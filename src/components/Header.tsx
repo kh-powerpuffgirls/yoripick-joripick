@@ -21,7 +21,7 @@ const Header = () => {
                     <Link to="/" className="nav-link">식BTI</Link>
                 </li>
                 <li>
-                    <Link to="/" className="nav-link">고객센터</Link>
+                    <Link to="/cservice" className="nav-link">고객센터</Link>
                 </li>
                 <li>
                     <Link to="/" className="nav-link">마이페이지</Link>
