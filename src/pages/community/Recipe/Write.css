@@ -1,0 +1,19 @@
+.container{
+    max-width: 1000px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    margin: 0 auto;
+    padding : 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+h1,h3{
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+h2{
+    font-weight: bold;
+    color: #029D60;
+}
+

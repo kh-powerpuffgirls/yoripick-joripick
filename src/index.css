@@ -1,9 +1,14 @@
 /* Header Component */
 
+body{
+  background-color: #ECEEF1;
+	font-family: 'SUIT', sans-serif;
+}
+
 #header {
   background: linear-gradient(135deg, yellowgreen, green);
-  border-radius: 12px;
   padding: 20px;
+  border-radius: 20px;
 }
 
 #header h1 {
