@@ -2,13 +2,14 @@
 body {
     margin: 0;
     font-family: 'Noto Sans KR', sans-serif;
-    background-color: #fdfdfd;
     color: #333;
+    background-color: #ECEEF1;
 }
+
 
 /* 헤더 영역 */
 .header {
-    background-color: #fff8f0;
+    background-color: #FFF185;
     padding: 20px 0;
     border-bottom: 1px solid #eee;
 }
@@ -20,66 +21,75 @@ body {
 }
 
 .category {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
-    color: #ff7f50;
+    color: #3E5822;
     cursor: pointer;
     padding: 8px 16px;
-    border-radius: 20px;
     transition: background 0.3s ease;
 }
 
 .category:hover {
-    background-color: #ffe1d1;
+    color: #029D60;
+    font-weight: bold;
 }
 
 /* 컨테이너 전체 */
 .container {
-    max-width: 1200px;
-    margin: 30px auto;
+    max-width: 1000px;
+    margin: auto;
     padding: 0 20px;
+    background-color: white;
 }
 
 /* 레시피 작성 버튼 */
 .write {
-    background-color: #ff7f50;
+    background-color: #029D60;
     color: white;
     border: none;
     padding: 12px 20px;
     border-radius: 5px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    margin-bottom: 30px;
+    margin: 20px 2px 30px 0;
     float: right;
 }
 
 .write:hover {
-    background-color: #ff6534;
+    background-color: #345a4b;
 }
 
 /* 랭킹 테이블 */
-.lanking {
+.ranking {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 3px solid #3E5822;
 }
 
-.lanking th {
-    text-align: left;
-    padding: 10px 0;
-    font-size: 22px;
-    color: #ff7f50;
-    border-bottom: 2px solid #ffd2b2;
+.ranking th {
+    padding: 10px;
+    background-color: #D5EFB7;
 }
 
-.lanking td {
+.ranking-title{
+    display:flex;
+    align-items: center;
+    gap:20px;
+    justify-content: flex-start;
+    padding: 10px 20px;
+    font-weight: bolder;
+    font-size: 30px;
+}
+
+.ranking td {
     padding: 10px;
     vertical-align: top;
     text-align: center;
 }
 
-.lanking td div {
+.ranking td div {
     margin-top: 10px;
     font-size: 14px;
 }
@@ -152,30 +162,35 @@ body {
 }
 
 .profile img {
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
 }
 
 .profile_name {
     display: flex;
     flex-direction: column;
+    padding:0;
+    margin :0;
+
 }
 
 .profile_name .eat-bti {
-    font-size: 12px;
+    font-size: 7px;
     color: #ff7f50;
     font-weight: 600;
 }
 
 .profile_name .nickname {
-    font-size: 11px;
-    color: #999;
+    font-size: 12px;
+    color: #636363;
+    font-weight: 600;
 }
 
 /* 날짜와 조회수 */
 .date {
-    margin-left: auto;
-    font-size: 11px;
-    color: #aaa;
+    font-size: 7px;
+    color: #636363;
 }
 
 .views img {
