@@ -1,3 +1,22 @@
+*, *::before, *::after { box-sizing: border-box;}
+
 #root {
+<<<<<<< HEAD
   margin: 0 auto;
+=======
+  margin: 0;
+  padding: 0px;
+  width:100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+>>>>>>> master
+}
+
+body {
+  padding: 0px;
+  margin: 0;
+  background-color: #ECEEF1;
+  font-family: 'Noto Sans KR', sans-serif;
 }
