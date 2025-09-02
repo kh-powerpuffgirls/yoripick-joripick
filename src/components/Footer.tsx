@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom"
+import { useDispatch } from "react-redux";
+import { openChat } from "../features/chatSlice";
 
 const Footer = () => {
+    const dispatch = useDispatch();
     return (
         <div id="footer">            
+            <button onClick={() => dispatch(openChat('0'))}>채팅 열기</button>
             <ul className="footer-nav">
                 <li className="footer-nav-item">
                     <Link to="/" className="footer-nav-link">Home</Link>
