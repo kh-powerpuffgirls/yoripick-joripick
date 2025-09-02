@@ -15,8 +15,8 @@ function App() {
     <>
       <Header />
       <AlertModal />
-      <p className='chatBtn' onClick={() => dispatch(openChat('0'))}>💬</p>
       <ChatModal />
+      <p className='chatBtn' onClick={() => dispatch(openChat('1'))}>💬</p>
       <Routes>
         <Route path="/home" element={<Mainpage/>} />
         <Route path="/cservice" element={<CServiceMain/>} />

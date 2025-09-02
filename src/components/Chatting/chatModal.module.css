@@ -85,7 +85,6 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
     gap: 5px;
 }
 
@@ -95,6 +94,7 @@
     max-width: 70%;
     word-break: break-word;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    text-align: left;
 }
 
 .me {
