@@ -173,3 +173,7 @@ button {
   background-color: #f0f8ff;
   text-decoration: none;
 }
+
+input[type=password]{
+  width: 385px;
+}
