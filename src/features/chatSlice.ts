@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { initialState } from "../type/chatmodal";
+import { initialState, type Message } from "../type/chatmodal";
 
 const chatSlice = createSlice({
     name: "chat",
@@ -13,15 +13,13 @@ const chatSlice = createSlice({
             state.isOpen = false;
             state.currentRoomId = null;
         },
-        sendMessage: (state, action: PayloadAction<{ text: string }>) => {
+        sendMessage: (state, action: PayloadAction<Message>) => {
             const room = state.rooms.find((r) => r.id === state.currentRoomId);
             if (room) {
                 room.messages.push({
-                    id: Date.now().toString(),
                     text: action.payload.text,
-                    sender: "me"
+                    sender: action.payload.sender
                 });
-                
             }
         }
     }

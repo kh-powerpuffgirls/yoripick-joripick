@@ -1,5 +1,4 @@
-type Message = {
-  id: string;
+export type Message = {
   text: string;
   sender: "me" | "other";
 };

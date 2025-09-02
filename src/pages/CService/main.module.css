@@ -1,7 +1,15 @@
+.body {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .cardContainer {
     gap: 50px;
     display: flex;
     justify-content: center;
+    margin-top: 50px;
 }
 
 .card {
@@ -57,7 +65,7 @@
     background-color: rgba(146, 202, 2, 100);
     cursor: pointer;
     margin: 10px;
-    width: 150px;
+    width: 130px;
 }
 
 .cancel {
@@ -69,5 +77,5 @@
     background-color: rgba(254, 190, 162, 100);
     cursor: pointer;
     margin: 10px;
-    width: 150px;
+    width: 130px;
 }

@@ -3,6 +3,7 @@ import type { RootState } from "../../store/store";
 import { closeChat, openChat, sendMessage } from "../../features/chatSlice";
 import style from './chatModal.module.css'
 import useInput from "../../hooks/useInput";
+import axios from "axios";
 
 export const ChatModal = () => {
     const dispatch = useDispatch();
@@ -14,10 +15,19 @@ export const ChatModal = () => {
     if (!isOpen) return null;
     const currentRoom = rooms.find((r) => r.id === currentRoomId);
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.text.trim()) return;
-        dispatch(sendMessage(input));
+        dispatch(sendMessage({ text: input.text, sender: "me" }));
         resetInput();
+        // 채팅방이 챗봇일 경우
+        try {
+            const response = await axios.post("http://localhost:8000/chat", { message: input.text });
+            dispatch(sendMessage({ text: response.data.reply, sender: "other" }));
+        } catch (err) {
+            console.error(err);
+            dispatch(sendMessage({ text: "서버 오류 발생", sender: "other" }));
+        }
+        // 채팅방이 일반 사용자일경우
     };
 
     return (
@@ -40,7 +50,7 @@ export const ChatModal = () => {
             {/* messages */}
             <div className={style.body}>
                 {currentRoom?.messages.map((msg) => (
-                    <div className={`${style.msgBubble} ${msg.sender === "me" ? style.me : style.other}`} key={msg.id}>
+                    <div className={`${style.msgBubble} ${msg.sender === "me" ? style.me : style.other}`}>
                         {msg.text}
                     </div>
                 ))}
