@@ -5,7 +5,7 @@ import style from "./alertModal.module.css"
 export const AlertModal = () => {
   const { htmlComponent, visible } = useSelector((state: RootState) => state.alert);
 
-  if (!visible) return null; // 렌더링X
+  if (!visible) return null;
 
   return (
     <div className={style.modalBackdrop} onClick={(e) => e.stopPropagation()}>

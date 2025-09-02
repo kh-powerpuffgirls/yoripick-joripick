@@ -3,6 +3,8 @@ import './App.css'
 import Header from './components/Header'
 import { CServiceMain } from './pages/CService/main'
 import { AlertModal } from './components/AlertModal'
+import Footer from './components/Footer'
+import { ChatModal } from './components/Chatting/chatModal'
 
 function App() {
   return (
@@ -11,10 +13,10 @@ function App() {
       <AlertModal />
       <Routes>
         <Route path="/" element={<div></div>} />
-      </Routes>
-      <Routes>
         <Route path="/cservice" element={<CServiceMain/>} />
       </Routes>
+      <Footer />
+      <ChatModal />
     </>
   )
 }
