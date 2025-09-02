@@ -34,12 +34,67 @@ body {
     font-weight: bold;
 }
 
+.main{
+    position:relative;
+}
+
+/* 사이드바 */
+.sidebar{
+    position: absolute; 
+    top: 30px;
+    left: calc(50% - 500px - 300px - 20px);
+
+    max-width: 300px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+}
+h1{
+    padding-left: 10px;
+    color: #029D60;
+}
+.sidebar_title{
+    font-size: 20px;
+    font-weight: 600;
+}
+#box{
+    margin:20px;
+    padding: 20px;
+    /* background-color: #666; */
+}
+.tag-box{
+    border: #636363;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.checkbox-group{
+    display: flex;
+    flex-direction: column;
+}
+.submit-button{
+    background-color: #029D60;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0px 2px 30px 0;
+    float: right;
+}
+
+.submit-button:hover {
+    background-color: #345a4b;
+}
+
+
 /* 컨테이너 전체 */
 .container {
     max-width: 1000px;
-    margin: auto;
-    padding: 0 20px;
+    padding: 20px ;
     background-color: white;
+    margin: auto;
+    
 }
 
 /* 레시피 작성 버튼 */
@@ -52,7 +107,7 @@ body {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    margin: 20px 2px 30px 0;
+    margin: 0px 2px 30px 0;
     float: right;
 }
 
@@ -68,6 +123,10 @@ body {
     border: 3px solid #3E5822;
 }
 
+#crown{
+    height: 38px;
+    width: 40px;
+}
 .ranking th {
     padding: 10px;
     background-color: #D5EFB7;
@@ -91,13 +150,9 @@ body {
 
 .ranking td div {
     margin-top: 10px;
+    margin-bottom: 10px;
     font-size: 14px;
 }
-
-/* 각 순위 구분 (원하는 순위별 스타일 커스터마이징 가능) */
-/* .lanking .1st, .lanking .2st, .lanking .3st, .lanking .4st {
-    width: 25%;
-} */
 
 /* 리스트 헤더 정렬 */
 .list_header {
@@ -117,16 +172,23 @@ body {
 
 /* 레시피 리스트 전체 영역 */
 .content_container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
+    /* display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(4, 1fr); */
+    display:flex;
+    flex-wrap: wrap;
+    justify-content:space-around ;
+    
+
 }
 
 /* 개별 콘텐츠 박스 */
 .content {
+    flex: 1 1 20%;
     background-color: white;
     border: 1px solid #eee;
     border-radius: 10px;
+    margin: 5px;
     padding: 15px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     transition: box-shadow 0.3s ease;
@@ -142,9 +204,15 @@ body {
     height: auto;
     object-fit: cover;
 }
+#title{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+    display: block;
+    
+    margin: 10px auto 0;
 
-.content > div:nth-child(2) {
-    margin-top: 10px;
     font-weight: bold;
     font-size: 15px;
     color: #444;
@@ -154,7 +222,7 @@ body {
 /* 프로필 스타일 */
 .profile {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 10px;
     margin-top: 15px;
     font-size: 12px;
@@ -193,7 +261,12 @@ body {
     color: #636363;
 }
 
-.views img {
-    margin-left: 6px;
-    vertical-align: middle;
+.views{
+    margin-left: auto;
+
 }
+.views img {
+    vertical-align: middle;
+
+}
+

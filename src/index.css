@@ -1,16 +1,5 @@
 /* Header Component */
-<<<<<<< HEAD
 
-body{
-  background-color: #ECEEF1;
-	font-family: 'SUIT', sans-serif;
-}
-
-#header {
-  background: linear-gradient(135deg, yellowgreen, green);
-  padding: 20px;
-  border-radius: 20px;
-=======
 #header {
   background-color: #92ca02;
   width: 100%;
@@ -18,7 +7,6 @@ body{
   display: flex;
   justify-content: space-between;
   align-items: center;
->>>>>>> master
 }
 
 .logo-image {
