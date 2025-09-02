@@ -1,0 +1,99 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalBox {
+  position: relative;
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  width: 420px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none; 
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+  height: auto;
+  line-height: 1;
+}
+
+.modalHeader {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 10px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #65a30d;
+}
+
+.form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.inputRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.subBtn {
+  background: lightcoral;
+  border: none;
+  border-radius: 6px;
+  width: 130px;
+  padding: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.subBtn:hover {
+  background: lightgreen
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submitBtn:hover {
+  background: #1e40af;
+}
+
+input[type="password"]{
+  width: 385px;
+}
