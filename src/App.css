@@ -1,9 +1,6 @@
 *, *::before, *::after { box-sizing: border-box;}
 
 #root {
-<<<<<<< HEAD
-  margin: 0 auto;
-=======
   margin: 0;
   padding: 0px;
   width:100%;
@@ -11,7 +8,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
->>>>>>> master
 }
 
 body {
