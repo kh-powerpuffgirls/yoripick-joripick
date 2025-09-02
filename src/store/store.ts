@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // src/store.ts
 
 import { configureStore } from "@reduxjs/toolkit";
@@ -7,6 +8,16 @@ export const store = configureStore({
     reducer: {
         // 리듀서 작성 하는 곳
         boards: boardsReducer,
+=======
+import { configureStore } from "@reduxjs/toolkit"
+import alert from '../features/alertSlice'
+import chat from '../features/chatSlice'
+
+export const store = configureStore({
+    reducer:{
+        alert,
+        chat
+>>>>>>> master
     }
 });
 
