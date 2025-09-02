@@ -1,32 +1,203 @@
 /* Header Component */
 #header {
-  background: linear-gradient(135deg, yellowgreen, green);
-  border-radius: 12px;
-  padding: 20px;
+  background-color: #92ca02;
+  width: 100%;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#header h1 {
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+.logo-image {
+  height: 50px;
 }
 
 .navbar {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 5px;
   list-style: none;
-  flex-wrap: wrap;
+}
+
+.nav-line {
+  width: 1px;
+  height: 20px;
+  border-right: white solid 2px;
 }
 
 .nav-link {
-  color: white;
+  color: black;
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  text-wrap: nowrap;
+}
+
+.log-link {
+  color: black;
+  text-decoration: none;
+  text-wrap: nowrap;
+  font-size: 12px;
 }
 
 .nav-link:hover {
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+.nav-right {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  list-style: none;
+}
+
+.search-icon {
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.search-icon:hover, .profile-icon:hover {
+  background-color: #dddddd;
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.search-image, .profile-image {
+  width: 25px;
+  height: 25px;
+}
+
+.profile-icon {
+  width: 90px;
+  height: 40px;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding:  0px 7.5px 0px 10px;
+}
+
+/* Footer */
+
+#footer {
+  background-color: #92ca02;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.footer-nav{
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin-bottom: 15px;
+}
+
+.footer-nav-item{
+  border: white solid 1px;
+  border-right: 0px;
+  padding: 10px 30px;
+  flex-shrink: 0;
+}
+.footer-nav-item:hover{
+  background-color: #b9e156;
+  transition: all 0.2s ease-in-out;
+}
+.footer-nav-item:nth-child(1){
+  border-radius: 15px 0px 0px 15px;
+}
+.footer-nav-item:nth-child(5){
+  border: white solid 1px;
+  border-radius: 0px 15px 15px 0px;
+}
+.footer-nav-link{
+  color: black;
+  text-decoration: none;
+}
+
+/* 페이지네이션 ========================================================================================= */
+.pagination-area{
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+  
+.pagination {
+  list-style: none;
+  display: flex;
+  padding: 0;}
+    
+.pagination li {
+  display: inline;
+  text-align: center;}
+
+.pagination a {
+  float: left;
+  display: inline;
+  align-items: center;
+  font-size: 14px;
+  text-decoration: none;
+  width: 30px;
+  height: 30px;
+  color: #96a0ad;
+  border: #96a0ad solid 1px;
+  border-radius: 10px;
+  line-height: 190%;
+  margin-left: 3px;
+}
+
+.pagination a.active {
+  cursor: default;
+  color: #ffffff;}
+  
+.pagination a:active {
+  outline: none;}
+  
+.page-modal .page-num {
+  margin-left: 3px;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  line-height: 190%;
+}
+
+.page-modal .page-num:hover , .page-first:hover, .page-last:hover, .page-left:hover, .page-right:hover{
+  background-color: #67c4a0;
+  color: #ffffff;}
+  
+.page-modal .page-num.active, .page-modal .page-num:active ,.page-first:active, .page-last:active, .page-left:active, .page-right:active{
+  background-color: #029d60;
+  cursor: pointer;}
+ 
+/* 인라인 설정 태그 ========================================================================================= */
+.flex-row {
+  display: flex;
+  align-items: center;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.gap-10 {
+  gap: 10px;
+}
+.gap-20 {
+  gap: 20px;
+}
+.gap-40 {
+  gap: 40px;
+}
+
+
+
+

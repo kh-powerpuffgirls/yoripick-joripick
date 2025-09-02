@@ -1,22 +1,23 @@
-import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import Header from './components/Header'
-import { CServiceMain } from './pages/CService/main'
-import { AlertModal } from './components/AlertModal'
 import Footer from './components/Footer'
+import { Route, Routes } from 'react-router-dom'
+import { AlertModal } from './components/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
+import Mainpage from './pages/mainpage/Mainpage'
+import { CServiceMain } from './pages/CService/main'
 
 function App() {
   return (
     <>
       <Header />
       <AlertModal />
+      <ChatModal />
       <Routes>
-        <Route path="/" element={<div></div>} />
+        <Route path="/home" element={<Mainpage/>} />
         <Route path="/cservice" element={<CServiceMain/>} />
       </Routes>
-      <Footer />
-      <ChatModal />
+      <Footer/>
     </>
   )
 }
