@@ -1,3 +1,4 @@
+/* 사이드바 */
 .sidebar{
     position: absolute; 
     top: 30px;
@@ -21,15 +22,15 @@ h1{
     padding: 20px;
     /* background-color: #666; */
 }
-.tag-box{
+.tag_box{
     border: #636363;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-.checkbox-group{
+.checkbox_group{
     display: flex;
     flex-direction: column;
 }
-.submit-button{
+.submit_button{
     background-color: #029D60;
     color: white;
     border: none;
@@ -42,6 +43,6 @@ h1{
     float: right;
 }
 
-.submit-button:hover {
+.submit_button:hover {
     background-color: #345a4b;
 }

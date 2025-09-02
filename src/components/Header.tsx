@@ -16,7 +16,7 @@ const Header = () => {
                     <Link to="/ingpedia" className="nav-link">재료백과</Link>
                 </li><li className="nav-line"></li>
                 <li>
-                    <Link to="/community" className="nav-link">커뮤니티</Link>
+                    <Link to="/community/recipe" className="nav-link">커뮤니티</Link>
                 </li><li className="nav-line"></li>
                 <li>
                     <Link to="/eat-bti" className="nav-link">식BTI</Link>

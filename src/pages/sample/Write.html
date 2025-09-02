@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./Write.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header_card">
+            <h1>🥗 레시피 작성 🥗</h1>
+        </div>
+
+        <div class="card">
+            <h2>기본정보</h2>
+            <div class="content">
+
+                <div id="title">
+                    <span>레시피 제목</span>
+                    <br/>
+                    <input type="text" name="title" >
+                </div>
+                <div id="title">
+                    <span>레시피 소개</span>
+                    <br/>
+                    <input type="textarea" name="content" >
+                </div>
+                <div id="title">
+                    <span>태그</span>
+                    <br/>
+                    <input type="text" name="tag">
+                </div>
+                <div id="title">
+                    <span>요리정보</span>
+                    <br/>
+                    <div class="info">
+                        <img src="../../assets/sample/저울아이콘.png" />
+                        조리방법
+                        <form action="">
+                            <select name="method">
+                                <option value="method">굽기</option>
+                                <option value="method">부침</option>
+                                <option value="method">찜</option>
+                                <option value="method">볶음</option>
+                                <option value="method">무치기</option>
+                            </select>
+                        </form>
+                    </div>
+                    <div class="info">
+                        <img src="../../assets/sample/요리아이콘.png" />
+                        요리종류
+                        <form action="">
+                            <select name="kind ">
+                                <option value="kind ">반찬</option>
+                                <option value="kind ">밥/죽/떡</option>
+                                <option value="kind ">국/탕</option>
+                                <option value="kind ">양념</option>
+                                <option value="kind ">빵</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>재료정보</h2>
+        </div>
+
+        <div class="card">
+            <h2>요리순서</h2>
+        </div>
+
+        <div class="button_area">
+        </div>
+    </div>
+</body>
+</html>

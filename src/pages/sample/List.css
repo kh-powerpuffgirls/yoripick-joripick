@@ -1,15 +1,76 @@
-
-/* 컨테이너 전체 */
-.container {
-    max-width: 1000px;
-    padding: 20px ;
-    background-color: white;
-    margin: auto;
-    
+/* 전체 레이아웃 기본 스타일 */
+body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+    background-color: #ECEEF1;
 }
 
-/* 레시피 작성 버튼 */
-.write {
+
+/* 헤더 영역 */
+.header {
+    background-color: #FFF185;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.category_line {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.category {
+    font-size: 20px;
+    font-weight: bold;
+    color: #3E5822;
+    cursor: pointer;
+    padding: 8px 16px;
+    transition: background 0.3s ease;
+}
+
+.category:hover {
+    color: #029D60;
+    font-weight: bold;
+}
+
+.main{
+    position:relative;
+}
+
+/* 사이드바 */
+.sidebar{
+    position: absolute; 
+    top: 30px;
+    left: calc(50% - 500px - 300px - 20px);
+
+    max-width: 300px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+}
+h1{
+    padding-left: 10px;
+    color: #029D60;
+}
+.sidebar_title{
+    font-size: 20px;
+    font-weight: 600;
+}
+#box{
+    margin:20px;
+    padding: 20px;
+    /* background-color: #666; */
+}
+.tag-box{
+    border: #636363;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.checkbox-group{
+    display: flex;
+    flex-direction: column;
+}
+.submit-button{
     background-color: #029D60;
     color: white;
     border: none;
@@ -22,14 +83,40 @@
     float: right;
 }
 
+.submit-button:hover {
+    background-color: #345a4b;
+}
+
+
+/* 컨테이너 전체 */
+.container {
+    max-width: 1000px;
+    background-color: white;
+    margin: auto;
+}
+
+/* 레시피 작성 버튼 */
+.write {
+    background-color: #029D60;
+    color: white;
+    border: none;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 30px;
+    float: right;
+}
+
 .write:hover {
     background-color: #345a4b;
 }
 
 /* 랭킹 테이블 */
 .ranking {
-    width: 100%;
-    margin-bottom: 20px;
+    width:  calc(100% - 40px);
+    margin: 20px;
     border-radius: 10px;
     border: 3px solid #3E5822;
 }
@@ -38,6 +125,7 @@
     height: 38px;
     width: 40px;
 }
+
 .ranking th {
     padding: 10px;
     background-color: #D5EFB7;
@@ -54,15 +142,20 @@
 }
 
 .ranking td {
-    padding: 10px;
+    /* padding: 10px; */
     vertical-align: top;
     text-align: center;
 }
 
 .ranking td div {
     margin-top: 10px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     font-size: 14px;
+}
+
+
+.list{
+    padding : 20px;
 }
 
 /* 리스트 헤더 정렬 */
@@ -78,7 +171,7 @@
 }
 
 .list_header div:hover {
-    color: #ff7f50;
+    color: #345a4b;
 }
 
 /* 레시피 리스트 전체 영역 */
@@ -88,16 +181,16 @@
     grid-template-columns: repeat(4, 1fr); */
     display:flex;
     flex-wrap: wrap;
-    justify-content:space-around ;
-    
+    justify-content:space-around ;   
 
 }
 
 /* 개별 콘텐츠 박스 */
 .content {
     flex: 1 1 20%;
+    max-width: 190px;
     background-color: white;
-    border: 1px solid #eee;
+    border: 1px solid #636363;
     border-radius: 10px;
     margin: 5px;
     padding: 15px;
@@ -179,4 +272,14 @@
 .views img {
     vertical-align: middle;
 
+}
+
+.stars{
+    margin-left: auto;
+    color: #FED049;
+    font-weight: 600;
+
+}
+.stars img {
+    vertical-align: middle;
 }

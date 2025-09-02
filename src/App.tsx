@@ -6,6 +6,7 @@ import { AlertModal } from './components/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
+import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
       <Routes>
         <Route path="/home" element={<Mainpage/>} />
         <Route path="/cservice" element={<CServiceMain/>} />
+
+        {/* community/recipe */}
+        <Route path="/community/recipe" element={<CommunityRecipeList />} />
+
       </Routes>
       <Footer/>
     </>

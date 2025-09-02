@@ -1,0 +1,97 @@
+.content {
+    flex: 1 1 20%;
+    max-width: 190px;
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.content:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.content img {
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+#title{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+    display: block;
+    
+    margin: 10px auto 0;
+
+    font-weight: bold;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.4;
+}
+
+/* 프로필 스타일 */
+.profile {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #666;
+}
+
+.profile img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.profile_name {
+    display: flex;
+    flex-direction: column;
+    padding:0;
+    margin :0;
+
+}
+
+.profile_name .eat_bti {
+    font-size: 7px;
+    color: #ff7f50;
+    font-weight: 600;
+}
+
+.profile_name .nickname {
+    font-size: 10px;
+    color: #636363;
+    font-weight: 600;
+}
+
+/* 날짜와 조회수 */
+.date {
+    font-size: 7px;
+    color: #636363;
+}
+
+.views{
+    margin-left: auto;
+
+}
+.views img {
+    vertical-align: middle;
+
+}
+
+.stars{
+    margin-left: auto;
+    color: #FED049;
+    font-weight: 600;
+
+}
+.stars img {
+    vertical-align: middle;
+}
