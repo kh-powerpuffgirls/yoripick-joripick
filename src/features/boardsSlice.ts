@@ -1,14 +1,27 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+interface BoardInfo {
+    title: string;
+    description: string;
+}
+
+interface BoardsState {
+    items: BoardInfo[];
+}
+
+const initialState: BoardsState = {
+    items: [],
+};
 
 const boardsSlice = createSlice({
     name: 'boards',
-    initialState: {
-        items: []
-    },
+    initialState,
     reducers: {
-        // 상태 변경 로직을 추가
-        // 예시: setBoards: (state, action) => { state.items = action.payload; }
+        setBoards: (state, action: PayloadAction<BoardInfo[]>) => {
+            state.items = action.payload;
+        },
     },
 });
 
+export const { setBoards } = boardsSlice.actions;
 export default boardsSlice.reducer;

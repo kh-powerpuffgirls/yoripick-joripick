@@ -1,0 +1,158 @@
+/* MyPost.css */
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.title-box {
+    border: 1px solid #000000;
+    padding: 1.1rem 1.5rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    background-color: #c8e47e;
+}
+
+.post-list h1 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+    text-align: left;
+    color: #1a202c;
+}
+
+.post-table {
+    border: 1px solid #000000;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border-collapse: collapse;
+}
+
+.table-header {
+    background-color: #c8e47e;
+}
+
+.table-header th {
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    font-size: 17px;
+    color: #000000;
+}
+
+.post-row {
+    cursor: pointer;
+    transition-property: background-color;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.post-row:hover {
+    background-color: #f7fafc;
+}
+
+.post-row td {
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    color: #2d3748;
+}
+
+.post-row td:nth-child(2),
+.post-row td:first-child,
+.post-row td:last-child,
+.post-row td:nth-child(3) {
+    text-align: center;
+    font-size: 16px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.post-detail-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+}
+
+.back-button {
+    margin-bottom: 1rem;
+    color: #4299e1;
+    transition-property: color;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    color: #2b6cb0;
+}
+
+.post-detail-card h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1a202c;
+}
+
+.post-meta {
+    color: #a0aec0;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.post-description {
+    color: #4a5568;
+    line-height: 1.625;
+    white-space: pre-wrap;
+}
+
+/* Pagination styles */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    font-size: 0.875rem;
+}
+
+.pagination-item {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    margin: 0 0.25rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    color: #4a5568;
+    background-color: transparent;
+    transition: background-color 150ms ease-in-out;
+}
+
+.pagination-item:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination-item.active {
+    background-color: #4299e1;
+    color: #fff;
+    font-weight: bold;
+}
+
+.pagination-arrow {
+    font-size: 1.25rem;
+    color: #4299e1;
+    cursor: pointer;
+}
+
+.pagination-arrow:hover {
+    color: #2b6cb0;
+}

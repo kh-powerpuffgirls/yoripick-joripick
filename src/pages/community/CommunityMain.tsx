@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CommunityMain.css';
 import CommunityHeader from './CommunityHeader';
+import { Link } from 'react-router-dom';
 
 interface BoardInfo {
     title: string;
     description: string;
 }
 
-const CommunityMain: React.FC = () => {
+const CommunityMain = () => {
     const [boards, setBoards] = useState<BoardInfo[]>([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/boards')
+        axios.get('http://localhost:8080/community')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setBoards(response.data);
@@ -35,9 +36,9 @@ const CommunityMain: React.FC = () => {
                 <div className="community-title-container">
                     <h1 className="community-title">요픽조픽 커뮤니티</h1>
                 </div>
-
-                <div className="my-posts-link-container">
-                    <a href="#" className="my-posts-link">내 게시글 보기 &gt;</a>
+                    <div className="my-posts-link-container">
+                    {/* <a> 태그 대신 라우터의 <Link> 컴포넌트를 사용하여 페이지 이동 */}
+                    <Link to="/mypost" className="my-posts-link">내 게시글 보기 &gt;</Link>
                 </div>
 
                 <section className="board-list-container">
