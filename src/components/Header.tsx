@@ -4,7 +4,7 @@ import { lodingImg } from "../assets/images"
 const Header = () => {
     return (
         <div id="header">
-            <Link to="/">
+            <Link to="/home">
                 <img className="logo-image" src={lodingImg.logo} alt="요리Pick! 조리Pick!" />
             </Link>
             <ul className="navbar">
@@ -23,6 +23,9 @@ const Header = () => {
                 <li>
                     <Link to="/cservice" className="nav-link">고객센터</Link>
                 </li><li className="nav-line"></li>
+                <li>
+                    <Link to="/cservice" className="nav-link">고객센터</Link>
+                </li>
                 <li>
                     <Link to="/mypage" className="nav-link">마이페이지</Link>
                 </li>
