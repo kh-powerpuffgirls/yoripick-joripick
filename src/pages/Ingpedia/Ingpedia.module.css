@@ -38,6 +38,9 @@ h2 {
 .content-area{
   padding: 0px 20px;
 }
+hr{
+  margin-bottom: 20px;
+}
 
 /* 레시피 분류 */
 .recipe-category {
@@ -46,25 +49,24 @@ h2 {
 }
 .recipe-category .category-list {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px 0px;
 }
 .category-list li{
   display: flex;
-  flex-direction: column;
   align-items: center;
 }
 .recipe-category .circle {
   display: block;
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: #ddd;
 }
 .recipe-category p {
   text-align: center;
   font-size: 20px;
-  font-weight: bolder;
+  margin-left: 10px;
 }
 
 /* 오늘의 PICK */
