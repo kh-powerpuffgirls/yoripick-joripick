@@ -54,28 +54,3 @@
     cursor: pointer;
     margin: 10px;
 }
-
-/* Modal CSS */
-.confirm {
-    border-radius: 10px;
-    border: 3px solid black;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    background-color: rgba(146, 202, 2, 100);
-    cursor: pointer;
-    margin: 10px;
-    width: 130px;
-}
-
-.cancel {
-    border-radius: 10px;
-    border: 3px solid black;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    background-color: rgba(254, 190, 162, 100);
-    cursor: pointer;
-    margin: 10px;
-    width: 130px;
-}

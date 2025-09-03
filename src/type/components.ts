@@ -1,11 +1,14 @@
-import type { ReactNode } from "react";
-
 export interface AlertState {
-    htmlComponent: ReactNode;
+    type: "chat" | "cservice" | null;
     visible: boolean;
 }
 
 export const initialState: AlertState = {
-    htmlComponent: null,
+    type: null,
     visible: false,
-};
+}
+
+export interface UseChatProps {
+    roomId: string | undefined;
+    myId: string;
+}

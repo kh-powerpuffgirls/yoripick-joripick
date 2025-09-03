@@ -1,29 +1,36 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { initialState, type Message } from "../type/chatmodal";
+import { initialState, type ChatRoom, type Message } from "../type/chatmodal";
 
 const chatSlice = createSlice({
     name: "chat",
     initialState,
     reducers: {
-        openChat: (state, action: PayloadAction<string>) => {
+        setRooms: (state, action: PayloadAction<ChatRoom[]>) => {
+            state.rooms = action.payload;
+        },
+        openChat: (state, action: PayloadAction<ChatRoom>) => {
             state.isOpen = true;
-            state.currentRoomId = action.payload;
+            state.rooms = state.rooms.filter(room => room.className !== action.payload.className);
+            state.rooms.unshift(action.payload);
+            state.currentRoomId = action.payload.classNo;
         },
         closeChat: (state) => {
             state.isOpen = false;
-            state.currentRoomId = null;
         },
         sendMessage: (state, action: PayloadAction<Message>) => {
-            const room = state.rooms.find((r) => r.id === state.currentRoomId);
+            const room = state.rooms.find((r) => r.classNo === state.currentRoomId);
             if (room) {
                 room.messages.push({
                     text: action.payload.text,
-                    sender: action.payload.sender
+                    sender: action.payload.sender,
+                    button: action.payload.button
                 });
+                state.rooms = state.rooms.filter(r => r.classNo !== room.classNo);
+                state.rooms.unshift(room);
             }
         }
     }
 })
 
-export const { openChat, closeChat, sendMessage } = chatSlice.actions;
+export const { setRooms, openChat, closeChat, sendMessage } = chatSlice.actions;
 export default chatSlice.reducer;
