@@ -1,21 +1,27 @@
 /* MyPost.css */
 
 .container {
+    background-color: #ffffff;
     max-width: 1000px;
+    width: 1000px;
+    padding-bottom: 70px;
     margin: 0 auto;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .title-box {
+    width: 100%;
+    max-width: 800px; 
+    margin: 0 auto;  
     border: 1px solid #000000;
-    padding: 1.1rem 1.5rem;
-    margin-bottom: 2rem;
-    margin-top: 2rem;
+    padding: 0.9rem 1.5rem;
+    margin-bottom: 3rem;
+    margin-top: 3rem;
     background-color: #c8e47e;
 }
 
 .post-list h1 {
-    font-size: 17px;
+    font-size: 16.5px;
     font-weight: 700;
     margin: 0;
     text-align: left;
@@ -23,12 +29,15 @@
 }
 
 .post-table {
-    border: 1px solid #000000;
     width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid #000000;
     background-color: #fff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .table-header {
@@ -40,7 +49,7 @@
     border-bottom: 1px solid #000000;
     padding: 1rem 1.5rem;
     text-align: center;
-    font-size: 17px;
+    font-size: 16.5px;
     color: #000000;
 }
 
@@ -68,9 +77,33 @@
 .post-row td:last-child,
 .post-row td:nth-child(3) {
     text-align: center;
-    font-size: 16px;
+    font-size: 15.5px;
     padding-left: 0;
     padding-right: 0;
+}
+
+.table-header th:nth-child(1),
+.post-row td:nth-child(1) {
+    width: 15%;
+}
+
+.post-row td:nth-child(2),
+.table-header th:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 55%;
+    max-width: 0;
+}
+
+.table-header th:nth-child(3),
+.post-row td:nth-child(3) {
+    width: 15%;
+}
+
+.table-header th:nth-child(4),
+.post-row td:nth-child(4) {
+    width: 15%;
 }
 
 .post-detail-card {
@@ -112,47 +145,4 @@
     color: #4a5568;
     line-height: 1.625;
     white-space: pre-wrap;
-}
-
-/* Pagination styles */
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 2rem;
-    font-size: 0.875rem;
-}
-
-.pagination-item {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 2.25rem;
-    height: 2.25rem;
-    margin: 0 0.25rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    color: #4a5568;
-    background-color: transparent;
-    transition: background-color 150ms ease-in-out;
-}
-
-.pagination-item:hover {
-    background-color: #f0f0f0;
-}
-
-.pagination-item.active {
-    background-color: #4299e1;
-    color: #fff;
-    font-weight: bold;
-}
-
-.pagination-arrow {
-    font-size: 1.25rem;
-    color: #4299e1;
-    cursor: pointer;
-}
-
-.pagination-arrow:hover {
-    color: #2b6cb0;
 }

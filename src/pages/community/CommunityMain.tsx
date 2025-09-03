@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import './CommunityMain.css';
+import styles from './CommunityMain.module.css';
 import CommunityHeader from './CommunityHeader';
 import { Link } from 'react-router-dom';
 
@@ -28,29 +28,46 @@ const CommunityMain = () => {
             });
     }, []);
 
-    return (
-        <div className="community-main-container">
-            <CommunityHeader />
-            
-            <main className="main-content">
-                <div className="community-title-container">
-                    <h1 className="community-title">요픽조픽 커뮤니티</h1>
-                </div>
-                    <div className="my-posts-link-container">
-                    {/* <a> 태그 대신 라우터의 <Link> 컴포넌트를 사용하여 페이지 이동 */}
-                    <Link to="/mypost" className="my-posts-link">내 게시글 보기 &gt;</Link>
-                </div>
+    const getBoardPath = (title: string) => {
+        switch (title) {
+            case '자유 게시판': return '/community/free';
+            case '레시피 공유': return '/community/recipe';
+            case '푸드 챌린지': return '/community/challenge';
+            case '쿠킹 클래스': return '/community/ckclass';
+            case '직거래 장터': return '/community/market';
+            default: return '/community';
+        }
+    };
 
-                <section className="board-list-container">
-                    {boards.map((board, index) => (
-                        <a key={index} href="#" className="board-card">
-                            <h2 className="board-title">{board.title}</h2>
-                            <p className="board-description">{board.description}</p>
-                        </a>
-                    ))}
-                </section>
-            </main>
-        </div>
+    return (
+        <>
+            <CommunityHeader />
+            <div className={styles.communityMainContainer}>
+                <main className={styles.mainContent}>
+                    <div className={styles.communityTitleContainer}>
+                        <h1 className={styles.communityTitle}>요픽조픽 커뮤니티</h1>
+                    </div>
+                    <div className={styles.myPostsLinkContainer}>
+                        <Link to="/community/mypost" className={styles.myPostsLink}>
+                            내 게시글 보기 &gt;
+                        </Link>
+                    </div>
+
+                    <section className={styles.boardListContainer}>
+                        {boards.map((board, index) => (
+                            <Link
+                                key={index}
+                                to={getBoardPath(board.title)}
+                                className={styles.boardCard}
+                            >
+                                <h2 className={styles.boardTitle}>{board.title}</h2>
+                                <p className={styles.boardDescription}>{board.description}</p>
+                            </Link>
+                        ))}
+                    </section>
+                </main>
+            </div>
+        </>
     );
 };
 

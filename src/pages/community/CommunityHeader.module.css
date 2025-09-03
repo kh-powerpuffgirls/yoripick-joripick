@@ -1,15 +1,14 @@
 .header {
     background-color: #FFED67;
-    padding: 15px 20px;
+    padding: 10px 15px;
     display: flex;
     flex-direction: row;
     align-items: center;
     box-sizing: border-box;
     width: 100%;
-    max-width: 1000px;
     position: relative;
     z-index: 10;
-    min-height: 80px;
+    min-height: 50px;
 }
 
 .nav {
@@ -22,8 +21,6 @@
 
 .nav-list {
     list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     gap: 15px;
     white-space: nowrap;
@@ -31,11 +28,11 @@
 
 .nav-item {
     font-weight: bold;
-    padding: 10px 15px;
+    padding: 0px 20px;
     cursor: pointer;
     border-radius: 20px;
     transition: background-color 0.3s, color 0.3s;
-    font-size: 20px;
+    font-size: 17.5px;
     color: #3E5822;
     position: relative;
 }
@@ -43,7 +40,7 @@
 .nav-item::after {
     content: '';
     position: absolute;
-    bottom: -17px;
+    bottom: -13.2px;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
@@ -59,13 +56,12 @@
 
 .nav-item:hover::after,
 .nav-item.active::after {
-    width: 100%;
+    width: 70%;
 }
 
 .search-toggle-icon {
     cursor: pointer;
     font-size: 1.5em;
-    padding: 10px;
     margin-left: auto;
 }
 
