@@ -16,60 +16,181 @@
             <h2>기본정보</h2>
             <div class="content">
 
-                <div id="title">
-                    <span>레시피 제목</span>
-                    <br/>
-                    <input type="text" name="title" >
-                </div>
-                <div id="title">
-                    <span>레시피 소개</span>
-                    <br/>
-                    <input type="textarea" name="content" >
-                </div>
-                <div id="title">
-                    <span>태그</span>
-                    <br/>
-                    <input type="text" name="tag">
-                </div>
-                <div id="title">
-                    <span>요리정보</span>
-                    <br/>
-                    <div class="info">
-                        <img src="../../assets/sample/저울아이콘.png" />
-                        조리방법
-                        <form action="">
-                            <select name="method">
-                                <option value="method">굽기</option>
-                                <option value="method">부침</option>
-                                <option value="method">찜</option>
-                                <option value="method">볶음</option>
-                                <option value="method">무치기</option>
-                            </select>
-                        </form>
+                <div class="other_card">
+                    <div id="title">
+                        <span>레시피 제목</span>
+                        <br/>
+                        <input type="text" name="title" >
                     </div>
-                    <div class="info">
-                        <img src="../../assets/sample/요리아이콘.png" />
-                        요리종류
-                        <form action="">
-                            <select name="kind ">
-                                <option value="kind ">반찬</option>
-                                <option value="kind ">밥/죽/떡</option>
-                                <option value="kind ">국/탕</option>
-                                <option value="kind ">양념</option>
-                                <option value="kind ">빵</option>
-                            </select>
-                        </form>
+                    <div id="title">
+                        <span>레시피 소개</span>
+                        <br/>
+                        <input type="textarea" name="content" >
                     </div>
+                    <div id="title">
+                        <span>태그</span>
+                        <br/>
+                        <input type="text" name="tag">
+                    </div>
+                    <div id="title">
+                        <span>요리정보</span>
+                        <br/>
+                        <div class="info_box">
+                            <div class="info">
+                                <img src="../../assets/sample/저울아이콘.png" />
+                                조리방법
+                                <form action="">
+                                    <select name="method">
+                                        <option value="">== 선택 ==</option>
+                                        <option value="method">굽기</option>
+                                        <option value="method">부침</option>
+                                        <option value="method">찜</option>
+                                        <option value="method">볶음</option>
+                                        <option value="method">무치기</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="info">
+                                <img src="../../assets/sample/요리아이콘.png" />
+                                요리종류
+                                <form action="">
+                                    <select name="kind">
+                                        <option value="">== 선택 ==</option>
+                                        <option value="kind">반찬</option>
+                                        <option value="kind">밥/죽/떡</option>
+                                        <option value="kind">국/탕</option>
+                                        <option value="kind">양념</option>
+                                        <option value="kind">빵</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="title">
+                    <span>대표사진</span>
+                    <div class="img_holder">+</div>
                 </div>
             </div>
         </div>
 
         <div class="card">
             <h2>재료정보</h2>
+            <div id="title">
+                <span>재료 추가</span>
+                <table id="ing">
+                    <tr>
+                        <th>
+                            <div class="ing_title">
+                                <span>지우기</span>
+                                <span>재료명</span>
+                                <span>수량</span>
+                                <span>중량</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="ing_title">
+                                <span>지우기</span>
+                                <span>재료명</span>
+                                <span>수량</span>
+                                <span>중량</span>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ing">
+                                <img src="../../assets/sample/minus_icon.png" id="minus" />
+                                <span>팽이버섯</span>
+                                <span>2봉</span>
+                                <span>300g</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ing">
+                                <img src="../../assets/sample/minus_icon.png" id="minus" />
+                                <span>조선고추장</span>
+                                <span>2스푼</span>
+                                <span>20g</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="add_ing">
+                                <img src="../../assets/sample/add_icon.png" id="add" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="title">
+               <span>영양성분 정보</span> 
+                <div class="nutrient">
+                    <div id="cpfn">
+                        <div id="bars">
+                            <span>탄수화물</span>
+                            <span>18g</span>
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>단백질</span>
+                            <span>18g</span>
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>지방</span>
+                            <span>18g</span>
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>나트륨</span>
+                            <span>18g</span>
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="kcal">
+                        <div class="chart">
+                            <div class="rad_chart"></div>
+                        </div>
+                        <span>칼로리 108kcal</span>
+                    </div>
+                </div>
+
+            </div>
+            
         </div>
 
         <div class="card">
             <h2>요리순서</h2>
+            <div id="title">
+                <table id="cook_box">
+                    <tr>
+                        <th>
+                            <span>step 1</span>
+                            <div id="icon">
+                                <img src="../../assets/sample/add_icon.png" id="add" />
+                                <img src="../../assets/sample/minus_icon.png" id="minus" />
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <div class="button_area">
