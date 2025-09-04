@@ -10,5 +10,5 @@ export const initialState: AlertState = {
 
 export interface UseChatProps {
     roomId: string | number | undefined;
-    myId: string;
+    myId: number | undefined;
 }

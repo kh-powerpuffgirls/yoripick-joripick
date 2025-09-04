@@ -4,7 +4,6 @@ import SockJS from "sockjs-client";
 import { useDispatch } from "react-redux";
 import { sendMessage } from "../features/chatSlice";
 import type { UseChatProps } from "../type/components";
-import { saveMessage } from "../api/chatApi";
 
 const useChat = ({ roomId, myId }: UseChatProps) => {
     const dispatch = useDispatch();

@@ -4,9 +4,11 @@ import { closeChat, openChat, sendMessage, setRooms } from "../../features/chatS
 import style from './chatModal.module.css'
 import useInput from "../../hooks/useInput";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import useChat from "../../hooks/useChat";
 import type { ChatRoom } from "../../type/chatmodal";
+import { getRooms, saveMessage } from "../../api/chatApi";
+import { useQuery } from "@tanstack/react-query";
 
 export const ChatModal = () => {
     const dispatch = useDispatch();
@@ -14,33 +16,24 @@ export const ChatModal = () => {
     const [input, handleInputChange, resetInput, setInput] = useInput({ text: "" });
     const modalRef = useRef<HTMLDivElement>(null);
     const currentRoom = rooms.find((r) => r.classNo === currentRoomId);
-
-    // 로그인 기능 끝나면 수정해야함
-    const [userId, setUserId] = useState("");
-    useEffect(() => {
-        // const id = Math.floor(Math.random() * 1000).toString();
-        const id = "0";
-        setUserId(id);
-        console.log(currentRoom);
-    }, []);
+    const {isAuthenticated, user} = useSelector( (state:RootState) => state.auth);
+    const userId = user?.userNo;
     const { sendChatMessage } = useChat({ roomId: currentRoomId, myId: userId });
 
     // 채팅방 목록 로딩
+    const { data: roomData } = useQuery({
+        queryKey: ["rooms", userId],
+        queryFn: getRooms,
+        staleTime: 1000 * 60,
+        gcTime : 1000 * 60 * 5,
+        enabled : true
+    });
     useEffect(() => {
-        if (!userId) return;
-        const fetchRooms = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8081/chat/rooms/${userId}`,
-                    { withCredentials: true }
-                );
-                const rooms = response.data.map((room: ChatRoom) => ({ ...room, messages: [] }));
-                dispatch(setRooms(rooms));
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchRooms();
-    }, [userId, dispatch]);
+        if (roomData) {
+            const rooms = roomData.data.map((room: ChatRoom) => ({ ...room, messages: [] }));
+            dispatch(setRooms(rooms));
+        }
+    }, [roomData, dispatch]);
 
     // 모달 외부 클릭 감지
     useEffect(() => {
@@ -69,6 +62,7 @@ export const ChatModal = () => {
         resetInput();
         if (type === "cservice") {
             dispatch(sendMessage({ text: input.text, sender: "me" }));
+            saveMessage(input.text, "USER");
             try {
                 const response = await axios.post("http://localhost:8080/chat",
                     { question: input.text },
@@ -78,11 +72,13 @@ export const ChatModal = () => {
                     text: response.data.answer,
                     sender: "other",
                     button: response.data.button
-                }))
+                }));
+                saveMessage(input.text, "BOT");
 
             } catch (err) {
                 console.error(err);
                 dispatch(sendMessage({ text: "서버 오류 발생", sender: "other" }));
+                saveMessage(input.text, "BOT");
             }
         } else {
             sendChatMessage(input.text);
