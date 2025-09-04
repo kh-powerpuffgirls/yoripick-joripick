@@ -56,18 +56,8 @@ h2{
     flex-grow: 10;
 }
 
-input[type="text"] {
+input[type="text"],input[type="textarea"] {
 	width: 95%;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 6px;
-	font-size: 16px;
-}
-
-textarea{
-    resize: none;  
-    font-family: '맑은 고딕', Arial, sans-serif;
-    width: 95%;
 	padding: 10px;
 	border: 1px solid #ccc;
 	border-radius: 6px;
@@ -139,7 +129,7 @@ option {
 
 .ing{
     background-color: #E8E8E8;
-    padding: 16px 26px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -147,7 +137,7 @@ option {
 }
 .add_ing{
     background-color: #E8E8E8;
-     padding: 16px 26px;
+    padding: 10px 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -158,22 +148,11 @@ option {
     padding-left: 10px;
     width: 20px;
     justify-content: center;
-    cursor: pointer;
 }
-#minus:hover {
-  filter: brightness(70%);
-  transition: filter 0.3s ease;
-}
-
 #add{
     padding-left: 10px;
     width: 20px;
     justify-content: center;
-    cursor:pointer;
-}
-#add:hover {
-  filter: brightness(70%);
-  transition: filter 0.3s ease;
 }
 
 
@@ -206,18 +185,18 @@ option {
 }
 .progress {
     width: 100%;
-    height: 15px;
-    background-color: #D9D9D9;
+    height: 30px;
+    background-color: #dedede;
     font-weight: 600;
     font-size: .8rem;
 }
 
 .progress .bar_progress {
     width: 72%;  
-    height: 15px;
+    height: 30px;
     padding: 0;
     text-align: center;
-    background-color: #92CA02;
+    background-color: #4F98FF;
     color: #111;
 }
 
@@ -242,7 +221,7 @@ option {
     width: inherit;
     height: inherit;
     border-radius: 50%;
-    background: conic-gradient(#FEBEA2 50deg, #D3EA9A 50deg);
+    background: conic-gradient(#9986dd 50deg, #fbb871 50deg);
 }
 
 
@@ -273,13 +252,11 @@ option {
 #cook_box td{
     display: flex;
     padding: 20px;
-    gap:10px;
 }
 
 #how2cook{
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    border: none;
+    border:0px #5a616b !important;
+
 }
 
 .img_how2cook{
@@ -305,10 +282,6 @@ option {
     width: 200px;
     align-self: center;
 }
-.add_how2cook:hover {
-    background-color: #029D60;
-    color: white;
-}
 
 .button_area{
     display: flex;
@@ -325,11 +298,6 @@ option {
     background-color: #92CA02;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     padding: 10px 30px;
-    cursor: pointer;
-}
-
-#cancel:hover {
-    background-color: #7FB400; 
 }
 
 #complete{
@@ -341,9 +309,4 @@ option {
     background-color: #029D60;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     padding: 10px 30px;
-    cursor: pointer;
-}
-
-#complete:hover {
-    background-color: #02774B; 
 }
