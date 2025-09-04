@@ -43,11 +43,11 @@ hr{
 }
 
 /* 레시피 분류 */
-.recipe-category {
+.ing-category {
   margin-bottom: 40px;
   position: relative;
 }
-.recipe-category .category-list {
+.ing-category .category-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px 0px;
@@ -56,14 +56,14 @@ hr{
   display: flex;
   align-items: center;
 }
-.recipe-category .circle {
+.ing-category .circle {
   display: block;
   width: 60px;
   height: 60px;
   border-radius: 50%;
   background-color: #ddd;
 }
-.recipe-category p {
+.ing-category p {
   text-align: center;
   font-size: 20px;
   margin-left: 10px;
@@ -175,12 +175,12 @@ hr{
 }
 
 /* 레시피 분류 hover */
-.recipe-category .circle:hover {
+.ing-category .circle:hover {
   background-color: #92ca02;
   transform: scale(1.05);
   transition: all 0.2s ease-in-out;
 }
-.recipe-category li:hover p {
+.ing-category li:hover p {
   color: #92ca02;
   font-weight: bold;
 }

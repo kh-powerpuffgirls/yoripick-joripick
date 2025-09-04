@@ -5,30 +5,33 @@ import cx from "classnames";
 
 export default function Ingpedia(){
 
+    const category = ["과일", "채소", "고기", "수산물", "유제품", "견과류", "곡류", "빵류", "디저트", "음료/주류", "양념", "기타"];
+    const categoryVal = [];
+
     return (
         <>
             <div className={ingStyle.container}>
 
-             <section className={ingStyle["recipe-category"]}>
-                <div className={ingStyle[`title-area`]}>
-                    <h2>재료 관리</h2>
-                </div>
-                <hr/>
-                <ul className={cx(ingStyle["category-list"], ingStyle["content-area"])}>
-                    <li><span className={ingStyle.circle}></span><p>굽기</p></li>
-                    <li><span className={ingStyle.circle}></span><p>부침</p></li>
-                    <li><span className={ingStyle.circle}></span><p>찜</p></li>
-                    <li><span className={ingStyle.circle}></span><p>볶음</p></li>
-                    <li><span className={ingStyle.circle}></span><p>무침</p></li>
-                    <li><span className={ingStyle.circle}></span><p>끓이기</p></li>
-                    <li><span className={ingStyle.circle}></span><p>반찬</p></li>
-                    <li><span className={ingStyle.circle}></span><p>밥/죽/떡</p></li>
-                    <li><span className={ingStyle.circle}></span><p>국/탕</p></li>
-                    <li><span className={ingStyle.circle}></span><p>양념</p></li>
-                    <li><span className={ingStyle.circle}></span><p>빵</p></li>
-                    <li><span className={ingStyle.circle}></span><p>장류</p></li>
-                </ul>
+                <section className={ingStyle["ing-category"]}>
+                    <div className={ingStyle[`title-area`]}>
+                        <h2>재료 관리</h2>
+                        <select name="drop-category">
+                            <option value="">아이언맨</option>
+                            <option value="deadpool">데드풀</option>
+                            <option value="spiderman">스파이더맨</option>
+                        </select>
+                    </div>
+                    <hr/>
+                    {/* map 정리 필요 */}
+                    <ul className={cx(ingStyle["category-list"], ingStyle["content-area"])}>
+                        {category.map(
+                        (item, index) => (
+                            <li key={index}><span className={ingStyle.circle}></span><p>{item}</p></li>
+                        )
+                        )}
+                    </ul>
                 </section>
+                <hr/>
 
                 {/* <!-- 오늘의 PICK --> */}
                 <section className={ingStyle[`today-pick`]}>
