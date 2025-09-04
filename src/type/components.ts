@@ -1,5 +1,5 @@
 export interface AlertState {
-    type: "chat" | "cservice" | null;
+    type: "admin" | "cclass" | "cservice" | null;
     visible: boolean;
 }
 
@@ -9,6 +9,6 @@ export const initialState: AlertState = {
 }
 
 export interface UseChatProps {
-    roomId: string | undefined;
+    roomId: string | number | undefined;
     myId: string;
 }

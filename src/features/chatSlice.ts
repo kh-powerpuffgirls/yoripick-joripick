@@ -10,8 +10,11 @@ const chatSlice = createSlice({
         },
         openChat: (state, action: PayloadAction<ChatRoom>) => {
             state.isOpen = true;
-            state.rooms = state.rooms.filter(room => room.className !== action.payload.className);
-            state.rooms.unshift(action.payload);
+            const exists = state.rooms.some(room => room.classNo === action.payload.classNo);
+            if (!exists) {
+                state.rooms = state.rooms.filter(room => room.className !== action.payload.className);
+                state.rooms.unshift(action.payload);
+            }
             state.currentRoomId = action.payload.classNo;
         },
         closeChat: (state) => {

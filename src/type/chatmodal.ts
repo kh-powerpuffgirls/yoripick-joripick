@@ -7,9 +7,9 @@ export type Message = {
 };
 
 export type ChatRoom = {
-  classNo: string;
+  classNo: string | number;
   className: string;
-  type: "chat" | "cservice" | null;
+  type: "admin" | "cclass" | "cservice" | null;
   messages: Message[];
 };
 
@@ -18,7 +18,7 @@ export type ChatRoomCreate = Pick<ChatRoom, 'type'>;
 type ChatState = {
   isOpen: boolean;
   rooms: ChatRoom[];
-  currentRoomId?: string;
+  currentRoomId?: string | number;
 };
 
 export const initialState: ChatState = {

@@ -22,7 +22,7 @@ export const CServiceMain = () => {
                         <img src="src\assets\jopik.png" alt="jopik.png" />
                         <p>원하는 답변을 얻지 못하셨나요?</p>
                         <button>불러오기</button>
-                        <button onClick={() => dispatch(showAlert({ type: "chat" }))}>새 대화</button>
+                        <button onClick={() => dispatch(showAlert({ type: "admin" }))}>새 대화</button>
                     </div>
                 </div>
             </div>

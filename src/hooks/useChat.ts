@@ -4,6 +4,7 @@ import SockJS from "sockjs-client";
 import { useDispatch } from "react-redux";
 import { sendMessage } from "../features/chatSlice";
 import type { UseChatProps } from "../type/components";
+import { saveMessage } from "../api/chatApi";
 
 const useChat = ({ roomId, myId }: UseChatProps) => {
     const dispatch = useDispatch();
@@ -19,7 +20,7 @@ const useChat = ({ roomId, myId }: UseChatProps) => {
         });
 
         stompClient.current.onConnect = () => {
-            stompClient.current?.subscribe(`/topic/cclass/${roomId}`, (msg: Message) => {
+            stompClient.current?.subscribe(`/topic/chat/${roomId}`, (msg: Message) => {
                 const data = JSON.parse(msg.body);
                 if (data.sender === myId) {
                     dispatch(sendMessage({ text: data.text, sender: "me" }));
@@ -39,7 +40,7 @@ const useChat = ({ roomId, myId }: UseChatProps) => {
     const sendChatMessage = (text: string) => {
         if (stompClient.current && stompClient.current.connected) {
             stompClient.current.publish({
-                destination: `/app/cclass/${roomId}`,
+                destination: `/app/chat/${roomId}`,
                 body: JSON.stringify({ text, sender: myId }),
             });
         }

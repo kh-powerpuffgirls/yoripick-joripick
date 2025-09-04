@@ -64,14 +64,11 @@ export const ChatModal = () => {
     }, [currentRoom?.messages]);
 
     // 채팅 메세지 보내기
-    const handleSend = async (type: "chat" | "cservice" | null | undefined) => {
+    const handleSend = async (type: "admin" | "cclass" | "cservice" | null | undefined) => {
         if (!input.text.trim()) return;
-        dispatch(sendMessage({ text: input.text, sender: "me" }));
         resetInput();
-        if (type === "chat") {
-            sendChatMessage(input.text);
-        }
         if (type === "cservice") {
+            dispatch(sendMessage({ text: input.text, sender: "me" }));
             try {
                 const response = await axios.post("http://localhost:8080/chat",
                     { question: input.text },
@@ -87,6 +84,8 @@ export const ChatModal = () => {
                 console.error(err);
                 dispatch(sendMessage({ text: "서버 오류 발생", sender: "other" }));
             }
+        } else {
+            sendChatMessage(input.text);
         }
     };
 
