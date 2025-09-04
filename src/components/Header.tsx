@@ -22,9 +22,6 @@ const Header = () => {
                 </li><li className="nav-line"></li>
                 <li>
                     <Link to="/cservice" className="nav-link">고객센터</Link>
-                </li><li className="nav-line"></li>
-                <li>
-                    <Link to="/cservice" className="nav-link">고객센터</Link>
                 </li>
                 <li>
                     <Link to="/mypage" className="nav-link">마이페이지</Link>
@@ -32,11 +29,13 @@ const Header = () => {
             </ul>
             <div className="nav-right">
                 <div className="search-icon">
-                    <img className="search-image" src={lodingImg.search}/>
+                    <img className="search-image" src={lodingImg.search} />
                 </div>
                 <div className="profile-icon">
-                    <Link to="/login" className="log-link">로그인</Link>
-                    <img className="profile-image" src={lodingImg.profile}/>
+                    <Link to="/login" className="log-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        로그인
+                        <img className="profile-image" src={lodingImg.profile} alt="프로필" />
+                    </Link>
                 </div>
             </div>
         </div>

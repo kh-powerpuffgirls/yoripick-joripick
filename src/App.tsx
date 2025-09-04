@@ -9,6 +9,8 @@ import { CServiceMain } from './pages/CService/main'
 import { useDispatch, useSelector } from 'react-redux'
 import { openChat } from './features/chatSlice'
 import type { RootState } from './store/store'
+import Login from './pages/login/Login'
+import AlreadyLoginRoute from './components/AlreadyLoginRoute'
 
 function App() {
   const dispatch = useDispatch();
@@ -27,6 +29,11 @@ function App() {
           
           시간되면 로그인한 사용자 쿠킹클래스 채팅방도 stompClient redux로 관리하기 */}
       <Routes>
+        <Route path="/login" element={
+            <AlreadyLoginRoute>
+              <Login />
+            </AlreadyLoginRoute>
+        } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
       </Routes>

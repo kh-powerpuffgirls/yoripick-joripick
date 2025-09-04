@@ -1,0 +1,167 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalBox {
+  position: relative;
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  width: 420px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none; 
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+  height: auto;
+  line-height: 1;
+}
+
+.modalHeader {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 10px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #65a30d;
+}
+
+.form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.inputRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+input:disabled {
+  background: #f9f9f9;
+}
+
+.subBtn {
+  background: lightcoral;
+  border: none;
+  border-radius: 6px;
+  width: 100px;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.3s;
+}
+
+.subBtn:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
+
+.subBtn:hover:not(:disabled) {
+  background: lightgreen;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submitBtn:hover {
+  background: #1e40af;
+}
+
+.successText {
+  color: #16a34a; /* 초록 */
+  font-weight: bold;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.errorText {
+  color: #dc2626; /* 빨강 */
+  font-weight: bold;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.successTextSmall {
+  color: #16a34a; /* 초록 */
+  font-size: 0.85rem;
+  margin-top: -8px;
+  margin-bottom: 10px;
+}
+
+.errorTextSmall {
+  color: #dc2626; /* 빨강 */
+  font-size: 0.85rem;
+  margin-top: -8px;
+  margin-bottom: 10px;
+}
+
+/* 중앙 팝업 알림 */
+.alertPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  background: #65a30d;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding: 1rem 3rem;
+  border-radius: 20%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: popupScale 0.5s ease forwards;
+  z-index: 1100;
+}
+
+@keyframes popupScale {
+  0% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
