@@ -55,18 +55,19 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
       dispatch(loginSucess(res.data));
-      navigate("/home", { state: { flash: "로그인 성공" } });
+      navigate("/home");
     } catch (err) {
       const error = err as AxiosError;
       if (error.response?.status === 401) {
         setError("비밀번호가 잘못되었습니다.");
+        setLoading(false);
       } else if (error.response?.status === 404) {
         setError("등록된 계정이 없습니다. 회원가입 후 이용해주세요.");
+        setLoading(false);
       } else {
         setError("로그인 처리 중 오류가 발생했습니다.");
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
     }
   };
 

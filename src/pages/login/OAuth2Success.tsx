@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loginSucess } from "../../features/authSlice";
-import Unauthorized from "../ErrorPage/Unauthorized"; // 경로 확인 필요
+import Unauthorized from "../ErrorPage/Unauthorized";
 
 export default function OAuth2Success() {
   const location = useLocation();
@@ -16,7 +16,7 @@ export default function OAuth2Success() {
     const accessToken = param.get("accessToken") as string;
 
     axios
-      .get("http://localhost:8081/api/auth/me", {
+      .get("http://localhost:8081/auth/me", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

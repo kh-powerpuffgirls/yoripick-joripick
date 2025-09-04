@@ -30,7 +30,7 @@
 
 .label {
   font-weight: 600;
-  margin-bottom: 0.5rem; /* 라벨과 입력창 간격 */
+  margin-bottom: 0.5rem;
 }
 
 .input {
