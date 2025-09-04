@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
 import useChat from "../../hooks/useChat";
 import type { ChatRoom } from "../../type/chatmodal";
 import { getRooms, saveMessage } from "../../api/chatApi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const ChatModal = () => {
     const dispatch = useDispatch();
@@ -23,15 +23,16 @@ export const ChatModal = () => {
     // 채팅방 목록 로딩
     const { data: roomData } = useQuery({
         queryKey: ["rooms", userId],
-        queryFn: getRooms,
+        queryFn: () => getRooms(userId),
         staleTime: 1000 * 60,
         gcTime : 1000 * 60 * 5,
-        enabled : true
+        enabled : isAuthenticated
     });
     useEffect(() => {
         if (roomData) {
-            const rooms = roomData.data.map((room: ChatRoom) => ({ ...room, messages: [] }));
+            const rooms = roomData.map((room: ChatRoom) => ({ ...room, messages: [] }));
             dispatch(setRooms(rooms));
+            console.log(rooms);
         }
     }, [roomData, dispatch]);
 
@@ -57,30 +58,35 @@ export const ChatModal = () => {
     }, [currentRoom?.messages]);
 
     // 채팅 메세지 보내기
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationFn: ({ content, role }: { content: string, role: "USER" | "BOT" }) => 
+            saveMessage(userId, content, role),
+        onSuccess : () => queryClient.invalidateQueries({queryKey:["rooms", userId]})
+    });
     const handleSend = async (type: "admin" | "cclass" | "cservice" | null | undefined) => {
         if (!input.text.trim()) return;
         resetInput();
         if (type === "cservice") {
-            dispatch(sendMessage({ text: input.text, sender: "me" }));
-            saveMessage(input.text, "USER");
+            dispatch(sendMessage({ content: input.text, username: "me" }));
+            mutation.mutate({ content: input.text, role: "USER" });
             try {
                 const response = await axios.post("http://localhost:8080/chat",
                     { question: input.text },
                     { withCredentials: true });
 
                 dispatch(sendMessage({
-                    text: response.data.answer,
-                    sender: "other",
+                    content: response.data.answer,
+                    username: "other",
                     button: response.data.button
                 }));
-                saveMessage(input.text, "BOT");
+                mutation.mutate({ content: response.data.answer, role: "BOT" });
 
             } catch (err) {
-                console.error(err);
-                dispatch(sendMessage({ text: "서버 오류 발생", sender: "other" }));
-                saveMessage(input.text, "BOT");
+                dispatch(sendMessage({ content: "서버 오류 발생", username: "other" }));
+                mutation.mutate({ content: "서버 오류 발생", role: "BOT" });
             }
-        } else {
+        } else if (type === "admin" || "cclass") {
             sendChatMessage(input.text);
         }
     };
@@ -108,8 +114,8 @@ export const ChatModal = () => {
                 {/* messages */}
                 <div ref={bodyRef} className={style.body}>
                     {currentRoom?.messages.map((msg) => (
-                        <div className={`${style.msgBubble} ${msg.sender === "me" ? style.me : style.other}`}>
-                            {msg.text}
+                        <div className={`${style.msgBubble} ${msg.username === "me" ? style.me : style.other}`}>
+                            {msg.content}
                             {msg.button && (
                                 <div className={style.linkBtn}>
                                     <a href={msg.button.url}

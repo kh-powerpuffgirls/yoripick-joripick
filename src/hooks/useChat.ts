@@ -16,15 +16,18 @@ const useChat = ({ roomId, myId }: UseChatProps) => {
         stompClient.current = new Client({
             webSocketFactory: () => socket,
             reconnectDelay: 5000,
+            connectHeaders: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`
+            },
         });
 
         stompClient.current.onConnect = () => {
             stompClient.current?.subscribe(`/topic/chat/${roomId}`, (msg: Message) => {
                 const data = JSON.parse(msg.body);
                 if (data.sender === myId) {
-                    dispatch(sendMessage({ text: data.text, sender: "me" }));
+                    dispatch(sendMessage({ content: data.text, username: "me" }));
                 } else {
-                    dispatch(sendMessage({ text: data.text, sender: "other" }));
+                    dispatch(sendMessage({ content: data.text, username: "other" }));
                 }
             });
         };

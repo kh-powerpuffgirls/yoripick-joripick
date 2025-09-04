@@ -14,28 +14,31 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = getAccessToken();
-        if(token){
+        if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
-    }, 
+    },
     (error) => Promise.reject(error)
 );
 
-export const getRooms = async function() {
-    const response = await api.get(`/rooms`);
-    return response;
+api.interceptors.response.use(
+    (response) => response,
+    async () => {}
+)
+
+export const getRooms = async function (userNo: number | undefined) {
+    const response = await api.get(`/rooms/${userNo}`);
+    return response.data;
 }
 
 export const deleteRooms = async function (type: "admin" | "cclass" | "cservice" | null, user: User) {
     await api.delete(`/rooms/${type}/${user.userNo}`);
 }
 
-export const saveMessage = async function (content: string, role: "USER"|"BOT") {
-    await api.post(`/messages`, {
-        params: {
-            content,
-            role
-        }
+export const saveMessage = async function (userNo: number | undefined, content: string, role: "USER" | "BOT") {
+    await api.post(`/messages/${userNo}`, {
+        content,
+        role
     });
 };

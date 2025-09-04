@@ -17,24 +17,9 @@ const handleNewChat = async (user: User | null, type: "admin" | "cclass" | "cser
         messages: []
     }
     if (user) {
-        try {
-            deleteRooms(type, user);
-        } catch (err) {
-            if (axios.isAxiosError(err)) {
-                if (err.response?.status === 404) {
-                    dispatch(openChat(newRoom));
-                } else {
-                    console.error("Axios error:", err.response?.status || err.message);
-                }
-            } else if (err instanceof Error) {
-                console.error("JS Error:", err.message);
-            } else {
-                console.error("Unknown error:", err);
-            }
-        } finally {
-            dispatch(openChat(newRoom));
-            dispatch(hideAlert());
-        }
+        deleteRooms(type, user);
+        dispatch(openChat(newRoom));
+        dispatch(hideAlert());
     }
     try {
         await axios.delete(`http://localhost:8080/chat`, { withCredentials: true });

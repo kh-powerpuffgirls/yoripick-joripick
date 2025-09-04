@@ -1,6 +1,6 @@
 export type Message = {
-  text: string;
-  sender: "me" | "other";
+  content: string;
+  username: string;
   button?: {
     url: string;
   };

@@ -24,8 +24,8 @@ const chatSlice = createSlice({
             const room = state.rooms.find((r) => r.classNo === state.currentRoomId);
             if (room) {
                 room.messages.push({
-                    text: action.payload.text,
-                    sender: action.payload.sender,
+                    content: action.payload.content,
+                    username: action.payload.username,
                     button: action.payload.button
                 });
                 state.rooms = state.rooms.filter(r => r.classNo !== room.classNo);
