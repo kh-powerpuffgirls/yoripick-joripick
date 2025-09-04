@@ -5,6 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modalBox {
@@ -64,18 +65,28 @@ input {
   border-radius: 6px;
 }
 
+input:disabled {
+  background: #f9f9f9;
+}
+
 .subBtn {
   background: lightcoral;
   border: none;
   border-radius: 6px;
-  width: 130px;
-  padding: 2px;
+  width: 100px;
+  padding: 6px 10px;
   cursor: pointer;
   white-space: nowrap;
+  transition: background-color 0.3s;
 }
 
-.subBtn:hover {
-  background: lightgreen
+.subBtn:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
+
+.subBtn:hover:not(:disabled) {
+  background: lightgreen;
 }
 
 .submitBtn {
@@ -88,12 +99,69 @@ input {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .submitBtn:hover {
   background: #1e40af;
 }
 
-input[type="password"]{
-  width: 385px;
+.successText {
+  color: #16a34a; /* 초록 */
+  font-weight: bold;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.errorText {
+  color: #dc2626; /* 빨강 */
+  font-weight: bold;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.successTextSmall {
+  color: #16a34a; /* 초록 */
+  font-size: 0.85rem;
+  margin-top: -8px;
+  margin-bottom: 10px;
+}
+
+.errorTextSmall {
+  color: #dc2626; /* 빨강 */
+  font-size: 0.85rem;
+  margin-top: -8px;
+  margin-bottom: 10px;
+}
+
+/* 중앙 팝업 알림 */
+.alertPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  background: #65a30d;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding: 1rem 3rem;
+  border-radius: 20%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: popupScale 0.5s ease forwards;
+  z-index: 1100;
+}
+
+@keyframes popupScale {
+  0% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }

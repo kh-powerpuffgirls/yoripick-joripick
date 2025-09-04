@@ -1,38 +1,26 @@
-button {
-  padding: 0.9rem 1rem;
-  width: 100%; /* 전체 폭 채우기 */
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
 .page {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #f5f7fa;
-  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  background-color: #f0f2f5;
 }
 
 .card {
   background: #fff;
-  padding: 3rem 2.5rem;
+  padding: 2rem 3rem;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 420px;
+  width: 600px; 
+  height : 650px;
+  box-sizing: border-box;
 }
 
 .title {
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #222;
   text-align: center;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
 }
 
 .form {
@@ -41,76 +29,63 @@ button {
 }
 
 .label {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 0.4rem;
-  margin-top: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  margin-bottom: 0.5rem; /* 라벨과 입력창 간격 */
 }
 
 .input {
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1.5rem; /* 입력박스 간 간격 */
   font-size: 1rem;
-  border: 1.8px solid #ddd;
-  border-radius: 6px;
-  transition: border-color 0.3s ease;
+  outline: none;
+  transition: border-color 0.3s;
 }
 
 .input:focus {
   border-color: #6c63ff;
-  outline: none;
-  box-shadow: 0 0 8px rgba(108, 99, 255, 0.3);
 }
 
 .primaryBtn {
-  background: linear-gradient(90deg, #6c63ff, #534fff);
+  background: linear-gradient(90deg, #6c63ff, #8b7bff);
   color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 1rem;
-  width: 100%;
   border: none;
   border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s ease;
-  margin-top: 2rem;
+  transition: background 0.3s;
+  margin-top: 0.5rem;
 }
 
-
 .primaryBtn:disabled {
-  background: #a9a9f0;
+  background: #b3afff;
   cursor: not-allowed;
 }
 
-.primaryBtn:hover:not(:disabled) {
-  background: linear-gradient(90deg, #534fff, #6c63ff);
-}
-
 .error {
-  margin-top: 1rem;
-  color: #e74c3c;
-  font-weight: 600;
+  color: red;
+  margin-top: 0.8rem;
   text-align: center;
-  font-size: 0.9rem;
 }
 
 .dividerWrap {
   display: flex;
   align-items: center;
-  margin: 2.5rem 0 1.5rem;
-  color: #aaa;
-  font-weight: 500;
-  font-size: 0.9rem;
+  margin: 2rem 0;
 }
 
 .divider {
   flex-grow: 1;
   height: 1px;
-  background-color: #ddd;
+  background-color: #ccc;
 }
 
 .dividerText {
   margin: 0 1rem;
+  color: #999;
+  font-size: 0.9rem;
 }
 
 .socialGroup {
@@ -120,60 +95,45 @@ button {
 }
 
 .socialBtn {
-  display: block;
-  width: 100%;
-  padding: 1rem 0;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
   border: none;
-  transition: background-color 0.3s ease;
-  text-align: center;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  transition: filter 0.2s;
+}
+
+.socialBtn:hover {
+  filter: brightness(90%);
 }
 
 .kakao {
-  background-color: #fee500;
+  background-color: #ffe500;
   color: #3c1e1e;
-}
-
-.kakao:hover {
-  background-color: #f5d600;
 }
 
 .naver {
   background-color: #03c75a;
-  color: #fff;
-}
-
-.naver:hover {
-  background-color: #02b14d;
 }
 
 .authLinks {
   display: flex;
   justify-content: center;
-  gap: 1rem; /* 버튼 사이 간격 */
-  margin-top: 2rem;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .linkBtn {
-  padding: 0.5rem 1.2rem;
-  border: 1px solid #007bff;
-  border-radius: 6px;
-  background-color: white;
-  color: #007bff;
-  font-size: 0.9rem;
+  background: none;
+  border: none;
+  color: #1a50d9;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
 
 .linkBtn:hover {
-  background-color: #f0f8ff;
-  text-decoration: none;
-}
-
-input[type=password]{
-  width: 385px;
+  text-decoration: underline;
 }
