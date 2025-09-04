@@ -1,26 +1,26 @@
-import type { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
 import type { RootState } from "../store/store";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 interface Props {
   children: ReactNode;
 }
 
-export default function AlreadyLoginRoute({ children }: Props) {
+export default function AlreadyLoginRoute({ children }: Props) {  
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const navigate = useNavigate();
+  const location = useLocation();
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      alert("이미 로그인된 사용자입니다. 이전 페이지로 돌아갑니다.");
+    if (isAuthenticated && location.pathname === "/login") {
+        alert("이미 로그인된 사용자입니다. 이전 페이지로 돌아갑니다.");
         navigate(-1);
     } else {
       setChecked(true);
     }
-  }, [isAuthenticated, navigate]);
+  }, [checked]);
 
   if (!checked) {
     return null;
