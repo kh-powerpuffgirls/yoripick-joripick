@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './CommunityRecipeWrite.css';
+import write from './CommunityRecipeWrite.module.css';
 
 // 자식 컴포넌트 import
 import NutrientInfo from './NutrientInfo';
@@ -159,32 +159,32 @@ const CommunityRecipeWrite: React.FC = () => {
 
 
   return (
-    <div className="container">
-      <div className="header_card">
-        <h1>🥗 레시피 작성 🥗</h1>
+    <div className={write.container}>
+      <div className={write.header_card}>
+        🥗 레시피 작성 🥗
       </div>
       
       {/* --- 기본 정보 카드 --- */}
-      <div className="card">
+      <div className={write.card}>
         <h2>기본정보</h2>
-        <div className="content">
-          <div className="other_card">
-            <div id="title">
+        <div className={write.content}>
+          <div className={write.other_card}>
+            <div id={write.title}>
               <span>레시피 제목</span><br />
               <input type="text" name="title" value={title} onChange={e => setTitle(e.target.value)} />
             </div>
-            <div id="title">
+            <div id={write.title}>
               <span>레시피 소개</span><br />
               <textarea name="content" value={introduction} onChange={e => setIntroduction(e.target.value)}></textarea>
             </div>
-             <div id="title">
+             <div id={write.title}>
                 <span>태그</span><br />
                 <input type="text" name="tag" placeholder="#태그 #단짠단짠" value={tags} onChange={e => setTags(e.target.value)} />
             </div>
-            <div id="title">
+            <div id={write.title}>
               <span>요리정보</span><br />
-              <div className="info_box">
-                <div className="info">
+              <div className={write.info_box}>
+                <div className={write.info}>
                   <img src={scaleIcon} alt="조리방법"/> 조리방법
                   <select name="method" value={cookingMethod} onChange={e => setCookingMethod(e.target.value)}>
                     <option value="">== 선택 ==</option>
@@ -193,7 +193,7 @@ const CommunityRecipeWrite: React.FC = () => {
                     <option value="3">찜</option>
                   </select>
                 </div>
-                <div className="info">
+                <div className={write.info}>
                   <img src={cookingIcon} alt="요리종류"/> 요리종류
                   <select name="kind" value={recipeType} onChange={e => setRecipeType(e.target.value)}>
                     <option value="">== 선택 ==</option>
@@ -205,11 +205,11 @@ const CommunityRecipeWrite: React.FC = () => {
               </div>
             </div>
           </div>
-          <div id="title">
+          <div id={write.title}>
             <span>대표사진</span>
             {/* ⭐️ 숨겨진 input을 클릭하도록 연결 */}
             <input type="file" accept="image/*" ref={mainImageInputRef} onChange={handleMainImageChange} style={{ display: 'none' }} />
-            <div className="img_holder" onClick={() => mainImageInputRef.current?.click()}>
+            <div className={write.img_holder} onClick={() => mainImageInputRef.current?.click()}>
                 {mainImagePreview ? (
                     <img src={mainImagePreview} alt="대표사진 미리보기" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                 ) : (
@@ -222,15 +222,15 @@ const CommunityRecipeWrite: React.FC = () => {
       </div>
 
       {/* --- 재료 정보 카드 --- */}
-      <div className="card">
+      <div className={write.card}>
         <h2>재료정보</h2>
-        <div id="title">
+        <div id={write.title}>
           <span>재료 (클릭하여 추가)</span>
-          <table id="ing">
+          <table id={write.ing}>
             <thead>
                 <tr>
-                    <th><div className="ing_title"><span>지우기</span><span>재료명</span><span>수량</span></div></th>
-                    <th><div className="ing_title"><span>지우기</span><span>재료명</span><span>수량</span></div></th>
+                    <th><div className={write.ing_title}><span>지우기</span><span>재료명</span><span>수량</span></div></th>
+                    <th><div className={write.ing_title}><span>지우기</span><span>재료명</span><span>수량</span></div></th>
                 </tr>
             </thead>
             <tbody>
@@ -238,8 +238,8 @@ const CommunityRecipeWrite: React.FC = () => {
                     {/* ⭐️ 재료 목록을 동적으로 렌더링 */}
                     {ingredients.map(ing => (
                         <td key={ing.id}>
-                            <div className="ing">
-                                <img src={minusIcon} id="minus" alt="삭제" onClick={() => handleRemoveIngredient(ing.id)} style={{cursor: 'pointer'}} />
+                            <div className={write.ing}>
+                                <img src={minusIcon} id={write.minus} alt="삭제" onClick={() => handleRemoveIngredient(ing.id)} style={{cursor: 'pointer'}} />
                                 <span>{ing.name}</span>
                                 <span>{ing.quantity}</span>
                             </div>
@@ -247,15 +247,15 @@ const CommunityRecipeWrite: React.FC = () => {
                     ))}
                     <td>
                         {/* ⭐️ 재료 추가 버튼 */}
-                        <div className="add_ing" onClick={handleAddIngredient} style={{cursor: 'pointer'}}>
-                            <img src={addIcon} id="add" alt="추가" />
+                        <div className={write.add_ing} onClick={handleAddIngredient} style={{cursor: 'pointer'}}>
+                            <img src={addIcon} id={write.add} alt="추가" />
                         </div>
                     </td>
                 </tr>
             </tbody>
           </table>
         </div>
-        <div id="title">
+        <div id={write.title}>
           <span>영양성분 정보</span>
           {/* ⭐️ 분리된 NutrientInfo 컴포넌트 사용 */}
           <NutrientInfo nutrients={nutrients} />
@@ -263,19 +263,19 @@ const CommunityRecipeWrite: React.FC = () => {
       </div>
 
       {/* --- 요리 순서 카드 --- */}
-      <div className="card">
+      <div className={write.card}>
         <h2>요리순서</h2>
         {/* ⭐️ 요리 순서 목록을 동적으로 렌더링 */}
         {cookingSteps.map((step, index) => (
-            <div id="title" key={step.id}>
-              <table id="cook_box">
+            <div id={write.title} key={step.id}>
+              <table id={write.cook_box}>
                 <thead>
                   <tr>
                     <th>
                       <span>step {index + 1}</span>
-                      <div id="icon">
-                        <img src={addIcon} id="add" alt="추가" onClick={handleAddCookingStep} style={{cursor: 'pointer'}}/>
-                        <img src={minusIcon} id="minus" alt="삭제" onClick={() => handleRemoveCookingStep(step.id)} style={{cursor: 'pointer'}}/>
+                      <div id={write.icon}>
+                        <img src={addIcon} id={write.add} alt="추가" onClick={handleAddCookingStep} style={{cursor: 'pointer'}}/>
+                        <img src={minusIcon} id={write.minus} alt="삭제" onClick={() => handleRemoveCookingStep(step.id)} style={{cursor: 'pointer'}}/>
                       </div>
                     </th>
                   </tr>
@@ -285,12 +285,12 @@ const CommunityRecipeWrite: React.FC = () => {
                     <td>
                       <textarea
                         name="how2cook"
-                        id="how2cook"
+                        id={write.how2cook}
                         value={step.description}
                         onChange={(e) => handleStepDescriptionChange(step.id, e.target.value)}
                       />
                       <input type="file" accept="image/*" onChange={(e) => handleStepImageChange(step.id, e)} style={{ display: 'none' }} id={`step-img-${step.id}`} />
-                      <label htmlFor={`step-img-${step.id}`} className="img_how2cook">
+                      <label htmlFor={`step-img-${step.id}`} className={write.img_how2cook}>
                         {step.imagePreview ? <img src={step.imagePreview} alt="step preview" style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : '+'}
                       </label>
                     </td>
@@ -299,13 +299,13 @@ const CommunityRecipeWrite: React.FC = () => {
               </table>
             </div>
         ))}
-        <button className="add_how2cook" onClick={handleAddCookingStep}>요리순서 추가</button>
+        <button className={write.add_how2cook} onClick={handleAddCookingStep}>요리순서 추가</button>
       </div>
       
       {/* --- 최종 버튼 --- */}
-      <div className="button_area">
-        <button id="cancel" onClick={() => navigate(-1)}>작성 취소</button>
-        <button id="complete" onClick={handleSubmit}>작성 완료</button>
+      <div className={write.button_area}>
+        <button id={write.cancel} onClick={() => navigate(-1)}>작성 취소</button>
+        <button id={write.complete} onClick={handleSubmit}>작성 완료</button>
       </div>
     </div>
   );

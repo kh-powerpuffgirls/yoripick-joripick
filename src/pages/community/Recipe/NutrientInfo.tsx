@@ -1,5 +1,5 @@
 import React from 'react';
-import './NutrientInfo.css';
+import nut from './NutrientInfo.module.css';
 
 // NutrientInfo 컴포넌트가 받을 props의 타입을 정의합니다.
 interface NutrientData {
@@ -40,41 +40,41 @@ const NutrientInfo: React.FC<NutrientInfoProps> = ({ nutrients }) => {
   const calorieAngle = (nutrients.calories / NUTRIENT_GOALS.calories) * 360;
 
   return (
-    <div className="nutrient">
-      <div id="cpfn">
-        <div id="bars">
+    <div className={nut.nutrient}>
+      <div id={nut.cpfn}>
+        <div id={nut.bars}>
           <span>탄수화물</span>
-          <span>{nutrients.carbs}g</span>
-          <div className="progress">
-            <div className="bar_progress" style={{ width: `${carbPercent}%`, backgroundColor: '#4F98FF' }}></div>
+          <span>{nut.carbs}g</span>
+          <div className={nut.progress}>
+            <div className={nut.bar_progress} style={{ width: `${carbPercent}%`, backgroundColor: '#4F98FF' }}></div>
           </div>
         </div>
-        <div id="bars">
+        <div id={nut.bars}>
           <span>단백질</span>
           <span>{nutrients.protein}g</span>
-          <div className="progress">
-            <div className="bar_progress" style={{ width: `${proteinPercent}%`, backgroundColor: '#FBB871' }}></div>
+          <div className={nut.progress}>
+            <div className={nut.bar_progress} style={{ width: `${proteinPercent}%`, backgroundColor: '#FBB871' }}></div>
           </div>
         </div>
-        <div id="bars">
+        <div id={nut.bars}>
           <span>지방</span>
           <span>{nutrients.fat}g</span>
-          <div className="progress">
-            <div className="bar_progress" style={{ width: `${fatPercent}%`, backgroundColor: '#9986DD' }}></div>
+          <div className={nut.progress}>
+            <div className={nut.bar_progress} style={{ width: `${fatPercent}%`, backgroundColor: '#9986DD' }}></div>
           </div>
         </div>
-        <div id="bars">
+        <div id={nut.bars}>
           <span>나트륨</span>
           <span>{nutrients.sodium}mg</span>
-          <div className="progress">
-            <div className="bar_progress" style={{ width: `${sodiumPercent}%`, backgroundColor: '#77D57A' }}></div>
+          <div className={nut.progress}>
+            <div className={nut.bar_progress} style={{ width: `${sodiumPercent}%`, backgroundColor: '#77D57A' }}></div>
           </div>
         </div>
       </div>
-      <div id="kcal">
-        <div className="chart">
+      <div id={nut.kcal}>
+        <div className={nut.chart}>
             {/* conic-gradient를 사용하여 원형 차트를 동적으로 그립니다. */}
-          <div className="rad_chart" style={{ background: `conic-gradient(#9986dd ${calorieAngle}deg, #dedede ${calorieAngle}deg)`}}></div>
+          <div className={nut.rad_chart} style={{ background: `conic-gradient(#FEBEA2 ${calorieAngle}deg, #D3EA9A ${calorieAngle}deg)`}}></div>
         </div>
         <span>칼로리 {nutrients.calories}kcal</span>
       </div>

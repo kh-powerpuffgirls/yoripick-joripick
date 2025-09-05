@@ -7,6 +7,7 @@ import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
 import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
+import CommunityRecipeWrite from './pages/community/Recipe/CommunityRecipeWrite'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
 
         {/* community/recipe */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
+        <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} />
 
       </Routes>
       <Footer/>

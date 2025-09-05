@@ -213,7 +213,7 @@ option {
 }
 
 .progress .bar_progress {
-    width: 72%;  
+    width: 40%;  
     height: 15px;
     padding: 0;
     text-align: center;
@@ -242,7 +242,7 @@ option {
     width: inherit;
     height: inherit;
     border-radius: 50%;
-    background: conic-gradient(#FEBEA2 50deg, #D3EA9A 50deg);
+    background: conic-gradient(#FEBEA2 60%, #D3EA9A 0deg);
 }
 
 
