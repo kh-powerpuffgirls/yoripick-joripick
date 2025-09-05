@@ -27,25 +27,24 @@ function App() {
       <AlertModal />
       <ChatModal />
       <Routes>
-        <Route path="/home" element={<Mainpage/>} />
-        <Route path="/cservice" element={<CServiceMain/>} />
-        {/* 커뮤니티 메인 페이지 */}
+        <Route path="/home" element={<Mainpage />} />
+        <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/community" element={<CommunityMain />} />
-        {/* 내 게시물 페이지 */}
         <Route path="/community/mypost" element={<MyPost />} />
-         <Route path="/community/free" element={<FreeMain />} />
-         <Route path="/community/free/form" element={<FreeForm />} />
-         <Route path="/community/free/:postId" element={<FreeDetail />} />
-         <Route path="/community/challenge" element={<ChallengeMain />} />
-         <Route path="/community/challenge/form" element={<ChallengeForm/>} />
-         <Route path="/community/ckclass/" element={<CkClassMain />} />
-         <Route path="/community/ckclass/search" element={<CkClassSearch />} />
-         <Route path="/community/ckclass/form" element={<CkClassForm />} />
-         <Route path="/community/market" element={<MarketMain />} />
-         <Route path="/community/market/form" element={<MarketForm />} />
-         <Route path="/community/market/buyform" element={<MarketBuyForm />} />
-         </Routes>
-      <Footer/>
+        <Route path="/community/free/form" element={<FreeForm />} />
+        <Route path="/community/free/form/:boardNo" element={<FreeForm />} />
+        <Route path="/community/free/:boardNo" element={<FreeDetail />} />
+        <Route path="/community/free" element={<FreeMain />} />
+        <Route path="/community/challenge" element={<ChallengeMain />} />
+        <Route path="/community/challenge/form" element={<ChallengeForm />} />
+        <Route path="/community/ckclass" element={<CkClassMain />} />
+        <Route path="/community/ckclass/search" element={<CkClassSearch />} />
+        <Route path="/community/ckclass/form" element={<CkClassForm />} />
+        <Route path="/community/market" element={<MarketMain />} />
+        <Route path="/community/market/form" element={<MarketForm />} />
+        <Route path="/community/market/buyform" element={<MarketBuyForm />} />
+      </Routes>
+      <Footer />
     </>
   );
 }
