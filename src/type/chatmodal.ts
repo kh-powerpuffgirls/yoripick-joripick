@@ -2,7 +2,7 @@ export type Message = {
   content: string;
   username: string;
   button?: {
-    url: string;
+    linkUrl: string;
   };
 };
 

@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { lodingImg } from "../assets/images";
 import { useSelector } from "react-redux";
 import useLogout from "../hooks/logout";
+import type { RootState } from "../store/store";
 
 
 const Header = () => {
-  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state:RootState) => state.auth.isAuthenticated);
 
   const logout = useLogout();
 

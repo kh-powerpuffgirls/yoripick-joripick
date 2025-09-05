@@ -21,18 +21,20 @@ const handleNewChat = async (user: User | null, type: "admin" | "cclass" | "cser
         dispatch(openChat(newRoom));
         dispatch(hideAlert());
     }
-    try {
-        await axios.delete(`http://localhost:8080/chat`, { withCredentials: true });
-    } catch (err) {
-        console.error("Error:", err);
-    } finally {
-        dispatch(openChat(newRoom));
-        dispatch(hideAlert());
+    if (type == "cservice") {
+        try {
+            await axios.delete(`http://localhost:8080/chat`, { withCredentials: true });
+        } catch (err) {
+            console.error("Error:", err);
+        } finally {
+            dispatch(openChat(newRoom));
+            dispatch(hideAlert());
+        }
     }
 };
 
 export const NewChatModal = ({ type }: ChatRoomCreate) => {
-    const {user} = useSelector( (state:RootState) => state.auth);
+    const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch();
     return (
         <>
