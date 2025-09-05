@@ -77,7 +77,7 @@ export const ChatModal = () => {
             dispatch(sendMessage(message));
             mutation.mutate(message);
             try {
-                const response = await axios.post("http://localhost:8080/chat",
+                const response = await axios.post(`http://localhost:8080/chat/${userId}`,
                     { question: input.text },
                     { withCredentials: true });
 
@@ -95,7 +95,7 @@ export const ChatModal = () => {
                 dispatch(sendMessage(message));
                 mutation.mutate(message);
             }
-        } else if (type === "admin" || "cclass") {
+        } else if (type === "admin" || type === "cclass") {
             sendChatMessage(input.text);
         }
     };

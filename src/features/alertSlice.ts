@@ -6,7 +6,7 @@ const alertSlice = createSlice({
     name : 'alert',
     initialState,
     reducers : {
-        showAlert : (state, action:PayloadAction<ChatRoomCreate>) => {
+        showAlert : (state, action:PayloadAction<ChatRoomCreate | null>) => {
             state.type = action.payload;
             state.visible = true;
         },

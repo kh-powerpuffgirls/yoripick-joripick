@@ -9,19 +9,19 @@ import type { RootState } from "../store/store";
 import type { User } from "../type/authtype";
 import { deleteRooms } from "../api/chatApi";
 
-const handleNewChat = async (user: User | null, type: ChatModalProps, dispatch: Dispatch<UnknownAction>) => {
+const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: Dispatch<UnknownAction>) => {
     const newRoom: ChatRoom = {
-        classNo: Date.now(),
+        classNo: type === "admin" ? -1 : 0,
         className: type === "admin" ? "관리자 문의하기" : "FAQ BOT, 요픽",
-        type: type as ChatModalProps,
+        type,
         messages: []
     }
-    dispatch(resetRoom(newRoom.type));
-    dispatch(openChat(newRoom));
     dispatch(hideAlert());
+    dispatch(resetRoom(type));
     if (user && type) {
         deleteRooms(type, user);
     }
+    dispatch(openChat(newRoom));
     if (type == "cservice") {
         try {
             await axios.delete(`http://localhost:8080/chat/${user?.userNo}`, { withCredentials: true });
@@ -34,6 +34,7 @@ const handleNewChat = async (user: User | null, type: ChatModalProps, dispatch: 
 export const NewChatModal = ({type}: ChatModalProps) => {
     const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch();
+    if (!type) return null;
     return (
         <>
             <h3>{"새 대화를 시작하시겠습니까?"}</h3>
