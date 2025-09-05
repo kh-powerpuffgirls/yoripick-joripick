@@ -9,11 +9,15 @@ export type Message = {
 export type ChatRoom = {
   classNo: string | number;
   className: string;
-  type: "admin" | "cclass" | "cservice" | null;
+  type: ChatRoomCreate;
   messages: Message[];
 };
 
-export type ChatRoomCreate = Pick<ChatRoom, 'type'>;
+export type ChatRoomCreate = "admin" | "cclass" | "cservice";
+
+export interface ChatModalProps {
+  type: ChatRoomCreate | null;
+}
 
 type ChatState = {
   isOpen: boolean;

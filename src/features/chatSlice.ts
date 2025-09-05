@@ -5,6 +5,12 @@ const chatSlice = createSlice({
     name: "chat",
     initialState,
     reducers: {
+        resetRoom: (state, action: PayloadAction<string>) => {
+            const target = state.rooms.find(room => room.type === action.payload);
+            if (target) {
+                target.messages = [];
+            }
+        },
         setRooms: (state, action: PayloadAction<ChatRoom[]>) => {
             state.rooms = action.payload;
         },
@@ -35,5 +41,5 @@ const chatSlice = createSlice({
     }
 })
 
-export const { setRooms, openChat, closeChat, sendMessage } = chatSlice.actions;
+export const { resetRoom, setRooms, openChat, closeChat, sendMessage } = chatSlice.actions;
 export default chatSlice.reducer;

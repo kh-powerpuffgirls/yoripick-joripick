@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import style from "./alertModal.module.css"
-import { NewChatModal } from "./AlertContents";
+import { NewChatModal } from "./alertChat";
 
 export const AlertModal = () => {
   const { type, visible } = useSelector((state: RootState) => state.alert);

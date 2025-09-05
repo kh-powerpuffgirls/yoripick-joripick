@@ -6,7 +6,7 @@ import useInput from "../../hooks/useInput";
 import axios from "axios";
 import { useEffect, useRef } from "react";
 import useChat from "../../hooks/useChat";
-import type { ChatRoom, Message } from "../../type/chatmodal";
+import type { ChatRoomCreate, Message } from "../../type/chatmodal";
 import { getRooms, saveMessage } from "../../api/chatApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -15,25 +15,27 @@ export const ChatModal = () => {
     let { isOpen, rooms, currentRoomId } = useSelector((state: RootState) => state.chat);
     const [input, handleInputChange, resetInput, setInput] = useInput({ text: "" });
     const modalRef = useRef<HTMLDivElement>(null);
-    const currentRoom = rooms.find((r) => r.classNo === currentRoomId);
+    let currentRoom = rooms.find((r) => r.classNo === currentRoomId);
     const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
     const userId = user?.userNo;
     const { sendChatMessage } = useChat({ roomId: currentRoomId, myId: userId });
 
     // 채팅방 목록 로딩
-    const { data: roomData } = useQuery({
+    const { data: roomData, refetch } = useQuery({
         queryKey: ["rooms", userId],
         queryFn: () => getRooms(userId),
-        staleTime: 1000 * 60,
-        gcTime: 1000 * 60 * 5,
-        enabled: isAuthenticated
+        enabled: isAuthenticated,
     });
     useEffect(() => {
+        if (isAuthenticated) {
+            refetch();
+        }
+    }, [isAuthenticated, roomData, refetch]);
+    useEffect(() => {
         if (roomData) {
-            // const rooms = roomData.map((room: ChatRoom) => ({ ...room }));
             dispatch(setRooms(roomData));
         }
-    }, [roomData, dispatch]);
+    }, [roomData, refetch]);
 
     // 모달 외부 클릭 감지
     useEffect(() => {
@@ -63,37 +65,34 @@ export const ChatModal = () => {
             saveMessage(userId, message),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["rooms", userId] })
     });
-    const handleSend = async (type: "admin" | "cclass" | "cservice" | null | undefined) => {
+    const handleSend = async (type: ChatRoomCreate) => {
         if (!input.text.trim()) return;
         resetInput();
         if (type === "cservice") {
-            dispatch(sendMessage({ content: input.text, username: "USER" }));
             let message: Message = {
                 content: input.text,
                 username: "USER",
                 button: undefined
             }
+            dispatch(sendMessage(message));
             mutation.mutate(message);
             try {
-                message.username = "BOT";
                 const response = await axios.post("http://localhost:8080/chat",
                     { question: input.text },
                     { withCredentials: true });
 
-                dispatch(sendMessage({
-                    content: response.data.content,
-                    username: "BOT",
-                    button: response.data.button
-                }));
+                message.username = "BOT";
                 message.content = response.data.content;
                 if (response.data.button) {
                     message.button = response.data.button;
                 }
+                dispatch(sendMessage(message));
                 mutation.mutate(message);
 
             } catch (err) {
-                dispatch(sendMessage({ content: "서버 오류 발생", username: "BOT" }));
+                message.username = "BOT";
                 message.content = "서버 오류 발생";
+                dispatch(sendMessage(message));
                 mutation.mutate(message);
             }
         } else if (type === "admin" || "cclass") {
@@ -139,13 +138,17 @@ export const ChatModal = () => {
 
             {/* input */}
             <div className={style.footer}>
-                <input
-                    value={input.text}
-                    onChange={(e) => setInput({ text: e.target.value })}
-                    placeholder="메시지를 입력하세요..."
-                    onKeyDown={(e) => e.key === "Enter" && handleSend(currentRoom?.type)}
-                />
-                <button onClick={() => handleSend(currentRoom?.type)}>전송</button>
+                {currentRoom && (
+                    <>
+                        <input
+                            value={input.text}
+                            onChange={(e) => setInput({ text: e.target.value })}
+                            placeholder="메시지를 입력하세요..."
+                            onKeyDown={(e) => e.key === "Enter" && handleSend(currentRoom.type)}
+                        />
+                        <button onClick={() => handleSend(currentRoom.type)}>전송</button>
+                    </>
+                )}
             </div>
         </div>
     )

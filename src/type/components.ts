@@ -1,5 +1,7 @@
-export interface AlertState {
-    type: "admin" | "cclass" | "cservice" | null;
+import type { ChatRoomCreate } from "./chatmodal";
+
+export type AlertState = {
+    type: ChatRoomCreate | null;
     visible: boolean;
 }
 
@@ -8,7 +10,7 @@ export const initialState: AlertState = {
     visible: false,
 }
 
-export interface UseChatProps {
+export type UseChatProps = {
     roomId: string | number | undefined;
     myId: number | undefined;
 }

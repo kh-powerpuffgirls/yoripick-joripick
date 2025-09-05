@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { ChatRoom, ChatRoomCreate } from "../type/chatmodal";
+import type { ChatModalProps, ChatRoom, ChatRoomCreate } from "../type/chatmodal";
 import axios from "axios";
-import { openChat } from "../features/chatSlice";
+import { openChat, resetRoom } from "../features/chatSlice";
 import { hideAlert } from "../features/alertSlice";
 import type { Dispatch, UnknownAction } from "redux";
 import style from "./alertModal.module.css"
@@ -9,31 +9,29 @@ import type { RootState } from "../store/store";
 import type { User } from "../type/authtype";
 import { deleteRooms } from "../api/chatApi";
 
-const handleNewChat = async (user: User | null, type: "admin" | "cclass" | "cservice" | null, dispatch: Dispatch<UnknownAction>) => {
+const handleNewChat = async (user: User | null, type: ChatModalProps, dispatch: Dispatch<UnknownAction>) => {
     const newRoom: ChatRoom = {
         classNo: Date.now(),
         className: type === "admin" ? "관리자 문의하기" : "FAQ BOT, 요픽",
-        type,
+        type: type as ChatModalProps,
         messages: []
     }
-    if (user) {
+    dispatch(resetRoom(newRoom.type));
+    dispatch(openChat(newRoom));
+    dispatch(hideAlert());
+    if (user && type) {
         deleteRooms(type, user);
-        dispatch(openChat(newRoom));
-        dispatch(hideAlert());
     }
     if (type == "cservice") {
         try {
-            await axios.delete(`http://localhost:8080/chat`, { withCredentials: true });
+            await axios.delete(`http://localhost:8080/chat/${user?.userNo}`, { withCredentials: true });
         } catch (err) {
             console.error("Error:", err);
-        } finally {
-            dispatch(openChat(newRoom));
-            dispatch(hideAlert());
         }
     }
 };
 
-export const NewChatModal = ({ type }: ChatRoomCreate) => {
+export const NewChatModal = ({type}: ChatModalProps) => {
     const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch();
     return (

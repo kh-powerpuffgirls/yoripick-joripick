@@ -25,7 +25,7 @@ function App() {
         <Header />
         <AlertModal />
         <ChatModal />
-        {rooms.length > 0 && (
+        {rooms && rooms.length > 0 && (
           <p className='chatBtn' onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
         )}
         {/* 만약에 로그인한 사용자가 관리자권한이 있다면? 관리자 문의 채팅방 열릴 때마다

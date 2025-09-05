@@ -15,14 +15,14 @@ export const CServiceMain = () => {
                         <img src="src\assets\yopik.png" alt="yopik.png" />
                         <p>궁금한 게 있으면 내게 물어봐!</p>
                         <button>불러오기</button>
-                        <button onClick={() => dispatch(showAlert({ type: "cservice" }))}>새 대화</button>
+                        <button onClick={() => dispatch(showAlert("cservice"))}>새 대화</button>
                     </div>
                     <div className={`${style.card} ${style.admin}`}>
                         <h3>직접 문의하기</h3>
                         <img src="src\assets\jopik.png" alt="jopik.png" />
                         <p>원하는 답변을 얻지 못하셨나요?</p>
                         <button>불러오기</button>
-                        <button onClick={() => dispatch(showAlert({ type: "admin" }))}>새 대화</button>
+                        <button onClick={() => dispatch(showAlert("admin"))}>새 대화</button>
                     </div>
                 </div>
             </div>

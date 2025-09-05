@@ -7,7 +7,7 @@ const alertSlice = createSlice({
     initialState,
     reducers : {
         showAlert : (state, action:PayloadAction<ChatRoomCreate>) => {
-            state.type = action.payload.type;
+            state.type = action.payload;
             state.visible = true;
         },
         hideAlert : (state) => {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { store } from "../store/store";
 import type { User } from "../type/authtype";
-import type { Message } from "../type/chatmodal";
+import type { ChatRoomCreate, Message } from "../type/chatmodal";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
@@ -33,7 +33,7 @@ export const getRooms = async function (userNo: number | undefined) {
     return response.data;
 }
 
-export const deleteRooms = async function (type: "admin" | "cclass" | "cservice" | null, user: User) {
+export const deleteRooms = async function (type: ChatRoomCreate, user: User) {
     await api.delete(`/rooms/${type}/${user.userNo}`);
 }
 
