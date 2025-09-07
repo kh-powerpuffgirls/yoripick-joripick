@@ -62,18 +62,19 @@ export const ChatModal = () => {
     const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationFn: (message: Message) =>
-            saveMessage(userId, message),
+            saveMessage(message.userNo, message),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["rooms", userId] })
     });
     const handleSend = async (type: ChatRoomCreate) => {
         if (!input.text.trim()) return;
         resetInput();
+        let message: Message = {
+            content: input.text,
+            userNo: userId as number,
+            username: "USER",
+            button: undefined
+        }
         if (type === "cservice") {
-            let message: Message = {
-                content: input.text,
-                username: "USER",
-                button: undefined
-            }
             dispatch(sendMessage(message));
             mutation.mutate(message);
             try {
@@ -122,17 +123,47 @@ export const ChatModal = () => {
 
             {/* messages */}
             <div ref={bodyRef} className={style.body}>
-                {currentRoom?.messages.map((msg) => (
-                    <div className={`${style.msgBubble} ${msg.username === "USER" ? style.me : style.other}`}>
-                        {msg.content}
-                        {msg.button?.linkUrl && (
-                            <div className={style.linkBtn}>
-                                <a href={`${window.location.pathname.split('/')[0]}${msg.button.linkUrl}`}
-                                    target="_blank">바로가기</a>
+                {currentRoom?.messages.map((msg, index) => {
+                    const currentMsgDate = new Date(msg.createdAt as string);
+                    const currentDateString = currentMsgDate.toLocaleDateString();
+                    const prevMsgDateString =
+                        index > 0
+                            ? new Date(currentRoom.messages[index - 1].createdAt ?? "").toLocaleDateString()
+                            : null;
+                    const isNewDate = prevMsgDateString !== currentDateString;
+                    return (
+                        <>
+                            {isNewDate && (
+                                <div className={style.dateSeparator}>
+                                    {currentMsgDate.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+                                </div>
+                            )}
+                            <div className={`${style.msg} ${(msg.userNo !== userId || msg.username === "BOT") ? style.left : style.right}`}>
+                                <div className={`${style.username} ${(msg.userNo !== userId || msg.username === "BOT") ? style.alignLeft : style.alignRight}`}>{msg.username}</div>
+                                <div className={style.msgWrapper}>
+                                    {!(msg.userNo !== userId || msg.username === "BOT") && (
+                                        <div className={style.time}>
+                                            {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                    )}
+                                    <div className={`${style.msgBubble} ${(msg.userNo !== userId || msg.username === "BOT") ? style.other : style.me}`}>
+                                        {msg.content}
+                                        {msg.button?.linkUrl && (
+                                            <div className={style.linkBtn}>
+                                                <a href={`${window.location.pathname.split('/')[0]}${msg.button.linkUrl}`} target="_blank">바로가기</a>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {(msg.userNo !== userId || msg.username === "BOT") && (
+                                        <div className={style.time}>
+                                            {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        )}
-                    </div>
-                )
+                        </>
+                    )
+                }
                 )}
             </div>
 

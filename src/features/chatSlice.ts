@@ -31,6 +31,7 @@ const chatSlice = createSlice({
             if (room) {
                 room.messages.push({
                     content: action.payload.content,
+                    userNo: action.payload.userNo,
                     username: action.payload.username,
                     button: action.payload.button
                 });

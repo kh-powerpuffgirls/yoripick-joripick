@@ -1,9 +1,11 @@
 export type Message = {
   content: string;
+  userNo: number;
   username: string;
   button?: {
     linkUrl: string;
   };
+  createdAt?: string;
 };
 
 export type ChatRoom = {
@@ -30,3 +32,8 @@ export const initialState: ChatState = {
   rooms: [],
   currentRoomId: undefined,
 };
+
+export type UseChatProps = {
+    roomId: string | number | undefined;
+    myId: number | undefined;
+}

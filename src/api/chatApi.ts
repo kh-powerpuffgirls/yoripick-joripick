@@ -40,3 +40,8 @@ export const deleteRooms = async function (type: ChatRoomCreate, user: User) {
 export const saveMessage = async function (userNo: number | undefined, message: Message) {
     await api.post(`/messages/${userNo}`, message);
 };
+
+export const getAdminSubs = async function (userNo: number | undefined) {
+    const response = await api.get(`/admin/${userNo}`);
+    return response.data;
+}
