@@ -5,11 +5,12 @@ export type Message = {
   button?: {
     linkUrl: string;
   };
-  createdAt?: string;
+  createdAt: string;
+  roomNo: number | string;
 };
 
 export type ChatRoom = {
-  classNo: string | number;
+  roomNo: string | number;
   className: string;
   type: ChatRoomCreate;
   messages: Message[];
@@ -32,8 +33,3 @@ export const initialState: ChatState = {
   rooms: [],
   currentRoomId: undefined,
 };
-
-export type UseChatProps = {
-    roomId: string | number | undefined;
-    myId: number | undefined;
-}

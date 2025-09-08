@@ -25,7 +25,10 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
     (response) => response,
-    async () => {}
+    async (error) => {
+        console.log(error);
+        return Promise.reject(error);
+    }
 )
 
 export const getRooms = async function (userNo: number | undefined) {
@@ -34,11 +37,13 @@ export const getRooms = async function (userNo: number | undefined) {
 }
 
 export const deleteRooms = async function (type: ChatRoomCreate, user: User) {
-    await api.delete(`/rooms/${type}/${user.userNo}`);
+    const response = await api.delete(`/rooms/${type}/${user.userNo}`);
+    return response.data;
 }
 
-export const saveMessage = async function (userNo: number | undefined, message: Message) {
-    await api.post(`/messages/${userNo}`, message);
+export const saveMessage = async function (type: ChatRoomCreate | undefined,
+        roomNo: string | number | undefined, message: Message) {
+    await api.post(`/messages/${type}/${roomNo}`, message);
 };
 
 export const getAdminSubs = async function (userNo: number | undefined) {

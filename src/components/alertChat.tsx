@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { ChatModalProps, ChatRoom, ChatRoomCreate } from "../type/chatmodal";
+import type { ChatModalProps, ChatRoomCreate } from "../type/chatmodal";
 import axios from "axios";
 import { openChat, resetRoom } from "../features/chatSlice";
 import { hideAlert } from "../features/alertSlice";
@@ -10,19 +10,11 @@ import type { User } from "../type/authtype";
 import { deleteRooms } from "../api/chatApi";
 
 const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: Dispatch<UnknownAction>) => {
-    const newRoom: ChatRoom = {
-        classNo: type === "admin" ? -1 : 0,
-        className: type === "admin" ? "관리자 문의하기" : "FAQ BOT, 요픽",
-        type,
-        messages: []
-    }
     dispatch(hideAlert());
     dispatch(resetRoom(type));
-    if (user && type) {
-        deleteRooms(type, user);
-    }
+    const newRoom = await deleteRooms(type as ChatRoomCreate, user as User);
     dispatch(openChat(newRoom));
-    if (type == "cservice") {
+    if (type === "cservice") {
         try {
             await axios.delete(`http://localhost:8080/chat/${user?.userNo}`, { withCredentials: true });
         } catch (err) {
@@ -30,11 +22,16 @@ const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: 
         }
     }
 };
-
-export const NewChatModal = ({type}: ChatModalProps) => {
-    const { user } = useSelector((state: RootState) => state.auth);
+export const NewChatModal = ({ type }: ChatModalProps) => {
+    const user = useSelector((state: RootState) => state.auth.user);
     const dispatch = useDispatch();
     if (!type) return null;
+    if (type === "admin" && user?.roles.includes("ROLE_ADMIN")) return (
+        <>
+            <h3>관리자는 관리자 문의를 시작할 수 없습니다.</h3>
+            <button className={style.confirm} onClick={() => dispatch(hideAlert())}>확인</button>
+        </>
+    )
     return (
         <>
             <h3>{"새 대화를 시작하시겠습니까?"}</h3>

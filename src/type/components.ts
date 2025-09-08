@@ -1,4 +1,4 @@
-import type { ChatRoomCreate } from "./chatmodal";
+import type { ChatRoomCreate, Message } from "./chatmodal";
 
 export type AlertState = {
     type: ChatRoomCreate | null;
@@ -9,3 +9,11 @@ export const initialState: AlertState = {
     type: null,
     visible: false,
 }
+
+export interface NotificationState {
+  list: Message[];
+}
+
+export const notiInitialState: NotificationState = {
+  list: [],
+};

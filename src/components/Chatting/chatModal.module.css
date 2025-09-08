@@ -105,11 +105,11 @@
     gap: 5px;
 }
 
-.left .msgWrapper{
+.left .msgWrapper {
     justify-content: flex-start;
 }
 
-.right .msgWrapper{
+.right .msgWrapper {
     justify-content: flex-end;
 }
 
@@ -187,11 +187,44 @@
 }
 
 .dateSeparator {
-    align-self: center;
     border-radius: 12px;
     font-size: 0.85rem;
     background-color: gray;
     color: white;
-    width: 50%;
+    width: fit-content;
+    padding: 2px 8px;
+    margin: 0 auto;
+    text-align: center;
 }
 
+.previewContainer {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 7px;
+    align-self: flex-end;
+}
+
+.previewImage {
+    width: auto;
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.previewButtons {
+    display: flex;
+    gap: 7px;
+    justify-content: center;
+    width: 100%;
+}
+
+.previewButtons button {
+    padding: 4px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #3E5822;
+    color: white;
+}

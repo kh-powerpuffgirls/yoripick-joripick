@@ -12,30 +12,36 @@ const chatSlice = createSlice({
             }
         },
         setRooms: (state, action: PayloadAction<ChatRoom[]>) => {
-            state.rooms = action.payload;
+            action.payload.forEach((room) => {
+                if (!state.rooms.some((r) => r.roomNo === room.roomNo && r.type === room.type)) {
+                    state.rooms.push(room);
+                }
+            });
         },
         openChat: (state, action: PayloadAction<ChatRoom>) => {
             state.isOpen = true;
-            const exists = state.rooms.some(room => room.classNo === action.payload.classNo);
+            const exists = state.rooms.some(room => room.roomNo === action.payload.roomNo);
             if (!exists) {
                 state.rooms = state.rooms.filter(room => room.className !== action.payload.className);
                 state.rooms.unshift(action.payload);
             }
-            state.currentRoomId = action.payload.classNo;
+            state.currentRoomId = action.payload.roomNo;
         },
         closeChat: (state) => {
             state.isOpen = false;
         },
         sendMessage: (state, action: PayloadAction<Message>) => {
-            const room = state.rooms.find((r) => r.classNo === state.currentRoomId);
+            const room = state.rooms.find((r) => r.roomNo === action.payload.roomNo);
             if (room) {
                 room.messages.push({
                     content: action.payload.content,
                     userNo: action.payload.userNo,
                     username: action.payload.username,
-                    button: action.payload.button
+                    button: action.payload.button,
+                    createdAt: action.payload.createdAt,
+                    roomNo: action.payload.roomNo,
                 });
-                state.rooms = state.rooms.filter(r => r.classNo !== room.classNo);
+                state.rooms = state.rooms.filter(r => r.roomNo !== room.roomNo);
                 state.rooms.unshift(room);
             }
         }
