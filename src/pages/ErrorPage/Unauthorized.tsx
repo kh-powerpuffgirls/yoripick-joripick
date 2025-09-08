@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import errorImage from "../401error.png";  // 경로 조정 필요
+import errorImage from "./401error.png";  // 경로 조정 필요
 
 export default function Unauthorized() {
   const navigate = useNavigate();

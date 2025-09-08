@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { loginSucess } from "../../features/authSlice";
+import { loginSuccess } from "../../features/authSlice";
 import Unauthorized from "../ErrorPage/Unauthorized";
 
 export default function OAuth2Success() {
@@ -13,6 +13,7 @@ export default function OAuth2Success() {
 
   useEffect(() => {
     const param = new URLSearchParams(location.search);
+    console.log(param)
     const accessToken = param.get("accessToken") as string;
 
     axios
@@ -22,8 +23,8 @@ export default function OAuth2Success() {
         },
       })
       .then((res) => {
-        dispatch(loginSucess({ accessToken, user: res.data }));
-        navigate("/menus", { state: { flash: "로그인 완료" }, replace: true });
+        dispatch(loginSuccess({ accessToken, user: res.data }));
+        navigate("/home", { state: { flash: "로그인 완료" }, replace: true });
       })
       .catch((error) => {
         if (error.response?.status === 401) {

@@ -1,10 +1,10 @@
 import type { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 import EnrollModal from "../enroll/EnrollModal";
 import styles from "./Login.module.css";
-import { loginSucess } from "../../features/authSlice";
+import { loginSuccess } from "../../features/authSlice";
 import { api } from "../../api/authApi";
 // import type { RootState } from "../../store/store";
 
@@ -18,7 +18,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [showEnrollModal, setShowEnrollModal] = useState(false);
 
-// const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   // useEffect(() => {
   //   if (isAuthenticated) {
@@ -32,7 +32,7 @@ export default function Login() {
 
     const idRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const pwRegex =
-        /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]{8,15}$/
+      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]{8,15}$/
 
     if (!email.trim() || !password.trim()) {
       setError("아이디와 비밀번호를 모두 입력하세요!");
@@ -53,8 +53,12 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await api.post("/auth/login", { email, password });
-      dispatch(loginSucess(res.data));
+      const res = await api.post(
+        "/auth/login",
+        { email, password },
+        { withCredentials: true }
+      );
+      dispatch(loginSuccess(res.data));
       navigate("/home");
     } catch (err) {
       const error = err as AxiosError;
@@ -72,7 +76,7 @@ export default function Login() {
   };
 
   const handleKakaoLogin = () => {
-    location.href = "http://localhost:8081/api/oauth2/authorization/kakao";
+    location.href = "http://localhost:8081/oauth2/authorization/kakao";
   };
 
   const handleNaverLogin = () => {
