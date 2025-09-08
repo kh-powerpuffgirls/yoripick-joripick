@@ -6,7 +6,7 @@ import EnrollModal from "../enroll/EnrollModal";
 import styles from "./Login.module.css";
 import { loginSuccess } from "../../features/authSlice";
 import { api } from "../../api/authApi";
-// import type { RootState } from "../../store/store";
+import ResetPasswordModal from "./ResetPasswordModal";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,15 +17,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showEnrollModal, setShowEnrollModal] = useState(false);
-
-  // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     alert("이미 로그인된 사용자입니다.");
-  //     navigate(-1);
-  //   }
-  // }, [isAuthenticated, navigate]);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +72,7 @@ export default function Login() {
   };
 
   const handleNaverLogin = () => {
-    alert("네이버 로그인 구현 필요");
+    location.href = "http://localhost:8081/oauth2/authorization/naver";
   };
 
   return (
@@ -139,13 +131,26 @@ export default function Login() {
           <button type="button" className={styles.linkBtn} onClick={() => setShowEnrollModal(true)}>
             회원가입
           </button>
-          <button type="button" className={styles.linkBtn} onClick={() => navigate("/find-account")}>
-            비밀번호 찾기
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          <button type="button" className={styles.linkBtn} onClick={() => setShowResetModal(true)}>
+            비밀번호를 잊어버리셨나요？
           </button>
         </div>
       </section>
 
-      {showEnrollModal && <EnrollModal onClose={() => setShowEnrollModal(false)} />}
+      {showEnrollModal && (
+        <EnrollModal onClose={() => setShowEnrollModal(false)} />
+      )}
+
+      {showResetModal && (
+        <ResetPasswordModal
+          onClose={() => setShowResetModal(false)}
+          onConfirm={(email) => {
+            alert(`${email} 계정의 비밀번호가 변경되었습니다.`);
+            setShowResetModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

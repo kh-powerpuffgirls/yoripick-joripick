@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import styles from "../pages/enroll/EnrollModal.module.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface SocialEnrollModalProps {
   email: string;
@@ -10,10 +11,10 @@ interface SocialEnrollModalProps {
 }
 
 export default function SocialEnrollModal({ email, provider, providerUserId, onClose }: SocialEnrollModalProps) {
-  const [nickname, setNickname] = useState("");
-  const [nicknameStatus, setNicknameStatus] = useState<null | boolean>(null);
+  const [username, setUsername] = useState("");
+  const [usernameStatus, setUsernameStatus] = useState<null | boolean>(null);
   const [error, setError] = useState("");
-  const nicknameRef = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const getByteLength = (str: string) => {
@@ -31,23 +32,24 @@ export default function SocialEnrollModal({ email, provider, providerUserId, onC
     return byteLength;
   };
 
-  const validateNickname = (nickname: string) => {
-    const byteLength = getByteLength(nickname);
+  const validateUsername = (username: string) => {
+    const byteLength = getByteLength(username);
     const pattern = /^[\u1100-\u11FF가-힣ㄱ-ㅎa-zA-Z0-9]+$/;
-    return pattern.test(nickname) && byteLength >= 4 && byteLength <= 16;
+    return pattern.test(username) && byteLength >= 4 && byteLength <= 16;
   };
 
-  const handleCheckNickname = async () => {
-    if (!validateNickname(nickname)) {
+  const handleCheckUsername = async () => {
+    if (!validateUsername(username)) {
       alert("닉네임 형식이 올바르지 않습니다.");
-      nicknameRef.current?.focus();
+      usernameRef.current?.focus();
       return;
     }
     try {
-      const res = await fetch(`http://localhost:8081/auth/check-username?username=${nickname}`);
-      if (!res.ok) throw new Error("닉네임 확인 실패");
-      const data = await res.json();
-      setNicknameStatus(data.available);
+      const res = await axios.get(`http://localhost:8081/auth/check-username`, {
+        params: { username }
+      });
+      setUsernameStatus(res.data.available);
+      setError("");
     } catch {
       setError("중복 확인 중 오류 발생");
     }
@@ -55,18 +57,18 @@ export default function SocialEnrollModal({ email, provider, providerUserId, onC
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nickname || nicknameStatus !== true) return alert("닉네임 중복확인을 해주세요.");
+    if (!username || usernameStatus !== true) return alert("닉네임 중복확인을 해주세요.");
 
     try {
-      const res = await fetch("http://localhost:8081/auth/enroll/social", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username: nickname, provider, providerUserId, accessToken: null }),
+      const res = await axios.post("http://localhost:8081/auth/enroll/social", {
+        email,
+        username,
+        provider,
+        providerUserId,
+        accessToken: null
       });
-      const data = await res.json();
-      if (!res.ok) return alert(data.message || "회원가입 실패");
       alert("소셜 회원가입 성공!");
-      navigate(`/oauth2/success?accessToken=${data.accessToken}`,{ replace: true })
+      navigate(`/oauth2/success?accessToken=${res.data.accessToken}`, { replace: true });
     } catch {
       alert("회원가입 중 오류 발생");
     }
@@ -76,26 +78,35 @@ export default function SocialEnrollModal({ email, provider, providerUserId, onC
     <div className={styles.modalOverlay}>
       <div className={styles.modalBox}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.title}>소셜 회원가입</h2>
+          <h2 className={styles.title}>이제 거의 다 왔어요 ! </h2>
           <button className={styles.closeBtn} onClick={onClose}>✖</button>
         </div>
+        <p className={styles.nicknameGuide}>
+          현재 사이트에서 사용할 닉네임을 입력해주세요.
+        </p>
         <form onSubmit={handleSubmit} className={styles.form}>
           <label>이메일</label>
           <input type="email" value={email} disabled className={styles.input} />
 
           <label>닉네임</label>
           <div className={styles.inputRow}>
-            <input type="text" value={nickname} onChange={e => { setNickname(e.target.value); setNicknameStatus(null); }} ref={nicknameRef} />
-            <button type="button" className={styles.subBtn} onClick={handleCheckNickname}>중복 확인</button>
+            <input
+              type="text"
+              value={username}
+              onChange={e => { setUsername(e.target.value); setUsernameStatus(null); }}
+              ref={usernameRef}
+              placeholder="한글·영문·숫자 4~16byte"
+            />
+            <button type="button" className={styles.subBtn} onClick={handleCheckUsername}>중복 확인</button>
           </div>
 
-          {nicknameStatus === true && <p className={styles.successTextSmall}>사용 가능한 닉네임입니다</p>}
-          {nicknameStatus === false && <p className={styles.errorTextSmall}>중복된 닉네임입니다</p>}
+          {usernameStatus === true && <p className={styles.successTextSmall}>사용 가능한 닉네임입니다</p>}
+          {usernameStatus === false && <p className={styles.errorTextSmall}>중복된 닉네임입니다</p>}
           {error && <p className={styles.errorTextSmall}>{error}</p>}
 
-          <button type="submit" className={styles.submitBtn}>회원가입</button>
+          <button type="submit" className={styles.submitBtn}>회원 가입 완료하기</button>
         </form>
       </div>
     </div>
   );
-}``
+}
