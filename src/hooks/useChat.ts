@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Client, type Message } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+import { store, type RootState } from "../store/store";
 import type { Message as ChatMessage } from "../type/chatmodal";
-import { addNotification, removeNotification } from "../features/notiSlice";
+import { addNotification, startClosingAnimation } from "../features/notiSlice";
 import { sendMessage } from "../features/chatSlice";
 
 const useChat = () => {
@@ -56,9 +56,14 @@ const useChat = () => {
                         dispatch(sendMessage(data));
                         if (data.userNo != userNo) {
                             dispatch(addNotification(data));
-                            setTimeout(() => {
-                                dispatch(removeNotification(data));
-                            }, 2000);
+                            const addedNotification = store.getState().noti.list.find(
+                                (noti) => noti.content === data.content && noti.roomNo === data.roomNo
+                            );
+                            if (addedNotification && addedNotification.id) {
+                                setTimeout(() => {
+                                    dispatch(startClosingAnimation(addedNotification.id as string));
+                                }, 2000);
+                            }
                         }
                     }
                 );
@@ -72,7 +77,7 @@ const useChat = () => {
                 console.log("구독 해제:", roomNo);
             }
         });
-    }, [rooms, isConnect]);
+    }, [rooms, isConnect, userNo, dispatch]);
 
     const sendChatMessage = (roomNo: string | number | undefined, message: ChatMessage) => {
         if (stompClient.current?.connected) {

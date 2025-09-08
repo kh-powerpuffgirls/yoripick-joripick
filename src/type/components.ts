@@ -11,7 +11,7 @@ export const initialState: AlertState = {
 }
 
 export interface NotificationState {
-  list: Message[];
+  list: (Message & { isClosing?: boolean })[];
 }
 
 export const notiInitialState: NotificationState = {

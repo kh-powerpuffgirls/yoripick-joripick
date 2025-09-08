@@ -1,4 +1,5 @@
 export type Message = {
+  messageNo?: number;
   content: string;
   userNo: number;
   username: string;
@@ -7,6 +8,7 @@ export type Message = {
   };
   createdAt: string;
   roomNo: number | string;
+  id?: string;
 };
 
 export type ChatRoom = {

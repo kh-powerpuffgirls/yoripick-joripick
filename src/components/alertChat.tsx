@@ -8,6 +8,7 @@ import style from "./alertModal.module.css"
 import type { RootState } from "../store/store";
 import type { User } from "../type/authtype";
 import { deleteRooms } from "../api/chatApi";
+import { useNavigate } from "react-router-dom";
 
 const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: Dispatch<UnknownAction>) => {
     dispatch(hideAlert());
@@ -25,11 +26,22 @@ const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: 
 export const NewChatModal = ({ type }: ChatModalProps) => {
     const user = useSelector((state: RootState) => state.auth.user);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     if (!type) return null;
     if (type === "admin" && user?.roles.includes("ROLE_ADMIN")) return (
         <>
             <h3>관리자는 관리자 문의를 시작할 수 없습니다.</h3>
             <button className={style.confirm} onClick={() => dispatch(hideAlert())}>확인</button>
+        </>
+    )
+    if (type === "admin" && user === null) return (
+        <>
+            <h3>로그인 후 이용 가능한 서비스 입니다.</h3>
+            <button className={style.confirm} onClick={() => {
+                navigate(`${window.location.pathname.split("/")[0]}/login`);
+                dispatch(hideAlert());
+            }}>바로가기</button>
+            <button className={style.cancel} onClick={() => dispatch(hideAlert())}>확인</button>
         </>
     )
     return (

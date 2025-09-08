@@ -1,34 +1,76 @@
 import { useSelector, useDispatch } from "react-redux";
 import style from "./Notification.module.css";
 import type { RootState } from "../../store/store";
-import { removeNotification } from "../../features/notiSlice";
+import { removeNotification, startClosingAnimation } from "../../features/notiSlice";
 import type { Message } from "../../type/chatmodal";
 import { openChat } from "../../features/chatSlice";
+import React, { useEffect, useState } from "react";
 
 export const Notification = () => {
   const dispatch = useDispatch();
   const notifications = useSelector((state: RootState) => state.noti.list);
   const rooms = useSelector((state: RootState) => state.chat.rooms);
+  const [isShown, setIsShown] = useState(false);
 
-  const handleClose = (message: Message) => {
-    dispatch(removeNotification(message));
+  useEffect(() => {
+    setIsShown(true);
+  }, []);
+
+  const handleStartClose = (messageId: string, event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    dispatch(startClosingAnimation(messageId));
   };
+
   const handleClick = (message: Message) => {
-    const room = rooms.find(r => r.roomNo == message.roomNo);
+    const room = rooms.find((r) => r.roomNo == message.roomNo);
     if (room) {
       dispatch(openChat(room));
-      dispatch(removeNotification(message));
+      if (message.id) {
+        dispatch(removeNotification(message.id));
+      }
     }
   };
 
   return (
-    <div className={style.container}>
+    <div>
       {notifications.map((message) => (
-        <div className={style.notification} onClick={() => handleClick(message)}>
-          <p>
-            <strong>{message.username}:</strong> {message.content}
-          </p>
-          <button onClick={() => handleClose(message)}>X</button>
+        <div
+          key={message.id}
+          className={`${style.notiItem} ${isShown ? style.slideUp : ""} ${message.isClosing ? style.fadeOut : ""
+            }`}
+          onAnimationEnd={(e) => {
+            if (e.animationName === style.fadeOut) {
+              dispatch(removeNotification(message.id as string));
+            }
+          }}
+        >
+          <div className={style.notiHeader}>
+            <h3>새로운 메세지</h3>
+            <span>{rooms.find((r) => r.roomNo == message.roomNo)?.className}</span>
+          </div>
+          <div className={style.notiContent}>
+            <div className={style.profile}></div>
+            <div className={style.messageBody}>
+              <p>
+                <strong>{message.username}</strong>
+              </p>
+              <p className={style.messageText}>{message.content}</p>
+            </div>
+          </div>
+          <div className={style.notiActions}>
+            <button
+              className={`${style.notiBtn} ${style.cancelBtn}`}
+              onClick={(e) => handleStartClose(message.id as string, e)}
+            >
+              취소
+            </button>
+            <button
+              className={`${style.notiBtn} ${style.moveBtn}`}
+              onClick={() => handleClick(message)}
+            >
+              이동
+            </button>
+          </div>
         </div>
       ))}
     </div>

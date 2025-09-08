@@ -78,18 +78,8 @@ export const ChatModal = () => {
                 const response = await axios.post(`http://localhost:8080/chat/${userNo}`,
                     { question: input.text },
                     { withCredentials: true });
-                let data = response.data;
-                console.log(typeof data);
-                if (typeof data === "string") {
-                    try {
-                        data = JSON.parse(data);
-                    } catch (e) {
-                        console.error("JSON.parse 실패:", e, data);
-                    }
-                }
                 message.username = "요픽";
                 message.content = response.data.content;
-                console.log(response.data.content);
                 if (response.data.button) {
                     message.button = response.data.button;
                 }
