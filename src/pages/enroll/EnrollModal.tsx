@@ -65,7 +65,7 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
       return;
     }
     try {
-      await axios.post("http://http://localhost:8081/auth/send-code", { email });
+      await axios.post("http://localhost:8081/auth/send-code", { email });
       setEmailSent(true);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);
