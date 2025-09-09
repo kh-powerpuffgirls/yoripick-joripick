@@ -10,8 +10,24 @@ import Login from './pages/login/Login'
 import AlreadyLoginRoute from './components/AlreadyLoginRoute'
 import OAuth2Success from './pages/login/OAuth2Success'
 import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
+import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { api } from './api/authApi'
+import { loginSuccess, logout } from './features/authSlice'
 
 function App() {
+
+  const dispath = useDispatch();
+
+  useEffect(() => {
+    api.post("/auth/refresh")
+      .then(res => {
+        dispath(loginSuccess(res.data));
+      })
+      .catch(err => {
+        dispath(logout());
+      });
+  }, []);
 
   return (
     <>
