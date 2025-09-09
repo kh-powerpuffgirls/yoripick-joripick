@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { ChatModalProps, ChatRoomCreate } from "../type/chatmodal";
+import type { ChatModalProps, ChatRoom, ChatRoomCreate } from "../type/chatmodal";
 import axios from "axios";
 import { openChat, resetRoom } from "../features/chatSlice";
 import { hideAlert } from "../features/alertSlice";
@@ -13,7 +13,17 @@ import { useNavigate } from "react-router-dom";
 const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: Dispatch<UnknownAction>) => {
     dispatch(hideAlert());
     dispatch(resetRoom(type));
-    const newRoom = await deleteRooms(type as ChatRoomCreate, user as User);
+    let newRoom:ChatRoom;
+    if (user) {
+        newRoom = await deleteRooms(type as ChatRoomCreate, user);
+    } else {
+        newRoom = {
+            roomNo: 0,
+            className: 'FAQ BOT, 요픽',
+            type: 'cservice',
+            messages: []
+        }
+    }
     dispatch(openChat(newRoom));
     if (type === "cservice") {
         try {

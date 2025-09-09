@@ -9,6 +9,7 @@ export type Message = {
   createdAt: string;
   roomNo: number | string;
   id?: string;
+  selectedFile: File | null;
 };
 
 export type ChatRoom = {

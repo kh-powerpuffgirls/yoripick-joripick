@@ -9,10 +9,11 @@ import type { ChatRoomCreate, Message } from "../../type/chatmodal";
 import { saveMessage } from "../../api/chatApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useChat from "../../hooks/useChat";
+import { useNavigate } from "react-router-dom";
 
 export const ChatModal = () => {
     const dispatch = useDispatch();
-    const { isOpen, rooms, currentRoomId } = useSelector((state: RootState) => state.chat);
+    let { isOpen, rooms, currentRoomId } = useSelector((state: RootState) => state.chat);
     const [input, handleInputChange, resetInput, setInput] = useInput({ text: "" });
     const modalRef = useRef<HTMLDivElement>(null);
     let currentRoom = rooms.find((r) => r.roomNo === currentRoomId);
@@ -22,6 +23,7 @@ export const ChatModal = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     // 모달 외부 클릭 감지
     useEffect(() => {
@@ -69,6 +71,7 @@ export const ChatModal = () => {
             button: undefined,
             createdAt: new Date().toISOString(),
             roomNo: currentRoomId ?? "",
+            selectedFile: null,
         }
         if (type === "cservice") {
             mutation.mutate(message);
@@ -122,7 +125,8 @@ export const ChatModal = () => {
             username: user?.username as string,
             button: undefined,
             createdAt: new Date().toISOString(),
-            roomNo: currentRoom.roomNo
+            roomNo: currentRoom.roomNo,
+            selectedFile,
         };
         mutation.mutate(message);
         sendChatMessage(currentRoomId, message);
@@ -186,7 +190,10 @@ export const ChatModal = () => {
                                         {msg.content}
                                         {msg.button?.linkUrl && (
                                             <div className={style.linkBtn}>
-                                                <a href={`${window.location.pathname.split("/")[0]}${msg.button.linkUrl}`} target="_blank">바로가기</a>
+                                                <button onClick={() => {
+                                                    navigate(msg.button?.linkUrl as string);
+                                                    dispatch(closeChat());
+                                                }}>바로가기</button>
                                             </div>
                                         )}
                                     </div>

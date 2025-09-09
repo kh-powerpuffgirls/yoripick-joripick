@@ -33,14 +33,7 @@ const chatSlice = createSlice({
         sendMessage: (state, action: PayloadAction<Message>) => {
             const room = state.rooms.find((r) => r.roomNo === action.payload.roomNo);
             if (room) {
-                room.messages.push({
-                    content: action.payload.content,
-                    userNo: action.payload.userNo,
-                    username: action.payload.username,
-                    button: action.payload.button,
-                    createdAt: action.payload.createdAt,
-                    roomNo: action.payload.roomNo,
-                });
+                room.messages.push(action.payload);
                 state.rooms = state.rooms.filter(r => r.roomNo !== room.roomNo);
                 state.rooms.unshift(room);
             }
