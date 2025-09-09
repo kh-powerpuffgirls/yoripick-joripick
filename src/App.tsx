@@ -15,6 +15,8 @@ import { useQuery } from '@tanstack/react-query'
 import { getRooms } from './api/chatApi'
 import { useEffect } from 'react'
 import { Notification } from './components/Chatting/Notification'
+import OAuth2Success from './pages/login/OAuth2Success'
+import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 
 function App() {
   const dispatch = useDispatch();
@@ -60,6 +62,8 @@ function App() {
         } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/oauth2/success" element={<OAuth2Success />} />
+        <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
       </Routes>
       <Footer />
     </>

@@ -1,43 +1,26 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type AuthState, type LoginResponse } from "../type/authtype";
 
-const stored = localStorage.getItem("auth");
-
-const initialState: AuthState = stored
-  ? JSON.parse(stored)
-  : {
-      accessToken: null,
-      user: null,
-      isAuthenticated: false,
-    };
+const initialState: AuthState = {
+  accessToken: null, // 직접 쓰지 않지만 타입 유지
+  user: null,
+  isAuthenticated: false,
+};
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginSucess: (state, action: PayloadAction<LoginResponse>) => {
-      state.accessToken = action.payload.accessToken;
+    loginSuccess: (state, action: PayloadAction<LoginResponse>) => {
       state.user = action.payload.user;
       state.isAuthenticated = true;
-
-      localStorage.setItem(
-        "auth",
-        JSON.stringify({
-          accessToken: action.payload.accessToken,
-          user: action.payload.user,
-          isAuthenticated: true,
-        })
-      );
     },
     logout: (state) => {
-      state.accessToken = null;
       state.user = null;
       state.isAuthenticated = false;
-
-      localStorage.removeItem("auth");
     },
   },
 });
 
-export const { loginSucess, logout } = authSlice.actions;
+export const { loginSuccess, logout } = authSlice.actions;
 export default authSlice.reducer;

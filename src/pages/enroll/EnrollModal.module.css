@@ -13,7 +13,7 @@
   background: #fff;
   padding: 30px 40px;
   border-radius: 12px;
-  width: 420px;
+  width: 430px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
@@ -40,7 +40,7 @@
 }
 
 .title {
-  font-size: 22px;
+  font-size: 30px;
   font-weight: bold;
   color: #65a30d;
 }
@@ -90,8 +90,8 @@ input:disabled {
 }
 
 .submitBtn {
-  width: 100%;
-  margin-top: 20px;
+  width: 50%;
+  margin: 20px auto 0;
   padding: 12px;
   background: #2563eb;
   color: white;
@@ -100,6 +100,14 @@ input:disabled {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s;
+  display: block;
+}
+
+.nicknameGuide {
+  color: #f87171;
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
 .submitBtn:hover {
