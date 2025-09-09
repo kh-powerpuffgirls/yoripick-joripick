@@ -11,7 +11,7 @@ export const api = axios.create({
     withCredentials: true 
 })
 
-// 인터셉터
+
 api.interceptors.request.use(
     (config) => {
         const token = getAccessToken();
