@@ -1,5 +1,5 @@
 // src/pages/CommunityRecipeList/CommunityRecipeList.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // import './CommunityList.css'; // 페이지 전용 CSS
@@ -18,52 +18,69 @@ import type { Recipe } from '../../../type/Recipe';
 import Pagination from '../../../components/Pagination';
 import axios from 'axios';
 
+// API 파라미터 타입을 정의합니다. (선택적 프로퍼티로)
+interface ApiParams {
+  sort?: string;
+  ingredient?: string;
+  rcp_mth_no?: string;
+  rcp_sta_no?: string;
+}
 
 const CommunityRecipeList: React.FC = () => {
-    const navigate = useNavigate();
-    // DB에서 가져올 레시피 목록을 담을 state
+     const navigate = useNavigate();
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
-    // 주간 랭킹 레시피를 담을 state
+    // 랭킹 레시피는 별도 API로 관리하는 것이 좋습니다. 지금은 일단 유지.
     const [rankingRecipes, setRankingRecipes] = useState<Recipe[]>([]);
 
-    // 백엔드 API가 준비되면 이 함수를 통해 데이터를 가져옵니다.
-    const fetchRecipes = async () => {
+    // 로딩 상태를 관리할 state 추가 (초기값: true)
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // API 요청에 사용할 파라미터를 state로 관리
+    const [searchParams, setSearchParams] = useState<ApiParams>({ sort: 'createdAt' }); // 기본 정렬: 최신순
+
+    // 백엔드 API를 호출하는 함수 (useCallback으로 불필요한 재성성 방지)
+    const fetchRecipes = useCallback(async () => {
+        setIsLoading(true); // API 호출 시작 시 로딩 상태로 변경
         try {
-        // const response = await axios.get('http://localhost:8080/api/recipes');
-        // setRecipes(response.data.recipes);
-        // setRankingRecipes(response.data.rankingRecipes);
-
-        // --- 현재는 목(mock) 데이터로 테스트 ---
-        const mockRecipes: Recipe[] = Array(12).fill({
-            rcp_no: 1, user_no: 1, rcp_name: '팽이버섯 유부 말이 15분 완성!', rcp_info: '...',
-            userInfo: { nickname: '망곰eee', eat_bti: '육식 티라노', profileImage: '' },
-            image_no: 1, views: 123, stars: 40, created_at: new Date().toISOString(),
-        }).map((recipe, index) => ({ ...recipe, rcp_no: index + 1 })); // 각기 다른 key를 갖도록 id 부여
-
-        setRecipes(mockRecipes);
-        setRankingRecipes(mockRecipes.slice(0, 4)); // 목 데이터 중 4개를 랭킹으로 사용
-        // --- 여기까지 목 데이터 ---
-
+            const response = await axios.get('http://localhost:8080/community/recipe', {
+                params: searchParams
+            });
+            setRecipes(response.data);
+            setRankingRecipes(response.data.slice(0, 4)); // 랭킹 데이터 임시 처리
         } catch (error) {
-        console.error("레시피 데이터를 불러오는데 실패했습니다.", error);
+            console.error("레시피 데이터를 불러오는데 실패했습니다.", error);
+        } finally {
+            setIsLoading(false); // API 호출 완료 시 (성공/실패 모두) 로딩 상태 해제
         }
-    };
+    }, [searchParams]);
 
-    // 컴포넌트가 처음 렌더링될 때 한 번만 데이터를 불러옵니다.
+    // 컴포넌트가 처음 렌더링될 때, 그리고 fetchRecipes 함수가 변경될 때 데이터를 불러옵니다.
     useEffect(() => {
         fetchRecipes();
-    }, []);
+    }, [fetchRecipes]);
+
+    // 사이드바에서 '조회' 버튼을 눌렀을 때 실행될 함수
+    const handleSearch = (sidebarParams: Omit<ApiParams, 'sort'>) => {
+        // 기존 정렬 조건은 유지하면서, 사이드바의 검색 조건을 합칩니다.
+        setSearchParams(prevParams => ({ ...prevParams, ...sidebarParams }));
+    };
+
+    // 정렬 버튼 클릭 핸들러
+    const handleSort = (sortType: string) => {
+        setSearchParams(prevParams => ({ ...prevParams, sort: sortType }));
+    };
 
 
     return (
         <>
         <CommunityHeader />
         <div className={CommunityList.main}>
-        <CommunitySidebar />
+
+        <CommunitySidebar onSearch={handleSearch} />
         <div className={CommunityList.container}>
             
-            <button className={CommunityList.write} onClick={() => navigate('/write')}>레시피 작성하기</button>
+            <button className={CommunityList.write} onClick={() => navigate('/community/recipe/write')}>레시피 작성하기</button>
 
             {/* 금주 Pick! 랭킹 섹션 */}
             <table className={CommunityList.ranking}>
@@ -99,21 +116,42 @@ const CommunityRecipeList: React.FC = () => {
 
             {/* 전체 레시피 리스트 섹션 */}
             <div className={CommunityList.list}>
-            <div className={CommunityList.list_header}>
-                <div>최신순</div>
-                <div>별점순</div>
+                <div className={CommunityList.list_header}>
+                    {/* 버튼 클릭 시 정렬 조건 변경 */}
+                    <div 
+                        className={searchParams.sort === 'createdAt' ? CommunityList.active_sort : ''}
+                        onClick={() => handleSort('createdAt')}
+                    >
+                    최신순
+                    </div>
+                    <div 
+                        className={searchParams.sort === 'stars' ? CommunityList.active_sort : ''}
+                        onClick={() => handleSort('stars')}
+                    >
+                        별점순
+                    </div>
+                </div>
+                <hr />
+                <div className={CommunityList.content_container}>
+                    {isLoading ? (
+                        // 1. 로딩 중일 때 보여줄 UI
+                        <p style={{fontSize:'20px', color:'#888'}}>레시피를 불러오는 중입니다...</p>
+                    ) : recipes.length > 0 ? (
+                        // 2. 로딩이 끝났고, 데이터가 있을 때
+                        recipes.map(recipe => (
+                            <Link to={`/recipe/${recipe.rcp_no}`} key={recipe.rcp_no} style={{ textDecoration: 'none' }}>
+                                <RecipeCard recipe={recipe} />
+                            </Link>
+                        ))
+                    ) : (
+                        // 3. 로딩이 끝났는데, 데이터가 없을 때
+                        <div className={CommunityList.empty_list}>
+                            <p>조건에 맞는 레시피가 없어요. 😢</p>
+                        </div>
+                    )}
+                </div>
             </div>
-            <hr />
-            <div className={CommunityList.content_container}>
-                {recipes.map(recipe => (
-                // Link를 사용해 클릭 시 상세 페이지로 이동
-                <Link to={`/recipe/${recipe.rcp_no}`} key={recipe.rcp_no} style={{ textDecoration: 'none' }}>
-                    <RecipeCard recipe={recipe} />
-                </Link>
-                ))}
-            </div>
-            </div>
-        <Pagination/>
+            <Pagination/>
         </div>
         </div>
     </>

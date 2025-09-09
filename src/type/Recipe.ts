@@ -23,18 +23,38 @@ export interface Recipe {
     // approval : string;	    //공식레시피 승인 유무
 }
 
-// //레시피 디테일
-// export const initMenu:CommunityRecipe = {
-//     rcp_no : 0,
-//     restaurant : '',
-//     name: '',
-//     price : 0,
-//     rcp_mth_no : 0,
-//     rcp_sta_no : 0
-// } as const;
+// NutrientInfo 컴포넌트 및 재료 영양소 계산에 사용될 타입
+export interface NutrientData {
+  calories: number;
+  carbs: number;
+  protein: number;
+  fat: number;
+  sodium: number;
+}
 
-// // 레시피 등록 타입
-// export type MenuCreate=Omit<Menu, 'id'>;
+// 백엔드 API('/api/ingredients/search')의 응답 데이터 구조
+export interface IngredientSearchResult {
+  ingNo: number;
+  ingName: string;
+  energy: number; // 칼로리
+  carb: number;   // 탄수화물
+  protein: number;// 단백질
+  fat: number;    // 지방
+  sodium: number; // 나트륨
+}
 
-// // 레시피 수정 타입
-// export type MenuUpdate = Pick<Menu,'id'> & Partial<Omit<Menu,'id'>>;
+// 최종적으로 레시피에 추가되는 재료의 데이터 구조
+export interface Ingredient {
+  id: number; // 프론트엔드에서 목록 관리를 위한 임시 고유 ID
+  name: string;
+  quantity: string; // 예: "100g (1개)"
+  nutrients: NutrientData; // 사용자가 입력한 중량에 맞게 환산된 영양소
+}
+
+// 요리 순서 데이터 구조
+export interface CookingStep {
+  id: number;
+  description: string;
+  image: File | null;
+  imagePreview?: string;
+}

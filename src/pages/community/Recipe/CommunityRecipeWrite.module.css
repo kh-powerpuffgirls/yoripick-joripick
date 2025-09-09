@@ -1,14 +1,16 @@
-body {
-    margin: 0;
-    font-family: 'Noto Sans KR', sans-serif;
-    color: #333;
-    background-color: #ECEEF1;
+
+.main{
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .container{
     max-width: 1000px;
-    margin:auto;
-    padding-bottom: 40px ;
+    width: 100%;
+    margin: auto;
+    box-sizing: border-box;
+    padding-bottom: 30px;
 }
 
 /* 레시피 작성 */
@@ -21,7 +23,7 @@ body {
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    padding: 90px 5% 30px 5%;
+    padding: 90px 5% 50px 5%;
 
     margin-bottom:20px;
 }
@@ -40,6 +42,7 @@ body {
 
 h2{
     color: #029D60;
+    margin-bottom: 10px;
 }
 
 
@@ -48,6 +51,7 @@ h2{
     margin-left: 5%;
     display: flex;
     justify-content: space-between;
+    padding-bottom: 20px;
 }
 .other_card{
     flex-grow: 2;
@@ -104,7 +108,7 @@ option {
     height: 35px;
 }
 
-/* 안써유 */
+
 .img_holder{
     background-color: #ECEEF1;
 	border: 1px solid #ccc;
@@ -113,6 +117,8 @@ option {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 250px;
+    height: 250px;
 }
 
 
@@ -149,7 +155,7 @@ option {
 }
 .add_ing{
     background-color: #E8E8E8;
-    padding: 10px 20px;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -206,11 +212,11 @@ option {
     background-color: #ECEEF1;
 	border: 1px solid #ccc;
 	border-radius: 6px;
-    padding:50px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 10%;
+    width: 120px;
+    height: 120px;
 }
 
 .add_how2cook{

@@ -1,7 +1,7 @@
 /* 사이드바 */
 .sidebar{
     position: absolute; 
-    top: 30px;
+    top: 150px;
     left: calc(50% - 500px - 300px - 20px);
 
     max-width: 300px;

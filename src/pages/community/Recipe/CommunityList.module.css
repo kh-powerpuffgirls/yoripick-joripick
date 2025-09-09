@@ -1,16 +1,23 @@
 
 .main{
-    position:relative;
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-
+hr{
+  height: 1px;
+  background-color: #8f8f8f;
+  border: 0;
+}
 /* 컨테이너 전체 */
 .container {
     max-width: 1000px;
+    width: 100%;
     background-color: white;
     margin: auto;
-    padding:30px;
-    
+    padding: 30px;
+    box-sizing: border-box;
 }
 
 /* 레시피 작성 버튼 */
@@ -19,7 +26,7 @@
     color: white;
     border: none;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
@@ -35,8 +42,12 @@
 .ranking {
     width:  calc(100% - 40px);
     margin: 20px;
-    border-radius: 10px;
     border: 3px solid #3E5822;
+    min-height: 200px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden; /* 중요! */
 }
 
 #crown{
@@ -87,10 +98,26 @@
     color: #888;
     cursor: pointer;
 }
-
 .list_header div:hover {
     color: #345a4b;
 }
+
+.sort_option {
+  cursor: pointer;
+  color: #888; /* 기본 색상 */
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.sort_option:hover {
+  color: #333;
+}
+
+/* ⭐️ 2. '활성화' 상태의 스타일을 담당할 클래스 */
+.active_sort {
+  color: #029D60 !important; /* 활성화 시 색상 */
+  font-weight: 700;
+}
+
 
 /* 레시피 리스트 전체 영역 */
 .content_container {
@@ -100,6 +127,16 @@
     display:flex;
     flex-wrap: wrap;
     justify-content:space-around ;   
-
+    min-height: 800px;
 }
 
+
+
+/* 리스트 비어있을때*/
+.empty_list {
+  width: 100%;
+  padding: 0;
+  font-size: 20px;
+  text-align: center;
+  color: #888;
+}

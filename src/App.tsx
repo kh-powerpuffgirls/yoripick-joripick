@@ -8,6 +8,7 @@ import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
 import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
 import CommunityRecipeWrite from './pages/community/Recipe/CommunityRecipeWrite'
+import CommunityRecipeDetail_Detail from './pages/community/Recipe/CommunityRecipeDetail_Detail'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         {/* community/recipe */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
         <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} />
+        <Route path="/community/recipe/test" element={<CommunityRecipeDetail_Detail />} />
 
       </Routes>
       <Footer/>
