@@ -9,24 +9,35 @@ import { CServiceMain } from './pages/CService/main'
 import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
 import CommunityRecipeWrite from './pages/community/Recipe/CommunityRecipeWrite'
 import CommunityRecipeDetail_Detail from './pages/community/Recipe/CommunityRecipeDetail_Detail'
+import Login from './pages/login/Login'
+import AlreadyLoginRoute from './components/AlreadyLoginRoute'
+import OAuth2Success from './pages/login/OAuth2Success'
+import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 
 function App() {
+
   return (
     <>
       <Header />
       <AlertModal />
       <ChatModal />
       <Routes>
-        <Route path="/home" element={<Mainpage/>} />
-        <Route path="/cservice" element={<CServiceMain/>} />
-
-        {/* community/recipe */}
+        <Route path="/login" element={
+          <AlreadyLoginRoute>
+            <Login />
+          </AlreadyLoginRoute>
+        } />
+        <Route path="/home" element={<Mainpage />} />
+        <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/oauth2/success" element={<OAuth2Success />} />
+        <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
+         {/* community/recipe */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
         <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} />
         <Route path="/community/recipe/test" element={<CommunityRecipeDetail_Detail />} />
 
       </Routes>
-      <Footer/>
+      <Footer />
     </>
   )
 }
