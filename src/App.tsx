@@ -19,16 +19,28 @@ import CkClassForm from './pages/community/ckclass/CkClassForm'
 import MarketMain from './pages/community/market/MarketMain'
 import MarketForm from './pages/community/market/MarketForm'
 import MarketBuyForm from './pages/community/market/MarketBuyForm'
+import Login from './pages/login/Login'
+import AlreadyLoginRoute from './components/AlreadyLoginRoute'
+import OAuth2Success from './pages/login/OAuth2Success'
+import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 
 function App() {
+
   return (
     <>
       <Header />
       <AlertModal />
       <ChatModal />
       <Routes>
+        <Route path="/login" element={
+          <AlreadyLoginRoute>
+            <Login />
+          </AlreadyLoginRoute>
+        } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/oauth2/success" element={<OAuth2Success />} />
+        <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/community" element={<CommunityMain />} />
         <Route path="/community/mypost" element={<MyPost />} />
         <Route path="/community/free/form" element={<FreeForm />} />

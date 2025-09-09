@@ -2,13 +2,16 @@ import { configureStore } from "@reduxjs/toolkit"
 import alert from '../features/alertSlice'
 import chat from '../features/chatSlice'
 import boardsReducer from '../features/boardsSlice';
+import auth from '../features/authSlice'
 
 export const store = configureStore({
-    reducer:{
+    reducer: {
         alert,
         chat,
+        auth,
         boards: boardsReducer
     }
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
