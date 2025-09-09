@@ -17,6 +17,10 @@ import { useEffect } from 'react'
 import { Notification } from './components/Chatting/Notification'
 import OAuth2Success from './pages/login/OAuth2Success'
 import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
+import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { api } from './api/authApi'
+import { loginSuccess, logout } from './features/authSlice'
 
 function App() {
   const dispatch = useDispatch();
@@ -40,6 +44,18 @@ function App() {
       dispatch(setRooms(roomData));
     }
   }, [roomData, refetch]);
+
+  const dispath = useDispatch();
+
+  useEffect(() => {
+    api.post("/auth/refresh")
+      .then(res => {
+        dispath(loginSuccess(res.data));
+      })
+      .catch(err => {
+        dispath(logout());
+      });
+  }, []);
 
   return (
     <>

@@ -6,7 +6,7 @@ import type { RootState } from "../store/store";
 
 
 const Header = () => {
-  const isAuthenticated = useSelector((state:RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const logout = useLogout();
 
