@@ -16,6 +16,12 @@ const useChat = () => {
 
     const subscriptions = useRef<{ [roomNo: string]: any }>({});
     const [isConnect, setIsConnect] = useState(false);
+    const userSettings = useSelector((state: RootState) => state.noti.userSettings);
+
+    console.log(userSettings?.newMessage);
+    console.log(userSettings?.newReply);
+    console.log(userSettings?.newReview);
+    console.log(userSettings?.expiration);
 
     useEffect(() => {
         if (!userNo || !accessToken) return;
@@ -46,7 +52,7 @@ const useChat = () => {
     }, [userNo, accessToken]);
 
     useEffect(() => {
-        if (!stompClient.current?.connected) return;
+        if (!stompClient.current?.connected || !userSettings) return;
         rooms.forEach((room) => {
             if (!subscriptions.current[room.roomNo] && room.type !== "cservice") {
                 subscriptions.current[room.roomNo] = stompClient.current?.subscribe(
@@ -54,8 +60,13 @@ const useChat = () => {
                     (msg: Message) => {
                         const data = JSON.parse(msg.body);
                         dispatch(sendMessage(data));
-                        if (data.userNo != userNo) {
-                            dispatch(addNotification(data));
+                        if (data.userNo != userNo && userSettings.newMessage === "Y" && room.notification === "Y") {
+                            if (data.imageNo) {
+                                const imgData = {...data, content: "사진을 보냈습니다."};
+                                dispatch(addNotification(imgData));
+                            } else {
+                                dispatch(addNotification(data));
+                            }
                             const addedNotification = store.getState().noti.list.find(
                                 (noti) => noti.content === data.content && noti.roomNo === data.roomNo
                             );

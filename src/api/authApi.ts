@@ -43,3 +43,8 @@ api.interceptors.response.use(
         return Promise.reject(err);
     } 
 )
+
+export const getNotiSettings = async (userNo: number | undefined) => {
+    const response = await api.get(`/auth/noti/${userNo}`);
+    return response.data;
+}

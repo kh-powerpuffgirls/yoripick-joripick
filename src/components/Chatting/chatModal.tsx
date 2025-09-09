@@ -55,14 +55,17 @@ export const ChatModal = () => {
 
     // 채팅 메세지 보내기
     const queryClient = useQueryClient();
-    const mutation = useMutation({
-        mutationFn: (message: Message) =>
+    const mutation = useMutation<Message, Error, FormData>({
+        mutationFn: (message: FormData) =>
             saveMessage(currentRoom?.type, currentRoomId, message),
-        onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ["rooms", userNo] })
+        onSuccess: (res) => {
+            console.log(res);
+            queryClient.invalidateQueries({ queryKey: ["rooms", userNo] });
+            sendChatMessage(currentRoomId, res);
+        }
     });
     const handleSend = async (type: ChatRoomCreate) => {
-        if (!input.text.trim()) return;
+        if (!input.text.trim() || !currentRoom) return;
         resetInput();
         let message: Message = {
             content: input.text,
@@ -70,36 +73,47 @@ export const ChatModal = () => {
             username: user?.username as string,
             button: undefined,
             createdAt: new Date().toISOString(),
-            roomNo: currentRoomId ?? "",
-            selectedFile: null,
+            roomNo: currentRoom.roomNo,
         }
+        let messageBlob = new Blob(
+            [JSON.stringify(message)],
+            { type: "application/json" }
+        );
+        let formData = new FormData();
+        formData.append("message", messageBlob)
+
         if (type === "cservice") {
-            mutation.mutate(message);
+            mutation.mutate(formData);
             dispatch(sendMessage(message));
-            sendChatMessage(currentRoomId, message);
             try {
                 const response = await axios.post(`http://localhost:8080/chat/${userNo}`,
                     { question: input.text },
                     { withCredentials: true });
-                message.username = "요픽";
-                message.content = response.data.content;
-                if (response.data.button) {
-                    message.button = response.data.button;
-                }
-                mutation.mutate(message);
-                dispatch(sendMessage(message));
-                sendChatMessage(currentRoomId, message);
+                const botMessage: Message = {
+                    ...message,
+                    username: "요픽",
+                    content: response.data.content,
+                    button: response.data.button ?? undefined
+                };
+                const messageBlob = new Blob([JSON.stringify(botMessage)], { type: "application/json" });
+                const formData = new FormData();
+                formData.append("message", messageBlob)
+                mutation.mutate(formData);
+                dispatch(sendMessage(botMessage));
             } catch (err) {
-                message.username = "요픽";
-                message.content = "서버 오류 발생";
-                mutation.mutate(message);
-                dispatch(sendMessage(message));
-                sendChatMessage(currentRoomId, message);
+                const botMessage: Message = {
+                    ...message,
+                    username: "요픽",
+                    content: "서버 오류 발생",
+                };
+                const messageBlob = new Blob([JSON.stringify(botMessage)], { type: "application/json" });
+                const formData = new FormData();
+                formData.append("message", messageBlob)
+                mutation.mutate(formData);
+                dispatch(sendMessage(botMessage));
             }
         } else if (type === "admin" || type === "cclass") {
-            message.username = user?.username as string;
-            mutation.mutate(message);
-            sendChatMessage(currentRoomId, message);
+            mutation.mutate(formData);
         }
     };
 
@@ -118,21 +132,33 @@ export const ChatModal = () => {
         }
     };
     const handleSendImage = () => {
-        if (!selectedFile || !currentRoom) return;
-        const message = {
-            content: previewUrl as string,
+        if (!currentRoom) return;
+        const message: Message = {
+            content: "사진을 보냈습니다.",
             userNo: user?.userNo as number,
             username: user?.username as string,
             button: undefined,
             createdAt: new Date().toISOString(),
             roomNo: currentRoom.roomNo,
-            selectedFile,
-        };
-        mutation.mutate(message);
-        sendChatMessage(currentRoomId, message);
+        }
+        const messageBlob = new Blob(
+            [JSON.stringify(message)],
+            { type: "application/json" }
+        );
+        const formData = new FormData();
+        formData.append("message", messageBlob)
+        if (selectedFile) {
+            formData.append("selectedFile", selectedFile);
+        }
+        mutation.mutate(formData);
         setSelectedFile(null);
         setPreviewUrl(null);
     };
+
+    // 사진첩 열기
+    const openPhotos = () => {
+
+    }
 
     if (!isOpen) return null;
     return (
@@ -165,46 +191,56 @@ export const ChatModal = () => {
                     const isNewDate = prevMsgDateString !== currentDateString;
 
                     return (
-                        <div key={msg.createdAt + index}>
-                            {isNewDate && (
-                                <div className={style.dateSeparator}>
-                                    {currentMsgDate.toLocaleDateString([], {
-                                        weekday: "long",
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric",
-                                    })}
-                                </div>
-                            )}
-                            <div className={`${style.msg} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.left : style.right}`}>
-                                <div className={`${style.username} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.alignLeft : style.alignRight}`}>
-                                    {msg.username}
-                                </div>
-                                <div className={style.msgWrapper}>
-                                    {!(msg.userNo !== userNo || msg.username === "요픽") && (
-                                        <div className={style.time}>
-                                            {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        <>
+                            <div>
+                                <button onClick={openPhotos}>사진첩</button>
+                                <button></button>
+                            </div>
+
+                            <div key={msg.createdAt + index}>
+                                {isNewDate && (
+                                    <div className={style.dateSeparator}>
+                                        {currentMsgDate.toLocaleDateString([], {
+                                            weekday: "long",
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                        })}
+                                    </div>
+                                )}
+                                <div className={`${style.msg} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.left : style.right}`}>
+                                    <div className={`${style.username} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.alignLeft : style.alignRight}`}>
+                                        {msg.username}
+                                    </div>
+                                    <div className={style.msgWrapper}>
+                                        {!(msg.userNo !== userNo || msg.username === "요픽") && (
+                                            <div className={style.time}>
+                                                {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                            </div>
+                                        )}
+                                        <div className={`${style.msgBubble} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.other : style.me}`}>
+                                            {!msg.imageNo && msg.content}
+                                            {msg.imageNo && (
+                                                <img src={msg.content} alt="이미지" className={style.previewImage} />
+                                            )}
+                                            {msg.button?.linkUrl && (
+                                                <div className={style.linkBtn}>
+                                                    <button onClick={() => {
+                                                        navigate(msg.button?.linkUrl as string);
+                                                        dispatch(closeChat());
+                                                    }}>바로가기</button>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                    <div className={`${style.msgBubble} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.other : style.me}`}>
-                                        {msg.content}
-                                        {msg.button?.linkUrl && (
-                                            <div className={style.linkBtn}>
-                                                <button onClick={() => {
-                                                    navigate(msg.button?.linkUrl as string);
-                                                    dispatch(closeChat());
-                                                }}>바로가기</button>
+                                        {(msg.userNo !== userNo || msg.username === "요픽") && (
+                                            <div className={style.time}>
+                                                {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                                             </div>
                                         )}
                                     </div>
-                                    {(msg.userNo !== userNo || msg.username === "요픽") && (
-                                        <div className={style.time}>
-                                            {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                                        </div>
-                                    )}
                                 </div>
                             </div>
-                        </div>
+                        </>
                     );
                 })}
                 {previewUrl && (

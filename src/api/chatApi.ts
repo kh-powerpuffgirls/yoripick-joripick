@@ -42,9 +42,12 @@ export const deleteRooms = async function (type: ChatRoomCreate, user: User) {
 }
 
 export const saveMessage = async function (type: ChatRoomCreate | undefined,
-        roomNo: string | number | undefined, message: Message) {
-    await api.post(`/messages/${type}/${roomNo}`, message);
-};
+        roomNo: string | number | undefined, message: FormData): Promise<Message> {
+    const response = await api.post<Message>(`/messages/${type}/${roomNo}`, message, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+    return response.data;
+}
 
 export const getAdminSubs = async function (userNo: number | undefined) {
     const response = await api.get(`/admin/${userNo}`);

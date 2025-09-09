@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { notiInitialState } from "../type/components";
+import { notiInitialState, type UserNotiSettings } from "../type/components";
 import type { Message } from "../type/chatmodal";
 
 const notificationSlice = createSlice({
@@ -23,8 +23,24 @@ const notificationSlice = createSlice({
                 notification.isClosing = true;
             }
         },
+        setSettingsLoading: (state, action: PayloadAction<boolean>) => {
+            state.isSettingsLoading = action.payload;
+        },
+        setSettingsError: (state, action: PayloadAction<string | null>) => {
+            state.settingsError = action.payload;
+        },
+        setUserSettings: (state, action: PayloadAction<UserNotiSettings>) => {
+            state.userSettings = action.payload;
+        },
     },
 });
 
-export const { addNotification, removeNotification, startClosingAnimation } = notificationSlice.actions;
+export const { 
+    addNotification, 
+    removeNotification, 
+    startClosingAnimation,
+    setSettingsLoading,
+    setSettingsError,
+    setUserSettings 
+ } = notificationSlice.actions;
 export default notificationSlice.reducer;

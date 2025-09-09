@@ -17,16 +17,45 @@ import { useEffect } from 'react'
 import { Notification } from './components/Chatting/Notification'
 import OAuth2Success from './pages/login/OAuth2Success'
 import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
-import { useDispatch } from 'react-redux'
-import { useEffect } from 'react'
-import { api } from './api/authApi'
+import { api, getNotiSettings } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
+import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
 
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const userNo = user?.userNo;
   const rooms = useSelector((state: RootState) => state.chat.rooms);
+
+  // 로그인 정보 유지
+  useEffect(() => {
+    api.post("/auth/refresh")
+      .then(res => {
+        dispatch(loginSuccess(res.data));
+      })
+      .catch(err => {
+        dispatch(logout());
+      });
+  }, []);
+
+  // 사용자 알림설정 정보
+  useEffect(() => {
+    const fetchSettings = async () => {
+      dispatch(setSettingsLoading(true));
+      dispatch(setSettingsError(null));
+      try {
+        const settings = await getNotiSettings(userNo);
+        dispatch(setUserSettings(settings));
+      } catch (error) {
+        dispatch(setSettingsError("알림 설정을 불러오는 데 실패했습니다."));
+      } finally {
+        dispatch(setSettingsLoading(false));
+      }
+    };
+    if (userNo) {
+      fetchSettings();
+    }
+  }, [dispatch, userNo]);
 
   // 채팅방 목록 로딩
   const { data: roomData, refetch } = useQuery({
@@ -44,18 +73,6 @@ function App() {
       dispatch(setRooms(roomData));
     }
   }, [roomData, refetch]);
-
-  const dispath = useDispatch();
-
-  useEffect(() => {
-    api.post("/auth/refresh")
-      .then(res => {
-        dispath(loginSuccess(res.data));
-      })
-      .catch(err => {
-        dispath(logout());
-      });
-  }, []);
 
   return (
     <>

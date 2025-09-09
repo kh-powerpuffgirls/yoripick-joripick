@@ -8,8 +8,7 @@ export type Message = {
   };
   createdAt: string;
   roomNo: number | string;
-  id?: string;
-  selectedFile: File | null;
+  imageNo?: number;
 };
 
 export type ChatRoom = {
@@ -17,6 +16,7 @@ export type ChatRoom = {
   className: string;
   type: ChatRoomCreate;
   messages: Message[];
+  notification?: string;
 };
 
 export type ChatRoomCreate = "admin" | "cclass" | "cservice";
