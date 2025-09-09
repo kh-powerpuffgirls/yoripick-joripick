@@ -23,6 +23,7 @@ import Login from './pages/login/Login'
 import AlreadyLoginRoute from './components/AlreadyLoginRoute'
 import OAuth2Success from './pages/login/OAuth2Success'
 import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
+import ChallengeDetail from './pages/community/challenge/ChallengeDetail'
 
 function App() {
 
@@ -47,7 +48,9 @@ function App() {
         <Route path="/community/free/form/:boardNo" element={<FreeForm />} />
         <Route path="/community/free/:boardNo" element={<FreeDetail />} />
         <Route path="/community/free" element={<FreeMain />} />
+        <Route path="/community/challenge/:challengeNo" element={<ChallengeDetail />} />
         <Route path="/community/challenge" element={<ChallengeMain />} />
+        <Route path="/community/challenge/form/:challengeNo" element={<ChallengeForm />} />
         <Route path="/community/challenge/form" element={<ChallengeForm />} />
         <Route path="/community/ckclass" element={<CkClassMain />} />
         <Route path="/community/ckclass/search" element={<CkClassSearch />} />
