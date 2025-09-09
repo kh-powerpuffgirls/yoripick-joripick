@@ -6,18 +6,30 @@ import { AlertModal } from './components/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
+import Login from './pages/login/Login'
+import AlreadyLoginRoute from './components/AlreadyLoginRoute'
+import OAuth2Success from './pages/login/OAuth2Success'
+import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 
 function App() {
+
   return (
     <>
       <Header />
       <AlertModal />
       <ChatModal />
       <Routes>
-        <Route path="/home" element={<Mainpage/>} />
-        <Route path="/cservice" element={<CServiceMain/>} />
+        <Route path="/login" element={
+          <AlreadyLoginRoute>
+            <Login />
+          </AlreadyLoginRoute>
+        } />
+        <Route path="/home" element={<Mainpage />} />
+        <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/oauth2/success" element={<OAuth2Success />} />
+        <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </>
   )
 }
