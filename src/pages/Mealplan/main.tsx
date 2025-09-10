@@ -12,7 +12,7 @@ interface MockNutrients {
 }
 
 interface MealSection {
-    id: 'breakfast' | 'lunch' | 'snack' | 'dinner' | 'midnightSnack';
+    id: 'BRK' | 'LNC' | 'SNK' | 'DIN' | 'MNS';
     name: string;
     isExpanded: boolean;
     items: MealItemData[];
@@ -49,11 +49,11 @@ export const MealplanMain = () => {
     });
 
     const [mealList, setMealList] = useState<MealSection[]>([
-        { id: 'breakfast', name: '아침 식사', isExpanded: false, items: [] },
-        { id: 'lunch', name: '점심 식사', isExpanded: false, items: [] },
-        { id: 'snack', name: '간식', isExpanded: false, items: [] },
-        { id: 'dinner', name: '저녁 식사', isExpanded: false, items: [] },
-        { id: 'midnightSnack', name: '야식', isExpanded: false, items: [] }
+        { id: 'BRK', name: '아침 식사', isExpanded: false, items: [] },
+        { id: 'LNC', name: '점심 식사', isExpanded: false, items: [] },
+        { id: 'SNK', name: '간식', isExpanded: false, items: [] },
+        { id: 'DIN', name: '저녁 식사', isExpanded: false, items: [] },
+        { id: 'MNS', name: '야식', isExpanded: false, items: [] }
     ]);
     const years = Array.from({ length: 10 }, (_, i) => input.year - i);
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -200,7 +200,6 @@ export const MealplanMain = () => {
                                 <div>{meal.name}</div>
                                 <div className={style.mealStats}>
                                     <span>{meal.items.length}개 항목</span> / <span>{meal.items.reduce((total, item) => total + item.energy, 0)} 칼로리</span>
-                                    {/* `openModal` 함수에 `meal` 객체를 전달 */}
                                     <button className={style.addButton} onClick={(e) => { e.stopPropagation(); openModal(meal); }}>+</button>
                                 </div>
                             </div>

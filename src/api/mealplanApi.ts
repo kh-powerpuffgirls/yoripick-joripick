@@ -24,10 +24,6 @@ mealplanApi.interceptors.request.use(
 export interface MealItemData {
     foodNo: number;
     foodName: string;
-    repFoodName: string;
-    foodCode: number;
-    userNo: number;
-    foodCodeName: string;
     energy: number;
     carb: number;
     protein: number;
@@ -35,7 +31,7 @@ export interface MealItemData {
     sodium: number;
 }
 
-export const searchFoods = async function (searchKeyword: { query: string, foodCode: number }) {
+export const searchFoods = async function (searchKeyword: { query: string, foodCode: number | null }) {
     const response = await mealplanApi.get<MealItemData[]>("/foods", {
         params: {
             query: searchKeyword.query,
@@ -44,3 +40,24 @@ export const searchFoods = async function (searchKeyword: { query: string, foodC
     });
     return response.data;
 };
+
+export interface FoodCodeData {
+    foodCode: number;
+    foodCodeName: string;
+}
+
+export const fetchFoodCodes = async function () {
+    const response = await mealplanApi.get<FoodCodeData[]>("/foodCodes");
+    return response.data;
+};
+
+export async function saveMealItem(userNo: number | undefined, mealId: string, date: string, item: MealItemData, weight: number) {
+    const response = await mealplanApi.post(`/newMeal/${userNo}`, {
+        mealDate: date,
+        mealId,
+        mealType: "FOOD",
+        refNo: item.foodNo,
+        quantity: weight
+    });
+    return response.data;
+}

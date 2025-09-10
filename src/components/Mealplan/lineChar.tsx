@@ -64,22 +64,26 @@ export default function LineChart({
                 });
                 return filtered;
             });
-            
+
         const newLabels = filteredData.map(item => item.date);
-        
+
         setChartData(filteredData);
         setLabels(newLabels);
 
     }, [fromDate, toDate, selectedNutrients, mockNutrients]);
 
-    const datasets = selectedNutrients.map((nutrient) => ({
-        label: nutrientLabels[nutrient],
-        data: chartData.map(item => item[nutrient]),
-        borderColor: nutrientColors[nutrient],
-        backgroundColor: nutrientColors[nutrient],
-        tension: 0.3,
-        fill: true,
-    }));
+    const datasets = selectedNutrients.map((nutrient) => {
+        const isCaloriesOrSodium = nutrient === 'calories' || nutrient === 'sodium';
+        return {
+            label: nutrientLabels[nutrient],
+            data: chartData.map(item => item[nutrient]),
+            borderColor: nutrientColors[nutrient],
+            backgroundColor: nutrientColors[nutrient],
+            tension: 0.3,
+            fill: true,
+            yAxisID: isCaloriesOrSodium ? 'y2' : 'y',
+        }
+    });
 
     const data = { labels, datasets };
 
@@ -98,8 +102,28 @@ export default function LineChart({
             },
         },
         scales: {
-            y: { beginAtZero: true }
-        }
+            y: {
+                type: 'linear' as const,
+                display: true,
+                position: 'left' as const,
+                title: {
+                    display: true,
+                    text: 'g'
+                }
+            },
+            y2: {
+                type: 'linear' as const,
+                display: true,
+                position: 'right' as const,
+                title: {
+                    display: true,
+                    text: 'mg, kcal'
+                },
+                grid: {
+                    drawOnChartArea: false,
+                },
+            },
+        },
     };
 
     return (
