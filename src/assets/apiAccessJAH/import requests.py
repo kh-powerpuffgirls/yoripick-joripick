@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
+# 소스 향신료 데이터 크롤링 코드
 output_file = "fatsecret_spices.txt"
 
 headers = {

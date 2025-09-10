@@ -12,6 +12,8 @@ import IngpediaDetail from './pages/Ingpedia/IngpediaDetail'
 import IngpediaWrite from './pages/Ingpedia/IngpediaWrite'
 import MyIng from './pages/MyIng/MyIng'
 import MyIngList from './pages/MyIng/MyIngList'
+import MyIngDetail from './pages/MyIng/MyIngDetail'
+import MyIngWrite from './pages/MyIng/MyIngWrite'
 
 function App() {
   return (
@@ -33,8 +35,8 @@ function App() {
         {/* 병합 후 마이페이지 하위 루트로 수정해야 함 */}
         <Route path="/mypage/inglist" element={<MyIng/>} >
           <Route path='' element={<MyIngList/>}/>
-          <Route path='detail' element={<IngpediaDetail/>}/>
-          <Route path='write' element={<IngpediaWrite/>}/>
+          <Route path='detail' element={<MyIngDetail/>}/>
+          <Route path='write' element={<MyIngWrite/>}/>
         </Route>
       </Routes>
       <Footer/>

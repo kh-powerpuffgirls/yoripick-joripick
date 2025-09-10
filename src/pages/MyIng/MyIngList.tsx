@@ -10,11 +10,6 @@ export default function MyIngList(){
         <>
             <div className={myingStyle.container}>
                 <div className={myingStyle[`title-area`]}>
-                    {/* <div className={myingStyle["toggle-area"]}>
-                        <img src={lodingImg.toggleList} className={cx(myingStyle["toggle-icon"],myingStyle["listIcon"])}></img>
-                        <div className={myingStyle["slide"]}/>
-                        <img src={lodingImg.toggleGall} className={cx(myingStyle["toggle-icon"],myingStyle["gallery"])}></img>
-                    </div> */}
 
                     <h2>내 식재료 관리</h2>
                     
@@ -62,10 +57,121 @@ export default function MyIngList(){
                             </div>
                             <div className={myingStyle[`mying-title`]}>
                                 <p>재료1 (1)</p>
-                                <img className={myingStyle[`cancle-icon`]} src={lodingImg.cancel}/>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
                             </div>
                         </article>
                         
+
+
+                    </div>
+                </section>
+
+
+
+
+                <section className={cx(myingStyle["mying-group"], myingStyle["content-area"])}>
+                    <div className={myingStyle[`title-area`]}>
+                        <h3>채소</h3>
+                        <hr className={myingStyle["gray"]}/>
+                    </div>
+
+                    <div className={cx(myingStyle["mying-part-grid"], myingStyle["content-area"])}>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>(1줄 이상 ...처리) 팽이버섯 무밥 말이 15분 완성!</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>재료1 (1)</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>재료1 (1)</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>재료1 (1)</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>재료1 (1)</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>재료1 (1)</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>재료1 (1)</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
+                        <article className={myingStyle[`mying-item`]}>
+                            <div className={myingStyle[`thumbnail`]}>
+                                <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                <img className={myingStyle[`bang-icon`]} src={lodingImg.bang}/>
+                                <div className={myingStyle[`d-day`]}>D - 30</div>
+                                {/* <div className={myingStyle[`d-day`]}>D - {dDay}</div> */}
+                            </div>
+                            <div className={myingStyle[`mying-title`]}>
+                                <p>재료1 (1)</p>
+                                <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                            </div>
+                        </article>
 
 
                     </div>

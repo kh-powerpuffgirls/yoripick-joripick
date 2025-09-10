@@ -78,7 +78,6 @@ hr{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: cyan;
   position: relative;
 }
 .thumbnail {
@@ -97,13 +96,17 @@ hr{
   display: block;
   background-color: #ddd;
 }
+.mying-item:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
 .bang-icon {
   width: 40px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
 }
 .d-day {
   width: 80px;
@@ -120,7 +123,7 @@ hr{
 .mying-title {
   width: 180px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   position: relative;
 
 }
@@ -138,11 +141,16 @@ hr{
   background-color: #eee;
   border-radius: 6px;
 }
-.cancle-icon{
+.cancel-icon {
   position: absolute;
   aspect-ratio: 1/1;
+  right: 5px;
+  top: 6px;
+  display: none;
 }
-
+.mying-item:hover .cancel-icon {
+  display: block;
+}
 
 
 

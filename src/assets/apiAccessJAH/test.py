@@ -4,11 +4,11 @@ from bs4 import BeautifulSoup
 
 # 가축질병발생정보 호출
 def call_api(idx):
-    base_url = "http://apis.data.go.kr/1390803/AgriFood/FdCkry/getKoreanFoodFdCkryList?serviceKey="
+    base_url = "https://apis.data.go.kr/1390803/AgriFood/FdFoodImage/getKoreanFoodFdFoodImageList?serviceKey="
     api_key = "01653a880ed500a6f9efa149676b3fc9a068a0c9ef2cc58a16c02b784b270b71"
     
     url1 = "&page_No="
-    url2 = "&ckry_Name=조리&service_Type=xml&Page_Size=20"
+    url2 = "&service_Type=xml&Page_Size=20"
     url = (
         f"{base_url}{api_key}{url1}{idx}{url2}"
     )
@@ -21,8 +21,8 @@ def call_api(idx):
 
 # 전체 데이터 개수 추출
 def extract_total_count(soup):
-    # total_count = int(soup.find("totalCnt").text)
-    return 2
+    total_count = int(soup.find("total_Count").text)
+    return total_count
 
 def create_dataframe(soup):
     data_list = []

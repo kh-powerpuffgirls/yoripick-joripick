@@ -17,6 +17,7 @@ import bang from './images/icon/bang.png'
 import cancel from './images/icon/cancel.png'
 import toggleList from './images/icon/list.png'
 import toggleGall from './images/icon/gallery.png'
+import calendar from './images/icon/calendar.svg'
 
 export const lodingImg = {
     logo: logo,
@@ -36,7 +37,8 @@ export const lodingImg = {
     bang: bang,
     cancel: cancel,
     toggleList: toggleList,
-    toggleGall: toggleGall
+    toggleGall: toggleGall,
+    calendar: calendar
 
 }
 
