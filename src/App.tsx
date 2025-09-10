@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
+import { MealplanMain } from './pages/Mealplan/main'
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
         } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
       </Routes>
