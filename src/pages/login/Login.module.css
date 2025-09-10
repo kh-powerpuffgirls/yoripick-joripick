@@ -1,0 +1,139 @@
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.card {
+  background: #fff;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 600px; 
+  height : 650px;
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1.5rem; /* 입력박스 간 간격 */
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input:focus {
+  border-color: #6c63ff;
+}
+
+.primaryBtn {
+  background: linear-gradient(90deg, #6c63ff, #8b7bff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 0.5rem;
+}
+
+.primaryBtn:disabled {
+  background: #b3afff;
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+  margin-top: 0.8rem;
+  text-align: center;
+}
+
+.dividerWrap {
+  display: flex;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.divider {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.dividerText {
+  margin: 0 1rem;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.socialGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.socialBtn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  transition: filter 0.2s;
+}
+
+.socialBtn:hover {
+  filter: brightness(90%);
+}
+
+.kakao {
+  background-color: #ffe500;
+  color: #3c1e1e;
+}
+
+.naver {
+  background-color: #03c75a;
+}
+
+.authLinks {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  color: #1a50d9;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.linkBtn:hover {
+  text-decoration: underline;
+}

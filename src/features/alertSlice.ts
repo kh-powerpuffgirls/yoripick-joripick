@@ -1,16 +1,17 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { initialState, type AlertState } from "../type/components";
+import { initialState } from "../type/components";
+import type { ChatRoomCreate } from "../type/chatmodal";
 
 const alertSlice = createSlice({
     name : 'alert',
     initialState,
     reducers : {
-        showAlert : (state, action:PayloadAction<AlertState>) => {
-            state.htmlComponent = action.payload.htmlComponent;
+        showAlert : (state, action:PayloadAction<ChatRoomCreate | null>) => {
+            state.type = action.payload;
             state.visible = true;
         },
         hideAlert : (state) => {
-            state.htmlComponent = null;
+            state.type = null;
             state.visible = false;
         }
     }
