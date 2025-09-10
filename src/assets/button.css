@@ -1,0 +1,86 @@
+/* 클릭 이벤트 */
+.click-basic:hover {
+    background-color: #eee;
+    cursor: pointer;
+    font-weight: bold;
+}
+.click-basic:active {
+    background-color: #ddd;
+}
+  /*
+  transform: translateY(-3px) scale(1.05);;
+  transition: all 0.3s ease;
+   */
+
+/* 버튼 종류 */
+.icon-btn {
+    border: black solid 3px;
+    width: 44px;
+    aspect-ratio: 1/1;
+    font-size: 14px;
+    background-color: white;
+    border-radius: 100px;
+}
+.round-btn {
+    border: black solid 3px;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: white;
+    border-radius: 100px;
+}
+.semi-round-btn {
+    border: black solid 2px;
+    padding: 4px 20px;
+    font-size: 16px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+/* 색 종류 */
+.green {
+    color: var(--ypjp-green);
+    border-color: var(--ypjp-green);
+}
+.green-b, .green.selected {
+    color: white;
+    background-color: var(--ypjp-green);
+    border-color: var(--ypjp-green);
+}
+.green-b:hover, .green.selected:hover {
+    background-color: var(--ypjp-green-dark);
+    border-color: var(--ypjp-green-dark);
+    cursor: pointer;
+}
+.orange {
+    color: var(--ypjp-salmon);
+    border-color: var(--ypjp-salmon);
+}
+.orange-b {
+    color: white;
+    background-color: var(--ypjp-salmon);
+    border-color: var(--ypjp-salmon);
+    cursor: pointer;
+}
+.orange-b:hover {
+    background-color: var(--ypjp-salmon-dark);
+    border-color: var(--ypjp-salmon-dark);
+    cursor: pointer;
+}
+.olive {
+    color: var(--ypjp-olive);
+    border-color: var(--ypjp-olive);
+}
+.olive-b {
+    color: white;
+    background-color: var(--ypjp-olive);
+    border-color: var(--ypjp-olive);
+}
+.olive-b:hover {
+    background-color: var(--ypjp-olive-dark);
+    border-color: var(--ypjp-olive-dark);
+    cursor: pointer;
+}
+.red {
+    color: var(--ypjp-red);
+    border-color: var(--ypjp-red);
+}

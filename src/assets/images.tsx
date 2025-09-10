@@ -8,6 +8,15 @@ import crown3 from './images/icon/3등 왕관.png'
 import arrowLeft from './images/icon/arrow left.png'
 import arrowRight from './images/icon/arrow right.png'
 import EatBTI from './images/mainpage/식BTI.png'
+import ingBn1 from './images/ing/fruits.jpg'
+import thumbUp from './images/icon/thumbUp.png'
+import thumbDown from './images/icon/thumbDown.png'
+import noImage from './images/icon/no image.jpeg'
+import plus from './images/icon/plus.png'
+import bang from './images/icon/bang.png'
+import cancel from './images/icon/cancel.png'
+import toggleList from './images/icon/list.png'
+import toggleGall from './images/icon/gallery.png'
 
 export const lodingImg = {
     logo: logo,
@@ -19,5 +28,20 @@ export const lodingImg = {
     crown3: crown3,
     arrowLeft: arrowLeft,
     arrowRight: arrowRight,
-    EatBTI: EatBTI
+    EatBTI: EatBTI,
+    thumbUp: thumbUp,
+    thumbDown: thumbDown,
+    noImage: noImage,
+    plus: plus,
+    bang: bang,
+    cancel: cancel,
+    toggleList: toggleList,
+    toggleGall: toggleGall
+
 }
+
+// 카테고리 no에 맞게 이미지 추가 필요
+export const ingBn = [
+    ingBn1, ingBn1
+]
+

@@ -24,15 +24,10 @@ ul {
 h2 {
   font-size: 24px;
 }
-.more-link {
-  font-size: 16px;
-  color: #888;
-  float: right;
-}
 .title-area{
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
   margin-bottom: 20px;
 }
 .content-area{
@@ -41,10 +36,37 @@ h2 {
 hr{
   margin-bottom: 20px;
 }
+.search-box {
+  height: 32px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+.search-box>* {
+  height: 100%;
+  padding: 0px 20px;
+  margin: 2px;
+  border-radius: 5px;
+}
+.drop-menu {
+  height: 100%;
+}
+.search-txt {
+  padding-right: 36px;
+}
+.search-icon {
+  border-radius: 0px;
+  right: 0px;
+  position: absolute;
+  padding: 7px;
+}
+.search-icon:hover {
+  cursor: pointer;
+}
 
 /* 레시피 분류 */
 .ing-category {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   position: relative;
 }
 .ing-category .category-list {
@@ -52,130 +74,27 @@ hr{
   grid-template-columns: repeat(4, 1fr);
   gap: 20px 0px;
 }
-.category-list li{
+.category-list>li{
   display: flex;
   align-items: center;
 }
+.category-list>li:first-child{
+  display: none;
+}
 .ing-category .circle {
   display: block;
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background-color: #ddd;
 }
 .ing-category p {
   text-align: center;
   font-size: 20px;
-  margin-left: 10px;
+  margin-left: 16px;
 }
-
-/* 오늘의 PICK */
-.today-pick {
-  margin-bottom: 40px;
-  position: relative;
-}
-.pick-list {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-.pick-item {
-  width: 280px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #f8f8f8;
-  border-radius: 8px;
-  padding: 10px;
-  position: relative;
-}
-.pick-title {
-  font-size: 16px;
-  margin: 0px 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.thumbnail {
-  background-color: #ccc;
-  width: 100%;
-  height: 180px;
-  border-radius: 6px;
-}
-.rank-icon {
-  width: 40px;
-}
-
-/* 재료 관리 Tip */
-.ingredient-tip {
-  margin-bottom: 40px;
-}
-.tip-image {
-  width: 400px;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 8px;
-  background-color: #ccc;
-}
-.tip-content {
-  display: flex;
-  flex-direction: column;
-  gap:25px;
-  align-items: end;
-}
-.tip-text h3 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.tip-text p {
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.carousel-thumbs {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 10px;
-  width: 100%;
-}
-.carousel-thumbs .thumb {
-  width: 80px;
-  height: 80px;
-  background-color: #ddd;
-  border-radius: 4px;
-}
-.arrow-icon{
-  width: 30px;
-  height: 30px;
-  opacity: 30%;
-}
-
-/* 식BTI 검사하기 */
-.food-bti {
-  margin-bottom: 60px;
-}
-.food-bti h2 {
-  margin-bottom: 10px;
-}
-.bti-banner img {
-  width: 100%;
-  border-radius: 12px;
-}
-
 /* 레시피 분류 hover */
-.ing-category .circle:hover {
+.ing-category li:hover .circle {
   background-color: #92ca02;
   transform: scale(1.05);
   transition: all 0.2s ease-in-out;
@@ -185,34 +104,105 @@ hr{
   font-weight: bold;
 }
 
-/* 오늘의 PICK hover */
-.pick-item:hover {
+
+
+.category-banner {
+  width: 180px;
+  height: 540px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.category-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+.category-banner-stroke {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  z-index: 1;
+  color: white;
+  -webkit-text-stroke: 4px white ;
+}
+.category-banner h2 {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  z-index: 1;
+  color: #fe8051;
+}
+
+
+
+
+/* 식재료 목록 */
+.ing-content {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  column-gap: 10px;
+}
+.ing-content-list {
+  width: 70%;
+}
+.ing-content-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(16, auto);
+  grid-auto-flow: column;
+  width: 100%;
+  height: 100%;
+  gap: 0px 10px;
+  padding: 24px 10px 10px;
+}
+.ing-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 15px;
+}
+.ing-item {
+  font-size: 16px;
+  color: #888;
+}
+
+.ing-item:hover {
   background-color: #eaf5d5;
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transform: translateY(-3px);
+  transition: all 0.3s ease;
+  border-radius: 6px;
+}
+/* 줄바꿈 설정 */
+.ing-item-text{
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 4px 10px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ing-item:hover .ing-item-text{
+  color: black;
+  font-weight: bold;
   transition: all 0.3s ease;
 }
-.pick-item .thumbnail:hover {
-  opacity: 0.85;
-  cursor: pointer;
+.arrow-icon{
+  width: 16px;
+  height: 16px;
+  opacity: 30%;
+  display: none;
 }
-
-/* 재료 관리 Tip hover */
-.tip-image:hover {
-  transform: scale(1.05);
-  transition: transform 0.3s ease;
-  cursor: pointer;
-}
-.carousel-thumbs .thumb:hover {
-  background-color: #92ca02;
-  transform: scale(1.1);
-  transition: all 0.2s ease;
-}
-
-/* 식BTI 검사하기 hover */
-.bti-banner img:hover {
-  opacity: 0.9;
-  transform: scale(1.02);
+.ing-item:hover .arrow-icon{
+  display: block;
   transition: all 0.3s ease;
-  cursor: pointer;
 }

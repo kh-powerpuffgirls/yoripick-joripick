@@ -173,7 +173,7 @@ h2 {
 }
 
 /* 레시피 분류 hover */
-.recipe-category .circle:hover {
+.recipe-category li:hover .circle {
   background-color: #92ca02;
   transform: scale(1.05);
   transition: all 0.2s ease-in-out;

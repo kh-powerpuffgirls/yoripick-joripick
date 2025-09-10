@@ -1,0 +1,263 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+ul {
+  list-style: none;
+}
+
+/* 공통 */
+
+.container {
+  width: 1000px;
+  min-height: 1000px; /* 창 크기에 따른 크기 변환 방지 */
+  background-color: white;
+  padding: 50px 70px;
+}
+
+.container * { /* 테스트용 테두리============================================================ */
+  /* border: cyan dashed 1px; */
+}
+
+h2 {
+  font-size: 24px;
+}
+.title-area{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.content-area{
+  padding: 0px 20px;
+}
+hr{
+  margin-bottom: 20px;
+}
+.margin-10 {
+  margin-bottom: 10px;
+}
+.gray {
+  height: 1px;
+  background-color: #ccc;
+  border: 0;
+  flex-grow: 1;
+  margin: 0 0 0 10px;
+}
+.aling-start{
+  align-items: baseline;
+}
+
+.sort-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+
+
+
+.mying-group{
+  margin-bottom: 20px;
+}
+.mying-part-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.mying-item {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: cyan;
+  position: relative;
+}
+.thumbnail {
+  background-color: #ccc;
+  width: 180px;
+  aspect-ratio: 1/1;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  background-color: #ddd;
+}
+.bang-icon {
+  width: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+.d-day {
+  width: 80px;
+  background-color: #ccc;
+  text-align: center;
+  border: #eaf5d5 solid 1px;
+  border-radius: 50px;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  
+}
+
+.mying-title {
+  width: 180px;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+
+}
+.mying-title > p {
+  font-size: 16px;
+  padding: 5px;
+  display: -webkit-box;
+  text-align: center;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mying-item:hover .mying-title {
+  background-color: #eee;
+  border-radius: 6px;
+}
+.cancle-icon{
+  position: absolute;
+  aspect-ratio: 1/1;
+}
+
+
+
+
+
+
+
+/* 식BTI 검사하기 */
+.food-bti {
+  margin-bottom: 60px;
+}
+.food-bti h2 {
+  margin-bottom: 10px;
+}
+.bti-banner img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+/* 레시피 분류 hover */
+.recipe-category li:hover .circle {
+  background-color: #92ca02;
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
+.recipe-category li:hover p {
+  color: #92ca02;
+  font-weight: bold;
+}
+
+/* 오늘의 PICK hover */
+.pick-item:hover {
+  background-color: #eaf5d5;
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+.pick-item .thumbnail:hover {
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+/* 재료 관리 Tip hover */
+.tip-image:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+.carousel-thumbs .thumb:hover {
+  background-color: #92ca02;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+/* 식BTI 검사하기 hover */
+.bti-banner img:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 토글 css */
+.toggle-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.slide {
+  background-color: #ccc;
+  width: 80px;
+  height: 35px;
+  box-shadow: inset 3px 4px 4px 2px #aaa;
+  border-radius: 100px;
+}
+.toggle-icon {
+  position: absolute;
+  left: 0%;
+  transform: translate(-50%, 0);
+  border-radius: 100%;
+  box-shadow: 3px 4px 4px 2px #aaa;
+  transition: all 0.3s ease-in-out;
+}
+.toggle-icon:hover {
+  cursor: pointer;
+}
+/* 여기 조건-클릭 이벤트 함수 등... 사용해야 함 */
+.toggle-area:active .toggle-icon.gallery {
+  transform: translate(+58px, 0);
+  opacity: 0%;
+  transition: all 0.3s ease-in-out;
+}
+.toggle-icon.listIcon {
+  opacity: 100%;
+}
+.toggle-area:active .toggle-icon.listIcon {
+  transform: translate(+58px, 0);
+  opacity: 100%;
+  transition: all 0.3s ease-in-out;
+}

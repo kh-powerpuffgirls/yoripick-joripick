@@ -1,11 +1,10 @@
 import { Outlet } from "react-router-dom";
 
-
-export default function Ingpedia(){
+export default function MyIng(){
 
     return (
         <>
-                <Outlet />
+            <Outlet />
         </>
     )
 }
