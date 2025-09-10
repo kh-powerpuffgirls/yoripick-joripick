@@ -62,7 +62,7 @@ h2{
     flex-grow: 10;
 }
 
-input[type="text"] {
+#input {
 	width: 95%;
 	padding: 10px;
 	border: 1px solid #ccc;

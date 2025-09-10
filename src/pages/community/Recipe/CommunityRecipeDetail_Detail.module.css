@@ -68,12 +68,12 @@
   transition: width 0.3s ease;
 }
 
-.slide {
+.one_slide {
   justify-self: center;
   align-self: center;
 }
 
-.slide img {
+.one_slide img {
   border-radius: 10px;
 }
 
@@ -90,6 +90,11 @@
 .one_img button.nav:hover {
   color: #aaa;
 }
+.one_img button.nav:disabled { 
+  cursor: not-allowed; 
+  opacity: 0.3; 
+}
+
 
 .one_info {
   padding: 20px;
@@ -99,39 +104,46 @@
 /* 토글 css */
 .toggle-area {
   display: flex;
-  justify-content: center;
   align-items: center;
   position: relative;
-}
-.slide {
-  background-color: #ccc;
   width: 80px;
   height: 35px;
+  cursor: pointer;
+}
+
+.slide {
+  background-color: #ccc;
+  width: 100%;
+  height: 100%;
   box-shadow: inset 3px 4px 4px 2px #aaa;
   border-radius: 100px;
 }
+
 .toggle-icon {
   position: absolute;
-  left: 0%;
-  transform: translate(-50%, 0);
-  border-radius: 100%;
+  top: 50%;
+  transition: all 0.3s ease-in-out;
+  border-radius: 50%;
   box-shadow: 3px 4px 4px 2px #aaa;
-  transition: all 0.3s ease-in-out;
 }
-.toggle-icon:hover {
-  cursor: pointer;
+
+/* 기본 상태 (isListView = true) */
+.listIcon {
+  transform: translate(0, -50%);
+  opacity: 1;
 }
-/* 여기 조건-클릭 이벤트 함수 등... 사용해야 함 */
-.toggle-area:active .toggle-icon.gallery {
-  transform: translate(+58px, 0);
-  opacity: 0%;
-  transition: all 0.3s ease-in-out;
+.galleryIcon {
+  transform: translate(0, -50%);
+  opacity: 0;
 }
-.toggle-icon.listIcon {
-  opacity: 100%;
+
+/* 토글된 상태 (isListView = false, .toggled 클래스가 붙었을 때) */
+.toggle-area.toggled .listIcon {
+  transform: translate(45px, -50%);
+  opacity: 0;
 }
-.toggle-area:active .toggle-icon.listIcon {
-  transform: translate(+58px, 0);
-  opacity: 100%;
-  transition: all 0.3s ease-in-out;
+.toggle-area.toggled .galleryIcon {
+  transform: translate(45px, -50%);
+  opacity: 1;
 }
+

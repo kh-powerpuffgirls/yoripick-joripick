@@ -36,6 +36,8 @@ body {
 
 .main{
     position:relative;
+<<<<<<< Updated upstream:src/pages/sample/List.css
+=======
 }
 
 /* 사이드바 */
@@ -91,6 +93,67 @@ h1{
 /* 컨테이너 전체 */
 .container {
     max-width: 1000px;
+    padding: 20px ;
+    background-color: white;
+    margin: auto;
+    
+>>>>>>> Stashed changes:src/pages/community/Recipe/List.css
+}
+
+/* 사이드바 */
+.sidebar{
+    position: absolute; 
+    top: 30px;
+    left: calc(50% - 500px - 300px - 20px);
+
+    max-width: 300px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+}
+h1{
+    padding-left: 10px;
+    color: #029D60;
+}
+.sidebar_title{
+    font-size: 20px;
+    font-weight: 600;
+}
+#box{
+    margin:20px;
+    padding: 20px;
+    /* background-color: #666; */
+}
+.tag-box{
+    border: #636363;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.checkbox-group{
+    display: flex;
+    flex-direction: column;
+}
+.submit-button{
+    background-color: #029D60;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0px 2px 30px 0;
+<<<<<<< Updated upstream:src/pages/sample/List.css
+    float: right;
+}
+
+.submit-button:hover {
+    background-color: #345a4b;
+}
+
+
+/* 컨테이너 전체 */
+.container {
+    max-width: 1000px;
     background-color: white;
     margin: auto;
 }
@@ -106,6 +169,8 @@ h1{
     font-weight: bold;
     cursor: pointer;
     margin: 30px;
+=======
+>>>>>>> Stashed changes:src/pages/community/Recipe/List.css
     float: right;
 }
 
@@ -125,7 +190,10 @@ h1{
     height: 38px;
     width: 40px;
 }
+<<<<<<< Updated upstream:src/pages/sample/List.css
 
+=======
+>>>>>>> Stashed changes:src/pages/community/Recipe/List.css
 .ranking th {
     padding: 10px;
     background-color: #D5EFB7;
@@ -149,6 +217,7 @@ h1{
 
 .ranking td div {
     margin-top: 10px;
+<<<<<<< Updated upstream:src/pages/sample/List.css
     /* margin-bottom: 10px; */
     font-size: 14px;
 }
@@ -158,6 +227,12 @@ h1{
     padding : 20px;
 }
 
+=======
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+>>>>>>> Stashed changes:src/pages/community/Recipe/List.css
 /* 리스트 헤더 정렬 */
 .list_header {
     display: flex;
@@ -181,14 +256,22 @@ h1{
     grid-template-columns: repeat(4, 1fr); */
     display:flex;
     flex-wrap: wrap;
+<<<<<<< Updated upstream:src/pages/sample/List.css
     justify-content:space-around ;   
+=======
+    justify-content:space-around ;
+    
+>>>>>>> Stashed changes:src/pages/community/Recipe/List.css
 
 }
 
 /* 개별 콘텐츠 박스 */
 .content {
     flex: 1 1 20%;
+<<<<<<< Updated upstream:src/pages/sample/List.css
     max-width: 190px;
+=======
+>>>>>>> Stashed changes:src/pages/community/Recipe/List.css
     background-color: white;
     border: 1px solid #636363;
     border-radius: 10px;
@@ -268,6 +351,7 @@ h1{
 .views{
     margin-left: auto;
 
+<<<<<<< Updated upstream:src/pages/sample/List.css
 }
 .views img {
     vertical-align: middle;
@@ -282,4 +366,11 @@ h1{
 }
 .stars img {
     vertical-align: middle;
+=======
+>>>>>>> Stashed changes:src/pages/community/Recipe/List.css
 }
+.views img {
+    vertical-align: middle;
+
+}
+

@@ -17,6 +17,8 @@ import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
+import CommunityRecipeDetail from './pages/community/Recipe/CommunityRecipeDetail'
+
 
 function App() {
 
@@ -51,6 +53,8 @@ function App() {
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
         <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} />
         <Route path="/community/recipe/test" element={<CommunityRecipeDetail_Detail />} />
+        <Route path="/community/recipe/detail" element={<CommunityRecipeDetail />} />
+
 
       </Routes>
       <Footer />

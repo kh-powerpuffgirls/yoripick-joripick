@@ -4,35 +4,16 @@ import axios from 'axios';
 import styles from './IngredientModal.module.css'; 
 import closeIcon from '../../../../assets/sample/X_btn.png';
 
-// 타입 정의 (별도의 type.ts 파일에서 관리하는 것이 좋습니다)
-interface NutrientData {
-  calories: number;
-  carbs: number;
-  protein: number;
-  fat: number;
-  sodium: number;
-}
-interface IngredientSearchResult {
-  ingNo: number;
-  ingName: string;
-  energy: number; // 100g당 칼로리
-  carb: number;   // 100g당 탄수화물
-  protein: number;// 100g당 단백질
-  fat: number;    // 100g당 지방
-  sodium: number; // 100g당 나트륨
-}
-interface FinalIngredient {
-  id: number;
-  name: string;
-  quantity: string;
-  nutrients: NutrientData;
-}
-interface ModalProps {
-  onClose: () => void;
-  onComplete: (ingredient: FinalIngredient) => void;
-}
+// ✨ Recipe.ts에서 수정한 타입들을 가져옵니다.
+import type { 
+  AddedIngredient, 
+  IngredientModalProps, 
+  IngredientSearchResult, 
+  NutrientData 
+} from '../../../../type/Recipe';
 
-const IngredientModal: React.FC<ModalProps> = ({ onClose, onComplete }) => {
+// ✨ 컴포넌트 Props 타입을 IngredientModalProps로 변경합니다.
+const IngredientModal: React.FC<IngredientModalProps> = ({ onClose, onComplete }) => {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState(''); // 예: "1개", "2T"
   const [weight, setWeight] = useState('');   // g 단위 중량 (숫자)
@@ -42,7 +23,8 @@ const IngredientModal: React.FC<ModalProps> = ({ onClose, onComplete }) => {
   
   // '재료명' input에 타이핑할 때마다 재료 검색 API 호출
   useEffect(() => {
-    if (name.length < 2 || (selectedIngredient && name === selectedIngredient.ingName)) {
+    // 검색어가 2글자 미만이거나, 이미 선택한 재료와 이름이 같으면 API 호출 안 함
+    if (name.length < 2 || (selectedIngredient && name === selectedIngredient.ing_name)) {
       setSearchResults([]);
       return;
     }
@@ -61,12 +43,12 @@ const IngredientModal: React.FC<ModalProps> = ({ onClose, onComplete }) => {
       fetchIngredients();
     }, 300);
 
-    return () => clearTimeout(timerId); // 컴포넌트 정리 시 타이머 제거
+    return () => clearTimeout(timerId);
   }, [name, selectedIngredient]);
 
   // 검색 결과 목록에서 재료를 선택했을 때
   const handleSelectIngredient = (ing: IngredientSearchResult) => {
-    setName(ing.ingName);
+    setName(ing.ing_name);
     setSelectedIngredient(ing);
     setSearchResults([]); // 목록 숨기기
   };
@@ -75,7 +57,7 @@ const IngredientModal: React.FC<ModalProps> = ({ onClose, onComplete }) => {
   const handleComplete = () => {
     const weightNum = Number(weight);
     if (!selectedIngredient || !quantity || !weight || isNaN(weightNum) || weightNum <= 0) {
-      alert('재료를 선택하고, 올바른 수량과 중량(g)을 입력해주세요.');
+      alert('재료를 검색/선택하고, 올바른 수량과 중량(g)을 입력해주세요.');
       return;
     }
 
@@ -88,15 +70,17 @@ const IngredientModal: React.FC<ModalProps> = ({ onClose, onComplete }) => {
       sodium:   (selectedIngredient.sodium / 100) * weightNum,
     };
     
-    // 부모에게 전달할 최종 재료 객체
-    const finalIngredient: FinalIngredient = {
-      id: Date.now(), // 고유 ID
-      name: selectedIngredient.ingName,
-      quantity: `${weight}g (${quantity})`, // "100g (1개)" 형식으로 조합
+    // ✨ 부모에게 전달할 최종 재료 객체를 AddedIngredient 타입에 맞게 생성
+    const newIngredient: AddedIngredient = {
+      id: Date.now(), // 프론트엔드용 임시 ID
+      ing_no: selectedIngredient.ing_no, // DB 재료 번호
+      name: selectedIngredient.ing_name, // 재료명
+      quantity: quantity, // 사용자가 입력한 수량 (예: "1개")
+      weight: weightNum,  // 사용자가 입력한 중량 (g)
       nutrients: calculatedNutrients,
     };
     
-    onComplete(finalIngredient);
+    onComplete(newIngredient); // 완성된 객체를 부모 컴포넌트로 전달
   };
 
   return (
@@ -109,26 +93,25 @@ const IngredientModal: React.FC<ModalProps> = ({ onClose, onComplete }) => {
         <div className={styles.container}>
           <div className={styles.content}>
             <span>재료명</span>
-            <div className={styles.searchInputWrapper}> {/* 검색창과 드롭다운을 묶는 wrapper */}
+            <div className={styles.searchInputWrapper}>
                 <input
                     type="text"
                     placeholder="두 글자 이상 입력하세요"
                     value={name}
                     className={styles.input_text}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setSelectedIngredient(null); // 직접 이름을 수정하면 선택 상태 초기화
+                    }}
                     autoComplete="off"
                 />
-                {searchResults.length >= 2 && (
+                {searchResults.length > 0 && (
                     <ul className={styles.dropdown}>
-                    {searchResults.length > 0 ? (
-                        searchResults.map(ing => (
-                            <li key={ing.ingNo} onClick={() => handleSelectIngredient(ing)}>
-                                {ing.ingName}
-                            </li>
-                        ))
-                    ) : (
-                        <li className={styles.noResult}>검색 결과 없음</li>
-                    )}
+                    {searchResults.map(ing => (
+                        <li key={ing.ing_no} onClick={() => handleSelectIngredient(ing)}>
+                            {ing.ing_name}
+                        </li>
+                    ))}
                     </ul>
                 )}
             </div>

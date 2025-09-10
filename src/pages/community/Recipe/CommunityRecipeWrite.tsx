@@ -13,37 +13,7 @@ import cookingIcon from '../../../assets/sample/요리아이콘.png';
 import minusIcon from '../../../assets/sample/minus_icon.png';
 import addIcon from '../../../assets/sample/add_icon.png';
 import CommunityHeader from '../Header/CommunityHeader';
-
-// ==========================================================
-// 타입 정의
-// ==========================================================
-// NutrientInfo 컴포넌트로 전달될 타입
-interface NutrientData {
-  calories: number;
-  carbs: number;
-  protein: number;
-  fat: number;
-  sodium: number;
-}
-// 재료 목록 State에서 사용할 타입
-interface Ingredient {
-  id: number;
-  name: string;
-  quantity: string; // 예: "100g (1개)"
-  nutrients: NutrientData; // 개별 재료의 환산된 영양소 정보
-}
-// 요리 순서 State에서 사용할 타입
-interface CookingStep {
-  id: number;
-  description: string;
-  image: File | null;
-  imagePreview?: string;
-}
-// 드롭다운 옵션 State에서 사용할 타입
-interface RcpOption {
-  id: number;
-  name: string;
-}
+import type { AddedIngredient, CookingStep, CookingStepForForm, NutrientData, SelectOption } from '../../../type/Recipe';
 
 // ==========================================================
 // 컴포넌트 시작
@@ -53,36 +23,35 @@ const CommunityRecipeWrite: React.FC = () => {
 
   // --- State 관리 ---
 
-  // 1. 기본 정보
+  // 1. 기본 정보 
   const [title, setTitle] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [tags, setTags] = useState('');
-  const [cookingMethod, setCookingMethod] = useState('');
-  const [recipeType, setRecipeType] = useState('');
+  const [cookingMethod, setCookingMethod] = useState(''); // id(number)가 담길 예정이지만, select의 value는 string이므로 string으로 유지
+  const [recipeType, setRecipeType] = useState('');     // 위와 동일
 
-  // 2. 대표 사진
+  // 2. 대표 사진 
   const [mainImage, setMainImage] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
 
-  // 3. 재료 정보 및 모달
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  // 3. 재료 정보 및 모달 
+  const [ingredients, setIngredients] = useState<AddedIngredient[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 4. 총 영양 정보 (NutrientInfo 자식 컴포넌트로 전달)
+  // 4. 총 영양 정보
   const [totalNutrients, setTotalNutrients] = useState<NutrientData>({
     calories: 0, carbs: 0, protein: 0, fat: 0, sodium: 0
   });
 
   // 5. 요리 순서
-  const [cookingSteps, setCookingSteps] = useState<CookingStep[]>([
+  const [cookingSteps, setCookingSteps] = useState<CookingStepForForm[]>([
     { id: Date.now(), description: '', image: null }
   ]);
   
   // 6. 드롭다운 선택지 목록
-  const [methodOptions, setMethodOptions] = useState<RcpOption[]>([]);
-  const [typeOptions, setTypeOptions] = useState<RcpOption[]>([]);
-
+  const [methodOptions, setMethodOptions] = useState<SelectOption[]>([]);
+  const [typeOptions, setTypeOptions] = useState<SelectOption[]>([]);
 
   // --- useEffect Hooks ---
 
@@ -94,7 +63,7 @@ const CommunityRecipeWrite: React.FC = () => {
           axios.get('/api/options/methods'),
           axios.get('/api/options/situations')
         ]);
-        // DTO의 snake_case를 camelCase에 맞게 매핑
+        // ✨ 서버 응답(snake_case)을 프론트엔드 타입(SelectOption)에 맞게 매핑
         setMethodOptions(methodRes.data.map((item: any) => ({ id: item.rcp_mth_no, name: item.rcp_method })));
         setTypeOptions(typeRes.data.map((item: any) => ({ id: item.rcp_sta_no, name: item.rcp_situation })));
       } catch (error) {
@@ -137,8 +106,8 @@ const CommunityRecipeWrite: React.FC = () => {
     }
   };
 
-  // 모달에서 재료 추가를 완료했을 때 실행되는 콜백 함수
-  const handleAddIngredientFromModal = (newIngredient: Ingredient) => {
+  // ✨ 모달에서 재료 추가를 완료했을 때 실행되는 콜백 함수 (타입 변경)
+  const handleAddIngredientFromModal = (newIngredient: AddedIngredient) => {
     setIngredients(prevIngredients => [...prevIngredients, newIngredient]);
     setIsModalOpen(false); // 모달 닫기
   };
@@ -154,7 +123,8 @@ const CommunityRecipeWrite: React.FC = () => {
       alert("요리 순서는 최대 20개까지 추가할 수 있습니다.");
       return;
     }
-    const newStep: CookingStep = { id: Date.now(), description: '', image: null };
+    // ✨ 타입에 맞게 newStep 타입 어노테이션 추가
+    const newStep: CookingStepForForm = { id: Date.now(), description: '', image: null };
     setCookingSteps([...cookingSteps, newStep]);
   };
 
@@ -194,15 +164,20 @@ const CommunityRecipeWrite: React.FC = () => {
     }
 
     const formData = new FormData();
-    // 1. 텍스트 데이터 추가
+    // 1. 텍스트 데이터 추가 (RecipeFormData 타입 참고)
     formData.append('rcpName', title);
     formData.append('rcpInfo', introduction);
     formData.append('tag', tags);
-    formData.append('rcpMthNo', cookingMethod);
+    formData.append('rcpMthNo', cookingMethod); // select의 value는 string이므로 그대로 전송
     formData.append('rcpStaNo', recipeType);
     
-    // 2. 재료 정보 (서버에서 파싱하기 쉽도록 JSON 문자열로 변환)
-    const ingredientData = ingredients.map(ing => ({ name: ing.name, quantity: ing.quantity }));
+    // ✨ 2. 재료 정보 (DB 스키마에 맞게 구조화된 데이터로 변경)
+    const ingredientData = ingredients.map(ing => ({
+        ing_no: ing.ing_no,
+        quantity: ing.quantity,
+        weight: ing.weight
+    }));
+    // 서버에서 파싱하기 쉽도록 JSON 문자열로 변환하여 전송
     formData.append('ingredients', JSON.stringify(ingredientData));
     
     // 3. 대표 이미지 파일 추가
@@ -211,11 +186,11 @@ const CommunityRecipeWrite: React.FC = () => {
     // 4. 요리 순서 데이터 및 파일 추가
     cookingSteps.forEach(step => {
         formData.append('stepDescriptions', step.description);
-        // 이미지가 없는 경우를 대비해 빈 Blob을 보내거나 서버에서 null 처리를 해야 함
         if (step.image) {
             formData.append('stepImages', step.image);
         } else {
-            formData.append('stepImages', new Blob()); // 빈 파일로 전송
+            // 이미지가 없는 순서는 빈 파일(Blob)을 보내 개수를 맞춤
+            formData.append('stepImages', new Blob()); 
         }
     });
     
@@ -251,7 +226,7 @@ const CommunityRecipeWrite: React.FC = () => {
             <div className={write.other_card}>
               <div id={write.title}>
                 <span>레시피 제목</span><br />
-                <input id='input' type="text" placeholder="ex) 소고기 미역국 끓이기" name="title" value={title} onChange={e => setTitle(e.target.value)} />
+                <input id={write.input} type="text" placeholder="ex) 소고기 미역국 끓이기" name="title" value={title} onChange={e => setTitle(e.target.value)} />
               </div>
               <div id={write.title}>
                 <span>레시피 소개</span><br />
@@ -259,13 +234,14 @@ const CommunityRecipeWrite: React.FC = () => {
               </div>
                <div id={write.title}>
                   <span>태그</span><br />
-                  <input id='input' type="text" name="tag" placeholder="#태그 #단짠단짠" value={tags} onChange={e => setTags(e.target.value)} />
+                  <input id={write.input} type="text" name="tag" placeholder="#태그 #단짠단짠" value={tags} onChange={e => setTags(e.target.value)} />
               </div>
               <div id={write.title}>
                 <span>요리정보</span><br />
                 <div className={write.info_box}>
                   <div className={write.info}>
                     <img src={scaleIcon} alt="조리방법"/> 조리방법
+                    {/* ✨ SelectOption 타입에 맞게 opt.id와 opt.name 사용 */}
                     <select name="method" value={cookingMethod} onChange={e => setCookingMethod(e.target.value)}>
                       <option value="">== 선택 ==</option>
                       {methodOptions.map(opt => <option key={opt.id} value={opt.id}>{opt.name}</option>)}
@@ -273,6 +249,7 @@ const CommunityRecipeWrite: React.FC = () => {
                   </div>
                   <div className={write.info}>
                     <img src={cookingIcon} alt="요리종류"/> 요리종류
+                    {/* ✨ SelectOption 타입에 맞게 opt.id와 opt.name 사용 */}
                     <select name="kind" value={recipeType} onChange={e => setRecipeType(e.target.value)}>
                       <option value="">== 선택 ==</option>
                       {typeOptions.map(opt => <option key={opt.id} value={opt.id}>{opt.name}</option>)}
@@ -304,27 +281,42 @@ const CommunityRecipeWrite: React.FC = () => {
             <table id={write.ing}>
               <thead>
                   <tr>
-                      <th><div className={write.ing_title}><span>지우기</span><span>재료명</span><span>수량</span><span>중량</span></div></th>
-                      <th><div className={write.ing_title}><span>지우기</span><span>재료명</span><span>수량</span><span>중량</span></div></th>
+                      <th><div className={write.ing_title}><span>지우기</span><span>재료명</span><span>수량(g)</span></div></th>
+                      <th><div className={write.ing_title}><span>지우기</span><span>재료명</span><span>수량(g)</span></div></th>
                   </tr>
               </thead>
+              {/* ✨ 2열 레이아웃을 위해 tbody 로직 수정 */}
               <tbody>
-                  <tr>
-                      {ingredients.map(ing => (
+                {Array.from({ length: Math.ceil((ingredients.length + 1) / 2) }).map((_, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {[0, 1].map(colIndex => {
+                      const itemIndex = rowIndex * 2 + colIndex;
+                      if (itemIndex < ingredients.length) {
+                        const ing = ingredients[itemIndex];
+                        return (
                           <td key={ing.id}>
-                              <div className={write.ing}>
-                                  <img src={minusIcon} id={write.minus} alt="삭제" onClick={() => handleRemoveIngredient(ing.id)} style={{cursor: 'pointer'}} />
-                                  <span>{ing.name}</span>
-                                  <span>{ing.quantity}</span>
-                              </div>
+                            <div className={write.ing}>
+                              <img src={minusIcon} id={write.minus} alt="삭제" onClick={() => handleRemoveIngredient(ing.id)} style={{cursor: 'pointer'}} />
+                              <span>{ing.name}</span>
+                              {/* AddedIngredient 타입의 quantity와 weight를 함께 표시 */}
+                              <span>{`${ing.weight}g (${ing.quantity})`}</span>
+                            </div>
                           </td>
-                      ))}
-                      <td>
-                          <div className={write.add_ing} onClick={() => setIsModalOpen(true)} style={{cursor: 'pointer'}}>
+                        );
+                      } else if (itemIndex === ingredients.length) {
+                        return (
+                          <td key="add-button">
+                            <div className={write.add_ing} onClick={() => setIsModalOpen(true)} style={{cursor: 'pointer'}}>
                               <img src={addIcon} id={write.add} alt="추가" />
-                          </div>
-                      </td>
+                            </div>
+                          </td>
+                        );
+                      } else {
+                        return <td key={`empty-${colIndex}`}></td>; // 빈 셀
+                      }
+                    })}
                   </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -345,7 +337,10 @@ const CommunityRecipeWrite: React.FC = () => {
                       <th>
                         <span>step {index + 1}</span>
                         <div id={write.icon}>
-                          <img src={addIcon} id={write.add} alt="추가" onClick={handleAddCookingStep} style={{cursor: 'pointer'}}/>
+                          {/* 마지막 순서일 때만 추가 버튼 보이게 하여 UI 개선 */}
+                          {index === cookingSteps.length - 1 && 
+                            <img src={addIcon} id={write.add} alt="추가" onClick={handleAddCookingStep} style={{cursor: 'pointer'}}/>
+                          }
                           <img src={minusIcon} id={write.minus} alt="삭제" onClick={() => handleRemoveCookingStep(step.id)} style={{cursor: 'pointer'}}/>
                         </div>
                       </th>
@@ -358,7 +353,7 @@ const CommunityRecipeWrite: React.FC = () => {
                           name="how2cook"
                           id={write.how2cook}
                           value={step.description}
-                          placeholder="ex) 소고기 "
+                          placeholder="ex) 소고기를 볶아주세요."
                           onChange={(e) => handleStepDescriptionChange(step.id, e.target.value)}
                         />
                         <input type="file" accept="image/*" onChange={(e) => handleStepImageChange(step.id, e)} style={{ display: 'none' }} id={`step-img-${step.id}`} />
