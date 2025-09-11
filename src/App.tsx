@@ -14,6 +14,8 @@ import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
+import { AdminDashboard } from './pages/Admin/main'
+import AdminRoute from './components/AdminRoute'
 
 function App() {
 
@@ -42,6 +44,11 @@ function App() {
         } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
       </Routes>
