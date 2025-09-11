@@ -24,7 +24,10 @@ const mealOptions = [
 ];
 
 interface RecipeType {
-
+    rcpNo: number;
+    rcpName: string;
+    energy: number;
+    carb
 }
 
 const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refreshSummary, showAlert }: MealInputModalProps) => {
