@@ -90,6 +90,7 @@ export const MealplanMain = () => {
                 prev.map(meal => ({
                     ...meal,
                     items: data[meal.id] || [],
+                    isExpanded: false
                 }))
             );
         } catch (err) {
@@ -102,20 +103,18 @@ export const MealplanMain = () => {
 
     // dailyNutrients 계산
     useEffect(() => {
-        const totals = mealList.reduce(
-            (acc, meal) => {
-                meal.items.forEach(item => {
-                    const factor = (item.quantity ?? 100) / 100;
-                    acc.energy += (item.energy ?? 0) * factor;
-                    acc.carbs += (item.carb ?? 0) * factor;
-                    acc.protein += (item.protein ?? 0) * factor;
-                    acc.fat += (item.fat ?? 0) * factor;
-                    acc.sodium += (item.sodium ?? 0) * factor;
-                });
-                return acc;
-            },
-            { energy: 0, carbs: 0, protein: 0, fat: 0, sodium: 0 }
-        );
+        const totals = mealList.reduce((acc, meal) => {
+            meal.items.forEach(item => {
+                const factor = item.mealType === 'FOOD' ? ((item.quantity ?? 100) / 100) : 1;
+                acc.energy += (item.energy ?? 0) * factor;
+                acc.carbs += (item.carb ?? 0) * factor;
+                acc.protein += (item.protein ?? 0) * factor;
+                acc.fat += (item.fat ?? 0) * factor;
+                acc.sodium += (item.sodium ?? 0) * factor;
+            });
+            return acc;
+        }, { energy: 0, carbs: 0, protein: 0, fat: 0, sodium: 0 });
+
         setDailyNutrients(totals);
     }, [mealList]);
 
@@ -209,7 +208,7 @@ export const MealplanMain = () => {
                                     <span>
                                         {Math.round(
                                             meal.items.reduce((total, item) => {
-                                                const factor = (item.quantity ?? 100) / 100;
+                                                const factor = item.mealType === 'FOOD' ? ((item.quantity ?? 100) / 100) : 1;
                                                 return total + (item.energy ?? 0) * factor;
                                             }, 0)
                                         )} 칼로리
@@ -221,9 +220,16 @@ export const MealplanMain = () => {
                                 <div className={style.mealItemsContainer}>
                                     {meal.items.map((item, index) => (
                                         <div key={index} className={style.mealItemEntry}>
-                                            <span className={style.mealItemLeft}>{item.foodName} ({item.quantity ?? 100}g)</span>
+                                            <span className={style.mealItemLeft}>
+                                                {item.foodName}
+                                                {item.mealType === 'FOOD' ? ` (${item.quantity ?? 100}g)` : ''}
+                                            </span>
                                             <div className={style.mealItemRight}>
-                                                <span className={style.mealItemEnergy}>{Math.round((item.energy ?? 0) * ((item.quantity ?? 100) / 100))} 칼로리</span>
+                                                <span className={style.mealItemEnergy}>
+                                                    {Math.round(
+                                                        (item.energy ?? 0) * (item.mealType === 'FOOD' ? ((item.quantity ?? 100) / 100) : 1)
+                                                    )} 칼로리
+                                                </span>
                                                 <button className={style.removeButton} onClick={() => handleDeleteMealItem(item.mealNo)}>X</button>
                                             </div>
                                         </div>

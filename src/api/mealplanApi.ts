@@ -24,6 +24,7 @@ mealplanApi.interceptors.request.use(
 
 export interface MealItemData {
     mealNo: number;
+    mealType: "FOOD" | "RCP";
     foodNo: number;
     foodName: string;
     energy: number;
@@ -90,11 +91,11 @@ export const removeMealItem = async (mealNo: number) => {
 
 export const fetchRecent = async (userNo: number | undefined) => {
     const response = await mealplanApi.get<MealItemData[]>(`/recents/${userNo}`);
+    console.log(response.data);
     return response.data;
 };
 
 export async function saveFoodItem(userNo: number | undefined, mealId: string, date: string, item: NewFoodItem) {
-    console.log("Saving item:", item);
     const response = await mealplanApi.post(`/foods/${userNo}`, {
         mealDate: date,
         mealId,
@@ -105,6 +106,16 @@ export async function saveFoodItem(userNo: number | undefined, mealId: string, d
 }
 
 export async function fetchRecipes(userNo: number) {
-    const response = await axios.get(`recipes/${userNo}`);
+    const response = await mealplanApi.get(`recipes/${userNo}`);
+    return response.data;
+}
+
+export async function addRcpItem(userNo: number | undefined, mealId: string, date: string, rcpNo: number) {
+    const response = await mealplanApi.post(`meals/${userNo}`, {
+        mealDate: date,
+        mealId,
+        mealType: "RCP",
+        refNo: rcpNo
+    });
     return response.data;
 }

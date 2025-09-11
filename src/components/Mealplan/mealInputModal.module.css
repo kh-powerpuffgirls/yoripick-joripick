@@ -15,7 +15,7 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 12px;
-    width: 90%;
+    width: 100%;
     max-width: 600px;
     display: flex;
     flex-direction: column;
@@ -205,6 +205,7 @@
     text-overflow: ellipsis;
     max-width: 40%;
 }
+
 .manualAddForm {
     display: flex;
     flex-direction: column;
@@ -240,7 +241,7 @@
     box-sizing: border-box;
 }
 
-.buttonGroup {
+.buttonGroups {
     display: flex;
     justify-content: center;
     gap: 20px;
@@ -259,23 +260,121 @@
 }
 
 .addButton {
-    background-color: #a3c9a8;
+    background-color: #8ac926;
+    color: white;
 }
 
 .addButton:hover {
-    background-color: #8bb78f;
+    background-color: #6a9c22;
 }
 
 .cancelButton {
-    background-color: #f0c5b5;
+    background-color: #ff6b6b;
+    color: white;
 }
 
 .cancelButton:hover {
-    background-color: #deab9a;
+    background-color: #e53935;
 }
 
 .manualAddForm p {
     text-align: right;
     font-size: 0.7em;
     color: red;
+}
+
+.recipeList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.recipeCard {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.recipeCard:hover {
+    transform: translateY(-4px);
+}
+
+.recipeCard img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.recipeCard h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 6px 0 4px;
+    text-align: center;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recipeCard p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+}
+
+.buttonGroup button {
+    flex: 1;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+
+.buttonGroup button:active {
+    transform: scale(0.97);
+}
+
+.buttonGroup button:nth-of-type(1) {
+    background: #4cafef;
+    color: #fff;
+}
+
+.buttonGroup button:nth-of-type(1):hover {
+    background: #2196f3;
+}
+
+.buttonGroup button:nth-of-type(2) {
+    background: #8ac926;
+    color: #fff;
+}
+
+.buttonGroup button:nth-of-type(2):hover {
+    background: #6a9c22;
+}
+
+.buttonGroup button:nth-of-type(3) {
+    background: #ff6b6b;
+    color: #fff;
+}
+
+.buttonGroup button:nth-of-type(3):hover {
+    background: #e53935;
 }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchFoodCodes, fetchRecent, fetchRecipes, saveFoodItem, saveMealItem, searchFoods, type FoodCodeData, type MealItemData } from '../../api/mealplanApi';
+import { addRcpItem, fetchFoodCodes, fetchRecent, fetchRecipes, saveFoodItem, saveMealItem, searchFoods, type FoodCodeData, type MealItemData } from '../../api/mealplanApi';
 import style from './MealInputModal.module.css';
 import { formatToYYYYMMDD } from '../../pages/Mealplan/main';
 import type { RootState } from '../../store/store';
 import { useSelector } from 'react-redux';
+
+import mockImg from '../../assets/jopik.png'
 
 interface MealInputModalProps {
     closeModal: () => void;
@@ -27,7 +29,7 @@ interface RecipeType {
     rcpNo: number;
     rcpName: string;
     energy: number;
-    carb
+    imgUrl: string;
 }
 
 const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refreshSummary, showAlert }: MealInputModalProps) => {
@@ -44,7 +46,17 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
     const [recentMeals, setRecentMeals] = useState<MealItemData[]>([]);
     const [myRecipes, setMyRecipes] = useState<RecipeType[]>([]);
 
-    const [manualFood, setManualFood] = useState({
+    const [manualFood, setManualFood] = useState<{
+        mealType: "FOOD" | "RCP";
+        foodName: string;
+        energy: number;
+        carb: number;
+        protein: number;
+        fat: number;
+        sodium: number;
+        quantity: number;
+    }>({
+        mealType: 'FOOD',
         foodName: '',
         energy: 0,
         carb: 0,
@@ -157,6 +169,19 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
             showAlert('식단 추가에 실패했습니다.');
         }
     };
+
+    const handleAddRcp = async (rcpNo: number) => {
+        try {
+            await addRcpItem(userNo, selectedMealId, modalDate, rcpNo);
+            await refreshMeals();
+            await refreshSummary();
+            showAlert('식단을 추가했습니다.');
+            closeModal();
+        } catch (error) {
+            console.error(error);
+            showAlert('식단 추가에 실패했습니다.');
+        }
+    }
 
     return (
         <div className={style.modalOverlay}>
@@ -306,22 +331,25 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
                 )}
 
                 {tab === 'myRecipe' && (
-                    <div className={style.foodList}>
+                    <div className={style.recipeList}>
                         {myRecipes.length > 0 ? (
                             <>
                                 {myRecipes.map((recipe, index) => (
                                     <div key={index} className={style.recipeCard}>
-                                        <h3>{recipe.recipeName}</h3>
-                                        <p>{recipe.description}</p>
-                                        {/* 이미지 등 추가? */}
+                                        {/* <img src={recipe.imgUrl} alt={recipe.rcpName}/> */}
+                                        <img src={mockImg} alt={recipe.rcpName} />
+                                        <h3>{recipe.rcpName}</h3>
+                                        <p>{recipe.energy} kcal</p>
+                                        <div className={style.buttonGroup}>
+                                            <button>레시피 보기</button>
+                                            <button onClick={() => handleAddRcp(recipe.rcpNo)}>추가</button>
+                                            <button>북마크 해제</button>
+                                        </div>
                                     </div>
                                 ))}
                             </>
                         ) : (
-                            <div className={style.emptyMessage}>
-                                <img src="" alt="북마크 없음" />
-                                <p>저장된 레시피가 없어요.</p>
-                            </div>
+                            <div className={style.emptyMessage}>저장된 레시피가 없어요.</div>
                         )}
                     </div>
                 )}
@@ -406,7 +434,7 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
                         </div>
                         <p>모든 영양성분 데이터(칼로리, 탄단지, 나트륨)는 100g(ml) 기준으로 입력해주세요.</p>
                         {/* 버튼 그룹 */}
-                        <div className={style.buttonGroup}>
+                        <div className={style.buttonGroups}>
                             <button type="submit" className={style.addButton}>추가</button>
                             <button type="button" onClick={() => setTab('search')} className={style.cancelButton}>취소</button>
                         </div>
