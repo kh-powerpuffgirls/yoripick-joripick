@@ -2,7 +2,6 @@ import './App.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { Route, Routes } from 'react-router-dom'
-import { AlertModal } from './components/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
@@ -20,6 +19,7 @@ import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import { api, getNotiSettings } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
 import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
+import { ChatAlertModal } from './components/Chatting/ChatAlertModal'
 
 function App() {
   const dispatch = useDispatch();
@@ -77,7 +77,7 @@ function App() {
   return (
     <>
       <Header />
-      <AlertModal />
+      <ChatAlertModal />
       <ChatModal />
       {rooms && rooms.length > 0 && (
         <p className='chatBtn' onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
