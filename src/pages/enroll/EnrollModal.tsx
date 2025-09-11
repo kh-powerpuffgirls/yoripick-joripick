@@ -25,7 +25,6 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordCheckRef = useRef<HTMLInputElement>(null);
 
-  // 이메일 검증
   const validateEmail = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // 바이트 계산 (초성/중성/종성 모두 2바이트)

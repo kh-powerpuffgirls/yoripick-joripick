@@ -1,7 +1,7 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import type { RootState } from "../store/store";
+import type { RootState } from "../../store/store";
 
 interface Props {
   children: ReactNode;
