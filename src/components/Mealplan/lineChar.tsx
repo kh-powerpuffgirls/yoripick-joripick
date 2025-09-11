@@ -9,7 +9,6 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
-import { useEffect, useState } from "react";
 import type { NutrientData } from './mealplanNut';
 
 ChartJS.register(
@@ -26,66 +25,40 @@ interface LineChartProps {
     fromDate: string;
     toDate: string;
     selectedNutrients: string[];
-    mockNutrients: { [key: string]: NutrientData };
+    statistics: Record<string, NutrientData>;
 }
 
 export const nutrientColors: { [key: string]: string } = {
-    calories: "#FEBEA2",
+    energy: "#FEBEA2",
     carbs: "#4F98FF",
     protein: "#FBB871",
     fat: "#9986DD",
     sodium: "#77D57A"
 };
 
-const nutrientLabels: { [key: string]: string } = {
-    calories: '총 섭취량',
+export const nutrientLabels: Record<string, string> = {
+    energy: '총 섭취량',
     carbs: '탄수화물',
     protein: '단백질',
     fat: '지방',
     sodium: '나트륨'
 };
 
-export default function LineChart({
-    fromDate,
-    toDate,
-    selectedNutrients,
-    mockNutrients
-}: LineChartProps) {
-    const [chartData, setChartData] = useState<any[]>([]);
-    const [labels, setLabels] = useState<string[]>([]);
-
-    useEffect(() => {
-        const filteredData = Object.entries(mockNutrients)
-            .filter(([date]) => date >= fromDate && date <= toDate)
-            .map(([date, nutrient]) => {
-                const filtered: any = { date };
-                selectedNutrients.forEach(n => {
-                    filtered[n] = nutrient[n as keyof NutrientData];
-                });
-                return filtered;
-            });
-
-        const newLabels = filteredData.map(item => item.date);
-
-        setChartData(filteredData);
-        setLabels(newLabels);
-
-    }, [fromDate, toDate, selectedNutrients, mockNutrients]);
-
+export default function LineChart({selectedNutrients, statistics}: LineChartProps) {
+    const labels = Object.keys(statistics).sort();
     const datasets = selectedNutrients.map((nutrient) => {
-        const isCaloriesOrSodium = nutrient === 'calories' || nutrient === 'sodium';
+        const isCaloriesOrSodium = nutrient === 'energy' || nutrient === 'sodium';
         return {
-            label: nutrientLabels[nutrient],
-            data: chartData.map(item => item[nutrient]),
+            label: nutrientLabels[nutrient] || nutrient,
+            data: labels.map((date) => statistics[date]?.[nutrient as keyof NutrientData] || 0),
             borderColor: nutrientColors[nutrient],
             backgroundColor: nutrientColors[nutrient],
             tension: 0.3,
+            borderWidth: 2,
             fill: true,
             yAxisID: isCaloriesOrSodium ? 'y2' : 'y',
         }
     });
-
-    const data = { labels, datasets };
 
     const options = {
         responsive: true,
@@ -128,7 +101,7 @@ export default function LineChart({
 
     return (
         <div style={{ width: '650px', height: '100%' }}>
-            <Line data={data} options={options} />
+            <Line data={{ labels, datasets }} options={options} />
         </div>
     );
 }

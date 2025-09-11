@@ -15,7 +15,8 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 12px;
-    width: 40%;
+    width: 90%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     max-height: 80vh;
@@ -113,12 +114,14 @@
 }
 
 .tabContent {
+    flex-grow: 1;
     overflow-y: auto;
     padding-right: 5px;
     padding-top: 15px;
 }
 
 .foodList {
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -201,4 +204,78 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 40%;
+}
+.manualAddForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.formRow {
+    display: flex;
+    gap: 15px;
+}
+
+.formGroup {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 15px;
+}
+
+.inputLabel {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #555;
+    white-space: nowrap;
+    font-size: 0.9em;
+}
+
+.manualAddForm input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.addButton,
+.cancelButton {
+    padding: 7px 50px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #555;
+    transition: background-color 0.2s ease;
+}
+
+.addButton {
+    background-color: #a3c9a8;
+}
+
+.addButton:hover {
+    background-color: #8bb78f;
+}
+
+.cancelButton {
+    background-color: #f0c5b5;
+}
+
+.cancelButton:hover {
+    background-color: #deab9a;
+}
+
+.manualAddForm p {
+    text-align: right;
+    font-size: 0.7em;
+    color: red;
 }

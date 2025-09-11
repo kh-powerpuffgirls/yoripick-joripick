@@ -192,9 +192,11 @@
     gap: 15px;
     font-size: 14px;
     color: #555;
+    font-weight: bold;
 }
 
-.addButton, .removeButton {
+.addButton,
+.removeButton {
     background-color: transparent;
     border: none;
     font-size: 24px;
@@ -223,7 +225,7 @@
     background-color: #d8f3dc;
     display: flex;
     flex-direction: column;
-    padding: 10px 20px;
+    padding: 5px 20px;
 }
 
 .mealItemEntry {
@@ -232,6 +234,26 @@
     align-items: center;
     padding: 8px 0;
     border-bottom: 1px solid #c8e8d0;
+}
+
+.mealItemEnergy {
+    font-size: 0.8em;
+    color: #555;
+}
+
+.mealItemLeft {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8em;
+    color: #555;
+}
+
+.mealItemRight {
+    display: flex;
+    gap: 18px;
+    align-items: center;
 }
 
 .mealItemEntry:last-child {

@@ -6,7 +6,7 @@ export interface NutrientData {
   protein: number;
   fat: number;
   sodium: number;
-  calories: number;
+  energy: number;
 }
 
 interface NutrientInfoProps {
@@ -18,7 +18,7 @@ const NUTRIENT_GOALS = {
   protein: 60,
   fat: 60,
   sodium: 2000,
-  calories: 2500,
+  energy: 2500,
 };
 
 const NutrientInfo: React.FC<NutrientInfoProps> = ({ nutrients }) => {
@@ -28,7 +28,7 @@ const NutrientInfo: React.FC<NutrientInfoProps> = ({ nutrients }) => {
     return Math.min(percentage, 100);
   };
 
-  const caloriesPercent = getPercentage(nutrients.calories, NUTRIENT_GOALS.calories);
+  const caloriesPercent = getPercentage(nutrients.energy, NUTRIENT_GOALS.energy);
   const carbPercent = getPercentage(nutrients.carbs, NUTRIENT_GOALS.carbs);
   const proteinPercent = getPercentage(nutrients.protein, NUTRIENT_GOALS.protein);
   const fatPercent = getPercentage(nutrients.fat, NUTRIENT_GOALS.fat);
@@ -40,7 +40,7 @@ const NutrientInfo: React.FC<NutrientInfoProps> = ({ nutrients }) => {
         <div className={nut.bars}>
           <div className={nut.tags}>
             <span>총 섭취량</span>
-            <span>{nutrients.calories} / {NUTRIENT_GOALS.calories} kcal</span>
+            <span>{nutrients.energy} / {NUTRIENT_GOALS.energy} kcal</span>
           </div>
           <div className={nut.progress}>
             <div className={nut.bar_progress} style={{ width: `${caloriesPercent}%`, backgroundColor: '#FEBEA2' }}></div>

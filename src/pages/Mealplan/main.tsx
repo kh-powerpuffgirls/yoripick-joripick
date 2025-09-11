@@ -1,15 +1,13 @@
 import useInput from '../../hooks/useInput';
-import { useEffect, useState } from 'react';
-import type { NutrientData } from '../../components/Mealplan/mealplanNut';
-import NutrientInfo from '../../components/Mealplan/mealplanNut';
+import { useEffect, useMemo, useState } from 'react';
+import NutrientInfo, { type NutrientData } from '../../components/Mealplan/mealplanNut';
 import style from './main.module.css';
-import LineChart from '../../components/Mealplan/lineChar';
+import LineChart, { nutrientLabels } from '../../components/Mealplan/lineChar';
 import MealInputModal from '../../components/Mealplan/mealInputModal';
-import type { MealItemData } from '../../api/mealplanApi';
-
-interface MockNutrients {
-    [key: string]: NutrientData
-}
+import { fetchMealList, fetchMealStats, removeMealItem, type MealItemData } from '../../api/mealplanApi';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
+import alertStyle from '../../components/Mealplan/mealplanAlert.module.css'
 
 interface MealSection {
     id: 'BRK' | 'LNC' | 'SNK' | 'DIN' | 'MNS';
@@ -18,12 +16,6 @@ interface MealSection {
     items: MealItemData[];
 }
 
-const mockNutrients: MockNutrients = {
-    '2025-09-08': { carbs: 150, protein: 45, fat: 50, sodium: 1500, calories: 1800 },
-    '2025-09-09': { carbs: 200, protein: 60, fat: 55, sodium: 1800, calories: 2200 },
-    '2025-09-10': { carbs: 250, protein: 70, fat: 65, sodium: 2100, calories: 2400 },
-    '2025-09-11': { carbs: 180, protein: 55, fat: 40, sodium: 1600, calories: 1900 },
-};
 const days = ["일", "월", "화", "수", "목", "금", "토"];
 
 export const formatToYYYYMMDD = (date: Date) => {
@@ -33,15 +25,11 @@ export const formatToYYYYMMDD = (date: Date) => {
     return `${year}-${month}-${day}`;
 };
 
-const nutrientLabels = {
-    calories: '총 섭취량',
-    carbs: '탄수화물',
-    protein: '단백질',
-    fat: '지방',
-    sodium: '나트륨'
-};
-
 export const MealplanMain = () => {
+    const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const showAlert = (message: string) => setAlertMessage(message);
+
     const [input, handleInputChange, resetInput, setInput] = useInput({
         year: new Date().getFullYear(),
         month: new Date().getMonth() + 1,
@@ -58,15 +46,17 @@ export const MealplanMain = () => {
     const years = Array.from({ length: 10 }, (_, i) => input.year - i);
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
-    const [selectedNutrients, setSelectedNutrients] = useState<string[]>(['calories']);
-    const [dailyNutrients, setDailyNutrients] = useState({
+    const [dailyNutrients, setDailyNutrients] = useState<NutrientData>({
         carbs: 0,
         protein: 0,
         fat: 0,
         sodium: 0,
-        calories: 0,
+        energy: 0,
     });
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedMeal, setSelectedMeal] = useState<{ mealId: string; mealName: string } | null>(null);
+    const [selectedNutrients, setSelectedNutrients] = useState<string[]>(['energy']);
     const today = new Date();
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(today.getDate() - 7);
@@ -75,6 +65,9 @@ export const MealplanMain = () => {
         fromDate: formatToYYYYMMDD(oneWeekAgo),
         toDate: formatToYYYYMMDD(today),
     });
+
+    const [statistics, setStatistics] = useState<Record<string, NutrientData>>({});
+    const dateKey = useMemo(() => formatToYYYYMMDD(new Date(input.year, input.month - 1, input.day)), [input]);
 
     const generateDates = () => {
         const dates = [];
@@ -88,27 +81,63 @@ export const MealplanMain = () => {
     };
     const dateCards = generateDates();
 
-    useEffect(() => {
-        const selectedDate = new Date(input.year, input.month - 1, input.day);
-        const dateKey = formatToYYYYMMDD(selectedDate);
-        const data = mockNutrients[dateKey] || { carbs: 0, protein: 0, fat: 0, sodium: 0, calories: 0 };
-        setDailyNutrients(data);
-    }, [input]);
-
-    const handleNutrientCheckbox = (nutrient: string) => {
-        setSelectedNutrients(prev =>
-            prev.includes(nutrient) ? prev.filter(n => n !== nutrient) : [...prev, nutrient]
-        );
+    // daily meal fetch
+    const loadMeals = async () => {
+        if (!userNo) return;
+        try {
+            const data = await fetchMealList(userNo, dateKey);
+            setMealList(prev =>
+                prev.map(meal => ({
+                    ...meal,
+                    items: data[meal.id] || [],
+                }))
+            );
+        } catch (err) {
+            console.error("식단 불러오기 실패:", err);
+        }
     };
+    useEffect(() => {
+        loadMeals();
+    }, [dateKey, userNo]);
+
+    // dailyNutrients 계산
+    useEffect(() => {
+        const totals = mealList.reduce(
+            (acc, meal) => {
+                meal.items.forEach(item => {
+                    const factor = (item.quantity ?? 100) / 100;
+                    acc.energy += (item.energy ?? 0) * factor;
+                    acc.carbs += (item.carb ?? 0) * factor;
+                    acc.protein += (item.protein ?? 0) * factor;
+                    acc.fat += (item.fat ?? 0) * factor;
+                    acc.sodium += (item.sodium ?? 0) * factor;
+                });
+                return acc;
+            },
+            { energy: 0, carbs: 0, protein: 0, fat: 0, sodium: 0 }
+        );
+        setDailyNutrients(totals);
+    }, [mealList]);
+
+    // 통계 데이터 fetch
+    const loadSummary = async () => {
+        if (!userNo) return;
+        try {
+            const data = await fetchMealStats(chartInput.fromDate, chartInput.toDate, userNo);
+            setStatistics(data);
+        } catch (err) {
+            console.error("일별 합계 가져오기 실패:", err);
+        }
+    };
+    useEffect(() => {
+        loadSummary();
+    }, [userNo, chartInput]);
 
     const toggleMealSection = (id: string) => {
         setMealList(mealList.map(meal =>
             meal.id === id ? { ...meal, isExpanded: !meal.isExpanded } : meal
         ));
     };
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedMeal, setSelectedMeal] = useState<{ mealId: string; mealName: string } | null>(null);
 
     const openModal = (meal: MealSection) => {
         setSelectedMeal({ mealId: meal.id, mealName: meal.name });
@@ -120,55 +149,30 @@ export const MealplanMain = () => {
         setSelectedMeal(null);
     };
 
-    const addMealItem = (mealId: string, newItem: MealItemData) => {
-        setMealList(mealList.map(meal => {
-            if (meal.id === mealId) {
-                const newItems = [...meal.items, newItem];
-                return { ...meal, items: newItems };
-            }
-            return meal;
-        }));
+    const handleDeleteMealItem = async (mealNo: number) => {
+        try {
+            await removeMealItem(mealNo);
+            await loadMeals();
+            await loadSummary();
+            showAlert('식단을 삭제했습니다.');
+        } catch (err) {
+            showAlert('삭제에 실패했습니다.');
+        }
     };
 
-    const removeMealItem = (mealId: string, itemIndex: number) => {
-        setMealList(mealList.map(meal => {
-            if (meal.id === mealId) {
-                const newItems = meal.items.filter((_, index) => index !== itemIndex);
-                return { ...meal, items: newItems };
-            }
-            return meal;
-        }));
+    const handleNutrientCheckbox = (nutrient: string) => {
+        setSelectedNutrients(prev =>
+            prev.includes(nutrient) ? prev.filter(n => n !== nutrient) : [...prev, nutrient]
+        );
     };
-
-    const calculateDailyNutrients = () => {
-        let totalCalories = 0;
-        let totalCarbs = 0;
-        let totalProtein = 0;
-        let totalFat = 0;
-        let totalSodium = 0;
-
-        mealList.forEach(meal => {
-            meal.items.forEach(item => {
-                totalCalories += item.energy;
-            });
-        });
-
-        const mockData = mockNutrients[formatToYYYYMMDD(new Date(input.year, input.month - 1, input.day))] || { carbs: 0, protein: 0, fat: 0, sodium: 0, calories: 0 };
-        setDailyNutrients({
-            ...mockData,
-            calories: totalCalories
-        });
-    };
-
-    useEffect(() => {
-        calculateDailyNutrients();
-    }, [mealList]);
 
     return (
         <div className={style.mealplanContainer}>
+            {/* Daily Record */}
             <h2 className={style.dailyRecordHeader}>DAILY RECORD 📝</h2>
             <hr className={style.divider} />
             <div className={style.dailyRecordComponent}>
+                {/* 날짜 선택 UI */}
                 <div className={style.nutrientSection}>
                     <div className={style.dropdownContainer}>
                         <select name="year" value={input.year} onChange={handleInputChange}>
@@ -193,29 +197,37 @@ export const MealplanMain = () => {
                     </div>
                     <NutrientInfo nutrients={dailyNutrients} />
                 </div>
+
+                {/* Meal List */}
                 <div className={style.mealListSection}>
                     {mealList.map(meal => (
                         <div key={meal.id} className={style.mealSectionItem}>
                             <div className={style.mealHeader} onClick={() => toggleMealSection(meal.id)}>
-                                <div>{meal.name}</div>
+                                <div style={{ fontWeight: "bold" }}>{meal.name}</div>
                                 <div className={style.mealStats}>
-                                    <span>{meal.items.length}개 항목</span> / <span>{meal.items.reduce((total, item) => total + item.energy, 0)} 칼로리</span>
+                                    <span>{meal.items.length}개 항목</span> /
+                                    <span>
+                                        {Math.round(
+                                            meal.items.reduce((total, item) => {
+                                                const factor = (item.quantity ?? 100) / 100;
+                                                return total + (item.energy ?? 0) * factor;
+                                            }, 0)
+                                        )} 칼로리
+                                    </span>
                                     <button className={style.addButton} onClick={(e) => { e.stopPropagation(); openModal(meal); }}>+</button>
                                 </div>
                             </div>
-                            {meal.isExpanded && (
+                            {meal.isExpanded && meal.items.length > 0 && (
                                 <div className={style.mealItemsContainer}>
-                                    {meal.items.length > 0 ? (
-                                        meal.items.map((item, index) => (
-                                            <div key={index} className={style.mealItemEntry}>
-                                                <span>{item.foodName}</span>
-                                                <span>{item.energy} 칼로리</span>
-                                                <button className={style.removeButton} onClick={() => removeMealItem(meal.id, index)}>X</button>
+                                    {meal.items.map((item, index) => (
+                                        <div key={index} className={style.mealItemEntry}>
+                                            <span className={style.mealItemLeft}>{item.foodName} ({item.quantity ?? 100}g)</span>
+                                            <div className={style.mealItemRight}>
+                                                <span className={style.mealItemEnergy}>{Math.round((item.energy ?? 0) * ((item.quantity ?? 100) / 100))} 칼로리</span>
+                                                <button className={style.removeButton} onClick={() => handleDeleteMealItem(item.mealNo)}>X</button>
                                             </div>
-                                        ))
-                                    ) : (
-                                        <div className={style.emptyMessage}>아직 식단이 없어요.</div>
-                                    )}
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
@@ -227,13 +239,18 @@ export const MealplanMain = () => {
                         mealId={selectedMeal.mealId}
                         mealName={selectedMeal.mealName}
                         selectedDate={new Date(input.year, input.month - 1, input.day)}
-                        addMealItem={addMealItem}
+                        showAlert={showAlert}
+                        refreshMeals={loadMeals}
+                        refreshSummary={loadSummary}
                     />
                 )}
             </div>
+
+            {/* Statistics */}
             <h2 className={style.statisticsHeader}>STATISTICS 📊</h2>
             <hr className={style.divider} />
             <div className={style.statisticsContainer}>
+                {/* 날짜 범위 선택 & 체크박스 */}
                 <div className={style.statisticsFilterArea}>
                     <div className={style.dateRangeSelector}>
                         <div className={style.dateSelectorRow}>
@@ -269,10 +286,19 @@ export const MealplanMain = () => {
                         fromDate={chartInput.fromDate}
                         toDate={chartInput.toDate}
                         selectedNutrients={selectedNutrients}
-                        mockNutrients={mockNutrients}
+                        statistics={statistics}
                     />
                 </div>
             </div>
+
+            {alertMessage && (
+                <div className={alertStyle.modalBackdrop} onClick={() => setAlertMessage(null)}>
+                    <div className={alertStyle.modal}>
+                        <h3>{alertMessage}</h3>
+                        <button className={alertStyle.confirm} onClick={() => setAlertMessage(null)}>확인</button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
