@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './ChallengeMain.module.css';
-import CommunityHeader from '../CommunityHeader';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./ChallengeMain.module.css";
+import CommunityHeader from "../CommunityHeader";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
+import ChallengeSuggestionForm from "./ChallengeSuggestionForm";
 
 interface ChallengeItem {
   challengeNo: number;
@@ -16,8 +19,11 @@ interface ChallengeItem {
 interface ActiveChallenge {
   chInfoNo: number;
   title: string;
-  imageUrl?: string;
+  startDate: string;
+  endDate: string;
 }
+
+const API_BASE_URL = "http://localhost:8081";
 
 const ChallengeMain = () => {
   const [popularChallenges, setPopularChallenges] = useState<ChallengeItem[]>([]);
@@ -25,10 +31,50 @@ const ChallengeMain = () => {
   const [activeChallenge, setActiveChallenge] = useState<ActiveChallenge | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const totalPages = 10;
+
+  // 알럿 관련 로컬 상태 추가
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertContent, setAlertContent] = useState<React.ReactNode | null>(null);
+
   const navigate = useNavigate();
+  // dispatch를 더 이상 사용하지 않으므로 제거합니다.
+  const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
+
+  const handleAlertClose = () => {
+    setAlertVisible(false);
+    setAlertContent(null);
+  };
+
+  const handleSuggestionClick = () => {
+    if (!isLoggedIn) {
+      setAlertContent(
+        <div>
+          <p>로그인 후 챌린지 요청이 가능합니다.</p>
+          <button onClick={handleAlertClose}>확인</button>
+        </div>
+      );
+      setAlertVisible(true);
+      return;
+    }
+
+    setAlertContent(
+      <ChallengeSuggestionForm onClose={handleAlertClose} />
+    );
+    setAlertVisible(true);
+  };
 
   const handleRegisterClick = () => {
-    navigate('/community/challenge/form');
+    if (!isLoggedIn) {
+      setAlertContent(
+        <div>
+          <p>로그인 후 챌린지 등록이 가능합니다.</p>
+          <button onClick={handleAlertClose}>확인</button>
+        </div>
+      );
+      setAlertVisible(true);
+      return;
+    }
+    navigate("/community/challenge/form");
   };
 
   const handleCardClick = (challengeNo: number) => {
@@ -39,22 +85,27 @@ const ChallengeMain = () => {
     const fetchData = async () => {
       try {
         const [activeResponse, recentResponse] = await Promise.all([
-          axios.get<ActiveChallenge>('http://localhost:8080/community/challenge/active'),
-          axios.get<ChallengeItem[]>('http://localhost:8080/community/challenge'),
+          axios.get<ActiveChallenge[]>(`${API_BASE_URL}/community/challenge/active`),
+          axios.get<ChallengeItem[]>(`${API_BASE_URL}/community/challenge`),
         ]);
 
-        setActiveChallenge(activeResponse.data);
+        const activeChallengeData =
+          activeResponse.data && activeResponse.data.length > 0
+            ? activeResponse.data[0]
+            : null;
+
+        setActiveChallenge(activeChallengeData);
         setRecentChallenges(recentResponse.data);
 
         const sortedPopular = [...recentResponse.data]
           .sort((a, b) => b.likes - a.likes)
           .slice(0, 3);
+
         setPopularChallenges(sortedPopular);
       } catch (error) {
-        console.error('데이터를 불러오는 데 실패했습니다.', error);
+        console.error("데이터를 불러오는 데 실패했습니다.", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -62,7 +113,6 @@ const ChallengeMain = () => {
     setCurrentPage(page);
   };
 
-  // 순위 뱃지가 포함되지 않은 일반 챌린지 카드 렌더링 함수
   const renderChallengeCard = (challenge: ChallengeItem) => (
     <div
       key={challenge.challengeNo}
@@ -72,14 +122,12 @@ const ChallengeMain = () => {
       <div className={styles.imagePlaceholder}>
         {challenge.postImageUrl ? (
           <img
-            src={`http://localhost:8080/images/${challenge.postImageUrl}`}
+            src={`${API_BASE_URL}/images/${challenge.postImageUrl}`}
             alt={challenge.title}
             className={styles.challengeImage}
           />
         ) : (
-          <div className={styles.defaultImage}>
-            이미지 없음
-          </div>
+          <div className={styles.defaultImage}>이미지 없음</div>
         )}
       </div>
       <div className={styles.cardInfo}>
@@ -95,27 +143,22 @@ const ChallengeMain = () => {
     </div>
   );
 
-  // 순위 뱃지가 포함된 인기 챌린지 카드 렌더링 함수
   const renderPopularChallengeCard = (challenge: ChallengeItem, index: number) => (
     <div
       key={challenge.challengeNo}
       className={styles.challengeCard}
       onClick={() => handleCardClick(challenge.challengeNo)}
     >
-      <div className={styles.rankBadge}>
-        {index + 1}
-      </div>
+      <div className={styles.rankBadge}>{index + 1}</div>
       <div className={styles.imagePlaceholder}>
         {challenge.postImageUrl ? (
           <img
-            src={`http://localhost:8080/images/${challenge.postImageUrl}`}
+            src={`${API_BASE_URL}/images/${challenge.postImageUrl}`}
             alt={challenge.title}
             className={styles.challengeImage}
           />
         ) : (
-          <div className={styles.defaultImage}>
-            이미지 없음
-          </div>
+          <div className={styles.defaultImage}>이미지 없음</div>
         )}
       </div>
       <div className={styles.cardInfo}>
@@ -137,33 +180,29 @@ const ChallengeMain = () => {
       <div className={styles.container}>
         <div className={styles.headerButtons}>
           <div className={styles.challengeTitle}>
-            {activeChallenge?.title || '챌린지 제목 없음'}
+            {activeChallenge?.title || "챌린지 제목 없음"}
           </div>
         </div>
-
         <div className={styles.section}>
           <h2>인기 챌린지 &gt;</h2>
-          {/* ⭐ popular-cardGrid 클래스 적용 */}
-          <div className={styles['popular-cardGrid']}>
+          <div className={styles["popular-cardGrid"]}>
             {popularChallenges.map(renderPopularChallengeCard)}
           </div>
         </div>
-
         <div className={styles.section}>
           <h2>최신 챌린지 &gt;</h2>
-          {/* ⭐ recent-cardGrid 클래스 적용 */}
-          <div className={styles['recent-cardGrid']}>
+          <div className={styles["recent-cardGrid"]}>
             {recentChallenges.map(renderChallengeCard)}
           </div>
         </div>
-
         <div className={styles.actionButtons}>
-          <button className={styles.requestButton}>새 챌린지 요청</button>
+          <button className={styles.requestButton} onClick={handleSuggestionClick}>
+            새 챌린지 요청
+          </button>
           <button className={styles.registerButton} onClick={handleRegisterClick}>
             등록하기
           </button>
         </div>
-
         <div className={styles.pagination}>
           <button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -172,11 +211,11 @@ const ChallengeMain = () => {
           >
             &lt;
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`${styles.pageBtn} ${currentPage === page ? styles.active : ''}`}
+              className={`${styles.pageBtn} ${currentPage === page ? styles.active : ""}`}
             >
               {page}
             </button>
@@ -190,6 +229,14 @@ const ChallengeMain = () => {
           </button>
         </div>
       </div>
+      {/* 로컬 상태에 따라 알럿 컴포넌트를 조건부 렌더링 */}
+      {alertVisible && (
+        <div className={styles.alertOverlay}>
+          <div className={styles.alertBox}>
+            {alertContent}
+          </div>
+        </div>
+      )}
     </>
   );
 };

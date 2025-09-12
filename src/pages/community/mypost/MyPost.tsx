@@ -10,6 +10,7 @@ interface MyPostDto {
     description: string;
     createdDate: string;
     views: number;
+    category: string; // BOARD, RECIPE, CHALLENGE, MARKET
 }
 
 const MyPost = () => {
@@ -19,7 +20,7 @@ const MyPost = () => {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const API_URL = 'http://localhost:8080/community/mypost';
+    const API_URL = 'http://localhost:8081/community/mypost/user/2';
 
     useEffect(() => {
         fetchPosts();
@@ -37,19 +38,27 @@ const MyPost = () => {
         }
     };
 
-    const handlePostClick = async (id: number) => {
-        try {
-            const response = await axios.get<MyPostDto>(`${API_URL}/${id}`);
-            setSelectedPost(response.data);
-        } catch (err) {
-            console.error('Failed to fetch post:', err);
-            setError('게시글 상세 정보를 불러오는 데 실패했습니다.');
-        }
-    };
+ const handlePostClick = (post: MyPostDto) => {
+    switch(post.category) {
+        case 'BOARD':
+            navigate(`/community/free/${post.id}`);
+            break;
+        case 'RECIPE':
+            navigate(`/community/recipe/${post.id}`);
+            break;
+        case 'CHALLENGE':
+            navigate(`/community/challenge/${post.id}`);
+            break;
+        case 'MARKET':
+            navigate(`/community/marketplace/${post.id}`);
+            break;
+        default:
+            console.warn('Unknown category:', post.category);
+    }
+};
 
     const handleBackToList = () => {
         setSelectedPost(null);
-        navigate(-1);
     };
 
     if (loading) {
@@ -76,17 +85,18 @@ const MyPost = () => {
                                     <th>제목</th>
                                     <th>날짜</th>
                                     <th>조회수</th>
+                                    <th>종류</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {posts.map((post) => (
                                     <tr
-                                        key={post.id}
+                                        key={`${post.category}-${post.id}`}
                                         className={mypostStyles['post-row']}
-                                        onClick={() => handlePostClick(post.id)}
+                                        onClick={() => handlePostClick(post)}
                                     >
                                         <td>{post.id}</td>
-                                        <td>{post.title}</td>
+                                        <td>{post.title || '-'}</td>
                                         <td>
                                             {new Date(post.createdDate).toLocaleDateString('ko-KR', {
                                                 year: '2-digit',
@@ -95,6 +105,7 @@ const MyPost = () => {
                                             })}
                                         </td>
                                         <td>{post.views}</td>
+                                        <td>{post.category}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -105,11 +116,11 @@ const MyPost = () => {
                         <button onClick={handleBackToList} className={mypostStyles['back-button']}>
                             &larr; 목록으로 돌아가기
                         </button>
-                        <h1>{selectedPost.title}</h1>
+                        <h1>{selectedPost.title || '제목 없음'}</h1>
                         <div className={mypostStyles['post-meta']}>
-                            작성일: {new Date(selectedPost.createdDate).toLocaleDateString()} | 조회수: {selectedPost.views}
+                            작성일: {new Date(selectedPost.createdDate).toLocaleDateString()} | 조회수: {selectedPost.views} | 종류: {selectedPost.category}
                         </div>
-                        <p className={mypostStyles['post-description']}>{selectedPost.description}</p>
+                        <p className={mypostStyles['post-description']}>{selectedPost.description || '내용 없음'}</p>
                     </div>
                 )}
             </div>

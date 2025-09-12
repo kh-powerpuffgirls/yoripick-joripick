@@ -80,6 +80,11 @@
     font-size: 15.5px;
     padding-left: 0;
     padding-right: 0;
+    text-align: center;
+
+}
+.post-table td {
+  text-align: center;
 }
 
 .table-header th:nth-child(1),

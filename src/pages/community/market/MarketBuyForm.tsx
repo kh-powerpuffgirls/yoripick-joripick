@@ -24,7 +24,7 @@ const MarketBuyForm = () => {
     useEffect(() => {
         const fetchItem = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/community/market/posts/${id}`);
+                const response = await axios.get(`http://localhost:8081/community/market/posts/${id}`);
                 setItem(response.data);
             } catch (error) {
                 console.error("Failed to fetch item details:", error);

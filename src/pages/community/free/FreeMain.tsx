@@ -23,18 +23,21 @@ const FreeMain = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 게시글 목록 가져오기
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get<FreePost[]>('http://localhost:8081/community/free');
+      setPosts(response.data);
+    } catch (err) {
+      console.error('게시글 목록을 불러오는 데 실패했습니다:', err);
+      setError('게시글 목록을 불러오는 데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get<FreePost[]>('http://localhost:8080/community/free');
-        setPosts(response.data);
-      } catch (err) {
-        console.error('게시글 목록을 불러오는 데 실패했습니다:', err);
-        setError('게시글 목록을 불러오는 데 실패했습니다.');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPosts();
   }, []);
 
@@ -44,16 +47,7 @@ const FreeMain = () => {
   return (
     <div className={styles['community-main-container']}>
       <div className={styles['main-content']}>
-
-        <div className={styles['button-container']}>
-          <button
-            onClick={() => navigate('/community/free/form')}
-            className={styles['register-button']}
-          >
-            글쓰기
-          </button>
-        </div>
-
+        {/* 게시글 리스트 섹션 */}
         <div className={styles['post-list-section']}>
           {posts.length > 0 ? (
             posts.map((post) => (
@@ -79,18 +73,19 @@ const FreeMain = () => {
                   </div>
                 </div>
 
-                {post.serverName && (
-                  <div className={styles['post-image-container']}>
-                    <img
-                      src={`http://localhost:8080/images/${post.serverName}`}
-                      alt={post.title}
-                      className={styles['post-image']}
-                    />
-                    <div className={styles['comment-count-badge']}>
-                      💬 {post.replyCount}
-                    </div>
-                  </div>
-                )}
+                {/* 게시글 이미지 */}
+                <div className={styles['post-image-container']}>
+                  <img
+                    src={
+                      post.serverName
+                        ? `http://localhost:8081/images/${post.serverName}?t=${new Date().getTime()}`
+                        : 'https://placehold.co/400x400/CCCCCC/ffffff?text=No+Image'
+                    }
+                    alt={post.title}
+                    className={styles['post-image']}
+                  />
+                  <div className={styles['comment-count-badge']}>💬 {post.replyCount}</div>
+                </div>
               </div>
             ))
           ) : (
@@ -98,6 +93,15 @@ const FreeMain = () => {
           )}
         </div>
 
+        {/* 글쓰기 버튼 */}
+        <div className={styles['button-container']}>
+          <button
+            onClick={() => navigate('/community/free/form')}
+            className={styles['register-button']}
+          >
+            등록 하기
+          </button>
+        </div>
       </div>
     </div>
   );

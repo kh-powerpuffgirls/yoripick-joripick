@@ -23,11 +23,11 @@ const MarketMain = () => {
         const fetchPosts = async () => {
             try {
                 // 인기 거래 목록 가져오기
-                const popularResponse = await axios.get('http://localhost:8080/community/market/posts/popular');
+                const popularResponse = await axios.get('http://localhost:8081/community/market/posts/popular');
                 setPopularPosts(popularResponse.data);
 
                 // 최신 거래 목록 가져오기
-                const recentResponse = await axios.get('http://localhost:8080/community/market/posts/recent');
+                const recentResponse = await axios.get('http://localhost:8081/community/market/posts/recent');
                 setRecentPosts(recentResponse.data);
             } catch (error) {
                 console.error("Failed to fetch market posts:", error);

@@ -13,7 +13,7 @@ const CommunityMain = () => {
     const [boards, setBoards] = useState<BoardInfo[]>([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/community')
+        axios.get('http://localhost:8081/community')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setBoards(response.data);

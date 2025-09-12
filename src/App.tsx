@@ -24,9 +24,9 @@ import AlreadyLoginRoute from './components/AlreadyLoginRoute'
 import OAuth2Success from './pages/login/OAuth2Success'
 import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import ChallengeDetail from './pages/community/challenge/ChallengeDetail'
+import ChallengeSuggestionForm from './pages/community/challenge/ChallengeSuggestionForm'
 
 function App() {
-
   return (
     <>
       <Header />
@@ -48,6 +48,8 @@ function App() {
         <Route path="/community/free/form/:boardNo" element={<FreeForm />} />
         <Route path="/community/free/:boardNo" element={<FreeDetail />} />
         <Route path="/community/free" element={<FreeMain />} />
+        {/* 새 챌린지 요청 라우트를 상세 페이지 라우트보다 위에 위치시켜야 합니다. */}
+        <Route path="/community/challenge/suggestion" element={<ChallengeSuggestionForm />} />
         <Route path="/community/challenge/:challengeNo" element={<ChallengeDetail />} />
         <Route path="/community/challenge" element={<ChallengeMain />} />
         <Route path="/community/challenge/form/:challengeNo" element={<ChallengeForm />} />
