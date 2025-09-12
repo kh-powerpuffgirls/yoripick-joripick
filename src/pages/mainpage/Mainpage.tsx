@@ -106,8 +106,6 @@ export default function Mainpage(){
                     <img className={mainStyle[`content-area`]}src={lodingImg.EatBTI} alt="식BTI 검사하기"/>
                 </div>
                 </section>
-
-                <Pagination/>
             </div>
 
         </>
