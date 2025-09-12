@@ -27,12 +27,9 @@ const SikBti: React.FC<SikBtiProps> = ({ sikBti }) => {
   return (
     <div
       style={{
-        backgroundColor: getColor(sikBti),
-        padding: '2px 6px', // 기존 eat_bti 스타일과 유사하게 수정
-        color: 'white',
-        borderRadius: '4px',
-        fontSize: '0.7rem',
-        fontWeight: 'bold',
+        color: getColor(sikBti),
+        fontSize: '7px',
+        fontWeight: '600',
       }}
     >
       {sikBti}

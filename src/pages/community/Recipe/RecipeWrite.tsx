@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import {api} from '../../../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store/store';
 
 // CSS 모듈 및 자식 컴포넌트 import
 import write from './CommunityRecipeWrite.module.css';
@@ -22,8 +24,7 @@ import type {
   SelectOption,
   IngredientForServer
 } from '../../../type/Recipe';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../store/store';
+
 
 // 컴포넌트 시작
 const RecipeWrite: React.FC = () => {
@@ -59,7 +60,7 @@ const RecipeWrite: React.FC = () => {
                     api.get('/api/options/methods'),
                     api.get('/api/options/situations')
                 ]);
-                
+
                 setMethodOptions(methodRes.data.map((item: any) => ({ id: item.rcpMthNo, name: item.rcpMethod })));
                 setTypeOptions(typeRes.data.map((item: any) => ({ id: item.rcpStaNo, name: item.rcpSituation })));
 
@@ -165,6 +166,10 @@ const RecipeWrite: React.FC = () => {
 
     const handleSubmit = async () => {
         if (isSubmitting) return;
+        if (!userNo) {
+            alert('로그인 정보가 없습니다. 다시 로그인해주세요.');
+            return;
+        }
         if (!rcpName.trim() || !rcpInfo.trim() || !rcpMthNo || !rcpStaNo || !mainImage) {
             alert('기본정보(제목, 소개, 요리정보, 대표사진)는 모두 필수 항목입니다.');
             return;
@@ -204,11 +209,11 @@ const RecipeWrite: React.FC = () => {
         try {
             setIsSubmitting(true);
             
-            await api.post(`/api/community/recipe/${userNo}`, formData, { // ✨ API 엔드포인트 수정
+            await api.post(`/api/community/recipe/${userNo}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             alert('레시피가 성공적으로 등록되었습니다!');
-            navigate('/community/recipe'); // ✨ 목록 페이지 경로로 수정
+            navigate('/community/recipe');
         } catch (error) {
             console.error('레시피 등록 실패:', error);
             alert('레시피 등록에 실패했습니다. 관리자에게 문의하세요.');

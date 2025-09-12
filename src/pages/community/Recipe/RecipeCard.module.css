@@ -14,12 +14,24 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.content img {
+.imageBox {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e8e8e8a2; /* 비는 공간 색상 */
     border-radius: 8px;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
+    overflow: hidden;
 }
+
+.imageBox img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
 #title{
     overflow: hidden;
     text-overflow: ellipsis;
@@ -90,6 +102,8 @@
     margin-left: auto;
     color: #FED049;
     font-weight: 600;
+    display: flex;
+    flex-direction: column;
 
 }
 .stars img {

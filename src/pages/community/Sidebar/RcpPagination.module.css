@@ -24,7 +24,7 @@
 }
 
 .pagination button:disabled {
-  cursor: not-allowed;
+  cursor: auto;
   opacity: 0.4;
 }
 

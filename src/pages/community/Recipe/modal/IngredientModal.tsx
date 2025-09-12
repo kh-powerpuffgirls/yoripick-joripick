@@ -24,7 +24,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({ onClose, onComplete }
   useEffect(() => {
     // ✨ name이 null 또는 undefined가 되는 것을 방지
     const currentName = name || ''; 
-    if (currentName.length < 2 || (selectedIngredient && currentName === selectedIngredient.ingName)) {
+    if (currentName.length < 1 || (selectedIngredient && currentName === selectedIngredient.ingName)) {
       setSearchResults([]);
       return;
     }
@@ -95,7 +95,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({ onClose, onComplete }
             <div className={styles.searchInputWrapper}>
                 <input
                     type="text"
-                    placeholder="두 글자 이상 입력하세요"
+                    placeholder="한글자 이상 입력하세요"
                     value={name} // ✨ name이 string임을 보장
                     className={styles.input_text}
                     onChange={(e) => {

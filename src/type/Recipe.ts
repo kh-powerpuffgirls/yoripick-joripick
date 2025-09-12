@@ -1,6 +1,4 @@
-// --- 1. DB 테이블 및 API 응답 관련 타입 ---
-// 주로 서버로부터 데이터를 받아올 때 사용되는 타입입니다.
-
+// 유저
 export interface User {
   userNo: number;
   username: string;
@@ -9,10 +7,7 @@ export interface User {
   serverName?: string; // 프로필 이미지 경로
 }
 
-/**
- * ✨ 레시피 상세 정보 (기존 Recipe 타입 유지)
- * API에서 recipe 단건 조회 시 받아올 데이터 구조입니다.
- */
+//레시피 정보
 export interface Recipe {
   rcpNo: number;
   userInfo: User;
@@ -33,26 +28,36 @@ export interface Recipe {
   steps: CookingStep[];
 }
 
+//레시피 재료
 export interface RecipeIngredient {
-  ingNo: number;
   ingName: string;
   quantity: string;
   weight: number;
 }
 
+//요리순서
 export interface CookingStep {
-  stepOrder: number;
+  rcpOrder: number;
   description: string;
-  imageNo?: number;
   serverName?: string;
 }
 
-// --- 2. 프론트엔드 상태 관리 및 컴포넌트 상호작용용 타입 ---
-// API 요청/응답, 컴포넌트 간 데이터 전달에 사용됩니다.
+// 리뷰 정보
+export interface Review {
+  reviewNo: number;
+  userInfo: User;
+  stars: number;
+  content: string;
+  serverName?: string; // 리뷰 이미지 경로
+  reviewDate: string;
 
-/**
- * 재료 검색 API('/api/ingredients/search')의 응답 데이터 구조
- */
+  rcpSource : 'API' | 'COMM';
+  refNo:number; //rcp_no
+  deleteStatus :  'N' | 'Y';
+}
+
+
+//재료 검색
 export interface IngredientSearchResult {
   ingNo: number;
   ingName: string;
@@ -63,9 +68,7 @@ export interface IngredientSearchResult {
   sodium: number;
 }
 
-/**
- * 영양소 정보
- */
+//영양소 정보
 export interface NutrientData {
   calories: number;
   carbs: number;
@@ -74,10 +77,7 @@ export interface NutrientData {
   sodium: number;
 }
 
-/**
- * ✨ 재료 추가 모달을 통해 레시피 작성 폼에 추가된 재료의 타입 (기존 AddedIngredient 유지)
- * 프론트엔드에서 상태 관리를 위해 사용합니다. (ID, 계산된 영양소 등 포함)
- */
+//재료추가 모달
 export interface AddedIngredient {
   id: number;
   ingNo: number;
@@ -87,9 +87,7 @@ export interface AddedIngredient {
   nutrients: NutrientData;
 }
 
-/**
- * ✨ 요리 순서 추가/수정을 위한 프론트엔드용 타입 (기존 CookingStepForForm 유지)
- */
+//요리순서추가
 export interface CookingStepForForm {
   id: number;
   description: string;
@@ -98,23 +96,14 @@ export interface CookingStepForForm {
 }
 
 
-// --- 3. API 요청(DTO) 및 기타 타입 ---
-
-/**
- * ✨ 서버로 전송될 재료 데이터의 타입
- * 프론트엔드 상태(AddedIngredient)에서 서버가 필요한 부분만 추출하여 만듭니다.
- */
+// 서버로전송하는 재료정보
 export interface IngredientForServer {
   ingNo: number;
   quantity: string;
   weight: number;
 }
 
-/**
- * ✨ 레시피 작성 폼에서 서버로 전송될 전체 데이터 구조 (DTO)
- * FormData에 담길 데이터들의 명세를 명확하게 정의합니다.
- * 백엔드 Spring Controller에서 @RequestParam으로 받을 이름과 일치시키는 것이 좋습니다.
- */
+// 서버로 전송될 레시피 작성 데이터
 export interface RecipeWriteRequestDto {
   rcpName: string;
   rcpInfo: string;
@@ -131,9 +120,7 @@ export interface RecipeWriteRequestDto {
   stepImages: File[]; // File 또는 Blob 배열
 }
 
-/**
- * 요리 방법/상황 드롭다운 옵션 타입
- */
+// 요리방법 상황 드롭다운
 export interface SelectOption {
   id: number;
   name: string;
@@ -149,7 +136,6 @@ export interface IngredientModalProps {
 
 
 
-// Sidebar 사이드바 타입
 // 레시피 목록의 개별 아이템 타입
 export interface RecipeListItem {
   rcpNo: number;
@@ -159,7 +145,6 @@ export interface RecipeListItem {
   serverName?: string;
   userProfileImage?: string;
   sikBti?: string;
-  likeCount?: number;
   avgStars?: number;
   reviewCount?: number;
 }

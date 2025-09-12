@@ -27,13 +27,13 @@ const RcpPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onP
 
   const pageNumbers = getPageNumbers();
   
-  if (totalPages <= 1) return null;
+  if (totalPages < 1) return null;
 
   return (
     <div className={styles.paginationArea}>
       <ul className={styles.pagination}>
-        <li><button onClick={() => onPageChange(1)} disabled={currentPage === 1}>&lt;&lt;</button></li>
-        <li><button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>&lt;</button></li>
+        <li><button onClick={() => onPageChange(1)} disabled={currentPage === 1}>◀◀</button></li>
+        <li><button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>◀</button></li>
         {pageNumbers.map(number => (
           <li key={number}>
             <button
@@ -44,8 +44,8 @@ const RcpPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onP
             </button>
           </li>
         ))}
-        <li><button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>&gt;</button></li>
-        <li><button onClick={() => onPageChange(totalPages)} disabled={currentPage === totalPages}>&gt;&gt;</button></li>
+        <li><button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>▶</button></li>
+        <li><button onClick={() => onPageChange(totalPages)} disabled={currentPage === totalPages}>▶▶</button></li>
       </ul>
     </div>
   );

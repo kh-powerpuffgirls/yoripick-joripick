@@ -22,10 +22,7 @@ h1{
     padding: 20px;
     /* background-color: #666; */
 }
-.tag_box{
-    border: #636363;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+
 .checkbox_group{
     display: flex;
     flex-direction: column;
@@ -45,4 +42,89 @@ h1{
 
 .submit_button:hover {
     background-color: #345a4b;
+}
+
+/* --- 재료 검색 부분 --- */
+
+/* ✨ 수정: input과 dropdown의 기준점이 되도록 position: relative 추가 */
+.input_wrapper {
+    position: relative;
+}
+
+.input_wrapper input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* ✨ 수정: 드롭다운 경계선과 배경 스타일 추가 */
+.dropdown {
+    position: absolute;
+    top: 100%; /* input 바로 아래에 위치 */
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-top: none; /* input 경계선과 겹치지 않게 */
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10; /* 다른 요소들 위에 보이도록 */
+}
+
+.dropdown li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.dropdown li:hover {
+    background-color: #f1f3f5;
+}
+
+.no_result {
+    color: #868e96;
+    padding: 8px 12px;
+    cursor: default;
+}
+
+/* --- 추가된 재료 태그 부분 --- */
+.tag_box {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap; /* 태그가 많아지면 다음 줄로 넘어감 */
+    gap: 8px;
+}
+
+.tag {
+    display: flex;
+    align-items: center;
+    background-color: #e9ecef;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+/* ✨ 수정: 못생긴 X버튼을 깔끔하게 변경 */
+.tag button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #868e96;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.tag button:hover {
+    color: #343a40;
 }
