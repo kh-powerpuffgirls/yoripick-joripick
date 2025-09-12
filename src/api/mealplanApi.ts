@@ -61,7 +61,7 @@ export async function saveMealItem(userNo: number | undefined, mealId: string, d
     const response = await mealplanApi.post(`/meals/${userNo}`, {
         mealDate: date,
         mealId,
-        mealType: "FOOD",
+        mealType: item.mealType,
         refNo: item.foodNo,
         quantity: item.quantity
     });

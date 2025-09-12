@@ -306,17 +306,26 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
                                         <span className={style.ellipsisText} title={food.foodName}>{food.foodName}</span>
                                         <span>{food.energy} kcal</span>
                                         <div className={style.inputGroup}>
-                                            <input
-                                                type="number"
-                                                step="10"
-                                                min="10"
-                                                defaultValue={itemWeights[food.foodNo] ?? food.quantity}
-                                                className={style.weightInput}
-                                                onChange={(e) =>
-                                                    handleWeightChange(food.foodNo, Number(e.target.value))
-                                                }
-                                            />
-                                            <span>g(ml)</span>
+                                            {food.mealType === 'FOOD' ? (
+                                                <>
+                                                    <input
+                                                        type="number"
+                                                        step="10"
+                                                        min="10"
+                                                        defaultValue={itemWeights[food.foodNo] ?? food.quantity}
+                                                        className={style.weightInput}
+                                                        onChange={(e) =>
+                                                            handleWeightChange(food.foodNo, Number(e.target.value))
+                                                        }
+                                                    />
+                                                    <span>g(ml)</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <input className={style.weightInput} disabled style={{ visibility: "hidden" }} />
+                                                    <span style={{ color: "transparent" }}>g(ml)</span>
+                                                </>
+                                            )}
                                             <button onClick={() => handleAddClick(food)}>
                                                 추가
                                             </button>
