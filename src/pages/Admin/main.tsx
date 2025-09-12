@@ -1,91 +1,214 @@
+import { useEffect, useState } from 'react';
 import style from './main.module.css'
+import { fetchChallenges, fetchRecipes, fetchReports, resolveChallenge, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
+import Pagination from '../../components/Pagination';
 
 export const AdminDashboard = () => {
+    const [challenges, setChallenges] = useState<ChallengeForm[]>([]);
+    const [reports, setReports] = useState<Reports[]>([]);
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const [rcpPageInfo, setRcpPageInfo] = useState<PageInfo | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const [userReports, setUserReports] = useState<Reports[]>([]);
+    const [commReports, setCommReports] = useState<Reports[]>([]);
+
+    const [openCards, setOpenCards] = useState<{ [key: number|string]: boolean }>({});
+    const handleToggleCard = (id: number|string) => {
+        setOpenCards(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
+
+    const fetchData = async (page: number) => {
+        setReports(await fetchReports());
+    };
+    const fetchRcpData = async (page: number) => {
+        const data = await fetchRecipes(page, 5);
+        setRecipes(data.list);
+        setRcpPageInfo(data.pageInfo);
+    }
+    const fetchChData = async (page: number) => {
+        setChallenges(await fetchChallenges());
+    }
+    useEffect(() => {
+        setLoading(true);
+        try {
+            fetchData(1);
+            fetchRcpData(1);
+            fetchChData(1);
+        } catch {
+            setError('관리 내역을 불러오는 데 실패했습니다.');
+        } finally {
+            setLoading(false);
+            setOpenCards({});
+        }
+    }, []);
+
+    useEffect(() => {
+        setUserReports(reports.filter(report => report.category === 'USERS'));
+        setCommReports(reports.filter(report => report.category !== 'USERS'));
+    }, [reports]);
+
+    const handleUserBan = (userNo: number) => {
+
+    }
+
+    const handleOpenReport = (c: Reports) => {
+
+    }
+
+    const handleOpenRcp = (c: Recipe) => {
+
+    }
+
+    const handleOpenCh = (c: ChallengeForm) => {
+        const ref = c.reference.trim();
+        if (ref && (ref.startsWith('http://') || ref.startsWith('https://'))) {
+            window.open(ref, '_blank', 'noopener,noreferrer');
+        } else {
+            alert('유효한 페이지가 아닙니다.');
+        }
+    };
+
+    const handleResolve = async (formNo: number) => {
+        if (!confirm('이 챌린지 요청을 완료 처리하시겠습니까?')) return;
+        try {
+            await resolveChallenge(formNo);
+            setChallenges(prev => prev.filter(c => c.formNo !== formNo));
+            fetchChData(1);
+        } catch {
+            alert('처리 중 오류가 발생했습니다.');
+        }
+    };
+
     return (
-        <>
-            <div>
+        <div className={style.container}>
+            <div className={style.section}>
                 <h3>회원관리 🔐</h3>
                 <hr />
-                <div>
-                    <div>
-                        <span>ID 19</span>
-                        <span>사기 / 기만 행위</span>
-                        <span>2025 / 08 / 27</span>
+                {!loading && !error && userReports.length === 0 &&
+                    <div className={style.emptyState}>처리할 신고 내역이 없습니다.</div>}
+                {userReports.map(c => (
+                    <div key={c.reportNo} className={style.card}>
+                        <div className={style.cardInfo} onClick={() => handleToggleCard(c.reportNo)}>
+                            <span>USER {c.refNo}</span>
+                            <span>{c.detail}</span>
+                            <span>{new Date(c.reportedAt).toLocaleString()}</span>
+                            <span className={style.toggleIcon}>{openCards[c.reportNo] ? '▲' : '▼'}</span>
+                        </div>
+                        {openCards[c.reportNo] && (
+                            <>
+                                <div className={style.cardContent}>
+                                    <strong>USER {c.userNo}</strong>
+                                    <div>{c.content}</div>
+                                </div>
+                                <div className={style.cardActions}>
+                                    <button onClick={() => handleUserBan(c.refNo)}>상세보기</button>
+                                    <button onClick={() => handleResolve(c.reportNo)}>처리완료</button>
+                                </div>
+                            </>
+                        )}
                     </div>
-                    <div>
-                        <span>USER 17</span>
-                        <span>직거래 마켓에 등록된 핸드폰 번호가 존재하지 않는 번호라고 나와요...</span>
-                    </div>
-                    <div>
-                        <button>새 탭에서 열기</button>
-                        <button>기각</button>
-                        <button>정지</button>
-                    </div>
-                </div>
+                ))}
             </div>
 
-            <div>
+            <div className={style.section}>
                 <h3>레시피 관리 🍳</h3>
                 <hr />
-                <div>
-                    <div>
-                        <span>ID 19</span>
-                        <span>오류 수정 요청</span>
-                        <span>2025 / 08 / 27</span>
+                {!loading && !error && recipes.length === 0 &&
+                    <div className={style.emptyState}>관리할 레시피가 없습니다.</div>}
+                {recipes.map(c => (
+                    <div key={`${c.rcpNo}-${c.reportNo}`} className={style.card}>
+                        <div className={style.cardInfo} onClick={() => handleToggleCard(`${c.rcpNo}-${c.reportNo}`)}>
+                            <span>ID {c.rcpNo}</span>
+                            <span>{c.type === 'RECIPE' ? c.title : c.detail}</span>
+                            {c.type === 'REPORT' && (
+                                <span>{new Date(c.reportedAt).toLocaleString()}</span>
+                            )}
+                            <span className={style.toggleIcon}>{openCards[`${c.rcpNo}-${c.reportNo}`] ? '▲' : '▼'}</span>
+                        </div>
+                        {openCards[`${c.rcpNo}-${c.reportNo}`] && (
+                            <>
+                                <div className={style.cardContent}>
+                                    <strong>USER {c.userNo}</strong>
+                                    <div>{c.type === 'RECIPE' ? c.info : c.content}</div>
+                                </div>
+                                <div className={style.cardActions}>
+                                    <button onClick={() => handleOpenRcp(c)}>상세보기</button>
+                                    <button onClick={() => handleResolve(c.rcpNo)}>처리완료</button>
+                                </div>
+                            </>
+                        )}
                     </div>
-                    <div>
-                        <span>USER 17</span>
-                        <span>레시피에 오타 있어요 '고구미' 수정부탁드립니다...</span>
-                    </div>
-                    <div>
-                        <button>새 탭에서 열기</button>
-                        <button>완료</button>
-                        <button>기각</button>
-                    </div>
-                </div>
+                ))}
+                {rcpPageInfo && (
+                    <Pagination
+                        pageInfo={rcpPageInfo}
+                        onPageChange={(page) => fetchRcpData(page)}
+                    />
+                )}
             </div>
 
-            <div>
+            <div className={style.section}>
                 <h3>커뮤니티 관리 🎮</h3>
                 <hr />
-                <div>
-                    <div>
-                        <span>ID 19</span>
-                        <span>새 챌린지 요청</span>
-                        <span>2025 / 08 / 27</span>
+                {!loading && !error && commReports.length === 0 &&
+                    <div className={style.emptyState}>처리할 신고 내역이 없습니다.</div>}
+                {commReports.map(c => (
+                    <div key={c.reportNo} className={style.card}>
+                        <div className={style.cardInfo} onClick={() => handleToggleCard(c.reportNo)}>
+                            <span>ID {c.reportNo}</span>
+                            <span>{c.detail}</span>
+                            <span>{new Date(c.reportedAt).toLocaleString()}</span>
+                            <span className={style.toggleIcon}>{openCards[c.reportNo] ? '▲' : '▼'}</span>
+                        </div>
+                        {openCards[c.reportNo] && (
+                            <>
+                                <div className={style.cardContent}>
+                                    <strong>USER {c.userNo}</strong>
+                                    <div>{c.content}</div>
+                                </div>
+                                <div className={style.cardActions}>
+                                    <button onClick={() => handleOpenReport(c)}>상세보기</button>
+                                    <button onClick={() => handleResolve(c.reportNo)}>처리완료</button>
+                                </div>
+                            </>
+                        )}
                     </div>
-                    <div>
-                        <span>USER 17</span>
-                        <span>마라탕후루 챌린지 끝나면 용암먹방 해주세요...</span>
-                    </div>
-                    <div>
-                        <button>새 탭에서 열기</button>
-                        <button>확인</button>
-                        <button>기각</button>
-                    </div>
-                </div>
+                ))}
             </div>
 
-            <div>
-                <h3>고객문의 💌</h3>
+            <div className={style.section}>
+                <h3>새 챌린지 요청 💌</h3>
                 <hr />
-                <div>
-                    <div>
-                        <span>ID 19</span>
-                        <span>Goofy</span>
-                        <span>2025 / 08 / 27</span>
+                {!loading && !error && challenges.length === 0 &&
+                    <div className={style.emptyState}>처리할 신규 요청이 없습니다.</div>}
+                {challenges.map(c => (
+                    <div key={c.formNo} className={style.card}>
+                        <div className={style.cardInfo} onClick={() => handleToggleCard(c.formNo)}>
+                            <span>ID {c.formNo}</span>
+                            <span>{c.chTitle}</span>
+                            <span>{new Date(c.createdAt).toLocaleString()}</span>
+                            <span className={style.toggleIcon}>{openCards[c.formNo] ? '▲' : '▼'}</span>
+                        </div>
+                        {openCards[c.formNo] && (
+                            <>
+                                <div className={style.cardContent}>
+                                    <strong>USER {c.userNo}</strong>
+                                    <div>{c.description}</div>
+                                </div>
+                                <div className={style.cardActions}>
+                                    <button onClick={() => handleOpenCh(c)}>상세보기</button>
+                                    <button onClick={() => handleResolve(c.formNo)}>처리완료</button>
+                                </div>
+                            </>
+                        )}
                     </div>
-                    <div>
-                        <span>USER 17</span>
-                        <span>제 식비티아이 마음에 안들어요 바꿔주세요...</span>
-                    </div>
-                    <div>
-                        <button>채팅방 열기</button>
-                        <button>확인</button>
-                        <button>기각</button>
-                    </div>
-                </div>
+                ))}
             </div>
-        </>
+        </div>
     )
 }

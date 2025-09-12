@@ -8,7 +8,11 @@ interface AdminRouteProps {
 }
 
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const { user, loading } = useSelector((state: RootState) => state.auth);
+
+  if (loading) {
+    return <>{children}</>;
+  }
 
   if (!user || !user.roles.includes('ROLE_ADMIN')) {
     return <Navigate to="/home" replace />;
