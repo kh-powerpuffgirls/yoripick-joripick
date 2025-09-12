@@ -21,12 +21,8 @@ export default function SocialEnrollModal({ email, provider, providerUserId, onC
     let byteLength = 0;
     for (let i = 0; i < str.length; i++) {
       const code = str.charCodeAt(i);
-      if (
-        (code >= 0xac00 && code <= 0xd7a3) ||
-        (code >= 0x1100 && code <= 0x1112) ||
-        (code >= 0x1161 && code <= 0x1175) ||
-        (code >= 0x11a8 && code <= 0x11c2)
-      ) byteLength += 2;
+      if ((code >= 0xac00 && code <= 0xd7a3) || (code >= 0x1100 && code <= 0x1112) ||
+          (code >= 0x1161 && code <= 0x1175) || (code >= 0x11a8 && code <= 0x11c2)) byteLength += 2;
       else byteLength += 1;
     }
     return byteLength;
@@ -60,15 +56,15 @@ export default function SocialEnrollModal({ email, provider, providerUserId, onC
     if (!username || usernameStatus !== true) return alert("닉네임 중복확인을 해주세요.");
 
     try {
-      const res = await axios.post("http://localhost:8081/auth/enroll/social", {
-        email,
-        username,
-        provider,
-        providerUserId,
-        accessToken: null
-      });
-      alert("소셜 회원가입 성공!");
-      navigate(`/oauth2/success?accessToken=${res.data.accessToken}`, { replace: true });
+      await axios.post(
+        "http://localhost:8081/auth/enroll/social",
+        { email, username, provider, providerUserId },
+        { withCredentials: true }
+      );
+
+      alert("회원가입 및 로그인 완료!");
+
+      window.location.replace("/home"); 
     } catch {
       alert("회원가입 중 오류 발생");
     }

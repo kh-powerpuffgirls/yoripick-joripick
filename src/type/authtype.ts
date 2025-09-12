@@ -10,7 +10,7 @@ export interface User {
   inactiveDate?: string | null;
   profile?: string;
   provider?: "local" | "kakao";
-  roles?: string[]; 
+  roles: string[]; 
 }
 
 export interface LoginResponse {

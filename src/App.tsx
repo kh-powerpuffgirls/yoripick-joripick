@@ -37,10 +37,10 @@ function App() {
       <ChatModal />
       <Routes>
         <Route path="/login" element={
-          <AlreadyLoginRoute>
+        <AlreadyLoginRoute>
             <Login />
           </AlreadyLoginRoute>
-        } />
+          } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
