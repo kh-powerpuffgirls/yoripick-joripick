@@ -32,12 +32,10 @@ const ChallengeMain = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const totalPages = 10;
 
-  // 알럿 관련 로컬 상태 추가
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertContent, setAlertContent] = useState<React.ReactNode | null>(null);
 
   const navigate = useNavigate();
-  // dispatch를 더 이상 사용하지 않으므로 제거합니다.
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
 
   const handleAlertClose = () => {
@@ -56,10 +54,7 @@ const ChallengeMain = () => {
       setAlertVisible(true);
       return;
     }
-
-    setAlertContent(
-      <ChallengeSuggestionForm onClose={handleAlertClose} />
-    );
+    setAlertContent(<ChallengeSuggestionForm onClose={handleAlertClose} />);
     setAlertVisible(true);
   };
 
@@ -84,9 +79,14 @@ const ChallengeMain = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // ✅ withCredentials 추가
         const [activeResponse, recentResponse] = await Promise.all([
-          axios.get<ActiveChallenge[]>(`${API_BASE_URL}/community/challenge/active`),
-          axios.get<ChallengeItem[]>(`${API_BASE_URL}/community/challenge`),
+          axios.get<ActiveChallenge[]>(`${API_BASE_URL}/community/challenge/active`, {
+            withCredentials: true,
+          }),
+          axios.get<ChallengeItem[]>(`${API_BASE_URL}/community/challenge`, {
+            withCredentials: true,
+          }),
         ]);
 
         const activeChallengeData =
@@ -229,12 +229,9 @@ const ChallengeMain = () => {
           </button>
         </div>
       </div>
-      {/* 로컬 상태에 따라 알럿 컴포넌트를 조건부 렌더링 */}
       {alertVisible && (
         <div className={styles.alertOverlay}>
-          <div className={styles.alertBox}>
-            {alertContent}
-          </div>
+          <div className={styles.alertBox}>{alertContent}</div>
         </div>
       )}
     </>

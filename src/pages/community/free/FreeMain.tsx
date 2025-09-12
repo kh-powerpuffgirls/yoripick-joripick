@@ -14,7 +14,7 @@ interface FreePost {
   replyCount: number;
   serverName?: string;
   username: string;
-  sik_bti: string;
+  sik_bti?: string;
 }
 
 const FreeMain = () => {

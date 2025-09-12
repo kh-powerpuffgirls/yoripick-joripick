@@ -5,50 +5,46 @@ import {
   type FormEvent,
 } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { store } from '../../../store/store';
 import styles from './FreeForm.module.css';
-import {store} from '../../../store/store'
 
-// axios 전역 withCredentials 설정 (쿠키 자동 포함)
-axios.defaults.withCredentials = true;
-
-const getAccessToken = () => {
-    return store.getState().auth.accessToken;
-};
-const api = axios.create({
-    baseURL: `http://localhost:8081/api/inglist`,
-    withCredentials: true
-});
-api.interceptors.request.use(
-    (config) => {
-        const token = getAccessToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
-api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        console.log(error);
-        return Promise.reject(error);
-    }
-)
-
-
-// 요청 인터셉터로 디버깅용 로그 출력
-axios.interceptors.request.use((config) => {
-  console.log('요청 URL:', config.url);
-  console.log('withCredentials:', config.withCredentials);
-  console.log('요청 헤더:', config.headers);
-  return config;
-});
-
+// API 기본 경로 정의
 const API_BASE = 'http://localhost:8081';
+
+// accessToken을 Redux 스토어에서 가져오는 헬퍼 함수
+const getAccessToken = () => {
+  return store.getState().auth.accessToken;
+};
+
+// axios 인스턴스 생성 및 설정
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
+});
+
+// 요청 인터셉터: 모든 요청에 액세스 토큰 추가
+api.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+// 응답 인터셉터: 401 오류 처리 및 토큰 갱신 등 (필요 시 확장 가능)
+api.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    console.log(error);
+    return Promise.reject(error);
+  },
+);
 
 interface FreePost {
   boardNo?: number;
@@ -63,7 +59,7 @@ const FreeForm = () => {
   const { boardNo } = useParams<{ boardNo: string }>();
   const isEdit = Boolean(boardNo);
   const navigate = useNavigate();
-  
+
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
@@ -88,13 +84,7 @@ const FreeForm = () => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-
-        const { data } = await axios.get<FreePost>(
-          `${API_BASE}/community/free/${boardNo}`,
-          {
-            // withCredentials는 전역설정에 이미 포함됨
-          }
-        );
+        const { data } = await api.get<FreePost>(`/community/free/${boardNo}`);
 
         setTitle(data.title);
         setSubheading(data.subheading || '');
@@ -117,8 +107,6 @@ const FreeForm = () => {
     setSelectedImage(file);
     setPreviewImage(file ? URL.createObjectURL(file) : null);
   };
-
-  console.log('accessToken in handleSubmit:', accessToken);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -143,45 +131,42 @@ const FreeForm = () => {
       if (subheading.trim()) formData.append('subheading', subheading);
       if (selectedImage) formData.append('file', selectedImage);
 
-      const url = `${API_BASE}/community/free${isEdit ? `/${boardNo}` : ''}`;
-      const method = isEdit ? axios.put : axios.post;
+      const url = `/community/free${isEdit ? `/${boardNo}` : ''}`;
+      const method = isEdit ? api.put : api.post;
 
-      await method(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          // 이곳에서 accessToken을 Authorization 헤더에 추가합니다.
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-        withCredentials: true,
-      });
+      await method(url, formData);
 
       setMessage(isEdit ? '게시글이 수정되었습니다.' : '게시글이 작성되었습니다.');
       setTimeout(() => navigate('/community/free'), 1500);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setError(isEdit ? '게시글 수정에 실패했습니다.' : '게시글 작성에 실패했습니다.');
+      if (e.response?.status === 401) {
+        setError('로그인이 필요합니다.');
+        navigate('/login');
+      } else {
+        setError(isEdit ? '게시글 수정에 실패했습니다.' : '게시글 작성에 실패했습니다.');
+      }
     }
   };
 
   const handleDelete = async () => {
-    // window.confirm은 사용자 경험을 위해 커스텀 모달 UI로 대체하는 것이 좋습니다.
     const confirmed = window.confirm('정말 삭제하시겠습니까?');
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${API_BASE}/community/free/${boardNo}`, {
-        headers: {
-          // 삭제 요청에도 accessToken을 추가합니다.
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-        withCredentials: true,
+      await api.delete(`/community/free/${boardNo}`, {
+        params: { userNo },
       });
-
       setMessage('게시글이 삭제되었습니다.');
       setTimeout(() => navigate('/community/free'), 1500);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setError('게시글 삭제에 실패했습니다.');
+      if (e.response?.status === 401) {
+        setError('로그인 후 이용해 주세요.');
+        navigate('/login');
+      } else {
+        setError('게시글 삭제에 실패했습니다.');
+      }
     }
   };
 

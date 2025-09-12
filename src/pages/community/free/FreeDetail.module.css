@@ -298,25 +298,22 @@
   text-decoration: underline;
 }
 
-/* 댓글 수정 폼 */
+/* --- 댓글 수정 폼 --- */
 .editForm {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   gap: 0.5rem;
 }
 
-/* 댓글 수정 및 답글 입력창 */
-.commentEditInput,
-.replyInput {
+.commentEditInput {
   width: 100%;
   min-height: 80px;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
   border: 1px solid #d1d5db;
   outline: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.95rem;
   resize: none;
 }
 
@@ -326,17 +323,30 @@
   gap: 0.5rem;
 }
 
-/* 답글 작성 폼 */
+/* --- 대댓글 --- */
+.childComments {
+  margin-top: 0.5rem;
+  margin-left: 40px;
+}
+
 .replyForm {
   display: flex;
-  flex-direction: row;
-  align-items: center;
   gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 1rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
   background-color: #f9fafb;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
+}
+
+.replyInput {
+  flex: 1; /* 입력창이 버튼과 겹치지 않도록 전체 폭 사용 */
+  min-height: 60px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  resize: none;
 }
 
 .replySubmitButton {
@@ -344,7 +354,7 @@
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 15px;
+  border-radius: 8px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -362,7 +372,7 @@
 .commentForm {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch; /* stretch로 전체 폭 사용 */
   gap: 10px;
   margin-top: 1.5rem;
   width: 100%;
@@ -385,6 +395,7 @@
 }
 
 .commentButton {
+  align-self: flex-end; /* 버튼을 오른쪽으로 */
   background-color: #007bff;
   color: white;
   border: none;

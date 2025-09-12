@@ -6,22 +6,11 @@ import { AlertModal } from './components/Security/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
-import Login from './pages/login/Login'
-import AlreadyLoginRoute from './components/Security/AlreadyLoginRoute'
-import OAuth2Success from './pages/login/OAuth2Success'
-import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
-import { useDispatch } from 'react-redux'
-import { useEffect } from 'react'
-import { api } from './api/authApi'
-import { loginSuccess, logout } from './features/authSlice'
-import MyPage from './pages/MyPage/MyPage'
 import CommunityMain from './pages/community/CommunityMain'
-import MyPost from './pages/community/mypost/MyPost'
-import FreeForm from './pages/community/free/FreeForm'
-import FreeDetail from './pages/community/free/FreeDetail'
+import MyPost from './pages/community/mypost/MyPost';
 import FreeMain from './pages/community/free/FreeMain'
-import ChallengeSuggestionForm from './pages/community/challenge/ChallengeSuggestionForm'
-import ChallengeDetail from './pages/community/challenge/ChallengeDetail'
+import FreeDetail from './pages/community/free/FreeDetail'
+import FreeForm from './pages/community/free/FreeForm'
 import ChallengeMain from './pages/community/challenge/ChallengeMain'
 import ChallengeForm from './pages/community/challenge/ChallengeForm'
 import CkClassMain from './pages/community/ckclass/CkClassMain'
@@ -30,6 +19,21 @@ import CkClassForm from './pages/community/ckclass/CkClassForm'
 import MarketMain from './pages/community/market/MarketMain'
 import MarketForm from './pages/community/market/MarketForm'
 import MarketBuyForm from './pages/community/market/MarketBuyForm'
+import Login from './pages/login/Login'
+import AlreadyLoginRoute from './components/Security/AlreadyLoginRoute'
+import OAuth2Success from './pages/login/OAuth2Success'
+import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
+<<<<<<< HEAD
+import ChallengeDetail from './pages/community/challenge/ChallengeDetail'
+import ChallengeSuggestionForm from './pages/community/challenge/ChallengeSuggestionForm'
+
+function App() {
+=======
+import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { api } from './api/authApi'
+import { loginSuccess, logout } from './features/authSlice'
+import MyPage from './pages/MyPage/MyPage'
 
 function App() {
 
@@ -45,6 +49,7 @@ function App() {
       });
   }, []);
 
+>>>>>>> origin/securitylogin
   return (
     <>
       <Header />
@@ -60,13 +65,14 @@ function App() {
         <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
-        <Route path="/myPage" element={<MyPage />} />
+<<<<<<< HEAD
         <Route path="/community" element={<CommunityMain />} />
         <Route path="/community/mypost" element={<MyPost />} />
         <Route path="/community/free/form" element={<FreeForm />} />
         <Route path="/community/free/form/:boardNo" element={<FreeForm />} />
         <Route path="/community/free/:boardNo" element={<FreeDetail />} />
         <Route path="/community/free" element={<FreeMain />} />
+        {/* 새 챌린지 요청 라우트를 상세 페이지 라우트보다 위에 위치시켜야 합니다. */}
         <Route path="/community/challenge/suggestion" element={<ChallengeSuggestionForm />} />
         <Route path="/community/challenge/:challengeNo" element={<ChallengeDetail />} />
         <Route path="/community/challenge" element={<ChallengeMain />} />
@@ -78,10 +84,13 @@ function App() {
         <Route path="/community/market" element={<MarketMain />} />
         <Route path="/community/market/form" element={<MarketForm />} />
         <Route path="/community/market/buyform" element={<MarketBuyForm />} />
+=======
+        <Route path="/myPage" element={<MyPage />} />
+>>>>>>> origin/securitylogin
       </Routes>
       <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

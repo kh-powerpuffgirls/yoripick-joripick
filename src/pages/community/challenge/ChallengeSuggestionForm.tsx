@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
-import style from '../../../components/alertModal.module.css';
+import style from './ChallengeSuggestionForm.module.css'
 
 interface ChallengeSuggestionFormProps {
   onClose?: () => void;
