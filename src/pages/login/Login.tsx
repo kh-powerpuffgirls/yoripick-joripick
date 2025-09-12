@@ -24,7 +24,7 @@ export default function Login() {
 
     const idRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const pwRegex =
-      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]{8,15}$/
+      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]{8,15}$/;
 
     if (!email.trim() || !password.trim()) {
       setError("아이디와 비밀번호를 모두 입력하세요!");
@@ -32,7 +32,7 @@ export default function Login() {
     }
 
     if (!idRegex.test(email)) {
-      setError("아이디는 6~12자의 영문과 숫자를 혼합하여 입력해야 합니다.");
+      setError("이메일을 다시 확인하여 주세요.");
       return;
     }
 
@@ -53,17 +53,27 @@ export default function Login() {
       dispatch(loginSuccess(res.data));
       navigate("/home");
     } catch (err) {
-      const error = err as AxiosError;
-      if (error.response?.status === 401) {
-        setError("비밀번호가 잘못되었습니다.");
-        setLoading(false);
-      } else if (error.response?.status === 404) {
-        setError("등록된 계정이 없습니다. 회원가입 후 이용해주세요.");
-        setLoading(false);
+      const error = err as AxiosError<{ errorCode: string; message: string }>;
+      if (error.response) {
+        const { errorCode, message } = error.response.data;
+
+        switch (errorCode) {
+          case "WRONG_PASSWORD":
+            setError(message || "비밀번호가 일치하지 않습니다.");
+            break;
+          case "WRONG_EMAIL":
+            setError(message || "존재하지 않는 이메일입니다.");
+            break;
+          case "ACCOUNT_LOCKED":
+            setError(message || "계정이 잠겼습니다. 관리자에게 문의하세요.");
+            break;
+          default:
+            setError(message || "로그인 처리 중 오류가 발생했습니다.");
+        }
       } else {
-        setError("로그인 처리 중 오류가 발생했습니다.");
-        setLoading(false);
+        setError("서버와 연결할 수 없습니다.");
       }
+      setLoading(false);
     }
   };
 
@@ -71,6 +81,7 @@ export default function Login() {
     location.href = "http://localhost:8081/oauth2/authorization/kakao";
   };
 
+  // ✅ return은 컴포넌트 마지막에
   return (
     <div className={styles.page}>
       <section className={styles.card}>
@@ -124,17 +135,13 @@ export default function Login() {
           <button type="button" className={styles.linkBtn} onClick={() => setShowEnrollModal(true)}>
             회원가입
           </button>
-          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
           <button type="button" className={styles.linkBtn} onClick={() => setShowResetModal(true)}>
             비밀번호를 잊어버리셨나요？
           </button>
         </div>
       </section>
 
-      {showEnrollModal && (
-        <EnrollModal onClose={() => setShowEnrollModal(false)} />
-      )}
-
+      {showEnrollModal && <EnrollModal onClose={() => setShowEnrollModal(false)} />}
       {showResetModal && (
         <ResetPasswordModal
           onClose={() => setShowResetModal(false)}

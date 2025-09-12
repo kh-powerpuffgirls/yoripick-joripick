@@ -64,15 +64,18 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
       return;
     }
     try {
-      await axios.post("http://localhost:8081/auth/send-code", { email });
+      await axios.post("http://localhost:8081/auth/send-code/enroll", { email });
       setEmailSent(true);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);
-    } catch {
-      alert("인증번호 전송 중 오류가 발생했습니다.");
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response) {
+        alert(err.response.data.message || "인증번호 전송 중 오류가 발생했습니다.");
+      } else {
+        alert("네트워크 오류가 발생했습니다.");
+      }
     }
   };
-
   const handleVerifyCode = async () => {
     try {
       const res = await axios.post("http://localhost:8081/auth/verify-code", { email, code: emailCode });
@@ -82,13 +85,22 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
     }
   };
 
-  const handleCheckUsername = () => {
+  const handleCheckUsername = async () => {
     if (!validateUsername(username)) {
       alert("사용자 이름 형식이 올바르지 않습니다.");
       usernameRef.current?.focus();
       return;
     }
-    setUsernameStatus(username.toLowerCase() === "test" ? false : true);
+
+    try {
+      const res = await axios.get("http://localhost:8081/auth/check-username", {
+        params: { username },
+      });
+
+      setUsernameStatus(res.data.available);
+    } catch {
+      alert("닉네임 중복 확인 중 오류가 발생했습니다.");
+    }
   };
 
   const checkPasswordMatch = (pw: string, pwCheck: string) => {
