@@ -25,7 +25,6 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordCheckRef = useRef<HTMLInputElement>(null);
 
-  // 이메일 검증
   const validateEmail = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // 바이트 계산 (초성/중성/종성 모두 2바이트)
@@ -65,7 +64,7 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
       return;
     }
     try {
-      await axios.post("http://http://localhost:8081/auth/send-code", { email });
+      await axios.post("http://localhost:8081/auth/send-code", { email });
       setEmailSent(true);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);

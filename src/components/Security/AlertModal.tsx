@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+import type { RootState } from "../../store/store";
 import style from "./alertModal.module.css"
 
 export const AlertModal = () => {

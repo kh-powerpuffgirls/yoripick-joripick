@@ -71,10 +71,6 @@ export default function Login() {
     location.href = "http://localhost:8081/oauth2/authorization/kakao";
   };
 
-  const handleNaverLogin = () => {
-    location.href = "http://localhost:8081/oauth2/authorization/naver";
-  };
-
   return (
     <div className={styles.page}>
       <section className={styles.card}>
@@ -121,9 +117,6 @@ export default function Login() {
         <div className={styles.socialGroup}>
           <button className={`${styles.socialBtn} ${styles.kakao}`} onClick={handleKakaoLogin}>
             카카오로 로그인
-          </button>
-          <button className={`${styles.socialBtn} ${styles.naver}`} onClick={handleNaverLogin}>
-            네이버로 로그인
           </button>
         </div>
 
