@@ -1,29 +1,36 @@
 import { useEffect, useState } from 'react';
 import style from './main.module.css'
-import { fetchChallenges, fetchRecipes, fetchReports, resolveChallenge, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
+import { fetchChallenges, fetchCommReports, fetchRecipes, fetchUserReports, resolveChallenge, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
 import Pagination from '../../components/Pagination';
 
 export const AdminDashboard = () => {
-    const [challenges, setChallenges] = useState<ChallengeForm[]>([]);
-    const [reports, setReports] = useState<Reports[]>([]);
+    const [userReports, setUserReports] = useState<Reports[]>([]);
+    const [userPageInfo, setUserPageInfo] = useState<PageInfo | null>(null);
+    const [commReports, setCommReports] = useState<Reports[]>([]);
+    const [commPageInfo, setCommPageInfo] = useState<PageInfo | null>(null);
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [rcpPageInfo, setRcpPageInfo] = useState<PageInfo | null>(null);
+    const [challenges, setChallenges] = useState<ChallengeForm[]>([]);
+    const [chPageInfo, setChPageInfo] = useState<PageInfo | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [openCards, setOpenCards] = useState<{ [key: number | string]: boolean }>({});
 
-    const [userReports, setUserReports] = useState<Reports[]>([]);
-    const [commReports, setCommReports] = useState<Reports[]>([]);
-
-    const [openCards, setOpenCards] = useState<{ [key: number|string]: boolean }>({});
-    const handleToggleCard = (id: number|string) => {
+    const handleToggleCard = (id: number | string) => {
         setOpenCards(prev => ({
             ...prev,
             [id]: !prev[id]
         }));
     };
-
-    const fetchData = async (page: number) => {
-        setReports(await fetchReports());
+    const fetchUserData = async (page: number) => {
+        const data = await fetchUserReports(page, 5);
+        setUserReports(data.list);
+        setUserPageInfo(data.pageInfo);
+    };
+    const fetchCommData = async (page: number) => {
+        const data = await fetchCommReports(page, 5);
+        setCommReports(data.list);
+        setCommPageInfo(data.pageInfo);
     };
     const fetchRcpData = async (page: number) => {
         const data = await fetchRecipes(page, 5);
@@ -31,12 +38,15 @@ export const AdminDashboard = () => {
         setRcpPageInfo(data.pageInfo);
     }
     const fetchChData = async (page: number) => {
-        setChallenges(await fetchChallenges());
+        const data = await fetchChallenges(page, 5);
+        setChallenges(data.list);
+        setChPageInfo(data.pageInfo);
     }
     useEffect(() => {
         setLoading(true);
         try {
-            fetchData(1);
+            fetchUserData(1);
+            fetchCommData(1);
             fetchRcpData(1);
             fetchChData(1);
         } catch {
@@ -46,11 +56,6 @@ export const AdminDashboard = () => {
             setOpenCards({});
         }
     }, []);
-
-    useEffect(() => {
-        setUserReports(reports.filter(report => report.category === 'USERS'));
-        setCommReports(reports.filter(report => report.category !== 'USERS'));
-    }, [reports]);
 
     const handleUserBan = (userNo: number) => {
 
@@ -113,6 +118,12 @@ export const AdminDashboard = () => {
                         )}
                     </div>
                 ))}
+                {userPageInfo && userPageInfo.listCount > 5 && (
+                    <Pagination
+                        pageInfo={userPageInfo}
+                        onPageChange={(page) => fetchUserData(page)}
+                    />
+                )}
             </div>
 
             <div className={style.section}>
@@ -144,7 +155,7 @@ export const AdminDashboard = () => {
                         )}
                     </div>
                 ))}
-                {rcpPageInfo && (
+                {rcpPageInfo && rcpPageInfo.listCount > 5 && (
                     <Pagination
                         pageInfo={rcpPageInfo}
                         onPageChange={(page) => fetchRcpData(page)}
@@ -179,6 +190,12 @@ export const AdminDashboard = () => {
                         )}
                     </div>
                 ))}
+                {commPageInfo && commPageInfo.listCount > 5 && (
+                    <Pagination
+                        pageInfo={commPageInfo}
+                        onPageChange={(page) => fetchCommData(page)}
+                    />
+                )}
             </div>
 
             <div className={style.section}>
@@ -202,12 +219,18 @@ export const AdminDashboard = () => {
                                 </div>
                                 <div className={style.cardActions}>
                                     <button onClick={() => handleOpenCh(c)}>상세보기</button>
-                                    <button onClick={() => handleResolve(c.formNo)}>처리완료</button>
+                                    <button onClick={() => handleResolveCh(c.formNo)}>처리완료</button>
                                 </div>
                             </>
                         )}
                     </div>
                 ))}
+                {chPageInfo && chPageInfo.listCount > 5 && (
+                    <Pagination
+                        pageInfo={chPageInfo}
+                        onPageChange={(page) => fetchChData(page)}
+                    />
+                )}
             </div>
         </div>
     )

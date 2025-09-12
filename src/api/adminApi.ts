@@ -21,23 +21,50 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 )
 
-export type ChallengeForm = {
-    formNo: number;
-    userNo: number;
-    chTitle: string;
-    description: string;
-    reference: string;
-    createdAt: string;
-}
-
-export const fetchChallenges = async () => {
-    const response = await api.get<ChallengeForm[]>('/challenges');
+export const fetchChallenges = async (page: number, size: number) => {
+    const response = await api.get('/challenges',{params: {page, size}});
     return response.data;
 };
 
 export const resolveChallenge = async (formNo: number) => {
     await api.patch(`/challenges/resolve/${formNo}`);
 };
+
+export const fetchRecipes = async (page: number, size: number) => {
+    const response = await api.get('/recipes',{params: {page, size}});
+    return response.data;
+}
+
+export const fetchUserReports = async (page: number, size: number) => {
+    const response = await api.get('/reports/user',{params: {page, size}});
+    return response.data;
+}
+
+export const fetchCommReports = async (page: number, size: number) => {
+    const response = await api.get('/reports/comm',{params: {page, size}});
+    return response.data;
+}
+
+
+export type PageInfo = {
+    listCount: number;
+    currentPage: number;
+    pageLimit: number;
+    itemLimit: number;
+    maxPage: number;
+    startPage: number;
+    endPage: number;
+};
+
+export type Reports = {
+    reportNo: number;
+    userNo: number;
+    category: string;
+    detail: string;
+    refNo: number;
+    content: string;
+    reportedAt: string;
+}
 
 export type Recipe = {
     rcpNo: number;
@@ -51,32 +78,11 @@ export type Recipe = {
     reportedAt: string;
 }
 
-export type PageInfo = {
-    listCount: number;
-    currentPage: number;
-    pageLimit: number;
-    itemLimit: number;
-    maxPage: number;
-    startPage: number;
-    endPage: number;
-};
-
-export const fetchRecipes = async (page: number, size: number) => {
-    const response = await api.get('/recipes',{params: {page, size}});
-    return response.data;
-}
-
-export type Reports = {
-    reportNo: number;
+export type ChallengeForm = {
+    formNo: number;
     userNo: number;
-    category: string;
-    detail: string;
-    refNo: number;
-    content: string;
-    reportedAt: string;
-}
-
-export const fetchReports = async () => {
-    const response = await api.get<Reports[]>('/reports');
-    return response.data;
+    chTitle: string;
+    description: string;
+    reference: string;
+    createdAt: string;
 }
