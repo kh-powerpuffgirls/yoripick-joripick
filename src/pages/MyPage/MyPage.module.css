@@ -1,0 +1,271 @@
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: "Noto Sans KR", "Arial", sans-serif;
+  color: #222;
+
+
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 18px;
+  margin-bottom: 22px;
+}
+
+.leftProfile {
+  width: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileImg {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e6e6e6;
+  background: #fff;
+}
+
+
+.profileInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.username {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111;
+}
+
+.email {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.buttonsBox {
+  margin-top: 50px;
+  display: flex;
+  gap: 10px;
+}
+
+.buttonsBox button {
+  background: #6f6f6f;
+  color: #fff;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: none;
+  line-height: 1.4;
+  height: auto;
+}
+
+.buttonsBox button:hover {
+  opacity: 0.92;
+}
+
+.recipeSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0;
+}
+
+.summaryCard {
+  text-align: center;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 2px solid #d3d3d3;
+  background: #fff;
+  height: 90px;
+  width: 150px;
+}
+
+.summaryCard p {
+  margin: 0;
+  color: #666;
+}
+
+.summaryCard span {
+  display: block;
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.navButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.mealBtn,
+.fridgeBtn {
+  width: 90px;
+  margin: 10px;
+  height: 90px;
+  padding: 10px 16px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.mealBtn {
+  background: #c9f06a;
+  color: #26311a;
+}
+
+.fridgeBtn {
+  background: #a7d8ff;
+  color: #08324a;
+}
+
+.allergySection {
+  margin: 18px 0;
+  padding: 14px;
+  border-radius: 10px;
+}
+
+.allergySection h3 {
+  margin: 0 0 8px 0;
+}
+
+.allergyTags {
+  margin: 8px 0;
+}
+
+.allergyTag {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 8px;
+  margin-bottom: 6px;
+  border-radius: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.allergyTag:nth-child(1) {
+  background: #e74c3c;
+}
+
+.allergyTag:nth-child(2) {
+  background: #f39c12;
+}
+
+.allergyTag:nth-child(3) {
+  background: #27ae60;
+}
+
+.allergyTag:nth-child(4) {
+  background: #16a085;
+}
+
+.editAllergyBtn {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #efefef;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.recipeList {
+  margin: 24px 0;
+}
+
+.recipeList h3 {
+  margin-bottom: 12px;
+}
+
+.recipeList ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recipeItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.recipeItem img {
+  width: 88px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 16px;
+}
+
+.recipeTitle {
+  flex: 1;
+  font-weight: 600;
+}
+
+.recipeLikes {
+  width: 80px;
+  text-align: right;
+  color: #333;
+  font-weight: 700;
+}
+
+.emptyRow {
+  padding: 14px;
+  color: #777;
+  text-align: center;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.inactiveBtn {
+  background: #ff4d4f;
+  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.inactiveBtn:hover {
+  background: #e04445;
+  transform: translateY(-1px);
+}
+
+.socialLogo {
+  width: 50px;
+  height: 20px;
+  object-fit: contain;
+}

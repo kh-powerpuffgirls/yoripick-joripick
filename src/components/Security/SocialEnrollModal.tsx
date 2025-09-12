@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import styles from "../pages/enroll/EnrollModal.module.css";
+import styles from "../../pages/enroll/EnrollModal.module.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 

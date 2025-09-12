@@ -2,8 +2,15 @@ export interface User {
   userNo: number;
   email: string;
   username: string;
-  profile: string;
-  roles: string[];
+  msgNoti: 'Y' | 'N';
+  replyNoti: 'Y' | 'N';
+  rvwNoti: 'Y' | 'N';
+  expNoti: 'Y' | 'N';
+  status: 'ACTIVE' | 'INACTIVE';
+  inactiveDate?: string | null;
+  profile?: string;
+  provider?: "local" | "kakao";
+  roles?: string[]; 
 }
 
 export interface LoginResponse {

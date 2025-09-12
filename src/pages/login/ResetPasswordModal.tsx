@@ -46,7 +46,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ onClose, onConf
 
         setIsSending(true);
         try {
-            await axios.post("http://localhost:8081/auth/send-code", { email });
+            await axios.post("http://localhost:8081/auth/send-code/reset", { email });
 
             alert("인증메일이 발송되었습니다.");
             setTimer(5 * 60);
@@ -55,7 +55,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ onClose, onConf
             setNewPassword("");
             setConfirmPassword("");
         } catch {
-            alert("인증메일 전송 중 오류가 발생했습니다.");
+            alert("사용자로 등록된 이메일이 아닙니다. 이메일을 다시 확인해주세요.");
         }
         setIsSending(false);
     };
