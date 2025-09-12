@@ -38,6 +38,12 @@
     text-align: center;
     color: #111;
     transition: width 0.4s ease-in-out;
+
+    /* 추가 코드============================================================================== */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* 원그래프 */
@@ -63,3 +69,23 @@
     transition: background 0.4s ease-in-out;
 }
 
+
+
+/* 원형 그래프 초과 텍스트 스타일 */
+.kcal_exceeded_text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* 막대 그래프 초과 텍스트 스타일 */
+.bar_exceeded_text {
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}

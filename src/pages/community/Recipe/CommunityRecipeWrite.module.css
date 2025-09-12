@@ -128,15 +128,18 @@ option {
 #ing{
     border-collapse: collapse;
     width: 100%;
+    table-layout: fixed;
 }
 
 #ing th{
     border-bottom: 1px solid #ccc;
     padding : 8px 20px;
+    width: 50%;
 }
 
 #ing td{
     padding: 10px;
+    width: 50%;
 }
 
 .ing_title{
@@ -148,10 +151,19 @@ option {
 .ing{
     background-color: #E8E8E8;
     padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
+    /* display: flex; */
+    /* justify-content: space-between; */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-content: center;
     align-items: center;
     border-radius: 10px;
+}
+.ing_name{
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .add_ing{
     background-color: #E8E8E8;
@@ -259,3 +271,6 @@ option {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     padding: 10px 30px;
 }
+
+
+

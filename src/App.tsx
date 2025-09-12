@@ -18,6 +18,7 @@ import { useEffect } from 'react'
 import { api } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
 import CommunityRecipeDetail from './pages/community/Recipe/CommunityRecipeDetail'
+import RecipeWrite from './pages/community/Recipe/RecipeWrite'
 
 
 function App() {
@@ -51,9 +52,11 @@ function App() {
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
          {/* community/recipe */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
-        <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} />
+        {/* <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} /> */}
         <Route path="/community/recipe/test" element={<CommunityRecipeDetail_Detail />} />
         <Route path="/community/recipe/detail" element={<CommunityRecipeDetail />} />
+        <Route path="/community/recipe/write" element={<RecipeWrite />} />
+
 
 
       </Routes>
