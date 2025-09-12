@@ -143,7 +143,8 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
         {usernameStatus === true && <p className={styles.successTextSmall}>사용 가능한 닉네임입니다</p>}
         {usernameStatus === false && <p className={styles.errorTextSmall}>중복된 닉네임입니다</p>}
 
-        {/* 이메일 */}
+        {user.provider === "local" && (
+          <>
         <label>이메일</label>
         {isEditingEmail ? (
           <div className={styles.inputRow}>
@@ -191,6 +192,8 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
         />
         {passwordMatch === true && <p className={styles.successTextSmall}>비밀번호가 일치합니다.</p>}
         {passwordMatch === false && <p className={styles.errorTextSmall}>비밀번호가 다릅니다.</p>}
+        </>
+      )}
 
         <div className={styles.actions}>
           <button className={styles.saveBtn} onClick={handleSave}>저장</button>

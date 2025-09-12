@@ -9,7 +9,7 @@ export interface User {
   status: 'ACTIVE' | 'INACTIVE';
   inactiveDate?: string | null;
   profile?: string;
-  provider?: string;
+  provider?: "local" | "kakao";
   roles?: string[]; 
 }
 
