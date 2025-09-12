@@ -13,6 +13,7 @@
 .section {
     margin-bottom: 40px;
     min-height: 440px;
+    min-width: 458px;
 }
 
 .section h3 {

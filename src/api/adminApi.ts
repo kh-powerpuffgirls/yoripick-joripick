@@ -35,6 +35,10 @@ export const fetchRecipes = async (page: number, size: number) => {
     return response.data;
 }
 
+export const resolveRecipes = async (recipe: Recipe) => {
+    await api.patch(`/recipes/resolve/${recipe.type.toLowerCase()}/${recipe.rcpNo}`);
+};
+
 export const fetchUserReports = async (page: number, size: number) => {
     const response = await api.get('/reports/user',{params: {page, size}});
     return response.data;
@@ -44,6 +48,11 @@ export const fetchCommReports = async (page: number, size: number) => {
     const response = await api.get('/reports/comm',{params: {page, size}});
     return response.data;
 }
+
+export const resolveReport = async (report: Reports) => {
+    // 백엔드에서 cooking_class일 경우에는 추가적으로 채팅방 퇴장
+    await api.patch(`/reports/resolve`,{report});
+};
 
 
 export type PageInfo = {

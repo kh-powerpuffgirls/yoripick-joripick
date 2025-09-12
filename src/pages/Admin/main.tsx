@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import style from './main.module.css'
-import { fetchChallenges, fetchCommReports, fetchRecipes, fetchUserReports, resolveChallenge, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
+import { fetchChallenges, fetchCommReports, fetchRecipes, fetchUserReports, resolveChallenge, resolveRecipes, resolveReport, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
 import Pagination from '../../components/Pagination';
 
 export const AdminDashboard = () => {
@@ -15,6 +15,7 @@ export const AdminDashboard = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [openCards, setOpenCards] = useState<{ [key: number | string]: boolean }>({});
+    console.log(window.location.origin);
 
     const handleToggleCard = (id: number | string) => {
         setOpenCards(prev => ({
@@ -59,16 +60,30 @@ export const AdminDashboard = () => {
 
     const handleUserBan = (userNo: number) => {
 
-    }
+    };
 
     const handleOpenReport = (c: Reports) => {
-
-    }
-
+        if (c.category === "COOKING_CLASS") {
+            // 쿠킹클래스 입장
+            return;
+        }
+        let ref = window.location.origin + "/";
+        if (c.category === 'BOARD') ref += "";
+        if (c.category === 'MARKETPLACE') ref += "";
+        if (c.category === 'REPLY') {
+            // 백엔드에서 parentNo 조회해오기
+            ref += "";
+        }
+        if (c.category === 'REVIEW') {
+            // 백엔드에서 parentNo 조회해오기
+            ref += "";
+        }
+        window.open(ref, '_blank', 'noopener,noreferrer');
+    };
     const handleOpenRcp = (c: Recipe) => {
-
-    }
-
+        const ref = window.location.origin + "/" + c.rcpNo;
+        window.open(ref, '_blank', 'noopener,noreferrer');
+    };
     const handleOpenCh = (c: ChallengeForm) => {
         const ref = c.reference.trim();
         if (ref && (ref.startsWith('http://') || ref.startsWith('https://'))) {
@@ -77,8 +92,32 @@ export const AdminDashboard = () => {
             alert('유효한 페이지가 아닙니다.');
         }
     };
-
-    const handleResolve = async (formNo: number) => {
+    const handleResolve = async (report: Reports) => {
+        if (!confirm('해당 신고 내역을 완료 처리하시겠습니까?')) return;
+        try {
+            await resolveReport(report);
+            if (report.category === 'USERS') {
+                setUserReports(prev => prev.filter(c => c.reportNo !== report.reportNo));
+                fetchUserData(1);
+            } else if (report.category !== 'USERS') {
+                setCommReports(prev => prev.filter(c => c.reportNo !== report.reportNo));
+                fetchCommData(1);
+            }
+        } catch {
+            alert('처리 중 오류가 발생했습니다.');
+        }
+    };
+    const handleResolveRcp = async (recipe: Recipe) => {
+        if (!confirm('이 레시피 관리내역을 완료 처리하시겠습니까?')) return;
+        try {
+            await resolveRecipes(recipe);
+            setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo && c.type === recipe.type));
+            fetchRcpData(1);
+        } catch {
+            alert('처리 중 오류가 발생했습니다.');
+        }
+    };
+    const handleResolveCh = async (formNo: number) => {
         if (!confirm('이 챌린지 요청을 완료 처리하시겠습니까?')) return;
         try {
             await resolveChallenge(formNo);
@@ -88,7 +127,6 @@ export const AdminDashboard = () => {
             alert('처리 중 오류가 발생했습니다.');
         }
     };
-
     return (
         <div className={style.container}>
             <div className={style.section}>
@@ -112,7 +150,7 @@ export const AdminDashboard = () => {
                                 </div>
                                 <div className={style.cardActions}>
                                     <button onClick={() => handleUserBan(c.refNo)}>상세보기</button>
-                                    <button onClick={() => handleResolve(c.reportNo)}>처리완료</button>
+                                    <button onClick={() => handleResolve(c)}>처리완료</button>
                                 </div>
                             </>
                         )}
@@ -149,7 +187,7 @@ export const AdminDashboard = () => {
                                 </div>
                                 <div className={style.cardActions}>
                                     <button onClick={() => handleOpenRcp(c)}>상세보기</button>
-                                    <button onClick={() => handleResolve(c.rcpNo)}>처리완료</button>
+                                    <button onClick={() => handleResolveRcp(c)}>처리완료</button>
                                 </div>
                             </>
                         )}
@@ -184,7 +222,7 @@ export const AdminDashboard = () => {
                                 </div>
                                 <div className={style.cardActions}>
                                     <button onClick={() => handleOpenReport(c)}>상세보기</button>
-                                    <button onClick={() => handleResolve(c.reportNo)}>처리완료</button>
+                                    <button onClick={() => handleResolve(c)}>처리완료</button>
                                 </div>
                             </>
                         )}
