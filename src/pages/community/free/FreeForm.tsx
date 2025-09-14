@@ -11,41 +11,38 @@ import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
 import styles from './FreeForm.module.css';
 
-// API 기본 경로 정의
+// API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
 
-// accessToken을 Redux 스토어에서 가져오는 헬퍼 함수
-const getAccessToken = () => {
-  return store.getState().auth.accessToken;
-};
+// Redux 스토어에서 accessToken을 가져오기
+const getAccessToken = () => store.getState().auth.accessToken;
 
-// axios 인스턴스 생성 및 설정
+// API 호출을 위한 axios 인스턴스 생성
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
 });
 
-// 요청 인터셉터: 모든 요청에 액세스 토큰 추가
+// 모든 요청에 토큰 추가
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error),
 );
 
-// 응답 인터셉터: 401 오류 처리 및 토큰 갱신 등 (필요 시 확장 가능)
+// 오류 처리
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
-    console.log(error);
-    return Promise.reject(error);
-  },
+  async (error: AxiosError) => Promise.reject(error),
 );
 
+// 이미지 URL 생성
+const getImageUrl = (serverName: string) => `${API_BASE}/images/${serverName}`;
+
+// 게시글 데이터 타입 정의
 interface FreePost {
   boardNo?: number;
   title: string;
@@ -55,14 +52,19 @@ interface FreePost {
   serverName?: string | null;
 }
 
+// 게시글 작성 및 수정 폼 컴포넌트
 const FreeForm = () => {
+  // URL 파라미터에서 게시글 번호 가져오기
   const { boardNo } = useParams<{ boardNo: string }>();
+  // 수정 모드 여부 판단
   const isEdit = Boolean(boardNo);
+  // 페이지 이동 함수
   const navigate = useNavigate();
 
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  // 로그인된 사용자 번호 가져오기
   const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
+  // 상태 관리
   const [title, setTitle] = useState('');
   const [subheading, setSubheading] = useState('');
   const [content, setContent] = useState('');
@@ -72,12 +74,12 @@ const FreeForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
+  // 로그인 여부 체크
   useEffect(() => {
-    if (!userNo) {
-      setError('게시글을 작성하려면 로그인이 필요합니다.');
-    }
-  }, [userNo, navigate]);
+    if (!userNo) setError('게시글 작성/수정을 위해 로그인 필요');
+  }, [userNo]);
 
+  // 수정 모드일 때 기존 게시글 데이터 불러오기
   useEffect(() => {
     if (!isEdit) return;
 
@@ -85,43 +87,35 @@ const FreeForm = () => {
       try {
         setLoading(true);
         const { data } = await api.get<FreePost>(`/community/free/${boardNo}`);
-
         setTitle(data.title);
         setSubheading(data.subheading || '');
         setContent(data.content);
-        if (data.serverName) {
-          setPreviewImage(`${API_BASE}/images/${data.serverName}`);
-        }
+        if (data.serverName) setPreviewImage(getImageUrl(data.serverName));
       } catch {
-        setError('게시글을 불러오는 데 실패했거나 권한이 없습니다.');
+        setError('게시글 불러오기 실패 또는 권한 없음');
       } finally {
         setLoading(false);
       }
     };
-
     fetchPost();
   }, [boardNo, isEdit]);
 
+  // 이미지 선택 시 미리보기
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setSelectedImage(file);
     setPreviewImage(file ? URL.createObjectURL(file) : null);
   };
 
+  // 폼 제출 (게시글 작성/수정) 처리
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMessage(null);
     setError(null);
 
-    if (!userNo) {
-      setError('게시글을 작성하려면 로그인이 필요합니다.');
-      return;
-    }
-
-    if (!title.trim() || !content.trim()) {
-      setMessage('제목과 내용을 반드시 입력하세요.');
-      return;
-    }
+    if (!userNo) return setError('로그인이 필요합니다.');
+    if (!title.trim() || !content.trim())
+      return setMessage('제목과 내용을 반드시 입력하세요.');
 
     try {
       const formData = new FormData();
@@ -135,37 +129,32 @@ const FreeForm = () => {
       const method = isEdit ? api.put : api.post;
 
       await method(url, formData);
-
-      setMessage(isEdit ? '게시글이 수정되었습니다.' : '게시글이 작성되었습니다.');
+      setMessage(isEdit ? '게시글 수정 완료' : '게시글 작성 완료');
       setTimeout(() => navigate('/community/free'), 1500);
     } catch (e: any) {
-      console.error(e);
       if (e.response?.status === 401) {
         setError('로그인이 필요합니다.');
         navigate('/login');
       } else {
-        setError(isEdit ? '게시글 수정에 실패했습니다.' : '게시글 작성에 실패했습니다.');
+        setError(isEdit ? '게시글 수정 실패' : '게시글 작성 실패');
       }
     }
   };
 
+  // 게시글 삭제 처리
   const handleDelete = async () => {
-    const confirmed = window.confirm('정말 삭제하시겠습니까?');
-    if (!confirmed) return;
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
     try {
-      await api.delete(`/community/free/${boardNo}`, {
-        params: { userNo },
-      });
-      setMessage('게시글이 삭제되었습니다.');
+      await api.delete(`/community/free/${boardNo}`, { params: { userNo } });
+      setMessage('게시글 삭제 완료');
       setTimeout(() => navigate('/community/free'), 1500);
     } catch (e: any) {
-      console.error(e);
       if (e.response?.status === 401) {
         setError('로그인 후 이용해 주세요.');
         navigate('/login');
       } else {
-        setError('게시글 삭제에 실패했습니다.');
+        setError('게시글 삭제 실패');
       }
     }
   };

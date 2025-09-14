@@ -17,43 +17,47 @@ interface FreePost {
   sik_bti?: string;
 }
 
+// 자유 게시판 메인 페이지
 const FreeMain = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<FreePost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [posts, setPosts] = useState<FreePost[]>([]); // 게시글 목록
+  const [loading, setLoading] = useState(true); // 로딩
+  const [error, setError] = useState<string | null>(null); // 에러
 
-  // 게시글 목록 가져오기
+  // 서버에서 게시글 목록을 가져오는 함수
   const fetchPosts = async () => {
     setLoading(true);
     try {
       const response = await axios.get<FreePost[]>('http://localhost:8081/community/free');
       setPosts(response.data);
     } catch (err) {
-      console.error('게시글 목록을 불러오는 데 실패했습니다:', err);
+      console.error('게시글 목록 불러오기 실패:', err);
       setError('게시글 목록을 불러오는 데 실패했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
+  // 게시글 목록
   useEffect(() => {
     fetchPosts();
   }, []);
 
+  // 로딩 및 에러 처리
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles['community-main-container']}>
       <div className={styles['main-content']}>
-        {/* 게시글 리스트 섹션 */}
+        {/* 게시글 리스트 */}
         <div className={styles['post-list-section']}>
           {posts.length > 0 ? (
             posts.map((post) => (
               <div
                 key={post.boardNo}
                 className={styles['post-card']}
+                // 게시글 클릭 시 상세 페이지 ㄱㄱ
                 onClick={() => navigate(`/community/free/${post.boardNo}`)}
               >
                 <div className={styles['post-left']}>
@@ -73,7 +77,7 @@ const FreeMain = () => {
                   </div>
                 </div>
 
-                {/* 게시글 이미지 */}
+                {/* 게시글 이미지와 댓글 수 표시 */}
                 <div className={styles['post-image-container']}>
                   <img
                     src={

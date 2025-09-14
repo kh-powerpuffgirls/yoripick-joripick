@@ -35,15 +35,13 @@
   margin-bottom: 20px;
 }
 
-/* 인기 챌린지 그리드 설정: 한 줄에 3개씩 */
-.popular-cardGrid {
+.popularCardGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(250px, 1fr));
   gap: 20px;
 }
 
-/* 최신 챌린지 그리드 설정: 한 줄에 4개씩 */
-.recent-cardGrid {
+.recentCardGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(200px, 1fr));
   gap: 15px;
@@ -55,6 +53,12 @@
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.challengeCard:hover {
+  transform: translateY(-3px);
 }
 
 .rankBadge {
@@ -164,4 +168,25 @@
 .pageBtn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.alertOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.alertBox {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
 }

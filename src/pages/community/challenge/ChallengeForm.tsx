@@ -1,241 +1,195 @@
-import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import styles from './ChallengeForm.module.css';
-import CommunityHeader from '../CommunityHeader';
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
+import styles from "./ChallengeForm.module.css";
 
-interface ChallengePost {
-  title?: string;
-  postImageUrl?: string;
-  videoUrl?: string;
-  chInfoNo?: number;
-  userNo?: number;
+// API 기본 URL 정의
+const API_BASE = "http://localhost:8081";
+
+// 이미지 URL 생성 헬퍼 함수
+const getImageUrl = (serverName: string) =>
+  `${API_BASE}/images/${serverName}`;
+
+// 챌린지 정보 데이터 타입 정의
+interface ChallengeInfo {
+  chInfoNo: number;
+  title: string;
+  startDate?: string;
+  endDate?: string;
+  imageNo?: number;
 }
 
-interface ChallengeDto {
-  videoUrl: string;
+// 챌린지 참여 게시글 데이터 타입 정의
+interface Challenge {
+  challengeNo: number;
   chInfoNo: number;
   userNo: number;
+  videoUrl?: string;
+  serverName?: string;
 }
 
+// 챌린지 참여 폼 컴포넌트
 const ChallengeForm = () => {
+  // URL 파라미터에서 챌린지 번호를 가져옴
   const { challengeNo } = useParams<{ challengeNo: string }>();
+  // 챌린지 번호가 있으면 수정 모드, 없으면 작성 모드
+  const isEdit = Boolean(challengeNo);
+  // 페이지 이동 훅 사용
   const navigate = useNavigate();
-  const isEdit = !!challengeNo;
 
+  // Redux 스토어에서 사용자 번호 가져오기
+  const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
+
+  // 컴포넌트 상태 관리
+  const [title, setTitle] = useState("");
   const [chInfoNo, setChInfoNo] = useState<number | null>(null);
-  const [title, setTitle] = useState<string>('');
-  const [existingImageUrl, setExistingImageUrl] = useState<string>('');
-  const [videoUrl, setVideoUrl] = useState<string>('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewImageUrl, setPreviewImageUrl] = useState<string>('');
-  const [loginUserNo, setLoginUserNo] = useState<number | null>(null);
-  const [postUserNo, setPostUserNo] = useState<number | null>(null);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(isEdit); // 수정 모드일 때 초기 로딩 필요
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  // 로그인한 유저 정보 가져오기
+  // 로그인 상태 확인
   useEffect(() => {
-    const fetchLoginUser = async () => {
+    if (!userNo) setError("로그인이 필요합니다.");
+  }, [userNo]);
+
+  // 수정 모드일 때 기존 데이터 불러오거나, 작성 모드일 때 현재 진행 중인 챌린지 정보 불러오기
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get<{ userNo: number }>(
-          'http://localhost:8081/auth/loginUser',
-          { withCredentials: true }
-        );
-        setLoginUserNo(res.data.userNo);
-      } catch (err) {
-        console.error('로그인 유저 정보 가져오기 실패', err);
-        setLoginUserNo(null);
+        setLoading(true);
+        if (isEdit) {
+          // 수정 모드: 챌린지 참여 게시글과 챌린지 정보 모두 가져옴
+          const { data: challengeData } = await axios.get<Challenge>(
+            `${API_BASE}/community/challenge/${challengeNo}`,
+            { withCredentials: true }
+          );
+          const { data: infoData } = await axios.get<ChallengeInfo>(
+            `${API_BASE}/community/challenge/active/${challengeData.chInfoNo}`
+          );
+          // 가져온 데이터로 상태 업데이트
+          setTitle(infoData.title);
+          setChInfoNo(infoData.chInfoNo);
+          if (challengeData.videoUrl) setVideoUrl(challengeData.videoUrl);
+          if (challengeData.serverName)
+            setPreviewImage(getImageUrl(challengeData.serverName));
+        } else {
+          // 작성 모드: 현재 진행 중인 챌린지 정보 목록을 가져와서 첫 번째 챌린지를 선택
+          const { data: infoList } = await axios.get<ChallengeInfo[]>(
+            `${API_BASE}/community/challenge/active`
+          );
+          if (infoList.length > 0) {
+            setTitle(infoList[0].title);
+            setChInfoNo(infoList[0].chInfoNo);
+          }
+        }
+      } catch (e) {
+        setError("데이터 불러오기 실패");
+      } finally {
+        setLoading(false);
       }
     };
-    fetchLoginUser();
-  }, []);
 
-  // 게시글 데이터 가져오기 (수정 모드)
-  useEffect(() => {
-    if (isEdit && challengeNo) {
-      const fetchPostData = async () => {
-        try {
-          const response = await axios.get<ChallengePost>(
-            `http://localhost:8081/community/challenge/${challengeNo}`,
-            { withCredentials: true }
-          );
-          const post = response.data;
-          setTitle(post.title || '');
-          setVideoUrl(post.videoUrl || '');
-          setChInfoNo(post.chInfoNo || null);
-          setPostUserNo(post.userNo || null);
-          if (post.postImageUrl) {
-            setExistingImageUrl(post.postImageUrl);
-            setPreviewImageUrl(`http://localhost:8081/images/${post.postImageUrl}`);
-          }
-        } catch (error) {
-          console.error('게시글 데이터를 불러오는 데 실패했습니다.', error);
-          alert('게시글을 불러오는 데 실패했습니다. 다시 시도해 주세요.');
-          navigate('/community/challenge');
-        }
-      };
-      fetchPostData();
-    }
-  }, [isEdit, challengeNo, navigate]);
+    fetchData();
+  }, [challengeNo, isEdit]); // challengeNo 또는 isEdit이 변경될 때마다 실행
 
-  // 활성 챌린지 가져오기 (새 작성 모드)
-  useEffect(() => {
-    if (!isEdit) {
-      const fetchActiveChallenge = async () => {
-        try {
-          const response = await axios.get<ChallengePost[]>(
-            'http://localhost:8081/community/challenge/active',
-            { withCredentials: true }
-          );
-          const activeList = response.data;
-          if (activeList && activeList.length > 0) {
-            const active = activeList[0];
-            setTitle(active.title || '');
-            setChInfoNo(active.chInfoNo || null);
-            setVideoUrl(active.videoUrl || '');
-            if (active.postImageUrl) {
-              setExistingImageUrl(active.postImageUrl);
-              setPreviewImageUrl(`http://localhost:8081/images/${active.postImageUrl}`);
-            }
-          } else {
-            alert('활성 챌린지가 없습니다.');
-            navigate('/community/challenge');
-          }
-        } catch (error) {
-          console.error('활성 챌린지 데이터를 불러오는 데 실패했습니다.', error);
-        }
-      };
-      fetchActiveChallenge();
-    }
-  }, [isEdit, navigate]);
-
+  // 이미지 파일 선택 핸들러
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setImageFile(file);
-
-    if (file) {
-      setPreviewImageUrl(URL.createObjectURL(file));
-    } else {
-      setPreviewImageUrl(existingImageUrl ? `http://localhost:8081/images/${existingImageUrl}` : '');
-    }
+    setSelectedImage(file);
+    // 선택된 파일이 있으면 미리보기 URL 생성
+    setPreviewImage(file ? URL.createObjectURL(file) : null);
   };
 
+  // 폼 제출 핸들러 (챌린지 등록/수정)
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!chInfoNo) return alert('챌린지 정보를 불러오는 중 오류가 발생했습니다.');
-    if (!loginUserNo) return alert('로그인 후 이용할 수 있습니다.');
+    setError(null);
+    setMessage(null);
 
-    const formData = new FormData();
-    const challengeDto: ChallengeDto = { videoUrl, chInfoNo, userNo: loginUserNo };
-    formData.append('challengeDto', new Blob([JSON.stringify(challengeDto)], { type: 'application/json' }));
-
-    if (imageFile) formData.append('file', imageFile);
+    // 필수 조건 유효성 검사
+    if (!userNo) return setError("로그인이 필요합니다.");
+    if (!chInfoNo) return setError("챌린지 정보를 선택할 수 없습니다.");
 
     try {
+      // 서버 전송을 위한 FormData 객체 생성
+      const formData = new FormData();
+      formData.append("userNo", String(userNo));
+      formData.append("chInfoNo", String(chInfoNo));
+      if (videoUrl.trim()) formData.append("videoUrl", videoUrl);
+      if (selectedImage) formData.append("file", selectedImage);
+
       if (isEdit) {
-        if (loginUserNo !== postUserNo) return alert('작성자만 수정할 수 있습니다.');
-        await axios.put(`http://localhost:8081/community/challenge/${challengeNo}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          withCredentials: true,
-        });
-        navigate(`/community/challenge/${challengeNo}`);
+        // 수정 모드: PUT 요청
+        await axios.put(`${API_BASE}/community/challenge/${challengeNo}`, formData, { withCredentials: true });
+        setMessage("챌린지 수정 완료");
       } else {
-        const response = await axios.post('http://localhost:8081/community/challenge', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          withCredentials: true,
-        });
-        const newChallengeNo = response.data?.challengeNo;
-        if (!newChallengeNo) return alert('서버에서 챌린지 번호를 받지 못했습니다.');
-        navigate(`/community/challenge/${newChallengeNo}`);
+        // 작성 모드: POST 요청
+        await axios.post(`${API_BASE}/community/challenge`, formData, { withCredentials: true });
+        setMessage("챌린지 등록 완료");
       }
-    } catch (error) {
-      console.error('게시글 처리 실패:', error);
-      alert(`게시글 ${isEdit ? '수정' : '등록'}에 실패했습니다.`);
+
+      // 성공 메시지 표시 후 페이지 이동
+      setTimeout(() => navigate("/community/challenge"), 1500);
+    } catch (e: any) {
+      if (e.response?.status === 401) {
+        setError("로그인이 필요합니다.");
+        navigate("/login");
+      } else {
+        setError(isEdit ? "챌린지 수정 실패" : "챌린지 등록 실패");
+      }
     }
   };
 
-  const handleDelete = async () => {
-    if (!challengeNo) return;
-    if (loginUserNo !== postUserNo) return alert('작성자만 삭제할 수 있습니다.');
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+  // 로딩 상태일 때 화면 표시
+  if (loading) return <div className={styles.loading}>로딩 중...</div>;
 
-    try {
-      await axios.delete(`http://localhost:8081/community/challenge/${challengeNo}`, {
-        withCredentials: true,
-      });
-      navigate('/community/challenge');
-    } catch (error) {
-      console.error('게시글 삭제 실패:', error);
-      alert('게시글 삭제에 실패했습니다.');
-    }
-  };
-
+  // JSX 렌더링
   return (
-    <>
-      <CommunityHeader />
-      <div className={styles.container}>
-        <h1>{isEdit ? '게시글 수정' : '새 게시글 작성'}</h1>
-        <div className={styles.titleDisplay}>{title || '값 없음'}</div>
+    <div className={styles.container}>
+      <h1>{isEdit ? "챌린지 수정" : "챌린지 등록"}</h1>
 
-        <div className={styles.previewBox}>
-          {previewImageUrl ? (
-            <img src={previewImageUrl} alt="미리보기" className={styles.previewImage} />
-          ) : (
-            '미리보기'
-          )}
+      {message && <div className={styles.messageBox}>{message}</div>}
+      {error && <div className={styles.errorBox}>{error}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>챌린지 타이틀</label>
+          {/* 챌린지 타이틀은 읽기 전용으로 표시 */}
+          <input type="text" value={title} readOnly className={styles.titleDisplay} />
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>
-              이미지 업로드 {existingImageUrl ? '(선택 가능)' : '*'}
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>영상 URL (선택)</label>
+          <input type="text" value={videoUrl} onChange={e => setVideoUrl(e.target.value)} className={styles.urlInput} />
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>이미지 업로드</label>
+          <div className={styles.fileInputBox}>
+            <label className={styles.fileButton}>
+              선택
+              <input type="file" accept="image/*" onChange={handleImageChange} className={styles.hiddenInput} />
             </label>
-            <div className={styles.fileInputBox}>
-              <label htmlFor="image-upload" className={styles.fileButton}>
-                이미지 선택
-              </label>
-              <input
-                id="image-upload"
-                type="file"
-                accept="image/*"
-                className={styles.hiddenInput}
-                onChange={handleImageChange}
-                required={!isEdit && !existingImageUrl}
-              />
-              <span className={styles.fileName}>
-                {imageFile?.name || (existingImageUrl ? existingImageUrl.split('/').pop() : '선택된 이미지 없음')}
-              </span>
-            </div>
+            <span className={styles.fileName}>{selectedImage?.name || "선택된 파일 없음"}</span>
           </div>
+        </div>
 
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>챌린지 URL</label>
-            <input
-              type="text"
-              className={styles.urlInput}
-              placeholder="URL을 등록해주세요."
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-            />
-          </div>
+        {/* 이미지 미리보기 */}
+        <div className={styles.previewBox}>
+          {previewImage ? <img src={previewImage} alt="미리보기" className={styles.previewImage} /> : "이미지를 선택하세요"}
+        </div>
 
-          <div className={styles.buttonGroup}>
-            {(!isEdit || loginUserNo === postUserNo) && (
-              <button type="submit" className={styles.submitButton}>
-                {isEdit ? '수정' : '등록'}
-              </button>
-            )}
-            <button type="button" className={styles.cancelButton} onClick={() => navigate('/community/challenge')}>
-              취소
-            </button>
-            {isEdit && loginUserNo === postUserNo && (
-              <button type="button" className={styles.deleteButton} onClick={handleDelete}>
-                삭제
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
-    </>
+        <div className={styles.buttonGroup}>
+          <button type="submit" className={styles.submitButton}>{isEdit ? "수정 완료" : "등록 완료"}</button>
+          <button type="button" className={styles.cancelButton} onClick={() => navigate("/community/challenge")}>취소</button>
+        </div>
+      </form>
+    </div>
   );
 };
 
