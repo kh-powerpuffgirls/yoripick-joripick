@@ -3,8 +3,8 @@
   background-color: #92ca02;
   width: 100%;
   padding: 15px 20px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -17,7 +17,6 @@
   justify-content: center;
   gap: 5px;
   list-style: none;
-  align-items: center;
 }
 
 .nav-line {
@@ -34,16 +33,6 @@
   text-wrap: nowrap;
 }
 
-.nav-button {
-  border: none;
-  background-color: transparent;
-  padding: 10px 20px;
-  border-radius: 6px;
-  text-wrap: nowrap;
-  font-size: 1.03em;
-  cursor: pointer;
-}
-
 .log-link {
   color: black;
   text-decoration: none;
@@ -51,7 +40,7 @@
   font-size: 12px;
 }
 
-.nav-link:hover, .nav-button:hover {
+.nav-link:hover {
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
