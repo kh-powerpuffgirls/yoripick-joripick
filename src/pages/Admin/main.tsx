@@ -64,18 +64,18 @@ export const AdminDashboard = () => {
 
     const handleOpenReport = (c: Reports) => {
         if (c.category === "COOKING_CLASS") {
-            // 쿠킹클래스 입장
+            // 쿠킹클래스 내용 전부 조회해와서 화면에 따로 출력
             return;
         }
         let ref = window.location.origin + "/";
         if (c.category === 'BOARD') ref += "";
         if (c.category === 'MARKETPLACE') ref += "";
         if (c.category === 'REPLY') {
-            // 백엔드에서 parentNo 조회해오기
+            // 백엔드에서 parentNo 조회해오기, css로 focus 주기
             ref += "";
         }
         if (c.category === 'REVIEW') {
-            // 백엔드에서 parentNo 조회해오기
+            // 백엔드에서 parentNo 조회해오기, css로 focus 주기
             ref += "";
         }
         window.open(ref, '_blank', 'noopener,noreferrer');
@@ -92,30 +92,28 @@ export const AdminDashboard = () => {
             alert('유효한 페이지가 아닙니다.');
         }
     };
-    const handleResolve = async (report: Reports) => {
+    const handleResolve = async (report: Reports | Recipe) => {
         if (!confirm('해당 신고 내역을 완료 처리하시겠습니까?')) return;
         try {
-            await resolveReport(report);
-            if (report.category === 'USERS') {
-                setUserReports(prev => prev.filter(c => c.reportNo !== report.reportNo));
-                fetchUserData(1);
-            } else if (report.category !== 'USERS') {
-                setCommReports(prev => prev.filter(c => c.reportNo !== report.reportNo));
-                fetchCommData(1);
-            }
+            await resolveReport(report.reportNo);
+            if ("category" in report) {
+                if (report.category === 'USERS') {
+                    setUserReports(prev => prev.filter(c => c.reportNo !== report.reportNo));
+                    fetchUserData(1);
+                } else if (report.category !== 'USERS') {
+                    setCommReports(prev => prev.filter(c => c.reportNo !== report.reportNo));
+                    fetchCommData(1);
+                }
+            } else {
+                setRecipes(prev => prev.filter(c => c.reportNo !== report.reportNo));
+                fetchRcpData(1)
+;            }
         } catch {
             alert('처리 중 오류가 발생했습니다.');
         }
     };
     const handleResolveRcp = async (recipe: Recipe) => {
-        if (!confirm('이 레시피 관리내역을 완료 처리하시겠습니까?')) return;
-        try {
-            await resolveRecipes(recipe);
-            setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo && c.type === recipe.type));
-            fetchRcpData(1);
-        } catch {
-            alert('처리 중 오류가 발생했습니다.');
-        }
+        
     };
     const handleResolveCh = async (formNo: number) => {
         if (!confirm('이 챌린지 요청을 완료 처리하시겠습니까?')) return;
@@ -187,7 +185,14 @@ export const AdminDashboard = () => {
                                 </div>
                                 <div className={style.cardActions}>
                                     <button onClick={() => handleOpenRcp(c)}>상세보기</button>
-                                    <button onClick={() => handleResolveRcp(c)}>처리완료</button>
+                                    {c.type === 'REPORT' ? (
+                                        <button onClick={() => handleResolve(c)}>처리완료</button>
+                                    ) : (
+                                        <>
+                                            <button onClick={() => handleResolveRcp(c)}>승인</button>
+                                            <button onClick={() => handleResolveRcp(c)}>기각</button>
+                                        </>
+                                    )}
                                 </div>
                             </>
                         )}

@@ -27,7 +27,7 @@ export const fetchChallenges = async (page: number, size: number) => {
 };
 
 export const resolveChallenge = async (formNo: number) => {
-    await api.patch(`/challenges/resolve/${formNo}`);
+    await api.patch(`/challenges/${formNo}`);
 };
 
 export const fetchRecipes = async (page: number, size: number) => {
@@ -36,6 +36,10 @@ export const fetchRecipes = async (page: number, size: number) => {
 }
 
 export const resolveRecipes = async (recipe: Recipe) => {
+    // 레시피 타입별로 
+    // 1. reports 인 경우 바로 resolve
+    // 2. recipes 승인 인 경우 -> db값 업데이트
+    // 3. recipes 기각 인 경우 -> ????
     await api.patch(`/recipes/resolve/${recipe.type.toLowerCase()}/${recipe.rcpNo}`);
 };
 
@@ -49,9 +53,8 @@ export const fetchCommReports = async (page: number, size: number) => {
     return response.data;
 }
 
-export const resolveReport = async (report: Reports) => {
-    // 백엔드에서 cooking_class일 경우에는 추가적으로 채팅방 퇴장
-    await api.patch(`/reports/resolve`,{report});
+export const resolveReport = async (reportNo: number) => {
+    await api.patch(`/reports/${reportNo}`);
 };
 
 
