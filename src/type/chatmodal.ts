@@ -1,44 +1,38 @@
-type Message = {
-  id: string;
-  text: string;
-  sender: "me" | "other";
+export type Message = {
+  messageNo?: number;
+  content: string;
+  userNo: number;
+  username: string;
+  button?: {
+    linkUrl: string;
+  };
+  createdAt: string;
+  roomNo: number | string;
+  imageNo?: number;
 };
 
-type ChatRoom = {
-  id: string;
-  name: string;
+export type ChatRoom = {
+  roomNo: string | number;
+  className: string;
+  type: ChatRoomCreate;
   messages: Message[];
+  notification?: string;
 };
+
+export type ChatRoomCreate = "admin" | "cclass" | "cservice";
+
+export interface ChatModalProps {
+  type: ChatRoomCreate | null;
+}
 
 type ChatState = {
   isOpen: boolean;
   rooms: ChatRoom[];
-  currentRoomId: string | null;
+  currentRoomId?: string | number;
 };
 
 export const initialState: ChatState = {
   isOpen: false,
-  rooms: [
-    { id: "1", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "2", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "3", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "4", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "5", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "6", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "7", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "8", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "9", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "10", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "11", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "12", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "13", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "14", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "15", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "16", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "17", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "18", name: "FAQ BOT, 요픽", messages: [] },
-    { id: "19", name: "왕초보 식구들의 조림핑 따라잡기", messages: [] },
-    { id: "20", name: "FAQ BOT, 요픽", messages: [] }
-  ],
-  currentRoomId: "1",
+  rooms: [],
+  currentRoomId: undefined,
 };
