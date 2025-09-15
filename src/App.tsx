@@ -9,6 +9,9 @@ import { CServiceMain } from './pages/CService/main'
 import { useDispatch, useSelector } from 'react-redux'
 import { openChat, setRooms } from './features/chatSlice'
 import { type RootState } from './store/store'
+import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
+import CommunityRecipeWrite from './pages/community/Recipe/CommunityRecipeWrite'
+import CommunityRecipeDetail_Detail from './pages/community/Recipe/CommunityRecipeDetail_Detail'
 import Login from './pages/login/Login'
 import AlreadyLoginRoute from './components/Security/AlreadyLoginRoute'
 import { useQuery } from '@tanstack/react-query'
@@ -25,6 +28,8 @@ import { ChatAlertModal } from './components/Chatting/chatAlertModal'
 import { MealplanMain } from './pages/Mealplan/main'
 import { AdminDashboard } from './pages/Admin/main'
 import AdminRoute from './components/AdminRoute'
+import CommunityRecipeDetail from './pages/community/Recipe/CommunityRecipeDetail'
+import RecipeWrite from './pages/community/Recipe/RecipeWrite'
 
 function App() {
   const dispatch = useDispatch();
@@ -109,6 +114,12 @@ function App() {
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />
+        {/* community/recipe */}
+        <Route path="/community/recipe" element={<CommunityRecipeList />} />
+        {/* <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} /> */}
+        <Route path="/community/recipe/test" element={<CommunityRecipeDetail_Detail />} />
+        <Route path="/community/recipe/detail" element={<CommunityRecipeDetail />} />
+        <Route path="/community/recipe/write" element={<RecipeWrite />} />
       </Routes>
       <Footer />
     </>

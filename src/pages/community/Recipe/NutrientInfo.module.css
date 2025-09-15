@@ -1,0 +1,91 @@
+/* 영양성분 정보 */
+.nutrient{
+    border: 1px solid #3e58226c;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    padding: 20px 40px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+/* 바 그래프 */
+#cpfn{
+    display: flex;   
+    width: 100%;
+    flex-direction:column ;
+    gap: 10px;
+}
+#bars{
+    display: grid;
+    grid-template-columns: 100px 60px 1fr; /* 이름, 수치, 바 */
+    align-items: center;
+    gap: 10px;
+}
+.progress {
+    width: 100%;
+    height: 30px;
+    background-color: #dedede;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress .bar_progress { 
+    height: 30px;
+    padding: 0;
+    text-align: center;
+    color: #111;
+    transition: width 0.4s ease-in-out;
+
+    /* 추가 코드============================================================================== */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 원그래프 */
+#kcal{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.chart{
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #D3EA9A;
+    display:inline-block;
+}
+.rad_chart{
+    width: inherit;
+    height: inherit;
+    border-radius: 50%;
+    transition: background 0.4s ease-in-out;
+}
+
+
+
+/* 원형 그래프 초과 텍스트 스타일 */
+.kcal_exceeded_text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* 막대 그래프 초과 텍스트 스타일 */
+.bar_exceeded_text {
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}

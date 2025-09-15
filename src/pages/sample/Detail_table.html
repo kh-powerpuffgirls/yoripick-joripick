@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./Detail_table.css" rel="stylesheet">
+</head>
+</head>
+<body>
+    <table>
+        <tr style="background-color: #E8E8E8;">
+            <th>
+                <!-- recipe 테이블의 tag : # ${tag} -->
+                <div id="tag"> # 팽이버섯</div>
+            </th>
+            <th>
+                <img src="../../assets/sample/저울아이콘.png" height="25px">
+                <span>조리방법</span>
+                <!-- (recipe 테이블의 rcp_mth_no)join(rcp_method테이블의 rcp_method): ${rcp_method} -->
+                <span style="color: #029D60;">데우기</span>
+            </th>
+            <th>
+                <img src="../../assets/sample/모래시계아이콘.png" height="25px">
+                <span>요리종류</span>
+                <!-- (recipe 테이블의 rcp_sta_no)join(rcp_situation 테이블의 rcp_situation): ${rcp_situation} -->
+                <span style="color: #029D60;">반찬</span>
+            </th>
+            <th>
+                <img src="../../assets/sample/요리아이콘.png" height="25px">
+                <span>칼로리</span>
+                <!-- (recipe 테이블의 nutrient_no)join(nutrient 테이블의 energy): ${energy} kcal -->
+                <span style="color: #029D60;">643kcal</span>
+            </th>
+        </tr>
+        <!-- 추후 생각예정 -->
+        <tr>
+            <td colspan="2">
+                <div class="ing">
+                    <span>✔</span>
+                    <span>팽이버섯</span>
+                    <span>2봉</span>
+                    <span>300g</span>
+                </div>
+            </td>
+            <td colspan="2">
+                <div class="ing">
+                    <span>✔</span>
+                    <span>팽이버섯</span>
+                    <span>2봉</span>
+                    <span>300g</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="ing">
+                    <span>✔</span>
+                    <span>팽이버섯</span>
+                    <span>2봉</span>
+                    <span>300g</span>
+                </div>
+            </td>
+            <td colspan="2">
+                <div class="ing">
+                    <span>✔</span>
+                    <span>팽이버섯</span>
+                    <span>2봉</span>
+                    <span>300g</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                
+                <div class="nutrient">
+                    <!-- 입력 값에 따라 chart,progress의 비율이 달라짐 -->
+                    <div id="cpfn">
+                        <div id="bars">
+                            <span>탄수화물</span>
+                            <span>18g</span>
+                            <!-- (입력 g수) / (300g) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>단백질</span>
+                            <span>10.7g</span>
+                            <!-- (입력 g수) / (60g) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>지방</span>
+                            <span>1.3g</span>
+                            <!-- (입력 g수) / (60g) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>나트륨</span>
+                            <span>510mg</span>
+                            <!-- (입력 mg수) / (2000mg) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="kcal">
+                        <div class="chart">
+                            <div class="rad_chart"></div>
+                        </div>
+                        <!-- (kcal 입력값) / (2500kcal) -->
+                        <span>칼로리 108kcal</span>   
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+</body>
+</html>
