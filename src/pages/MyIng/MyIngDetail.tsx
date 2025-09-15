@@ -1,13 +1,90 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { lodingImg } from "../../assets/images";
 import MyIngDetailStyle from "./MyIngDetail.module.css"
 import "../../assets/button.css"
 import cx from "classnames";
+import { useEffect, type FormEvent } from "react";
+import { initialUpdateMyIng, type MyIngItem, type MyIngUpdate } from "../../type/myIng";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteMyIng, getMyIng, updateMyIng } from "../../api/myIngApi";
+import { expDateIcon, expDateMessage, formatDate } from "./common";
+import useInput from "../../hooks/useInput";
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
 
 export default function MyIngDetail(){
 
-    const ingCodeName = ['전체','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
-    const ingContent = ['단감aaaaaaaaaaaaaaaaaaaaaaaaaaaa', '연시', '감말랭이', '곶감', '구아바', '한라봉', '천혜향', '레드향', '황금향', '금귤', '다래', '대추', '건대추', '건대추야자', '두리안', '설향딸기', '딸기', '라임', '레몬', '롱안', '리치', '망고', '애플망고', '매실', '매실 당절임', '염장 매실', '머루', '머스켓베일리에이', '왕머루', '감로멜론', '머스크멜론', '모과', '무화과', '바나나', '배', '배 과즙', '버찌', '복분자', '백도복숭아', '천도복숭아'];
+    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+    const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
+
+    const navigate = useNavigate();
+    const {ingNo} = useParams();
+    
+    const {data: MyIngItem, isLoading, isError, error} = useQuery<MyIngItem>({
+        queryKey: ['MyIngItem', ingNo], // 캐시 구분용 키
+        queryFn: () => getMyIng(Number(ingNo), userNo ?? 0),
+        staleTime: 1000*60, // Fresh 유지 시간
+        gcTime: 1000 *60 * 5, // 캐시 메모리 저장 시간
+        enabled: true
+    });
+    
+    const [newMyIng, handleInputChange, resetMyIng, setNewMyIng] = useInput<MyIngUpdate>(initialUpdateMyIng);
+    
+    useEffect(()=>{
+        if (MyIngItem) {
+        const { userNo, ingNo, createdAt, expDate, quantity } = MyIngItem;
+        setNewMyIng({ userNo, ingNo, createdAt: createdAt ? new Date(createdAt) : undefined,
+            expDate: expDate ? new Date(expDate) : undefined, quantity });
+    }
+    },[MyIngItem]);
+
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+            mutationFn: (newMyIng:MyIngUpdate) => updateMyIng(Number(ingNo), userNo ?? 0, newMyIng),
+            onSuccess: (res) => {
+                // 등록 요청 성공 시
+                queryClient.invalidateQueries({queryKey:['MyIngItem', ingNo]}); // 메뉴 목록 데이터 캐시 무효화
+                queryClient.invalidateQueries({queryKey:['MyIngs']}); // 메뉴 목록 데이터 캐시 무효화
+                navigate(`/mypage/inglist/detail/${ingNo}`, {
+                    state: {flash: "식재료 정보가 수정되었습니다."}
+                });
+            }
+    })
+
+    if(mutation.isPending){
+        return <div>Loading...</div>
+    }
+
+    if(mutation.isError){
+        console.log(newMyIng);
+        return <div className="alert alert-danger">{mutation.error.message}</div>
+    }
+
+    const editMyIng = (e: FormEvent) => {
+        e.preventDefault(); // 제출 방지
+        const payload = {
+            ...newMyIng,
+            createdAt: new Date(newMyIng.createdAt ?? ''),
+            expDate: new Date(newMyIng.expDate ?? '')
+        }
+        mutation.mutate(payload); //비동기함수 실행
+    }
+
+    const deleteMyIngMutation = useMutation({
+        mutationFn: (ingNo:number) => deleteMyIng(ingNo, userNo ?? 0),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey:['MyIngItem', ingNo]});
+        }
+    })
+    const handleDelete = (ingNo:number) => {
+        deleteMyIngMutation.mutate(ingNo);
+    };
+
+    if(isLoading) return <div>Loading...</div>
+    if(isError) return <div style={{color:'red'}}>{error.message}</div>
+    if(!MyIngItem) return <div>값 없음</div>
+    
+
 
     return (
         <>
@@ -21,49 +98,45 @@ export default function MyIngDetail(){
                         </div>
                     </div>
                     <div className={MyIngDetailStyle[`title-area`]}>
-                        <h3>과일(*카테고리명으로 수정해야 함*)</h3>
+                        <h3>{MyIngItem.ingCodeName}</h3>
                         <hr className={MyIngDetailStyle["gray"]}/>
                     </div>
                     <div className={cx(MyIngDetailStyle["content-area"], MyIngDetailStyle["ing-detail-section"])}>
                         
-                        <div className={MyIngDetailStyle["thumbnail"]}>
-                            <img src={lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
-                            <img className={MyIngDetailStyle[`bang-icon`]} src={lodingImg.bang}/>
-                            <div className={MyIngDetailStyle[`d-day`]}>D - 30</div>
-                            <div>* 소비기한이 임박했습니다!</div>
-                        </div>
-                        <section className={MyIngDetailStyle["ing-inform"]}>
-                            <select name="ingCodeName" className={MyIngDetailStyle["drop-menu"]}>
-                                {ingCodeName.map(
-                                    (item, index) => (
-                                        <option value={index} className={MyIngDetailStyle["drop-item"]}>{item}</option>
-                                    )
-                                )}
-                            </select>
-                            <input type="text" value={"재료명"} className={MyIngDetailStyle["ing-name"]}/>
-                            <div className={MyIngDetailStyle["sub-inform"]}>
-                                <h3>수량 / 무게</h3><input type="text" value={"0"} className={MyIngDetailStyle["ing-quantity"]} name="quantity"/>
-                                <h3>등록일</h3>
-                                <input type="date" value={"2025-09-01"} className={MyIngDetailStyle["ing-regidate"]} name="regidate"></input>
-                                <h3>소비기한</h3>
-                                <input type="date" value={"2025-09-01"} className={MyIngDetailStyle["ing-usedate"]} name="usedate"/>
+                        <div className={MyIngDetailStyle["thumb-area"]}>
+                            <div className={MyIngDetailStyle["thumbnail"]}>
+                                <img src={lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
+                                {expDateIcon(MyIngItem)}
                             </div>
-                        </section>
+                            {expDateMessage(MyIngItem)}
+                        </div>
+                        <form className={MyIngDetailStyle["ing-inform"]} id="myIngForm" onSubmit={editMyIng}>
+                            <select name="ingCodeName" className={MyIngDetailStyle["drop-menu"]} disabled>
+                                <option value={MyIngItem.ingCode} className={MyIngDetailStyle["drop-item"]}>{MyIngItem.ingCodeName}</option>
+                            </select>
+                            <input type="text" value={MyIngItem.ingName} className={MyIngDetailStyle["ing-name"]} disabled/>
+                            <div className={MyIngDetailStyle["sub-inform"]}>
+                                <h3>수량 / 무게</h3><input type="text" value={newMyIng.quantity ?? ''} className={MyIngDetailStyle["ing-quantity"]} name="quantity" onChange={handleInputChange}/>
+                                <h3>등록일</h3>
+                                <input type="date" value={formatDate(newMyIng.createdAt ?? new Date)} className={MyIngDetailStyle["ing-regidate"]} name="regidate" onChange={(e) => setNewMyIng((prev) => ({...prev, createdAt: new Date(e.target.value), }))}/>
+                                <h3>소비기한</h3>
+                                <input type="date" value={formatDate(newMyIng.expDate ?? new Date)} className={MyIngDetailStyle["ing-usedate"]} name="usedate" onChange={(e) => setNewMyIng((prev) => ({...prev, expDate: new Date(e.target.value), }))}/>
+                            </div>
+                        </form>
                     </div>
                     <section className={MyIngDetailStyle["btn-group"]}>
                         <div className={cx("flex-row", "gap-20", "center")}>
-                            <button className={cx("click-basic", "semi-round-btn", "olive")}>수정</button>
-                            <button className={cx("click-basic", "semi-round-btn", "red")}>삭제</button>
+                            <button type="submit" className={cx("click-basic", "semi-round-btn", "olive")} disabled={mutation.isPending} onClick={editMyIng}>수정</button>
+                            <button className={cx("click-basic", "semi-round-btn", "red")}
+                            onClick={
+                                (e) => {
+                                    e.stopPropagation();
+                                    handleDelete(MyIngItem.ingNo);
+                                }}>삭제</button>
                         </div>
                     </section>
                 </section>
                 <hr/>
-
-
-
-
-
-
 
                 {/* <!-- 관련 레시피 --> */}
                 <section className={cx(MyIngDetailStyle["recipe-section"])}>

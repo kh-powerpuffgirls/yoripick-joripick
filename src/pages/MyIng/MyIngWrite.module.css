@@ -21,10 +21,6 @@ ul {
   padding: 50px 70px;
 }
 
-.container * { /* 테스트용 테두리============================================================ */
-  /* border: cyan dashed 1px; */
-}
-
 h2 {
   font-size: 24px;
 }
@@ -75,7 +71,9 @@ hr{
   height: 100%;
   border-right: #ddd solid 2px;
 }
-
+.point {
+  color: var(--ypjp-red);
+}
 
 
 .ing-detail-section{
@@ -141,6 +139,7 @@ input {
 .sub-inform > *, .ing-name {
   padding: 0px 10px;
   height: 28px;
+  max-height: 28px;
 }
 
 .sub-inform {

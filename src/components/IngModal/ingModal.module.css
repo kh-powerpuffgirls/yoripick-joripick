@@ -1,0 +1,116 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+ul {
+  list-style: none;
+}
+
+/* 공통 */
+.container {
+  width: 600px;
+  height: 500px;
+  background-color: white;
+  padding: 30px;
+  position: relative;
+}
+
+.title, form {
+  margin-bottom: 20px;
+}
+.margin0 {
+  margin: 0px;
+}
+.margin-10 {
+  margin-bottom: 10px;
+}
+.gray {
+  height: 1px;
+  background-color: #ccc;
+  border: 0;
+}
+.aling-start{
+  align-items: baseline;
+}
+.more-link {
+  font-size: 16px;
+  color: #888;
+  float: right;
+  margin-left: 10px;
+}
+.aling-start{
+  align-items: baseline;
+}
+.vt-line {
+  width: 0px;
+  height: 100%;
+  border-right: #ddd solid 2px;
+}
+
+input {
+  border: #ccc solid 1px;
+  border-radius: 4px;
+}
+.drop-menu {
+  height: 100%;
+  width: 100px;
+  padding-left: 20px;
+  color:var(--ypjp-green);
+  border-color: var(--ypjp-green);
+  border-radius: 4px;
+}
+
+.result {
+  padding: 0 10px;
+}
+.result-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+.result-item:hover {
+  color: var(--ypjp-green);
+  cursor: pointer;
+}
+
+.category {
+  min-width: 160px;
+  text-align: center;
+  font-weight: bold;
+  padding: 5px 0;
+}
+.ingName {
+  padding: 0 10px;
+}
+
+.pagination-area {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 0%;
+  bottom: 20px;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: gray;
+}
+.pagination .active {
+  color: black;
+  text-decoration : underline;
+}
+.pagination li {
+  padding: 0 5px;
+  border-radius: 6px;
+}
+.pagination li:hover {
+  background-color: #ddd;
+}

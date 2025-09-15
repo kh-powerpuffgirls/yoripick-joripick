@@ -28,6 +28,7 @@ import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import { api, getNotiSettings } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
 import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
+import { IngPopup } from './components/IngModal/IngModal'
 
 function App() {
   const dispatch = useDispatch();
@@ -109,9 +110,11 @@ function App() {
         {/* 병합 후 마이페이지 하위 루트로 수정해야 함 */}
         <Route path="/mypage/inglist" element={<MyIng/>} >
           <Route path='' element={<MyIngList/>}/>
-          <Route path='detail' element={<MyIngDetail/>}/>
+          <Route path='detail/:ingNo' element={<MyIngDetail/>}/>
           <Route path='write' element={<MyIngWrite/>}/>
         </Route>
+        <Route path="/ing-popup" element={<IngPopup/>} />
+
         <Route path="/login" element={
           <AlreadyLoginRoute>
             <Login />

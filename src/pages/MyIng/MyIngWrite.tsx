@@ -1,13 +1,67 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { lodingImg } from "../../assets/images";
 import MyIngWriteStyle from "./MyIngWrite.module.css"
 import "../../assets/button.css"
 import cx from "classnames";
+import { useSelector } from "react-redux";
+import type { RootState } from '../../store/store';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { initialState, type MyIngCreate } from "../../type/myIng";
+import { insertMyIng as createMyIng } from "../../api/myIngApi";
+import useInput from "../../hooks/useInput";
+import { type FormEvent } from "react";
+import { formatDate, openIngPopup } from "./common";
 
 export default function MyIngWrite(){
 
     const ingCodeName = ['전체','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
-    const ingContent = ['단감aaaaaaaaaaaaaaaaaaaaaaaaaaaa', '연시', '감말랭이', '곶감', '구아바', '한라봉', '천혜향', '레드향', '황금향', '금귤', '다래', '대추', '건대추', '건대추야자', '두리안', '설향딸기', '딸기', '라임', '레몬', '롱안', '리치', '망고', '애플망고', '매실', '매실 당절임', '염장 매실', '머루', '머스켓베일리에이', '왕머루', '감로멜론', '머스크멜론', '모과', '무화과', '바나나', '배', '배 과즙', '버찌', '복분자', '백도복숭아', '천도복숭아'];
+    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+    const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
+    const navigate = useNavigate();
+    const [newMyIng, handleInputChange] = useInput<MyIngCreate>(initialState);
+
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+            mutationFn: (newMyIng:MyIngCreate) => createMyIng(newMyIng),
+            onSuccess: (res) => {
+                // 등록 요청 성공 시
+                queryClient.invalidateQueries({queryKey:['MyIngs']}); // 메뉴 목록 데이터 캐시 무효화
+                navigate(`/mypage/inglist`, {
+                    state: {flash: "식재료가 등록되었습니다."}
+                });
+            }
+    })
+
+    if(mutation.isPending){
+        return <div>Loading...</div>
+    }
+
+    if(mutation.isError){
+        return <div className="alert alert-danger">{mutation.error.message}</div>
+    }
+
+    const insertMyIng = (e: FormEvent) => {
+        e.preventDefault(); // 제출 방지
+        console.log(newMyIng);
+        if(newMyIng.ingNo == null || newMyIng.ingNo == 0 ){
+            alert('식재료를 선택하세요');
+            return;
+        }
+        if(newMyIng.quantity == null){
+            alert('수량을 입력하세요');
+            return;
+        }
+
+        const payload = {
+            ...newMyIng,
+            userNo: userNo ?? 0,
+            createdAt: new Date(newMyIng.createdAt ?? ''),
+            expDate: new Date(newMyIng.expDate ?? '')
+        }
+        mutation.mutate(payload); //비동기함수 실행
+    }
+
+    
 
     return (
         <>
@@ -17,7 +71,7 @@ export default function MyIngWrite(){
                         <div className="flex-row gap-10">
                             <h2>내 식재료 관리</h2>
                             <h2>&gt;</h2>
-                            <h2>상세보기</h2>
+                            <h2>등록하기</h2>
                         </div>
                     </div>
                     <div className={MyIngWriteStyle[`title-area`]}>
@@ -28,35 +82,29 @@ export default function MyIngWrite(){
                         
                         <div className={MyIngWriteStyle["thumbnail"]}>
                             <img src={lodingImg.plus} className={MyIngWriteStyle["add-img"]}/>
-                            {/* <img src={lodingImg.noImage} className={MyIngWriteStyle["thumbnail-img"]}/> */}
                         </div>
                         <section className={MyIngWriteStyle["ing-inform"]}>
-                            <select name="ingCodeName" className={MyIngWriteStyle["drop-menu"]}>
-                                {ingCodeName.map(
-                                    (item, index) => (
-                                        <option value={index} className={MyIngWriteStyle["drop-item"]}>{item}</option>
-                                    )
-                                )}
+                            <select name="ingCodeName" className={MyIngWriteStyle["drop-menu"]} onClick={openIngPopup}>
+                                <option value={newMyIng.ingCode} className={MyIngWriteStyle["drop-item"]}>{newMyIng.ingCodeName}</option>
                             </select>
-                            <input type="text" value={"재료명"} className={MyIngWriteStyle["ing-name"]}/>
+                            <input type="text" name="ingName" className={MyIngWriteStyle["ing-name"]} placeholder="재료명" onChange={handleInputChange}  onClick={openIngPopup}/>
                             <div className={MyIngWriteStyle["sub-inform"]}>
-                                <h3>수량 / 무게</h3><input type="text" value={"0"} className={MyIngWriteStyle["ing-quantity"]} name="quantity"/>
+                                <h3>수량 / 무게<span className={MyIngWriteStyle["point"]}> *</span></h3><input type="text" className={MyIngWriteStyle["ing-quantity"]} name="quantity" placeholder="ex) 100g / 1개" onChange={handleInputChange}/>
                                 <h3>등록일</h3>
-                                <input type="date" value={"2025-09-01"} className={MyIngWriteStyle["ing-regidate"]} name="regidate"></input>
+                                <input type="date" value={formatDate(newMyIng.createdAt ?? new Date)} className={MyIngWriteStyle["ing-regidate"]} name="createdAt" onChange={handleInputChange}/>
                                 <h3>소비기한</h3>
-                                <input type="date" value={"2025-09-01"} className={MyIngWriteStyle["ing-usedate"]} name="usedate"/>
+                                <input type="date" className={MyIngWriteStyle["ing-usedate"]} name="expDate" onChange={handleInputChange}/>
                             </div>
                         </section>
                     </div>
                     <section className={MyIngWriteStyle["btn-group"]}>
                         <div className={cx("flex-row", "gap-20", "center")}>
-                            <button className={cx("click-basic", "semi-round-btn", "olive")}>등록</button>
-                            <button className={cx("click-basic", "semi-round-btn", "red")}>취소</button>
+                            <button className={cx("click-basic", "semi-round-btn", "olive")} onClick={insertMyIng}>등록</button>
+                            <button className={cx("click-basic", "semi-round-btn", "red")} onClick={() => navigate(`/mypage/inglist`)}>취소</button>
                         </div>
                     </section>
                 </section>
                 <hr/>
-
 
             </div>
         </>
