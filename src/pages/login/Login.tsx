@@ -1,12 +1,13 @@
 import type { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import EnrollModal from "../enroll/EnrollModal";
 import styles from "./Login.module.css";
-import { loginSuccess } from "../../features/authSlice";
+import { loginSuccess, saveUserData } from "../../features/authSlice";
 import { api } from "../../api/authApi";
 import ResetPasswordModal from "./ResetPasswordModal";
+import type { RootState } from "../../store/store";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,9 +19,12 @@ export default function Login() {
   const [error, setError] = useState("");
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
-
+  
+  const location = useLocation();
+  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const from = (location.state as { from?: Location })?.from?.pathname || "/home";
 
     const idRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const pwRegex =
@@ -41,6 +45,7 @@ export default function Login() {
       return;
     }
 
+
     setLoading(true);
     setError("");
 
@@ -49,9 +54,10 @@ export default function Login() {
         "/auth/login",
         { email, password },
         { withCredentials: true }
-      );
-      dispatch(loginSuccess(res.data));
-      navigate("/home");
+      );      
+      dispatch(saveUserData(res.data));
+      navigate(from, { replace: true });
+      setLoading(false);
     } catch (err) {
       const error = err as AxiosError<{ errorCode: string; message: string }>;
       if (error.response) {
@@ -75,13 +81,13 @@ export default function Login() {
       }
       setLoading(false);
     }
+
   };
 
   const handleKakaoLogin = () => {
-    location.href = "http://localhost:8081/oauth2/authorization/kakao";
+    // location.href = "http://localhost:8081/oauth2/authorization/kakao";
   };
 
-  // ✅ return은 컴포넌트 마지막에
   return (
     <div className={styles.page}>
       <section className={styles.card}>

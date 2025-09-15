@@ -13,17 +13,17 @@ import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
-import { loginSuccess, logout } from './features/authSlice'
+import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import MyPage from './pages/MyPage/MyPage'
 
 function App() {
 
   const dispatch = useDispatch();
-
   useEffect(() => {
     api.post("http://localhost:8081/auth/refresh")
       .then(res => {
-        dispatch(loginSuccess(res.data));
+        dispatch(saveUserData(res.data));
+        dispatch(loginSuccess());
       })
       .catch(err => {
         dispatch(logout());
@@ -37,10 +37,10 @@ function App() {
       <ChatModal />
       <Routes>
         <Route path="/login" element={
-        <AlreadyLoginRoute>
+          <AlreadyLoginRoute>
             <Login />
           </AlreadyLoginRoute>
-          } />
+        } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />

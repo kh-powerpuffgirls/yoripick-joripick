@@ -86,10 +86,7 @@ const MyPage = () => {
             {user && (
                 <section className={styles.profileSection}>
                     <div className={styles.leftProfile}>
-                        <img
-                            src={user.profile || defaultProfile}
-                            className={styles.profileImg}
-                        />
+                        <img src={`http://localhost:8081${user.profile}`} alt="프로필 이미지" />
                     </div>
 
                     <div className={styles.profileInfo}>
