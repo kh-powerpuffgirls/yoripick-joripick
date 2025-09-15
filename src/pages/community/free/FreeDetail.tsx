@@ -3,10 +3,30 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { store } from '../../../store/store';
 import styles from './FreeDetail.module.css';
 
 // API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
+
+// Redux 스토어에서 accessToken을 가져오기
+const getAccessToken = () => store.getState().auth.accessToken;
+
+// API 호출을 위한 axios 인스턴스 생성
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
+});
+
+// 모든 요청에 토큰 추가
+api.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 // 게시글 데이터 타입 정의
 interface FreePost {
@@ -37,18 +57,14 @@ interface Reply {
   profileImageServerName?: string;
 }
 
-// 게시글 상세 페이지 컴포넌트
+// 게시글 상세 페이지
 const FreeDetail = () => {
-  // URL 파라미터에서 게시글 번호를 가져옵니다.
   const { boardNo } = useParams<{ boardNo: string }>();
-  // 페이지 이동을 위한 useNavigate 훅 사용
   const navigate = useNavigate();
 
-  // Redux 스토어에서 사용자 정보와 액세스 토큰을 가져옵니다.
   const user = useSelector((state: RootState) => state.auth.user);
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
-  // 컴포넌트 상태 관리
+  // 상태 관리
   const [post, setPost] = useState<FreePost | null>(null);
   const [replies, setReplies] = useState<Reply[]>([]);
   const [likesCount, setLikesCount] = useState<number>(0);
@@ -64,20 +80,11 @@ const FreeDetail = () => {
   const [replyingToReplyNo, setReplyingToReplyNo] = useState<number | null>(null);
   const [replyingContent, setReplyingContent] = useState('');
 
-  // 댓글 섹션의 끝으로 자동 스크롤하기 위한 ref
+  // 댓글 섹션의 끝으로 자동 스크롤
   const commentsEndRef = useRef<HTMLDivElement>(null);
 
-  // JWT 토큰을 포함하는 axios 인스턴스를 생성하는 헬퍼 함수
-  const getApi = () =>
-    axios.create({
-      baseURL: API_BASE,
-      headers: user && accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
-      withCredentials: true,
-    });
-
-  // 게시글, 댓글, 좋아요 데이터를 가져오는 핵심 로직
+  // 게시글, 댓글, 좋아요
   useEffect(() => {
-    // 유효하지 않은 게시글 ID 처리
     if (!boardNo || isNaN(Number(boardNo))) {
       setError('유효하지 않은 게시글 ID입니다.');
       setIsLoading(false);
@@ -87,36 +94,33 @@ const FreeDetail = () => {
     const fetchPostData = async () => {
       try {
         setIsLoading(true);
-        // 게시글 데이터 요청
-        const postRes = await axios.get<FreePost>(`${API_BASE}/community/free/${boardNo}`, { withCredentials: true });
+        const postRes = await api.get<FreePost>(`/community/free/${boardNo}`);
         setPost(postRes.data);
 
-        // 댓글 및 좋아요 데이터 초기화
-        let repliesRes: Reply[] = [];
         let likesCountRes = 0;
         let isLikedRes = false;
 
-        // 사용자가 로그인한 경우에만 좋아요 상태와 개수 요청
-        if (user) {
-          const [likesCountResp, likeStatusResp, repliesResp] = await Promise.all([
-            axios.get<number>(`${API_BASE}/community/free/${boardNo}/likes/count`, { withCredentials: true }),
-            axios.get<{ isLiked: boolean }>(`${API_BASE}/community/free/${boardNo}/likes/status`, { params: { userNo: user.userNo }, withCredentials: true }),
-            axios.get<Reply[]>(`${API_BASE}/community/free/${boardNo}/replies`, { withCredentials: true }),
-          ]);
+        // 로그인 여부와 관계없이 조회할 수 있는 데이터 요청
+        const repliesResPromise = api.get<Reply[]>(`/community/free/${boardNo}/replies`);
+        const likesCountResPromise = api.get<number>(`/community/free/${boardNo}/likes/count`);
 
-          likesCountRes = likesCountResp.data;
-          isLikedRes = likeStatusResp.data.isLiked;
-          repliesRes = repliesResp.data;
-        } else {
-          // 비로그인 시 댓글 데이터만 요청
-          const repliesResp = await axios.get<Reply[]>(`${API_BASE}/community/free/${boardNo}/replies`);
-          repliesRes = repliesResp.data;
-        }
+        // 로그인한 경우에만 좋아요 상태 요청
+        const likeStatusResPromise = user 
+          ? api.get<{ isLiked: boolean }>(`/community/free/${boardNo}/likes/status`) 
+          : Promise.resolve({ data: { isLiked: false } });
 
-        // 상태 업데이트
+        const [repliesResp, likesCountResp, likeStatusResp] = await Promise.all([
+            repliesResPromise,
+            likesCountResPromise,
+            likeStatusResPromise
+        ]);
+
+        likesCountRes = likesCountResp.data;
+        isLikedRes = likeStatusResp.data.isLiked;
+
         setLikesCount(likesCountRes);
         setIsLiked(isLikedRes);
-        setReplies(repliesRes);
+        setReplies(repliesResp.data);
         setError(null);
       } catch (err) {
         console.error('게시글 데이터를 불러오는 데 실패했습니다:', err);
@@ -127,9 +131,9 @@ const FreeDetail = () => {
     };
 
     fetchPostData();
-  }, [boardNo, user]); // boardNo 또는 user가 변경될 때마다 실행
+  }, [boardNo, user]);
 
-  // 댓글이 업데이트될 때마다 자동으로 댓글 섹션의 끝으로 스크롤
+  // 댓글이 업데이트될 때마다 자동으로 댓글 끝으로 이동ㅇㅇ
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [replies]);
@@ -140,7 +144,7 @@ const FreeDetail = () => {
     if (isLikeLoading) return;
     setIsLikeLoading(true);
     try {
-      await getApi().post(`/community/free/${boardNo}/likes`, { userNo: user.userNo });
+      await api.post(`/community/free/${boardNo}/likes`);
       setIsLiked(prev => !prev);
       setLikesCount(prev => (isLiked ? prev - 1 : prev + 1));
     } catch (err) {
@@ -156,9 +160,9 @@ const FreeDetail = () => {
     if (!user) { alert('로그인 후 댓글 작성 가능'); return; }
     if (!newComment.trim()) { alert('댓글 입력 필요'); return; }
     try {
-      await getApi().post(`/community/free/replies`, { refNo: Number(boardNo), category: 'BOARD', userNo: user.userNo, content: newComment.trim() });
+      await api.post(`/community/free/replies`, { refNo: Number(boardNo), category: 'BOARD', content: newComment.trim() });
       setNewComment('');
-      const repliesRes = await getApi().get<Reply[]>(`/community/free/${boardNo}/replies`);
+      const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
       setReplies(repliesRes.data);
     } catch (err) {
       console.error('댓글 작성 실패:', err);
@@ -171,30 +175,31 @@ const FreeDetail = () => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddComment(); }
   };
 
-  // 게시글 수정 버튼 클릭 핸들러
+  // 게시글 수정 버튼 클릭
   const handleEditClick = () => {
     if (!user) { alert('로그인 후 수정 가능'); return; }
     if (post && user.userNo === post.userNo) navigate(`/community/free/form/${boardNo}`);
     else alert('본인 게시글만 수정 가능');
   };
 
-  // 게시글 삭제 핸들러
+  // 게시글 삭제
   const handleDeletePost = async () => {
     if (!user || !post) return;
     if (user.userNo !== post.userNo) { alert('본인 게시글만 삭제 가능'); return; }
     if (!window.confirm('게시글 삭제하시겠습니까?')) return;
-    try { await getApi().delete(`/community/free/${boardNo}`, { params: { userNo: user.userNo } }); alert('게시글 삭제 완료'); navigate('/community/free'); }
+    try { 
+      await api.delete(`/community/free/${boardNo}`); 
+      alert('게시글 삭제 완료'); 
+      navigate('/community/free'); 
+    }
     catch (err) { console.error(err); alert('게시글 삭제 실패'); }
   };
 
-  // 댓글과 대댓글을 렌더링하는 함수
+  // 댓글과 대댓글을 렌더링
   const renderReplies = () => {
-    // 부모 댓글만 필터링
     const parentReplies = replies.filter(r => r.category === 'BOARD');
     return parentReplies.map(parent => {
-      // 각 부모 댓글에 속한 대댓글 필터링
       const childReplies = replies.filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo);
-      // 프로필 이미지 URL
       const parentProfileImageUrl = parent.profileImageServerName
         ? `${API_BASE}/images/${parent.profileImageServerName}`
         : 'https://placehold.co/400x400/CCCCCC/ffffff?text=No+Image';
@@ -210,7 +215,6 @@ const FreeDetail = () => {
               </div>
             </div>
 
-            {/* 댓글 수정 폼 렌더링 */}
             {editingReplyNo === parent.replyNo ? (
               <div className={styles.editForm}>
                 <textarea
@@ -224,13 +228,13 @@ const FreeDetail = () => {
                     onClick={async () => {
                       if (!editingContent.trim()) return alert('내용 입력 필요');
                       try {
-                        await getApi().put(`/community/free/replies/${editingReplyNo}`, { content: editingContent, userNo: user?.userNo });
-                        const repliesRes = await getApi().get<Reply[]>(`/community/free/${boardNo}/replies`);
+                        await api.put(`/community/free/replies/${editingReplyNo}`, { content: editingContent });
+                        const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
                         setReplies(repliesRes.data);
                         setEditingReplyNo(null);
                         setEditingContent('');
                       } catch (err) {
-                        console.error(err);
+                        console.log(err);
                         alert('댓글 수정 실패');
                       }
                     }}
@@ -244,7 +248,6 @@ const FreeDetail = () => {
               <p className={styles.commentContent}>{parent.content}</p>
             )}
 
-            {/* 댓글 액션 버튼들 (수정, 삭제, 답글) */}
             <div className={styles.commentActions}>
               {user && parent.userNo === user.userNo && editingReplyNo !== parent.replyNo && (
                 <>
@@ -259,11 +262,11 @@ const FreeDetail = () => {
                     onClick={async () => {
                       if (!window.confirm('댓글 삭제하시겠습니까?')) return;
                       try {
-                        await getApi().delete(`/community/free/replies/${parent.replyNo}`, { params: { userNo: user.userNo } });
-                        const repliesRes = await getApi().get<Reply[]>(`/community/free/${boardNo}/replies`);
+                        await api.delete(`/community/free/replies/${parent.replyNo}`);
+                        const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
                         setReplies(repliesRes.data);
                       } catch (err) {
-                        console.error(err);
+                        console.log(err);
                         alert('댓글 삭제 실패');
                       }
                     }}
@@ -277,7 +280,6 @@ const FreeDetail = () => {
               )}
             </div>
 
-            {/* 답글 작성 폼 */}
             {replyingToReplyNo === parent.replyNo && (
               <form
                 className={styles.replyForm}
@@ -285,18 +287,17 @@ const FreeDetail = () => {
                   e.preventDefault();
                   if (!replyingContent.trim()) return alert('답글 입력 필요');
                   try {
-                    await getApi().post(`/community/free/replies`, {
+                    await api.post(`/community/free/replies`, {
                       refNo: parent.replyNo,
                       category: 'REPLY',
-                      userNo: user?.userNo,
                       content: replyingContent.trim()
                     });
-                    const repliesRes = await getApi().get<Reply[]>(`/community/free/${boardNo}/replies`);
+                    const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
                     setReplies(repliesRes.data);
                     setReplyingContent('');
                     setReplyingToReplyNo(null);
                   } catch (err) {
-                    console.error(err);
+                    console.log(err);
                     alert('답글 작성 실패');
                   }
                 }}
@@ -311,7 +312,6 @@ const FreeDetail = () => {
               </form>
             )}
 
-            {/* 대댓글 목록 표시 */}
             {childReplies.length > 0 && (
               <div className={styles.childComments}>
                 {childReplies.map(child => {
@@ -327,7 +327,6 @@ const FreeDetail = () => {
                           <span className={styles.commentDate}>{new Date(child.createdAt).toLocaleString()}</span>
                         </div>
                       </div>
-                      {/* 대댓글 수정 폼 */}
                       {editingReplyNo === child.replyNo ? (
                         <div className={styles.editForm}>
                           <textarea
@@ -341,13 +340,13 @@ const FreeDetail = () => {
                               onClick={async () => {
                                 if (!editingContent.trim()) return alert('내용 입력 필요');
                                 try {
-                                  await getApi().put(`/community/free/replies/${editingReplyNo}`, { content: editingContent, userNo: user?.userNo });
-                                  const repliesRes = await getApi().get<Reply[]>(`/community/free/${boardNo}/replies`);
+                                  await api.put(`/community/free/replies/${editingReplyNo}`, { content: editingContent });
+                                  const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
                                   setReplies(repliesRes.data);
                                   setEditingReplyNo(null);
                                   setEditingContent('');
                                 } catch (err) {
-                                  console.error(err);
+                                  console.log(err);
                                   alert('대댓글 수정 실패');
                                 }
                               }}
@@ -360,7 +359,6 @@ const FreeDetail = () => {
                       ) : (
                         <p className={styles.commentContent}>{child.content}</p>
                       )}
-                      {/* 대댓글 액션 버튼들 */}
                       {user && child.userNo === user.userNo && editingReplyNo !== child.replyNo && (
                         <div className={styles.commentActions}>
                           <button
@@ -374,11 +372,11 @@ const FreeDetail = () => {
                             onClick={async () => {
                               if (!window.confirm('댓글 삭제하시겠습니까?')) return;
                               try {
-                                await getApi().delete(`/community/free/replies/${child.replyNo}`, { params: { userNo: user.userNo } });
-                                const repliesRes = await getApi().get<Reply[]>(`/community/free/${boardNo}/replies`);
+                                await api.delete(`/community/free/replies/${child.replyNo}`);
+                                const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
                                 setReplies(repliesRes.data);
                               } catch (err) {
-                                console.error(err);
+                                console.log(err);
                                 alert('대댓글 삭제 실패');
                               }
                             }}
@@ -398,15 +396,12 @@ const FreeDetail = () => {
     });
   };
 
-  // 로딩, 에러, 게시글 없음 상태 처리
   if (isLoading) return <div className={styles.loading}>로딩 중...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
   if (!post) return <div className={styles.noPost}>게시글이 존재하지 않습니다.</div>;
 
-  // 이미지 URL 유효성 검사 및 설정
   const validImageUrl = post.serverName ? `${API_BASE}/images/${post.serverName}` : post.imageUrl || null;
 
-  // 컴포넌트 렌더링
   return (
     <div className={styles.container}>
       <div className={styles.mainCard}>
@@ -433,7 +428,6 @@ const FreeDetail = () => {
 
         <hr className={styles.divider} />
 
-        {/* 댓글 작성 폼 */}
         {user ? (
           <div className={styles.newCommentWrapper}>
             <textarea value={newComment} onChange={e => setNewComment(e.target.value)} placeholder="댓글 작성..." rows={3} className={styles.newCommentInput} onKeyDown={handleNewCommentKeyDown} />
@@ -441,13 +435,11 @@ const FreeDetail = () => {
           </div>
         ) : <div className={styles.loginNotice}>로그인 후 댓글 작성 가능</div>}
 
-        {/* 댓글 섹션 */}
         <div className={styles.commentsSection}>
           {replies.length > 0 ? renderReplies() : <div className={styles.noComments}>댓글이 없습니다.</div>}
           <div ref={commentsEndRef} />
         </div>
 
-        {/* 뒤로가기 버튼 */}
         <div className={styles.backButtonContainer}>
           <button onClick={() => navigate(-1)} className={styles.backButton}>뒤로가기</button>
         </div>
