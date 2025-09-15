@@ -3,9 +3,9 @@ import { lodingImg } from "../assets/images";
 import { useSelector } from "react-redux";
 import useLogout from "../hooks/logout";
 import type { RootState } from "../store/store";
-// import { NewAnnouncement } from "./Admin/newAnnouncement";
+import { NewAnnouncement } from "./Admin/newAnnouncement";
 import { useState } from "react";
-// import { NewChallenge } from "./Admin/newChallenge";
+import { NewChallenge } from "./Admin/newChallenge";
 
 const Header = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -17,8 +17,8 @@ const Header = () => {
 
   return (
     <>
-      {/* {openNewAnn && <NewAnnouncement setOpenNewAnn={setOpenNewAnn}/>}
-      {openNewCh && <NewChallenge setOpenNewCh={setOpenNewCh}/>} */}
+      {openNewAnn && <NewAnnouncement setOpenNewAnn={setOpenNewAnn}/>}
+      {openNewCh && <NewChallenge setOpenNewCh={setOpenNewCh}/>}
       <div id="header">
         <Link to="/home">
           <img className="logo-image" src={lodingImg.logo} alt="요리Pick! 조리Pick!" />
