@@ -1,29 +1,71 @@
-import { Link } from "react-router-dom"
+import type { PageInfo } from "../api/adminApi";
+import styles from './Pagination.module.css';
 
-// 링크 연결 필요함
+type PaginationProps = {
+    pageInfo: PageInfo;
+    onPageChange: (page: number) => void;
+};
 
-const Pagination = () => {
+const Pagination = ({ pageInfo, onPageChange }: PaginationProps) => {
+    const { currentPage, startPage, endPage, maxPage } = pageInfo;
+
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+    }
+
     return (
-        <>
-            <div className="pagination-area">
-                <ul className="pagination page-modal">
-                    <li> <a href="#" className="page-first">&lt;&lt;</a></li>
-                    <li> <a href="#" className="page-left">&lt;</a></li> 
-                    <li> <a href="#" className="active page-num">1</a></li>
-                    <li> <a href="#" className="page-num">2</a></li>
-                    <li> <a href="#" className="page-num">3</a></li>
-                    <li> <a href="#" className="page-num">4</a></li>
-                    <li> <a href="#" className="page-num">5</a></li>
-                    <li> <a href="#" className="page-num">6</a></li>
-                    <li> <a href="#" className="page-num">7</a></li>
-                    <li> <a href="#" className="page-num">8</a></li>
-                    <li> <a href="#" className="page-num">9</a></li>
-                    <li> <a href="#" className="page-right">&gt;</a></li>
-                    <li><a href="#" className="page-last">&gt;&gt;</a></li>
-                </ul>
-            </div>
-        </>
-    )
-}
+        <div className={styles['pagination-area']}>
+            <ul className={styles.pagination}>
+                <li>
+                    <button
+                        className={styles.pageFirst}
+                        disabled={currentPage === 1}
+                        onClick={() => onPageChange(1)}
+                    >
+                        &lt;&lt;
+                    </button>
+                </li>
+                <li>
+                    <button
+                        className={styles.pagePrev}
+                        disabled={currentPage === 1}
+                        onClick={() => onPageChange(currentPage - 1)}
+                    >
+                        &lt;
+                    </button>
+                </li>
+                {pages.map((page) => (
+                    <li key={page}>
+                        <button
+                            className={currentPage === page ? styles.pageNumActive : ''}
+                            onClick={() => onPageChange(page)}
+                        >
+                            {page}
+                        </button>
+                    </li>
+                ))}
+                <li>
+                    <button
+                        className={styles.pageNext}
+                        disabled={currentPage === maxPage}
+                        onClick={() => onPageChange(currentPage + 1)}
+                    >
+                        &gt;
+                    </button>
+                </li>
+                <li>
+                    <button
+                        className={styles.pageLast}
+                        disabled={currentPage === maxPage}
+                        onClick={() => onPageChange(maxPage)}
+                    >
+                        &gt;&gt;
+                    </button>
+                </li>
+            </ul>
+        </div>
+    );
+};
 
-export default Pagination
+export default Pagination;

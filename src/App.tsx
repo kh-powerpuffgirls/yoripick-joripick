@@ -23,6 +23,8 @@ import MyPage from './pages/MyPage/MyPage'
 import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
 import { ChatAlertModal } from './components/Chatting/chatAlertModal'
 import { MealplanMain } from './pages/Mealplan/main'
+import { AdminDashboard } from './pages/Admin/main'
+import AdminRoute from './components/AdminRoute'
 
 function App() {
   const dispatch = useDispatch();
@@ -99,6 +101,11 @@ function App() {
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/mypage/mealplan" element={<MealplanMain />} />
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />
