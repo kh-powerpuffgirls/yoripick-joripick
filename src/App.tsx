@@ -8,7 +8,7 @@ import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
 import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
 import CommunityRecipeWrite from './pages/community/Recipe/CommunityRecipeWrite'
-import CommunityRecipeDetail_Detail from './pages/community/Recipe/CommunityRecipeDetail_Detail'
+import CommunityRecipeDetail_Detail from './pages/community/Recipe/CookingSteps'
 import Login from './pages/login/Login'
 import AlreadyLoginRoute from './components/AlreadyLoginRoute'
 import OAuth2Success from './pages/login/OAuth2Success'
@@ -53,7 +53,6 @@ function App() {
          {/* community/recipe */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
         {/* <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} /> */}
-        <Route path="/community/recipe/test" element={<CommunityRecipeDetail_Detail />} />
         <Route path="/community/recipe/detail" element={<CommunityRecipeDetail />} />
         <Route path="/community/recipe/write" element={<RecipeWrite />} />
 

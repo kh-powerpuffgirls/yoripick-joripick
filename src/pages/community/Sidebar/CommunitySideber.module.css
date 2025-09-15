@@ -24,6 +24,7 @@ h1{
 }
 
 .checkbox_group{
+    padding-top: 10px;
     display: flex;
     flex-direction: column;
 }
@@ -48,6 +49,7 @@ h1{
 
 /* ✨ 수정: input과 dropdown의 기준점이 되도록 position: relative 추가 */
 .input_wrapper {
+    padding-top: 10px;
     position: relative;
 }
 

@@ -167,3 +167,47 @@ export interface IngredientOption {
   ingNo: number;
   ingName: string;
 }
+
+
+// 레시피 상세
+export interface RecipeDetail {
+  rcpNo: number;
+  rcpName: string;
+  rcpInfo: string;
+  createdAt: string;
+  views: number;
+  tag?: string;
+  
+  // JOIN된 정보들
+  isOfficial: boolean; // 공식/식구 레시피 구분
+  rcpMethod: string;   // 요리 방법 이름
+  rcpSituation: string; // 요리 종류 이름
+  
+  mainImage: string; // 대표 이미지 경로
+  writer: User;  // 작성자 정보
+  
+  totalNutrient: NutrientData; // 전체 영양 정보
+  ingredients: RecipeIngredient[]; // 재료 목록
+  steps: CookingStep[];    // 요리 순서 목록
+
+  // 집계 정보
+  likeCount: number;
+  dislikeCount: number;
+  avgStars: number;
+  reviewCount: number;
+  
+  // 현재 로그인한 유저의 정보 
+  myLikeStatus?: 'LIKE' | 'DISLIKE' ;
+}
+
+export interface WriteReviewModalProps {
+  rcpNo: number; // 어떤 레시피에 대한 리뷰인지 식별
+  onClose: () => void; // 모달을 닫는 함수
+  onReviewSubmit: () => void; // 리뷰 제출 성공 시 호출될 함수
+}
+
+export interface PhotoReviewModalProps {
+  photoReviews: Review[]; // 표시할 포토 리뷰 목록
+  initialIndex: number; // 처음 보여줄 이미지의 인덱스
+  onClose: () => void; // 모달을 닫는 함수
+}
