@@ -15,4 +15,5 @@ export interface AuthState {
   accessToken: string | null;
   user: User | null;
   isAuthenticated: boolean;
+  loading: boolean;
 }
