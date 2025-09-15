@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { CookingStep } from '../../../type/Recipe'; 
 import styles from './CookingSteps.module.css';
-import classNames from 'classnames/bind';
+// import classNames from 'classnames/bind';
 
 import listIcon from '../../../assets/sample/list.png';
 import galleryIcon from '../../../assets/sample/gallery.png';

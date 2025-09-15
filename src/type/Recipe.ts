@@ -211,3 +211,4 @@ export interface PhotoReviewModalProps {
   initialIndex: number; // 처음 보여줄 이미지의 인덱스
   onClose: () => void; // 모달을 닫는 함수
 }
+

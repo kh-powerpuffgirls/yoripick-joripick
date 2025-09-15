@@ -1,0 +1,168 @@
+/* CommunityRecipeDetail_Detail.module.css */
+
+/* --- 전체 컨테이너 --- */
+/* [적용] 기존 CSS의 .content 와 유사한 패딩과 flex 구조를 적용했습니다. */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* 내부 요소 간 간격 */
+}
+
+/* --- 공통 헤더 (조리순서 타이틀, 토글) --- */
+/* [적용] 기존 CSS의 .user_report 와 유사한 space-between 정렬을 사용했습니다. */
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 5px 0;
+}
+
+/* --- hr (구분선) 스타일 --- */
+/* [추가] 구분선을 좀 더 연하게 만들어 콘텐츠가 돋보이도록 했습니다. */
+.container hr {
+  border: none;
+  border-top: 1px solid #e9e9e9;
+  width: 100%;
+  margin: 5px 0;
+}
+
+/* --- 뷰 전환 토글 스위치 --- */
+/* [신규] JSX 구조에 맞춰 토글 스위치 디자인을 새로 만들었습니다. */
+.toggle-area {
+  width: 70px;
+  height: 34px;
+  background-color: #FE8051; /* '하나씩 보기' 활성화 색상 */
+  border-radius: 17px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.toggle-area.toggled {
+  background-color: #3E5822; /* '목록으로 보기' 활성화 색상 */
+}
+.slide {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background-color: white;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s ease;
+}
+.toggle-area.toggled .slide {
+  transform: translateX(36px);
+}
+.toggle-icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 7px;
+}
+.listIcon { left: 8px; }
+.galleryIcon { right: 8px; }
+
+/* --- "목록으로 보기" 뷰 --- */
+.list_method {
+  display: flex;
+  flex-direction: column;
+}
+.list {
+  display: grid;
+  grid-template-columns: 30px 1fr auto; /* 순번, 설명, 이미지 순으로 배치 */
+  align-items: center;
+  gap: 20px;
+  padding: 15px 5px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.list_img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover; /* [적용] 기존 CSS의 .photo_box img와 동일한 속성 */
+  background-color: #f0f0f0;
+}
+
+/* --- "하나씩 보기" 뷰 --- */
+.one_method {
+  display: flex;
+  flex-direction: column;
+}
+.one_img {
+  position: relative; /* 버튼 위치 조정을 위해 relative로 설정 */
+  width: 100%;
+  max-width: 510px; /* 이미지 최대 크기 */
+  margin: 0 auto; /* 중앙 정렬 */
+}
+.one_slide {
+  width: 100%;
+  height: 510px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.one_slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.no_image {
+  color: #888;
+  font-size: 16px;
+}
+.one_info {
+  text-align: center;
+  padding: 15px;
+  line-height: 1.7;
+}
+
+/* --- 슬라이드 네비게이션 버튼 --- */
+/* [신규] 슬라이드 좌우 버튼 스타일을 추가했습니다. */
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.nav:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.nav:disabled {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: not-allowed;
+}
+.left { left: 10px; }
+.right { right: 10px; }
+
+/* --- 슬라이드 진행률 표시 바 --- */
+/* [신규] 현재 단계를 시각적으로 보여주는 인디케이터 바 스타일입니다. */
+.indicator {
+  width: 100%;
+  height: 5px;
+  background-color: #e0e0e0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  overflow: hidden; /* 바가 둥근 모서리를 넘어가지 않도록 */
+}
+.indicator_bar {
+  height: 100%;
+  background-color: #FE8051; /* [적용] 기존 CSS의 포인트 색상 중 하나를 사용 */
+  transition: width 0.3s ease;
+}
