@@ -6,7 +6,7 @@ import cx from "classnames";
 import { useSelector } from "react-redux";
 import type { RootState } from '../../store/store';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { initialState, type MyIngCreate } from "../../type/myIng";
+import { initialState, type MyIngCreate } from "../../type/Ing";
 import { insertMyIng as createMyIng } from "../../api/myIngApi";
 import useInput from "../../hooks/useInput";
 import { type FormEvent } from "react";
@@ -14,7 +14,6 @@ import { formatDate, openIngPopup } from "./common";
 
 export default function MyIngWrite(){
 
-    const ingCodeName = ['전체','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const navigate = useNavigate();

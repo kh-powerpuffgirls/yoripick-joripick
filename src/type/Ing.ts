@@ -1,3 +1,24 @@
+export interface IngItem {
+    ingNo: number;
+    ingName: string;
+    ingCode: number;
+    ingCodeName: string;
+    nutrientNo: number;
+}
+export const initialIngItem = {
+    ingNo: 0,
+    ingName: '',
+    ingCode: 0,
+    ingCodeName: '',
+    nutrientNo: 0
+}
+
+
+
+
+
+
+
 export interface MyIngItem {
     userNo: number;
     ingNo: number;

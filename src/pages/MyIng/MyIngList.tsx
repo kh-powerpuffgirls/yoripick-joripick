@@ -5,7 +5,7 @@ import myingStyle from "./MyIng.module.css";
 import ingStyle from "../Ingpedia/Ingpedia.module.css";
 import cx from "classnames";
 import { useNavigate } from 'react-router-dom';
-import { type GroupedData, type MyIngItem } from '../../type/myIng';
+import { type GroupedData, type MyIngItem } from '../../type/Ing';
 import useInput from '../../hooks/useInput';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteMyIng, searchMyIngs } from '../../api/myIngApi';
@@ -39,8 +39,6 @@ export default function MyIngList() {
             initialCollapsed[item.ingCodeName] = false;
         });
         setCollapsed(initialCollapsed);
-
-        console.log("데이터 수신:", MyIngItems);
     };
 
     const queryClient = useQueryClient();

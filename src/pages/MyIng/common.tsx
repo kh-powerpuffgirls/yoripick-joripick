@@ -1,5 +1,5 @@
 import { lodingImg } from "../../assets/images";
-import type { MyIngItem } from "../../type/myIng";
+import type { MyIngItem } from "../../type/Ing";
 import myingStyle from "./MyIng.module.css";
 import MyIngDetailStyle from "./MyIngDetail.module.css"
 

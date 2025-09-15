@@ -4,7 +4,7 @@ import MyIngDetailStyle from "./MyIngDetail.module.css"
 import "../../assets/button.css"
 import cx from "classnames";
 import { useEffect, type FormEvent } from "react";
-import { initialUpdateMyIng, type MyIngItem, type MyIngUpdate } from "../../type/myIng";
+import { initialUpdateMyIng, type MyIngItem, type MyIngUpdate } from "../../type/Ing";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteMyIng, getMyIng, updateMyIng } from "../../api/myIngApi";
 import { expDateIcon, expDateMessage, formatDate } from "./common";

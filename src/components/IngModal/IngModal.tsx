@@ -1,14 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import ingModalStyle from "./ingModal.module.css"
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { lodingImg } from "../../assets/images";
 import ingStyle from "../../pages/Ingpedia/Ingpedia.module.css";
 import cx from "classnames";
+import { useNavigate } from "react-router-dom";
+import useInput from "../../hooks/useInput";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { searchIngs } from "../../api/IngApi";
 
 export const IngPopup = () => {
-  const ingCodeName = ['분류','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
-  const ingResult = ['테스트1','테스트2'];
   
   const handleSelect = (value: string) => {
     window.opener?.postMessage({ type: 'ING_RESULT', payload: value }, '*');
@@ -26,13 +28,45 @@ export const IngPopup = () => {
     }
   }, []);
 
-  // const { type, visible } = useSelector((state: RootState) => state.alert);
-  // const dispatch = useDispatch();
-  // if (!visible) return null;
 
+  const ingCode = 0;
+  const ingCodeName = ['분류','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
+  const ingResult = ['테스트1','테스트2'];
+
+
+
+
+
+  const navigate = useNavigate();
+
+  const [searchKeyword, onChangeKeyword] = useInput({
+      ingCode:0,
+      keyword: ''
+  });
+
+  const [submittedKeyword, setSubmittedKeyword] = useState({
+      ingCode:0,
+      keyword: ''
+  });
+
+  const{data:IngItems, isLoading, isError, error} = useQuery({
+    queryKey: ['IngItems', submittedKeyword],
+    queryFn: () => searchIngs(submittedKeyword),
+      staleTime: 60*1000
+  })
+
+  const handleSearchIngs = () => {
+    setSubmittedKeyword(searchKeyword);
+  };
+
+  if(isLoading) return <div>Loading...</div>
+  if(isError) return <div className="alert alert-danger">{error.message}</div>
+
+
+  
   return (
     <div className={ingModalStyle.container}>
-      <h3>재료명 검색</h3>
+      <h3 className={ingModalStyle.title}>재료명 검색</h3>
       <form action="." method="post" className={ingStyle["search-box"]}>
         <select name="ingCodeName" className={ingModalStyle["drop-menu"]}>
             {ingCodeName.map(
