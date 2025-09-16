@@ -1,6 +1,5 @@
 /* Reviews.module.css */
 
-/* --- 리뷰 전체 컨테이너 --- */
 .reviews_section {
     display: flex;
     flex-direction: column;
@@ -29,7 +28,12 @@
     border-radius: 20px;
     font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
+.title_area button:hover {
+    background-color: #f1f3f5;
+}
+
 
 /* --- 포토 리뷰 --- */
 .photo_container {
@@ -45,17 +49,23 @@
     position: relative;
     cursor: pointer;
     overflow: hidden;
+    border-radius: 8px;
 }
 .photo_box img {
     position: absolute;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+.photo_box:hover img {
+    transform: scale(1.1);
 }
 .photo_box_add {
-    background-color: #686868;
-    color: white;
-    font-size: 24px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #868e96;
+    font-size: 20px;
     font-weight: 500;
     display: flex;
     flex-direction: column;
@@ -68,14 +78,15 @@
 .sort_area {
     display: flex;
     gap: 10px;
-    color: #636363;
+    color: #868e96;
 }
 .sort_area span {
     cursor: pointer;
+    font-weight: 500;
 }
 .active_sort {
     font-weight: bold;
-    color: #333;
+    color: #343a40;
 }
 .review_container {
     display: flex;
@@ -84,8 +95,8 @@
 .review_item {
     display: flex;
     gap: 20px;
-    padding: 15px 0;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 20px 0;
+    border-bottom: 1px solid #f1f3f5;
 }
 .review_item:last-child {
     border-bottom: none;
@@ -94,6 +105,7 @@
     width: 55px;
     height: 55px;
     border-radius: 50%;
+    object-fit: cover;
 }
 .profile_content {
     flex-grow: 1;
@@ -133,17 +145,21 @@
 .action_btn {
     border: none;
     background: none;
-    color: #888;
+    color: #adb5bd;
     cursor: pointer;
     font-size: 12px;
 }
+.action_btn:hover {
+    color: #495057;
+}
 .rcp_content {
     margin: 8px 0;
-    color: #454545;
+    color: #495057;
+    line-height: 1.6;
 }
 .date {
     font-size: 12px;
-    color: #888;
+    color: #adb5bd;
 }
 .review_img {
     width: 100px;
@@ -156,5 +172,12 @@
     padding: 15px;
     font-weight: bold;
     cursor: pointer;
-    color: #555;
+    color: #495057;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+.add_btn:hover {
+    background-color: #e9ecef;
 }

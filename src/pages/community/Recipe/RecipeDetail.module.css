@@ -1,6 +1,7 @@
 /* --- 페이지 전체 레이아웃 --- */
 .container {
     max-width: 1000px;
+    width: 100%;
     margin: auto;
     background-color: white;
     display: flex;

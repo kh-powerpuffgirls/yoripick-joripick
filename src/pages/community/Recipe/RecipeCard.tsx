@@ -17,7 +17,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <div className={recipecard.content}>
       <div className={recipecard.imageBox}>
-        <img src={recipe.serverName } alt={recipe.rcpName} className={recipecard.thumbnail} />
+        <img src={recipe.serverName} alt={recipe.rcpName} className={recipecard.thumbnail} />
       </div>
       <div id={recipecard.title}>{recipe.rcpName}</div>
       <div className={recipecard.profile}>

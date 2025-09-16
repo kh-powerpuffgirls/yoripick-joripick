@@ -7,15 +7,19 @@ import type { RootState } from '../../../store/store';
 
 import styles from './RecipeDetail.module.css'; // Detail.css를 모듈로 사용
 
-// 아이콘 및 자식 컴포넌트 import
-import likeIcon from '../../../assets/sample/like_unclick.png';
-import dislikeIcon from '../../../assets/sample/dislike_unclick.png';
+// 아이콘 
+import likeClick from '../../../assets/sample/like_click.png';
+import likeUnclick from '../../../assets/sample/like_unclick.png';
+import dislikeClick from '../../../assets/sample/dislike_click.png';
+import dislikeUnclick from '../../../assets/sample/dislike_unclick.png';
+
+// 자식 컴포넌트
 import DetailTable from './DetailTable';
 import CookingSteps from './CookingSteps';
 import Reviews from './Reviews';
 
-const RecipeDetail: React.FC = () => {
-    // 1. URL에서 현재 레시피의 번호(ID)를 가져옵니다. (예: /recipe/123)
+const CommunityRecipeDetail: React.FC = () => {
+    // 1. URL에서 현재 레시피의 번호(ID)
     const { rcpNo } = useParams<{ rcpNo: string }>(); 
     
     // 페이지 이동 함수
@@ -27,15 +31,25 @@ const RecipeDetail: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // 좋아요 상태
+    const [myLikeStatus, setMyLikeStatus] = useState<'LIKE' | 'DISLIKE' | null>(null);
+    const [likeCount, setLikeCount] = useState(0);
+
     // 3. 컴포넌트가 처음 렌더링될 때 API를 호출하여 데이터 요청
     useEffect(() => {
         const fetchRecipeDetail = async () => {
         if (!rcpNo) return;
         
         try {
-            // 백엔드에 /api/recipes/{rcpNo} 주소로 데이터 요청
-            const response = await api.get(`/api/recipes/${rcpNo}`);
+            const url = loginUserNo
+                ? `/api/community/recipe/${rcpNo}/${loginUserNo}`
+                : `/api/community/recipe/${rcpNo}`;
+            
+            const response = await api.get(url);
+            
             setRecipe(response.data);
+            setMyLikeStatus(response.data.myLikeStatus || null);
+            setLikeCount(response.data.likeCount);
         } catch (err) {
             setError('레시피 정보를 불러오는 데 실패했습니다.');
             console.error(err);
@@ -45,6 +59,38 @@ const RecipeDetail: React.FC = () => {
         };
         fetchRecipeDetail();
     }, [rcpNo]); // rcpNo가 바뀔 때마다 데이터를 다시 불러옴
+
+    // ✨ 추가: 좋아요/싫어요 버튼 클릭 핸들러
+    const handleLikeClick = async (newStatus: 'LIKE' | 'DISLIKE') => {
+        if (!loginUserNo) {
+            alert('로그인이 필요한 기능입니다.');
+            return;
+        }
+
+        // 현재 상태와 같은 버튼을 다시 누르면 '중립' 상태로 변경 (토글 기능)
+        const finalStatus = myLikeStatus === newStatus ? 'COMMON' : newStatus;
+        
+        // 1. UI 즉시 업데이트 (Optimistic UI Update)
+        const originalStatus = myLikeStatus;
+        const originalCount = likeCount;
+
+        setMyLikeStatus(finalStatus === 'COMMON' ? null : finalStatus);
+        if(finalStatus === 'LIKE') {
+            setLikeCount(originalStatus === 'LIKE' ? originalCount - 1 : originalCount + 1);
+        } else if (finalStatus === 'COMMON' && originalStatus === 'LIKE') {
+            setLikeCount(originalCount - 1);
+        }
+
+        // 2. 백엔드에 변경사항 전송
+        try {
+             await api.post(`/api/community/recipe/${rcpNo}/like/${loginUserNo}`, { status: finalStatus });
+        } catch (error) {
+            // 3. API 호출 실패 시 UI를 원래대로 되돌림
+            alert('오류가 발생했습니다. 다시 시도해주세요.');
+            setMyLikeStatus(originalStatus);
+            setLikeCount(originalCount);
+        }
+    };
 
     // 삭제 버튼 클릭 시 실행될 핸들러 함수
     const handleDelete = async () => {
@@ -91,7 +137,7 @@ const RecipeDetail: React.FC = () => {
             <span style={{fontWeight: 'bold', fontSize: '50px'}}>{recipe.rcpName}</span>
             <span style={{fontSize: '20px', color: '#636363'}}>{new Date(recipe.createdAt).toLocaleString()}</span>
             <div className={styles.other_info}>
-            좋아요 <span style={{color: '#FF0000'}}>{recipe.likeCount}</span> |
+            좋아요 <span style={{color: '#FF0000'}}>{likeCount}</span> |
             리뷰 <span style={{color: '#009626'}}>{recipe.reviewCount}</span> |
             조회수 <span style={{color: '#009626'}}>{recipe.views}</span>
             </div>
@@ -107,7 +153,7 @@ const RecipeDetail: React.FC = () => {
                 )}
             {/* ==================== 대표 이미지 및 소개 ==================== */}
             <div className={styles.basic_info}>
-            {recipe.mainImage && <img src={`/images/${recipe.mainImage}`} alt={recipe.rcpName} />}
+            {recipe.mainImage && <img src={recipe.mainImage} alt={recipe.rcpName} />}
             <span>{recipe.rcpInfo}</span>
             </div>
             
@@ -119,8 +165,18 @@ const RecipeDetail: React.FC = () => {
 
             {/* ==================== 좋아요/싫어요 버튼 ==================== */}
             <div className={styles.Likes}>
-            <img src={likeIcon} height="90px" alt="좋아요" />
-            <img src={dislikeIcon} height="90px" alt="싫어요" />
+                <img 
+                    src={myLikeStatus === 'LIKE' ? likeClick : likeUnclick} 
+                    height="90px" 
+                    alt="좋아요" 
+                    onClick={() => handleLikeClick('LIKE')}
+                />
+                <img 
+                    src={myLikeStatus === 'DISLIKE' ? dislikeClick : dislikeUnclick} 
+                    height="90px" 
+                    alt="싫어요"
+                    onClick={() => handleLikeClick('DISLIKE')}
+                />
             </div>
 
             {/* ✨ 3. 리뷰 영역 자식 컴포넌트 */}
@@ -130,4 +186,4 @@ const RecipeDetail: React.FC = () => {
     );
 };
 
-export default RecipeDetail;
+export default CommunityRecipeDetail;

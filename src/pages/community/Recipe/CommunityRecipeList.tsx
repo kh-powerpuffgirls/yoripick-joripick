@@ -115,7 +115,7 @@ const CommunityRecipeList: React.FC = () => {
                                         {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
                                         {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
                                         {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
-                                        <Link to={`/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
+                                        <Link to={`/community/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
                                             <RecipeCard recipe={recipe} />
                                         </Link>
                                     </td>
@@ -148,7 +148,7 @@ const CommunityRecipeList: React.FC = () => {
                                 <p style={{textAlign: 'center', fontSize:'18px', color:'#888'}}>레시피를 불러오는 중입니다...</p>
                             ) : recipePage.recipes.length > 0 ? (
                                 recipePage.recipes.map(recipe => (
-                                    <Link to={`/recipe/${recipe.rcpNo}`} key={recipe.rcpNo} style={{ textDecoration: 'none' }}>
+                                    <Link to={`/community/recipe/${recipe.rcpNo}`} key={recipe.rcpNo} style={{ textDecoration: 'none' }}>
                                         <RecipeCard recipe={recipe} />
                                     </Link>
                                 ))

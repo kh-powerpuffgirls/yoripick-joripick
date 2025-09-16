@@ -15,9 +15,9 @@ import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
 import { loginSuccess, logout } from './features/authSlice'
-import CommunityRecipeDetail from './pages/community/Recipe/CommunityRecipeDetail'
 import RecipeWrite from './pages/community/Recipe/RecipeWrite'
 import MyPage from './pages/MyPage/MyPage'
+import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
 
 function App() {
 
@@ -48,10 +48,8 @@ function App() {
         <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
-         {/* community/recipe */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
-        {/* <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} /> */}
-        <Route path="/community/recipe/detail" element={<CommunityRecipeDetail />} />
+        <Route path="/community/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
         <Route path="/community/recipe/write" element={<RecipeWrite />} />
         <Route path="/myPage" element={<MyPage />} />
       </Routes>
