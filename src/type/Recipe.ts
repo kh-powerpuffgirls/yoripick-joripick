@@ -168,8 +168,6 @@ export interface IngredientOption {
   ingName: string;
 }
 
-
-// 레시피 상세
 export interface RecipeDetail {
   rcpNo: number;
   rcpName: string;
@@ -178,37 +176,34 @@ export interface RecipeDetail {
   views: number;
   tag?: string;
   
-  // JOIN된 정보들
-  isOfficial: boolean; // 공식/식구 레시피 구분
-  rcpMethod: string;   // 요리 방법 이름
-  rcpSituation: string; // 요리 종류 이름
+  isOfficial: boolean;
+  rcpMethod: string;
+  rcpSituation: string;
   
-  mainImage: string; // 대표 이미지 경로
-  writer: User;  // 작성자 정보
+  mainImage: string;
+  writer: User;
   
-  totalNutrient: NutrientData; // 전체 영양 정보
-  ingredients: RecipeIngredient[]; // 재료 목록
-  steps: CookingStep[];    // 요리 순서 목록
+  totalNutrient: NutrientData;
+  ingredients: RecipeIngredient[];
+  steps: CookingStep[];
 
-  // 집계 정보
+  avgStars:number;
+
   likeCount: number;
-  dislikeCount: number;
-  avgStars: number;
   reviewCount: number;
-  
-  // 현재 로그인한 유저의 정보 
-  myLikeStatus?: 'LIKE' | 'DISLIKE' ;
 }
 
+
+// --- 모달 Props 타입 ---
+
 export interface WriteReviewModalProps {
-  rcpNo: number; // 어떤 레시피에 대한 리뷰인지 식별
-  onClose: () => void; // 모달을 닫는 함수
-  onReviewSubmit: () => void; // 리뷰 제출 성공 시 호출될 함수
+  rcpNo: number;
+  onClose: () => void;
+  onReviewSubmit: () => void;
 }
 
 export interface PhotoReviewModalProps {
-  photoReviews: Review[]; // 표시할 포토 리뷰 목록
-  initialIndex: number; // 처음 보여줄 이미지의 인덱스
-  onClose: () => void; // 모달을 닫는 함수
+  photoReviews: Review[];
+  initialIndex: number;
+  onClose: () => void;
 }
-

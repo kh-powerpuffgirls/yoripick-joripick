@@ -20,12 +20,14 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    object-fit: cover;
 }
 .profile_name {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 }
-.eat_bti {
+.eat_bti { /* SikBti 컴포넌트를 직접 사용하므로 이 클래스는 필요 없을 수 있습니다. */
     font-size: 12px;
     color: #ff7f50;
     font-weight: 600;
@@ -39,19 +41,25 @@
 /* 신고 버튼 */
 .report {
     border:none;
-    background-color: white;
+    background-color: transparent;
     cursor: pointer;
     color: #636363;
     text-decoration: underline;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     gap: 5px;
+    padding: 0;
 }
 .report img {
     width: 20px;
     height: 20px;
+}
+#action_btn{
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 16px;
 }
 
 /* 정보 테이블 */
@@ -61,16 +69,15 @@
     border-radius: 20px;
     border-collapse: collapse;
     overflow: hidden; /* radius 적용을 위해 */
+    font-size: 15px;
 }
 .info_table th, .info_table td { 
-    border-collapse: collapse;
     padding: 15px;
-    font-size: 15px;
     text-align: center;
     vertical-align: middle;
 }
 .info_table th {
-    background-color: #E8E8E8;
+    background-color: #f8f9fa;
 }
 #tag {
     border: 2px solid #029D60;
@@ -79,18 +86,26 @@
     color: #029D60;
     padding: 8px 16px;
     font-weight: bold;
+    display: inline-block;
 }
 .info_value {
     color: #029D60;
     font-weight: bold;
 }
+.info_table th > span, .info_table th > img {
+    vertical-align: middle;
+    margin: 0 4px;
+}
+
 
 /* 재료 목록 */
 .ing {
-    background-color: #F8F8F8;
+    background-color: #f8f9fa;
     padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
+    border-radius: 8px;
+    margin: 4px;
 }

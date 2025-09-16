@@ -1,0 +1,128 @@
+/* --- 페이지 전체 레이아웃 --- */
+.container {
+    max-width: 1000px;
+    margin: auto;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* --- 상단 헤더 --- */
+.head_title {
+    background-color: #C5E99B;
+    padding: 100px 50px 40px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* 요소들 사이 간격 추가 */
+}
+.approval_star {
+    display: flex;
+    gap: 15px;
+    align-items: center; /* 수직 정렬 */
+}
+.approval_star div {
+    background-color: #92CA02;
+    color: white;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    width: 85px;
+    padding: 5px 10px;
+    text-align: center;
+}
+.approval_star span {
+    color: #FF6767;
+    font-size: 35px;
+    font-weight: bold;
+}
+.other_info {
+    align-self: flex-end;
+    font-size: 20px;
+    color: #636363;
+}
+/* 추가: 헤더의 레시피 이름, 날짜 스타일 */
+.rcp_name {
+    font-weight: bold;
+    font-size: 50px;
+}
+.created_at {
+    font-size: 20px;
+    color: #636363;
+}
+
+
+/* --- 수정/삭제 버튼 --- */
+.user_btn {
+    align-self: flex-end;
+    display: flex;
+    gap: 15px;
+}
+
+#action_btn { /* ID 선택자는 CSS 모듈에서 권장되지 않지만, 기존 코드 유지를 위해 사용 */
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    color: #636363;
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+/* --- 대표 이미지 및 소개 --- */
+.basic_info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px; /* 이미지와 소개글 사이 간격 */
+}
+.basic_info img {
+    height: 400px;
+    width: 400px;
+    border-radius: 20px; /* 이미지 모서리 둥글게 */
+    object-fit: cover;
+}
+.basic_info span {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.6; /* 줄 간격 */
+}
+
+/* --- 좋아요/싫어요 버튼 --- */
+.Likes {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.Likes img {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.Likes img:hover {
+    transform: scale(1.1);
+}
+
+/* ====================================================================
+ 아래 스타일들은 각 자식 컴포넌트(DetailTable, CookingSteps 등)의
+ CSS 모듈 파일로 이동하는 것이 좋습니다.
+ 일단 여기서는 주석 처리합니다.
+====================================================================
+
+.food_info { ... }
+.writer_profile { ... }
+.report { ... }
+table { ... }
+.ing { ... }
+.nutrient { ... }
+.list_method { ... }
+.one_method { ... }
+.reviews_section { ... }
+
+*/
