@@ -1,15 +1,15 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { initialState } from "../type/components";
+import { initialState, type AlertState } from "../type/components";
 
 const alertSlice = createSlice({
     name: 'alert',
     initialState,
-    reducers: {
-        showAlert: (state, action: PayloadAction<React.ReactNode>) => {
-            state.htmlComponent = action.payload;
+    reducers : {
+        showAlert : (state, action:PayloadAction<AlertState>) => {
+            state.htmlComponent = action.payload.htmlComponent;
             state.visible = true;
         },
-        hideAlert: (state) => {
+        hideAlert : (state) => {
             state.htmlComponent = null;
             state.visible = false;
         }

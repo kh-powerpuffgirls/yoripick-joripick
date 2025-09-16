@@ -9,7 +9,7 @@ import { NewChallenge } from "./Admin/newChallenge";
 
 const Header = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const isAdmin = useSelector((state: RootState) => state.auth.user?.roles.includes("ROLE_ADMIN"));
+  const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
   const logout = useLogout();
   const [openNewAnn, setOpenNewAnn] = useState(false);

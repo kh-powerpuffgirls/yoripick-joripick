@@ -11,6 +11,16 @@ export const initialState: AlertState = {
     visible: false,
 };
 
+export type ChatalertState = {
+  type: ChatRoomCreate | null;
+  visible: boolean;
+}
+
+export const chatInitialState: ChatalertState = {
+  type: null,
+  visible: false,
+}
+
 export interface UserNotiSettings {
   newMessage: string;
   newReply: string;

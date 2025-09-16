@@ -5,7 +5,7 @@ import { NewChatModal } from "./alertChat";
 import { hideAlert } from "../../features/alertSlice";
 
 export const ChatAlertModal = () => {
-  const { type, visible } = useSelector((state: RootState) => state.alert);
+  const { type, visible } = useSelector((state: RootState) => state.chatalert);
   const dispatch = useDispatch();
   if (!visible) return null;
   return (
