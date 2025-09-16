@@ -35,13 +35,13 @@ export const fetchRecipes = async (page: number, size: number) => {
     return response.data;
 }
 
-export const resolveRecipes = async (recipe: Recipe) => {
-    // 레시피 타입별로 
-    // 1. reports 인 경우 바로 resolve
-    // 2. recipes 승인 인 경우 -> db값 업데이트
-    // 3. recipes 기각 인 경우 -> ????
-    await api.patch(`/recipes/resolve/${recipe.type.toLowerCase()}/${recipe.rcpNo}`);
-};
+export const disproveRecipe = async (rcpNo: number) => {
+    await api.patch(`/recipes/disprove/${rcpNo}`);
+}
+
+export const approveRecipe = async (rcpNo: number) => {
+    await api.patch(`/recipes/approve/${rcpNo}`);
+}
 
 export const fetchUserReports = async (page: number, size: number) => {
     const response = await api.get('/reports/user',{params: {page, size}});

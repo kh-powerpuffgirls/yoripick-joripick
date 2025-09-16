@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import style from './main.module.css'
-import { fetchChallenges, fetchCommReports, fetchRecipes, fetchUserReports, resolveChallenge, resolveRecipes, resolveReport, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
+import { approveRecipe, disproveRecipe, fetchChallenges, fetchCommReports, fetchRecipes, fetchUserReports, resolveChallenge, resolveReport, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
 import Pagination from '../../components/Pagination';
+import { hideAlert, showAlert } from '../../features/alertSlice';
+import { useDispatch } from 'react-redux';
+import { openChat } from '../../features/chatSlice';
 
 export const AdminDashboard = () => {
     const [userReports, setUserReports] = useState<Reports[]>([]);
@@ -15,7 +18,7 @@ export const AdminDashboard = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [openCards, setOpenCards] = useState<{ [key: number | string]: boolean }>({});
-    console.log(window.location.origin);
+    const dispatch = useDispatch();
 
     const handleToggleCard = (id: number | string) => {
         setOpenCards(prev => ({
@@ -106,14 +109,47 @@ export const AdminDashboard = () => {
                 }
             } else {
                 setRecipes(prev => prev.filter(c => c.reportNo !== report.reportNo));
-                fetchRcpData(1)
-;            }
+                fetchRcpData(1);
+            }
         } catch {
             alert('처리 중 오류가 발생했습니다.');
         }
     };
+    const openChatRcp = (userNo: number, message: string) => {
+        dispatch(openChat())
+    };
+    const openResolveRcpModal = async (recipe: Recipe) => {
+        const disproveRecipeFn = async (message: string) => {
+            try {
+                await disproveRecipe(recipe.rcpNo);
+                setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo && !c.reportNo));
+                fetchRcpData(1);
+                openChatRcp(recipe.userNo, `죄송합니다. ${recipe.title} 레시피가 공식 레시피 전환에 실패했습니다!
+                    기각 사유는 다음과 같습니다: ${message}`);
+            } catch {
+                alert('처리 중 오류가 발생했습니다.');
+            }
+        }
+        dispatch(showAlert(
+            <>
+                <h3>레시피 작성자에게 전달할 내용을 입력해주세요.</h3>
+                <input type="text" name="reason" id="reason" />
+                <button onClick={() => disproveRecipeFn(reason.value)}>기각</button>
+                <button onClick={() => dispatch(hideAlert())}>취소</button>
+            </>
+        ))
+    };
     const handleResolveRcp = async (recipe: Recipe) => {
-        
+        if (!confirm('이 레시피의 공식화 요청을 승인하시겠습니까?')) return;
+        try {
+            await approveRecipe(recipe.rcpNo);
+            setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo && !c.reportNo));
+            fetchRcpData(1);
+            openChatRcp(recipe.userNo, `축하합니다. ${recipe.title} 레시피가 공식 레시피로 전환되었습니다!
+                    감사합니다^.^ 앞으로도 활발한 요리 활동 부탁드립니다 ㅎㅎ`);
+        } catch {
+            alert('처리 중 오류가 발생했습니다.');
+        }
     };
     const handleResolveCh = async (formNo: number) => {
         if (!confirm('이 챌린지 요청을 완료 처리하시겠습니까?')) return;
@@ -190,7 +226,7 @@ export const AdminDashboard = () => {
                                     ) : (
                                         <>
                                             <button onClick={() => handleResolveRcp(c)}>승인</button>
-                                            <button onClick={() => handleResolveRcp(c)}>기각</button>
+                                            <button onClick={() => openResolveRcpModal(c)}>기각</button>
                                         </>
                                     )}
                                 </div>
