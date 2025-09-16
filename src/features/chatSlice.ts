@@ -1,31 +1,45 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { initialState } from "../type/chatmodal";
+import { initialState, type ChatRoom, type Message } from "../type/chatmodal";
 
 const chatSlice = createSlice({
     name: "chat",
     initialState,
     reducers: {
-        openChat: (state, action: PayloadAction<string>) => {
+        resetRoom: (state, action: PayloadAction<string>) => {
+            const target = state.rooms.find(room => room.type === action.payload);
+            if (target) {
+                target.messages = [];
+            }
+        },
+        setRooms: (state, action: PayloadAction<ChatRoom[]>) => {
+            action.payload.forEach((room) => {
+                if (!state.rooms.some((r) => r.roomNo === room.roomNo && r.type === room.type)) {
+                    state.rooms.push(room);
+                }
+            });
+        },
+        openChat: (state, action: PayloadAction<ChatRoom>) => {
             state.isOpen = true;
-            state.currentRoomId = action.payload;
+            const exists = state.rooms.some(room => room.roomNo === action.payload.roomNo);
+            if (!exists) {
+                state.rooms = state.rooms.filter(room => room.className !== action.payload.className);
+                state.rooms.unshift(action.payload);
+            }
+            state.currentRoomId = action.payload.roomNo;
         },
         closeChat: (state) => {
             state.isOpen = false;
-            state.currentRoomId = null;
         },
-        sendMessage: (state, action: PayloadAction<{ text: string }>) => {
-            const room = state.rooms.find((r) => r.id === state.currentRoomId);
+        sendMessage: (state, action: PayloadAction<Message>) => {
+            const room = state.rooms.find((r) => r.roomNo === action.payload.roomNo);
             if (room) {
-                room.messages.push({
-                    id: Date.now().toString(),
-                    text: action.payload.text,
-                    sender: "me"
-                });
-                
+                room.messages.push(action.payload);
+                state.rooms = state.rooms.filter(r => r.roomNo !== room.roomNo);
+                state.rooms.unshift(room);
             }
         }
     }
 })
 
-export const { openChat, closeChat, sendMessage } = chatSlice.actions;
+export const { resetRoom, setRooms, openChat, closeChat, sendMessage } = chatSlice.actions;
 export default chatSlice.reducer;
