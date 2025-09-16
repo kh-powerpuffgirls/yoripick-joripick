@@ -57,6 +57,10 @@ export const resolveReport = async (reportNo: number) => {
     await api.patch(`/reports/${reportNo}`);
 };
 
+export const getChatRoom = async (userNo: number) => {
+    const response = await api.get(`/chatRooms/${userNo}`);
+    return response.data;
+};
 
 export type PageInfo = {
     listCount: number;

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import style from './main.module.css'
-import { approveRecipe, disproveRecipe, fetchChallenges, fetchCommReports, fetchRecipes, fetchUserReports, resolveChallenge, resolveReport, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
+import { approveRecipe, disproveRecipe, fetchChallenges, fetchCommReports, fetchRecipes, fetchUserReports, getChatRoom, resolveChallenge, resolveReport, type ChallengeForm, type PageInfo, type Recipe, type Reports } from '../../api/adminApi';
 import Pagination from '../../components/Pagination';
 import { hideAlert, showAlert } from '../../features/alertSlice';
 import { useDispatch } from 'react-redux';
-import { openChat } from '../../features/chatSlice';
+import { closeChat, openChat, sendMessage } from "../../features/chatSlice";
 
 export const AdminDashboard = () => {
     const [userReports, setUserReports] = useState<Reports[]>([]);
@@ -115,8 +115,18 @@ export const AdminDashboard = () => {
             alert('처리 중 오류가 발생했습니다.');
         }
     };
-    const openChatRcp = (userNo: number, message: string) => {
-        dispatch(openChat())
+    const openChatRcp = async (userNo: number, msg: string) => {
+        const chatRoom = await getChatRoom(userNo);
+        dispatch(openChat(chatRoom));
+        const message: Message = {
+            content: msg,
+            userNo: userNo,
+            username: "admin",
+            button: undefined,
+            createdAt: new Date().toISOString(),
+            roomNo: chatRoom.roomNo,
+        }
+        dispatch(sendMessage(message));
     };
     const openResolveRcpModal = async (recipe: Recipe) => {
         const disproveRecipeFn = async (message: string) => {
