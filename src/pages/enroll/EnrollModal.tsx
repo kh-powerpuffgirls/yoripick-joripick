@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import styles from "./EnrollModal.module.css";
+import errorMessages from "../../components/ErrorMessages";
 
 interface EnrollModalProps {
   onClose: () => void;
@@ -27,7 +28,7 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
 
   const validateEmail = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // 바이트 계산 (초성/중성/종성 모두 2바이트)
+  // 한글/영문/숫자 → 바이트 계산
   const getByteLength = (str: string) => {
     let byteLength = 0;
     for (let i = 0; i < str.length; i++) {
@@ -46,40 +47,44 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
     return byteLength;
   };
 
-
   const validateUsername = (username: string) => {
     const byteLength = getByteLength(username);
     const pattern = /^[\u1100-\u11FF가-힣ㄱ-ㅎa-zA-Z0-9]+$/;
     return pattern.test(username) && byteLength >= 4 && byteLength <= 16;
   };
 
-
   const validatePassword = (value?: string) =>
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[~!@#$%^&*]).{8,15}$/.test(value ?? password);
 
   const handleSendEmail = async () => {
     if (!validateEmail()) {
-      alert("올바른 이메일 주소를 입력하세요.");
+      alert(errorMessages.INVALID_EMAIL);
       emailRef.current?.focus();
       return;
     }
     try {
-      await axios.post("http://localhost:8081/auth/send-code/enroll", { email });
+      await axios.post("http://localhost:8081/auth/email-codes", { email });
       setEmailSent(true);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);
-    } catch (err: any) {
-      if (axios.isAxiosError(err) && err.response) {
-        alert(err.response.data.message || "인증번호 전송 중 오류가 발생했습니다.");
+    } catch (err) {
+      const error = err as AxiosError<{ errorCode: string; message?: string }>;
+      if (error.response) {
+        const { errorCode, message } = error.response.data;
+        alert(errorMessages[errorCode] || message || "인증번호 전송 중 오류가 발생했습니다.");
       } else {
         alert("네트워크 오류가 발생했습니다.");
       }
     }
   };
+  
   const handleVerifyCode = async () => {
     try {
-      const res = await axios.post("http://localhost:8081/auth/verify-code", { email, code: emailCode });
-      setEmailVerified(res.status === 200 && res.data.verified === true);
+      const res = await axios.post("http://localhost:8081/auth/email-codes/verify", {
+        email,
+        code: emailCode,
+      });
+      setEmailVerified(res.data.verified === true);
     } catch {
       alert("인증번호 확인 중 오류가 발생했습니다.");
     }
@@ -87,18 +92,16 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
 
   const handleCheckUsername = async () => {
     if (!validateUsername(username)) {
-      alert("사용자 이름 형식이 올바르지 않습니다.");
+      alert(errorMessages.INVALID_USERNAME);
       usernameRef.current?.focus();
       return;
     }
-
     try {
-      const res = await axios.get("http://localhost:8081/auth/check-username", {
+      const res = await axios.get("http://localhost:8081/auth/users/check", {
         params: { username },
       });
-
       setUsernameStatus(res.data.available);
-    } catch {
+    } catch (err) {
       alert("닉네임 중복 확인 중 오류가 발생했습니다.");
     }
   };
@@ -124,32 +127,40 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return alert("이메일을 입력하세요.");
+    if (!email) return alert(errorMessages.INVALID_EMAIL);
     if (!emailSent) return alert("인증메일 전송 버튼을 눌러주세요.");
     if (!emailVerified) return alert("이메일 인증을 완료해주세요.");
-    if (!username) return alert("사용자 이름을 입력하세요.");
+    if (!username) return alert(errorMessages.INVALID_USERNAME);
     if (usernameStatus !== true) return alert("사용자 이름 중복확인을 해주세요.");
-    if (!password) return alert("비밀번호를 입력하세요.");
-    if (!validatePassword()) return alert("비밀번호 형식이 올바르지 않습니다.");
+    if (!password) return alert(errorMessages.INVALID_PASSWORD);
+    if (!validatePassword()) return alert(errorMessages.INVALID_PASSWORD);
     if (!passwordCheck) return alert("비밀번호 확인을 입력하세요.");
     if (passwordMatch !== true) return alert("비밀번호가 일치하지 않습니다.");
 
     try {
-      const res = await axios.post("http://localhost:8081/auth/enroll", {
+      const res = await axios.post("http://localhost:8081/auth/users", {
         email,
         username,
         password,
       });
 
-      if (!(res.status == 201)) {
+      if (res.status !== 201) {
         return alert(res.data.message || "회원가입 실패");
       }
+
       alert("회원가입 성공!");
       onClose();
-    } catch {
-      alert("회원가입 중 오류가 발생했습니다.");
+    } catch (err) {
+      const error = err as AxiosError<{ errorCode: string; message?: string }>;
+      if (error.response) {
+        const { errorCode, message } = error.response.data;
+        alert(errorMessages[errorCode] || message || "회원가입 중 오류가 발생했습니다.");
+      } else {
+        alert("네트워크 오류가 발생했습니다.");
+      }
     }
   };
+
 
   return (
     <div className={styles.modalOverlay}>

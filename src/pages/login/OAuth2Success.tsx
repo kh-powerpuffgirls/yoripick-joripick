@@ -17,7 +17,7 @@ export default function OAuth2Success() {
     const accessToken = param.get("accessToken") as string;
 
     axios
-      .get("http://localhost:8081/auth/me", {
+      .get("http://localhost:8081/auth/users/me", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
