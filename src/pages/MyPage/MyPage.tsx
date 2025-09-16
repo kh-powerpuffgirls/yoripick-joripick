@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import styles from "./MyPage.module.css";
 import kakaoLogo from "./kakaologo.png";
@@ -13,6 +13,7 @@ import type { RootState } from "../../store/store";
 import { useNavigate } from "react-router-dom";
 import defaultProfile from "./defaultprofile.png"
 import InactiveModal from "../../components/MyPage/InactiveModal";
+import { updateProfileImage } from "../../features/authSlice";
 
 const MyPage = () => {
     const [isProfileModal, setProfileModal] = useState(false);
@@ -20,12 +21,15 @@ const MyPage = () => {
     const [isMemberInfoModal, setMemberInfoModal] = useState(false);
     const [isAlarmModal, setAlarmModal] = useState(false);
     const [isInactiveModal, setInactiveModal] = useState(false);
-
+    const dispatch = useDispatch();
     const [allergyInfo, setAllergyInfo] = useState<string[]>([]);
     const [myRecipes, setMyRecipes] = useState<
         { id: number; title: string; likes: number; img: string }[]
     >([]);
 
+    const handleUpdateProfile = (newUrl: string) => {
+        dispatch(updateProfileImage(newUrl));
+    };
     const user = useSelector((state: RootState) => state.auth.user);
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const navigate = useNavigate();
@@ -173,7 +177,7 @@ const MyPage = () => {
             </div>
 
             {isProfileModal && (
-                <ProfileModal user={user!} onClose={() => setProfileModal(false)} />
+                <ProfileModal user={user!} onClose={() => setProfileModal(false)} onUpdateProfile={handleUpdateProfile} />
             )}
             {isAllergyModal && (
                 <AllergyModal user={user!} onClose={() => setAllergyModal(false)} />
