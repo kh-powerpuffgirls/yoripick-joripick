@@ -58,7 +58,9 @@ const ProfileModal = ({ user, onClose, onUpdateProfile }: ProfileModalProps) => 
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h2 className={styles.title}>프로필 변경</h2>
-          <button className={styles.closeBtn} onClick={onClose}>✖</button>
+          <button className={styles.closeBtn} onClick={onClose}>
+            ✖
+          </button>
         </div>
 
         <img src={previewUrl} alt="profile" className={styles.previewImg} />
@@ -72,8 +74,12 @@ const ProfileModal = ({ user, onClose, onUpdateProfile }: ProfileModalProps) => 
         {profileImg && <p>선택된 파일: {profileImg.name}</p>}
 
         <div className={styles.actions}>
-          <button className={styles.saveBtn} onClick={handleSave}>저장</button>
-          <button className={styles.closeBtn} onClick={onClose}>닫기</button>
+          <button className={styles.saveBtn} onClick={handleSave}>
+            저장
+          </button>
+          <button className={styles.closeBtn} onClick={onClose}>
+            닫기
+          </button>
         </div>
       </div>
     </div>

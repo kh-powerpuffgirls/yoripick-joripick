@@ -30,7 +30,7 @@ api.interceptors.response.use(
 
         if(err.response?.status === 401){
             try{
-                const response = await axios.post(`http://localhost:8081/auth/refresh`,{},{
+                const response = await axios.post(`http://localhost:8081/auth/tokens/refresh`,{},{
                     withCredentials:true
                 });                
                 store.dispatch(loginSuccess(response.data))
