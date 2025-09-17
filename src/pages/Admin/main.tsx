@@ -16,10 +16,14 @@ import {
     type Reports,
 } from '../../api/adminApi';
 import Pagination from '../../components/Pagination';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { openChat, sendMessage } from "../../features/chatSlice";
-import type { Message } from '../../type/chatmodal';
+import type { ChatRoom, Message } from '../../type/chatmodal';
 import { RcpAlertModal } from '../../components/Admin/rcpAlertModal';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { saveMessage } from '../../api/chatApi';
+import useChat from '../../hooks/useChat';
+import type { RootState } from '../../store/store';
 
 export const AdminDashboard = () => {
     const [userReports, setUserReports] = useState<Reports[]>([]);
@@ -38,8 +42,11 @@ export const AdminDashboard = () => {
     const [confirmInput, setConfirmInput] = useState(false);
     const [confirmTarget, setConfirmTarget] = useState<any>(null);
     const [confirmAction, setConfirmAction] = useState<(value?: string) => void>(() => () => { });
+    const { sendChatMessage } = useChat();
+    const user = useSelector((state: RootState) => state.auth.user);
 
     const dispatch = useDispatch();
+    const queryClient = useQueryClient();
 
     const handleToggleCard = (id: number | string) => {
         setOpenCards((prev) => ({
@@ -139,23 +146,45 @@ export const AdminDashboard = () => {
     };
 
     // 레시피 승인
+    const approveMutation = useMutation({
+        mutationFn: ({ roomNo, formData }: { roomNo: string | number; formData: FormData }) =>
+            saveMessage("admin", roomNo, formData),
+        onSuccess: (res, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["rooms", variables.roomNo] });
+            sendChatMessage(variables.roomNo, res);
+        },
+    });
+
+    // 레시피 승인 함수
     const handleResolveRcp = async (recipe: Recipe) => {
         try {
             await approveRecipe(recipe.rcpNo);
             setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo));
             fetchRcpData(1);
+
+            // 채팅방 가져오기
             const chatRoom = await getChatRoom(recipe.userNo);
-            dispatch(openChat(chatRoom));
+            
+            // 메시지 객체 생성
             const message: Message = {
                 content: `축하합니다! ${recipe.title} 레시피가 공식 레시피로 전환되었습니다.`,
-                userNo: recipe.userNo,
-                username: "admin",
+                userNo: user?.userNo as number,
+                username: user?.username as string,
                 createdAt: new Date().toISOString(),
                 roomNo: chatRoom.roomNo
             };
-            sendMessage(message);
-        } catch {
-            alert('처리 중 오류가 발생했습니다.');
+
+            // 서버에 보낼 formData
+            const messageBlob = new Blob([JSON.stringify(message)], { type: "application/json" });
+            const formData = new FormData();
+            formData.append("message", messageBlob);
+
+            // 뮤테이션 실행
+            approveMutation.mutate({ roomNo: chatRoom.roomNo, formData });
+            dispatch(openChat(chatRoom));
+        } catch (err) {
+            alert("처리 중 오류가 발생했습니다.");
+            console.error(err);
         }
     };
 

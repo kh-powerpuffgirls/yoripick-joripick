@@ -59,7 +59,6 @@ export const ChatModal = () => {
         mutationFn: (message: FormData) =>
             saveMessage(currentRoom?.type, currentRoomId, message),
         onSuccess: (res) => {
-            console.log(res);
             queryClient.invalidateQueries({ queryKey: ["rooms", userNo] });
             sendChatMessage(currentRoomId, res);
         }
@@ -80,7 +79,7 @@ export const ChatModal = () => {
             { type: "application/json" }
         );
         let formData = new FormData();
-        formData.append("message", messageBlob)
+        formData.append("message", messageBlob);
 
         if (type === "cservice") {
             mutation.mutate(formData);

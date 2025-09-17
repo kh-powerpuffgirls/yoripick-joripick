@@ -6,9 +6,11 @@ import boardsReducer from '../features/boardsSlice';
 import auth from '../features/authSlice'
 import noti from '../features/notiSlice'
 import userReducer from '../features/userSlice';
+import stomp from '../features/stompSlice';
 
 export const store = configureStore({
     reducer: {
+        stomp,
         chatalert,
         alert,
         chat,
