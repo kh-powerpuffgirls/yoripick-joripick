@@ -14,10 +14,10 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const [emailVerified, setEmailVerified] = useState<null | boolean>(null);
   const [usernameStatus, setUsernameStatus] = useState<null | boolean>(null);
   const [passwordMatch, setPasswordMatch] = useState<null | boolean>(null);
-  const [showAlert, setShowAlert] = useState(false);
   const [passwordValid, setPasswordValid] = useState<null | boolean>(null);
 
   const emailRef = useRef<HTMLInputElement>(null);

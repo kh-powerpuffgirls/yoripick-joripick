@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type AuthState, type LoginResponse } from "../type/authtype";
+import { type AuthState, type LoginResponse, type User } from "../type/authtype";
 
 const initialState: AuthState = {
   accessToken: null,
@@ -33,8 +33,22 @@ const authSlice = createSlice({
         state.user.profile = action.payload;
       }
     },
+    updateImageNo : (state, action: PayloadAction<number>) => {
+      if (state.user) {
+        state.user.imageNo = action.payload;
+      }
+    },
+    updateUserInfo: (
+      state,
+      action: PayloadAction<Partial<Pick<User, "username" | "email">>>
+    ) => {
+      if (state.user) {
+        if (action.payload.username) state.user.username = action.payload.username;
+        if (action.payload.email) state.user.email = action.payload.email;
+      }
+    },
   },
 });
 
-export const { loginSuccess, logout, updateProfileImage } = authSlice.actions;
+export const { loginSuccess, saveUserData, logout, updateProfileImage, updateImageNo, updateUserInfo,} = authSlice.actions;
 export default authSlice.reducer;

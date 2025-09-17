@@ -1,7 +1,10 @@
 import React, { useState, useRef } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import styles from "./Modal.module.css";
 import type { User } from "../../type/authtype";
+import errorMessages from "../ErrorMessages";
+import { useDispatch } from "react-redux";
+import { updateUserInfo } from "../../features/authSlice";
 
 interface MemberInfoModalProps {
   user: User;
@@ -18,6 +21,12 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
   const [usernameStatus, setUsernameStatus] = useState<null | boolean>(null);
   const [emailStatus, setEmailStatus] = useState<null | boolean>(null);
 
+  const [emailSent, setEmailSent] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const [emailCode, setEmailCode] = useState("");
+  const [emailVerified, setEmailVerified] = useState<null | boolean>(null);
+
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [newPwCheck, setNewPwCheck] = useState("");
@@ -27,7 +36,8 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
   const usernameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
-  // === 유효성 검사 함수들 ===
+  const dispatch = useDispatch();
+
   const validateEmail = (val: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 
@@ -58,25 +68,65 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
   const validatePassword = (val: string) =>
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[~!@#$%^&*]).{8,15}$/.test(val);
 
-  // === 중복확인 ===
   const handleCheckUsername = async () => {
     if (!validateUsername(username)) {
-      alert("닉네임 형식이 올바르지 않습니다. (한글/영문/숫자 4~16byte)");
+      alert("닉네임 형식이 올바르지 않습니다.(한글/영문/숫자 4~16byte)");
       usernameRef.current?.focus();
       return;
     }
-    // TODO: 서버 API로 중복검사
-    setUsernameStatus(username.toLowerCase() !== "test");
+    try {
+      const res = await axios.get("http://localhost:8081/auth/users/check", {
+        params: { username },
+      });
+      setUsernameStatus(res.data.available);
+    } catch {
+      alert("닉네임 중복 확인 중 오류가 발생했습니다.");
+    }
   };
 
   const handleCheckEmail = async () => {
-    if (!validateEmail(email)) {
+    const trimmedEmail = email.trim();
+    if (!validateEmail(trimmedEmail)) {
       alert("이메일 형식이 올바르지 않습니다.");
       emailRef.current?.focus();
       return;
     }
-    // TODO: 서버 API로 중복검사
-    setEmailStatus(email.toLowerCase() !== "duplicate@nate.com");
+    try {
+      const res = await axios.post("http://localhost:8081/auth/email-codes", {
+        email: trimmedEmail,
+      });
+      setEmailStatus(res.data.available);
+      setEmailSent(true);
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+    } catch (err) {
+      const error = err as AxiosError<{ errorCode: string; message?: string }>;
+      if (error.response) {
+        const { errorCode } = error.response.data;
+        if (errorCode === "EMAIL_ALREADY_EXISTS") {
+          setEmailStatus(false);
+          return;
+        }
+        if (errorCode === "INVALID_EMAIL") {
+          alert(errorMessages[errorCode]);
+          return;
+        }
+      }
+      alert("네트워크 오류가 발생했습니다.");
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      const res = await axios.post("http://localhost:8081/auth/email-codes/verify", {
+        email,
+        code: emailCode,
+      });
+      setEmailVerified(res.data.verified === true);
+    } catch {
+      alert("인증번호 확인 중 오류가 발생했습니다.");
+      setEmailVerified(false);
+    }
   };
 
   const onNewPwChange = (val: string) => {
@@ -90,38 +140,60 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
     setPasswordMatch(newPw === val);
   };
 
-  // === 저장 ===
   const handleSave = async () => {
     if (isEditingUsername && usernameStatus !== true) {
       return alert("닉네임 중복확인을 해주세요.");
     }
-    if (isEditingEmail && emailStatus !== true) {
-      return alert("이메일 중복확인을 해주세요.");
+    if (isEditingEmail) {
+      if (emailStatus !== true) return alert("이메일 중복확인을 해주세요.");
+      if (emailVerified !== true) return alert("이메일 인증을 완료해주세요.");
     }
     if (newPw && (!passwordValid || passwordMatch !== true)) {
       return alert("비밀번호 조건을 만족하거나 확인이 일치해야 합니다.");
     }
 
+    const updatePayload: Record<string, string> = {};
+    if (isEditingUsername) updatePayload.username = username;
+    if (isEditingEmail) updatePayload.email = email;
+    if (newPw) {
+      updatePayload.currentPassword = currentPw;
+      updatePayload.newPassword = newPw;
+    }
+
+    updatePayload.userNo = String(user.userNo);
+    if (Object.keys(updatePayload).length === 0) {
+      return alert("변경된 내용이 없습니다.");
+    }
+
     try {
-      console.log({ username, email, currentPw, newPw });
-      // await axios.put("http://localhost:8081/auth/update", { ... });
-      alert("수정 성공!");
+      const res = await axios.put("http://localhost:8081/mypage/update", updatePayload);
+      alert(res.data.message);
+
+      dispatch(updateUserInfo({
+      username: isEditingUsername ? username : undefined,
+      email: isEditingEmail ? email : undefined,
+    }));
+
       onClose();
-    } catch {
-      alert("회원정보 수정 중 오류 발생");
+    } catch (err) {
+      const error = err as AxiosError<{ errorCode?: string; message?: string }>;
+      if (error.response?.data?.errorCode) {
+        const errorCode = error.response.data.errorCode;
+        alert(errorMessages[errorCode] ?? "알 수 없는 오류가 발생했습니다.");
+      } else {
+        alert("네트워크 오류가 발생했습니다.");
+      }
     }
   };
 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        {/* 헤더 */}
         <div className={styles.modalHeader}>
           <h2 className={styles.title}>회원 정보 수정</h2>
           <button className={styles.closeBtn} onClick={onClose}>✖</button>
         </div>
 
-        {/* 닉네임 */}
         <label>닉네임</label>
         {isEditingUsername ? (
           <div className={styles.inputRow}>
@@ -143,57 +215,72 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
         {usernameStatus === true && <p className={styles.successTextSmall}>사용 가능한 닉네임입니다</p>}
         {usernameStatus === false && <p className={styles.errorTextSmall}>중복된 닉네임입니다</p>}
 
-        {user.provider === "local" && (
+        {user.provider === null && (
           <>
-        <label>이메일</label>
-        {isEditingEmail ? (
-          <div className={styles.inputRow}>
+            <label>이메일</label>
+            {isEditingEmail ? (
+              <div className={styles.inputRow}>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setEmailStatus(null); setEmailVerified(null); }}
+                  ref={emailRef}
+                  placeholder="이메일은 중복될 수 없습니다."
+                />
+                <button type="button" className={styles.subBtn} onClick={handleCheckEmail}>중복확인</button>
+                <button type="button" className={styles.cancelBtn} onClick={() => setEditingEmail(false)}>취소</button>
+              </div>
+            ) : (
+              <div className={styles.inputRow}>
+                <span>{email}</span>
+                <button type="button" className={styles.subBtn} onClick={() => setEditingEmail(true)}>수정</button>
+              </div>
+            )}
+
+            {emailStatus === true && <p className={styles.successTextSmall}>사용 가능한 이메일입니다. 인증번호를 입력해주세요.</p>}
+            {emailStatus === false && <p className={styles.errorTextSmall}>중복된 이메일입니다</p>}
+
+            {isEditingEmail && emailSent && (
+              <div className={styles.inputRow}>
+                <input
+                  type="text"
+                  value={emailCode}
+                  onChange={(e) => { setEmailCode(e.target.value); setEmailVerified(null); }}
+                  placeholder="인증번호 입력"
+                />
+                <button type="button" className={styles.subBtn} onClick={handleVerifyCode}>인증</button>
+              </div>
+            )}
+            {emailVerified === true && <p className={styles.successTextSmall}>이메일 인증 완료</p>}
+            {emailVerified === false && <p className={styles.errorTextSmall}>인증번호가 올바르지 않습니다.</p>}
+
+            <label>현재 비밀번호</label>
+            <input type="password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} />
+
+            <label>새 비밀번호</label>
             <input
-              type="email"
-              value={email}
-              onChange={e => { setEmail(e.target.value); setEmailStatus(null); }}
-              ref={emailRef}
-              placeholder="이메일은 중복될 수 없습니다."
+              type="password"
+              value={newPw}
+              onChange={e => onNewPwChange(e.target.value)}
+              placeholder="영문, 숫자, 특수문자 포함 8~15자"
             />
-            <button type="button" className={styles.subBtn} onClick={handleCheckEmail}>중복확인</button>
-            <button type="button" className={styles.cancelBtn} onClick={() => setEditingEmail(false)}>취소</button>
-          </div>
-        ) : (
-          <div className={styles.inputRow}>
-            <span>{email}</span>
-            <button type="button" className={styles.subBtn} onClick={() => setEditingEmail(true)}>수정</button>
-          </div>
+            {newPw && passwordValid === false && (
+              <p className={styles.errorTextSmall}>
+                비밀번호는 영문, 숫자, 특수문자 포함 8~15글자이어야 합니다.
+              </p>
+            )}
+
+            <label>새 비밀번호 확인</label>
+            <input
+              type="password"
+              value={newPwCheck}
+              onChange={e => onNewPwCheckChange(e.target.value)}
+              placeholder="비밀번호 동일하게 입력해주세요."
+            />
+            {passwordMatch === true && <p className={styles.successTextSmall}>비밀번호가 일치합니다.</p>}
+            {passwordMatch === false && <p className={styles.errorTextSmall}>비밀번호가 다릅니다.</p>}
+          </>
         )}
-        {emailStatus === true && <p className={styles.successTextSmall}>사용 가능한 이메일입니다</p>}
-        {emailStatus === false && <p className={styles.errorTextSmall}>중복된 이메일입니다</p>}
-
-        <label>현재 비밀번호</label>
-        <input type="password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} />
-
-        <label>새 비밀번호</label>
-        <input
-          type="password"
-          value={newPw}
-          onChange={e => onNewPwChange(e.target.value)}
-          placeholder="영문, 숫자, 특수문자 포함 8~15자"
-        />
-        {newPw && passwordValid === false && (
-          <p className={styles.errorTextSmall}>
-            비밀번호는 영문, 숫자, 특수문자 포함 8~15글자이어야 합니다.
-          </p>
-        )}
-
-        <label>새 비밀번호 확인</label>
-        <input
-          type="password"
-          value={newPwCheck}
-          onChange={e => onNewPwCheckChange(e.target.value)}
-          placeholder="비밀번호 동일하게 입력해주세요."
-        />
-        {passwordMatch === true && <p className={styles.successTextSmall}>비밀번호가 일치합니다.</p>}
-        {passwordMatch === false && <p className={styles.errorTextSmall}>비밀번호가 다릅니다.</p>}
-        </>
-      )}
 
         <div className={styles.actions}>
           <button className={styles.saveBtn} onClick={handleSave}>저장</button>

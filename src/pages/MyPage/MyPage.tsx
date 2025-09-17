@@ -30,6 +30,8 @@ const MyPage = () => {
     const handleUpdateProfile = (newUrl: string) => {
         dispatch(updateProfileImage(newUrl));
     };
+
+    const [profileImg, setProfileImg] = useState<File | null>(null);
     const user = useSelector((state: RootState) => state.auth.user);
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const navigate = useNavigate();
@@ -64,11 +66,15 @@ const MyPage = () => {
 
         const fetchData = async () => {
             try {
-                const recipeRes = await api.get(`/users/${user.userNo}/recipes`);
-                setMyRecipes(recipeRes.data);
+                const response = await api.post(`/users/profiles`, user);
+                console.log(user);
+                dispatch(updateProfileImage(response.data));
 
-                const allergyRes = await api.get(`/users/${user.userNo}/allergies`);
-                setAllergyInfo(allergyRes.data);
+                // const recipeRes = await api.get(`/users/${user.userNo}/recipes`);
+                // setMyRecipes(recipeRes.data);
+
+                // const allergyRes = await api.get(`/users/${user.userNo}/allergies`);
+                // setAllergyInfo(allergyRes.data);
             } catch (err) {
                 console.error("마이페이지 데이터 불러오기 오류:", err);
             }
@@ -90,7 +96,7 @@ const MyPage = () => {
             {user && (
                 <section className={styles.profileSection}>
                     <div className={styles.leftProfile}>
-                        <img src={`http://localhost:8081${user.profile}`} alt="프로필 이미지" />
+                        <img src={ user.profile ? `${user.profile}` : defaultProfile} alt="프로필 이미지" className={styles.profileImg}/>
                     </div>
 
                     <div className={styles.profileInfo}>
@@ -174,7 +180,7 @@ const MyPage = () => {
             </div>
 
             {isProfileModal && (
-                <ProfileModal user={user!} onClose={() => setProfileModal(false)} onUpdateProfile={handleUpdateProfile} />
+                <ProfileModal user={user!} onClose={() => setProfileModal(false)} onUpdateProfile={handleUpdateProfile} profileImg={profileImg} setProfileImg={setProfileImg} />
             )}
             {isAllergyModal && (
                 <AllergyModal user={user!} onClose={() => setAllergyModal(false)} />

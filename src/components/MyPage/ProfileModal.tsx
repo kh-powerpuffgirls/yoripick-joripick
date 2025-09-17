@@ -3,16 +3,20 @@ import type { User } from "../../type/authtype";
 import { useState } from "react";
 import axios from "axios";
 import { api } from "../../api/authApi";
+import { useDispatch } from "react-redux";
+import { updateImageNo, updateProfileImage } from "../../features/authSlice";
 
 interface ProfileModalProps {
   user: User;
   onClose: () => void;
   onUpdateProfile: (url: string) => void;
+  profileImg: File | null;
+  setProfileImg: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
-const ProfileModal = ({ user, onClose, onUpdateProfile }: ProfileModalProps) => {
-  const [profileImg, setProfileImg] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>(user.profile || "/default-profile.png");
+const ProfileModal = ({ user, onClose, onUpdateProfile , profileImg, setProfileImg}: ProfileModalProps) => {
+  const dispatch = useDispatch();
+  const [previewUrl, setPreviewUrl] = useState<string>(user.profile || "default-profile.png");
   const handleFileChange = (file: File | null) => {
     if (file) {
       setProfileImg(file);
@@ -40,8 +44,8 @@ const ProfileModal = ({ user, onClose, onUpdateProfile }: ProfileModalProps) => 
         alert(res.data.message);
 
         if (res.data.url) {
-          onUpdateProfile(res.data.url);
-          setPreviewUrl(res.data.url);
+          dispatch(updateProfileImage(res.data.url));
+          dispatch(updateImageNo(res.data.imageNo));
         }
       } else {
         alert(res.data.message);
