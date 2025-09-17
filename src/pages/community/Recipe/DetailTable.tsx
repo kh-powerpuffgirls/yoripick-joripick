@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { RecipeDetail } from '../../../type/Recipe';
 import styles from './DetailTable.module.css';
 import type { RootState } from '../../../store/store';
@@ -21,12 +22,27 @@ interface DetailTableProps {
 const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
   const loginUserNo = useSelector((state: RootState) => state.auth.user?.userNo);
   const isOwner = loginUserNo === recipe.writer.userNo;
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    navigate(`/profile/${recipe.writer.userNo}`);
+  };
+
+  const roundNutrients = (nutrients: typeof recipe.totalNutrient) => {
+    const rounded = { ...nutrients };
+    for (const key in rounded) {
+      rounded[key as keyof typeof rounded] = parseFloat(
+        rounded[key as keyof typeof rounded].toFixed(2)
+      );
+    }
+    return rounded;
+  };
 
   return (
     <div className={styles.food_info}>
       {/* --- 작성자 정보 및 신고 버튼 --- */}
       <div className={styles.user_report}>
-        <div className={styles.writer_profile}>
+        <div className={styles.writer_profile} onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
           <img src={recipe.writer.serverName || sampleProfileImg} alt={recipe.writer.username} />
           <div className={styles.profile_name}>
             {recipe.writer.sik_bti && <SikBti sikBti={recipe.writer.sik_bti} />}
@@ -69,16 +85,20 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
               <td colSpan={2}>
                 {recipe.ingredients[rowIndex * 2] ? (
                   <div className={styles.ing}>
-                    <span>✔ {recipe.ingredients[rowIndex * 2].ingName}</span>
-                    <span>{recipe.ingredients[rowIndex * 2].quantity} ({recipe.ingredients[rowIndex * 2].weight}g)</span>
+                    <span>✔ </span>
+                    <span>{recipe.ingredients[rowIndex * 2].ingName}</span>
+                    <span>{recipe.ingredients[rowIndex * 2].quantity} </span>
+                    <span>{recipe.ingredients[rowIndex * 2].weight}g</span>
                   </div>
                 ) : null}
               </td>
               <td colSpan={2}>
                 {recipe.ingredients[rowIndex * 2 + 1] ? (
                   <div className={styles.ing}>
-                    <span>✔ {recipe.ingredients[rowIndex * 2 + 1].ingName}</span>
-                    <span>{recipe.ingredients[rowIndex * 2 + 1].quantity} ({recipe.ingredients[rowIndex * 2 + 1].weight}g)</span>
+                    <span>✔</span> 
+                    <span>{recipe.ingredients[rowIndex * 2 + 1].ingName}</span>
+                    <span>{recipe.ingredients[rowIndex * 2 + 1].quantity}</span>
+                    <span>{recipe.ingredients[rowIndex * 2 + 1].weight}g</span>
                   </div>
                 ) : null}
               </td>
@@ -88,7 +108,7 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
           <tr>
             <td colSpan={4}>
               {/* ✨ NutrientInfo 컴포넌트를 재사용하여 영양 정보 표시 */}
-              <NutrientInfo nutrients={recipe.totalNutrient} />
+              <NutrientInfo nutrients={roundNutrients(recipe.totalNutrient)} />
             </td>
           </tr>
         </tbody>

@@ -87,8 +87,8 @@
 .basic_info img {
     height: 400px;
     width: 400px;
-    border-radius: 20px; /* 이미지 모서리 둥글게 */
-    object-fit: cover;
+    border-radius: 20px; 
+    object-fit: contain;
 }
 .basic_info span {
     font-size: 24px;
@@ -109,21 +109,3 @@
 .Likes img:hover {
     transform: scale(1.1);
 }
-
-/* ====================================================================
- 아래 스타일들은 각 자식 컴포넌트(DetailTable, CookingSteps 등)의
- CSS 모듈 파일로 이동하는 것이 좋습니다.
- 일단 여기서는 주석 처리합니다.
-====================================================================
-
-.food_info { ... }
-.writer_profile { ... }
-.report { ... }
-table { ... }
-.ing { ... }
-.nutrient { ... }
-.list_method { ... }
-.one_method { ... }
-.reviews_section { ... }
-
-*/

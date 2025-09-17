@@ -1,3 +1,4 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 /* DetailModal.module.css */
 
 /* --- 공통 모달 배경 --- */
@@ -24,20 +25,73 @@
 .modal_writereview { width: 600px; border: 1px solid #E8E8E8; border-radius: 20px; background-color: white; }
 .continer { display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 20px; }
 .profile_stars { display: flex; align-items: center; gap: 20px; }
-.content { display: flex; flex-direction: column; gap: 10px; width: 80%; font-size: 20px; }
-.content input[type="text"] { border: none; background-color: #E8E8E8; box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.25); border-radius: 10px; height: 40px; padding: 0 20px; }
-.btn { display: flex; gap: 15px; }
+
+.content { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    width: 80%; 
+    font-size: 20px; 
+}
+.content input[type="text"] { 
+    border: none; 
+    background-color: #E8E8E8; 
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.25); 
+    border-radius: 10px; 
+    padding: 0 20px; 
+    height: 40px;
+}
+.btn { 
+    display: flex; 
+    gap: 15px;
+}
 .btn button { color: white; border-radius: 10px; border: none; padding: 10px 30px; font-size: 16px; font-weight: 600; cursor: pointer; }
 .btn #cancel { background-color: #ACACAC; }
 .btn #complete { background-color: #636363; }
-.rate { display: inline-block; border: 0; }
+/* .rate { display: inline-block; border: 0; }
 .rate > input { display: none; }
 .rate > label { float: right; color: #ddd; }
 .rate > label:before { display: inline-block; font-size: 3rem; padding: .3rem .2rem; margin: 0; cursor: pointer; font-family: FontAwesome; content: "\f005 "; }
 .rate .half:before { content: "\f089 "; position: absolute; padding-right: 0; }
 .rate input:checked ~ label, .rate label:hover, .rate label:hover ~ label { color: #f73c32 !important; }
-.rate input:checked + .rate label:hover, .rate input:checked ~ label:hover, .rate input:checked ~ .rate label:hover ~ label, .rate label:hover ~ input:checked ~ label { color: #f73c32 !important; }
-.upload_box { width: 200px; height: 150px; border: 2px dashed #ccc; border-radius: 8px; cursor: pointer; position: relative; background-color: #eee; display: flex; align-self: center; justify-content: center; color: #888; font-size: 48px; }
+.rate input:checked + .rate label:hover, .rate input:checked ~ label:hover, .rate input:checked ~ .rate label:hover ~ label, .rate label:hover ~ input:checked ~ label { color: #f73c32 !important; } */
+/* 별점 */
+.rate {
+    display: inline-block;
+    border: 0;
+    margin-right: 15px;
+}
+.rate > input {
+    display: none;
+}
+.rate > label {
+    float: right;
+    color: #ddd
+}
+.rate > label:before {
+    display: inline-block;
+    font-size: 3rem;
+    padding: .3rem .2rem;
+    margin: 0;
+    cursor: pointer;
+    font-family: FontAwesome;
+    content: "\f005 ";}
+.rate .half:before {
+    content: "\f089 ";
+    position: absolute;
+    padding-right: 0;
+}
+.rate input:checked ~ label, 
+.rate label:hover,.rate label:hover ~ label {
+     color: #f73c32 !important;  
+} 
+.rate input:checked + .rate label:hover,
+.rate input input:checked ~ label:hover,
+.rate input:checked ~ .rate label:hover ~ label,  
+.rate label:hover ~ input:checked ~ label {
+     color: #f73c32 !important;  
+} 
+.upload_box { width: 200px; height: 150px; border: 2px dashed #ccc; border-radius: 8px; cursor: pointer; position: relative; background-color: #eee; display: flex; align-self: center; justify-content: center; color: #888; font-size: 48px; align-items: center;}
 .upload_box img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
 .file_name { margin-top: 6px; font-size: 12px; color: #666; text-align: center; }
 

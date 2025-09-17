@@ -65,23 +65,28 @@
 /* 정보 테이블 */
 .info_table {
     width: 100%;
-    border: 1px solid #3e58226c;
-    border-radius: 20px;
+    border-radius: 10px;
     border-collapse: collapse;
     overflow: hidden; /* radius 적용을 위해 */
     font-size: 15px;
+    table-layout: fixed;
+    box-shadow: 0 0 0 1px #666666;
 }
-.info_table th, .info_table td { 
+.info_table th{
+    border-bottom: 1px solid #ccc;
+    padding : 20px;
+    width: 50%;
+    background-color: #E8E8E8;
+}
+.info_table td { 
     padding: 15px;
     text-align: center;
     vertical-align: middle;
 }
-.info_table th {
-    background-color: #f8f9fa;
-}
+
 #tag {
     border: 2px solid #029D60;
-    border-radius: 15px;
+    border-radius: 10px;
     background-color: white;
     color: #029D60;
     padding: 8px 16px;
@@ -100,12 +105,12 @@
 
 /* 재료 목록 */
 .ing {
-    background-color: #f8f9fa;
+    background-color: #E8E8E8;
     padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: 10px;
     margin: 4px;
 }

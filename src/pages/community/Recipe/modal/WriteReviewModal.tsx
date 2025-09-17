@@ -15,6 +15,7 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({ rcpNo, onClose, onR
   const [preview, setPreview] = useState<string | null>(null);
 
   const userProfile = useSelector((state: RootState) => state.auth.user?.profile);
+  const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
   // 유저 프로필
   const profileImageUrl = userProfile 
@@ -40,21 +41,38 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({ rcpNo, onClose, onR
 
   // '작성 완료' 버튼 클릭 시
   const handleSubmit = async () => {
-    if (stars === 0) return alert('별점을 선택해주세요.');
-    if (!content.trim()) return alert('한줄 리뷰를 입력해주세요.');
-
+    if (stars === 0) {
+      alert('별점을 선택해주세요.');
+      return; 
+    }
+    if (!content.trim()) {
+      alert('한줄 리뷰를 입력해주세요.');
+      return;
+    }
     const formData = new FormData();
     formData.append('rcpNo', String(rcpNo));
     formData.append('stars', String(stars));
     formData.append('content', content);
     if (imageFile) formData.append('image', imageFile);
-
+    
     try {
-      await api.post('/api/reviews', formData, { 
-        headers: {'Content-Type': 'multipart/form-data'} 
-      });
+      if (!userNo) {
+          alert('로그인이 필요합니다.');
+          return;
+      }
+
+      await api.post(
+        `/api/community/recipe/${rcpNo}/reviews/${userNo}`, 
+        formData, 
+        { 
+          headers: {'Content-Type': 'multipart/form-data'} 
+        }
+      );
+
       alert('리뷰가 성공적으로 등록되었습니다.');
       onReviewSubmit(); // 부모에게 완료 사실을 알려 리뷰 목록 새로고침
+      onClose();
+      
     } catch (error) {
       console.error("리뷰 등록 실패:", error);
       alert('리뷰 등록에 실패했습니다.');

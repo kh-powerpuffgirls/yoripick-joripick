@@ -83,7 +83,8 @@ const RecipeWrite: React.FC = () => {
         }, { calories: 0, carbs: 0, protein: 0, fat: 0, sodium: 0 });
 
         for (const key in totals) {
-            totals[key as keyof NutrientData] = Math.round(totals[key as keyof NutrientData]);
+            // totals[key as keyof NutrientData] = Math.round(totals[key as keyof NutrientData]);
+           totals[key as keyof NutrientData] = parseFloat(totals[key as keyof NutrientData].toFixed(2));
         }
         setTotalNutrients(totals);
     }, [ingredients]);
