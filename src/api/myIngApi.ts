@@ -31,13 +31,19 @@ api.interceptors.response.use(
     }
 )
 
-export const getMyIngs = async function (userNo: number | undefined) {
-    const response = await api.get(`/${userNo}`);
+export const getMyIngs = async function (param:{userNo: number, sortNo?: number, keyword?:string}) {
+    const response = await api.get(`/${param.userNo}`, {
+        params:{
+            userNo: param.userNo,
+            sortNo: param.sortNo, 
+            keyword:param.keyword
+        }
+    });
     return response.data;
 }
 
 export const insertMyIng = async function (newMyIng:MyIngCreate) {
-    const response = await api.post(`/write`, newMyIng);
+    const response = await api.post(`/detail`, newMyIng);
     return response.data;
 }
 
@@ -57,7 +63,13 @@ export const updateMyIng = async function (ingNo:number, userNo:number, newMyIng
     return response.data;
 }
 
-export const searchMyIngs = async function (submittedKeyword: string, userNo:number) {
-    const response = await api.get<MyIngItem[]>(`/${userNo}`);
+export const searchMyIngs = async function (param:{userNo: number, sortNo?: number, keyword?:string}) {
+    const response = await api.get<MyIngItem[]>(`/${param.userNo}`, {
+        params:{
+            userNo: param.userNo,
+            sortNo: param.sortNo, 
+            keyword:param.keyword
+        }
+    });
     return response.data;
 }

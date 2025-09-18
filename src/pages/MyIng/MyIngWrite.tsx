@@ -6,10 +6,10 @@ import cx from "classnames";
 import { useSelector } from "react-redux";
 import type { RootState } from '../../store/store';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { initialState, type MyIngCreate } from "../../type/Ing";
+import { initialState, type MyIngCreate, type MyIngItem } from "../../type/Ing";
 import { insertMyIng as createMyIng } from "../../api/myIngApi";
 import useInput from "../../hooks/useInput";
-import { type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { formatDate, openIngPopup } from "./common";
 
 export default function MyIngWrite(){
@@ -17,15 +17,39 @@ export default function MyIngWrite(){
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const navigate = useNavigate();
-    const [newMyIng, handleInputChange] = useInput<MyIngCreate>(initialState);
-
+    const [newMyIng, setNewMyIng] = useState<MyIngCreate>(initialState);
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data?.type === 'ING_RESULT') {
+            const { ingNo, ingName, ingCode, ingCodeName } = event.data.payload;
+
+            setNewMyIng((prev) => ({
+                ...prev,
+                ingNo,
+                ingName,
+                ingCode,
+                ingCodeName,
+            }));
+            }
+        };
+
+        setNewMyIng((prev) => ({...prev,userNo:userNo as number}));
+
+        window.addEventListener('message', handleMessage);
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, [userNo]);
+
     const mutation = useMutation({
             mutationFn: (newMyIng:MyIngCreate) => createMyIng(newMyIng),
             onSuccess: (res) => {
                 // 등록 요청 성공 시
                 queryClient.invalidateQueries({queryKey:['MyIngs']}); // 메뉴 목록 데이터 캐시 무효화
-                navigate(`/mypage/inglist`, {
+
+                navigate('/mypage/inglist', {
                     state: {flash: "식재료가 등록되었습니다."}
                 });
             }
@@ -46,18 +70,11 @@ export default function MyIngWrite(){
             alert('식재료를 선택하세요');
             return;
         }
-        if(newMyIng.quantity == null){
+        if(newMyIng.quantity == null || newMyIng.quantity == ''){
             alert('수량을 입력하세요');
             return;
         }
-
-        const payload = {
-            ...newMyIng,
-            userNo: userNo ?? 0,
-            createdAt: new Date(newMyIng.createdAt ?? ''),
-            expDate: new Date(newMyIng.expDate ?? '')
-        }
-        mutation.mutate(payload); //비동기함수 실행
+        mutation.mutate(newMyIng); //비동기함수 실행
     }
 
     
@@ -86,13 +103,14 @@ export default function MyIngWrite(){
                             <select name="ingCodeName" className={MyIngWriteStyle["drop-menu"]} onClick={openIngPopup}>
                                 <option value={newMyIng.ingCode} className={MyIngWriteStyle["drop-item"]}>{newMyIng.ingCodeName}</option>
                             </select>
-                            <input type="text" name="ingName" className={MyIngWriteStyle["ing-name"]} placeholder="재료명" onChange={handleInputChange}  onClick={openIngPopup}/>
+                            <input type="text" name="ingName" className={MyIngWriteStyle["ing-name"]} placeholder="재료명"
+                            onChange={()=>setNewMyIng}  onClick={openIngPopup} value={newMyIng.ingName}/>
                             <div className={MyIngWriteStyle["sub-inform"]}>
-                                <h3>수량 / 무게<span className={MyIngWriteStyle["point"]}> *</span></h3><input type="text" className={MyIngWriteStyle["ing-quantity"]} name="quantity" placeholder="ex) 100g / 1개" onChange={handleInputChange}/>
+                                <h3>수량 / 무게<span className={MyIngWriteStyle["point"]}> *</span></h3><input type="text" className={MyIngWriteStyle["ing-quantity"]} name="quantity" placeholder="ex) 100g / 1개" value={newMyIng.quantity} onChange={(e) => setNewMyIng(prev => ({ ...prev, quantity: e.target.value }))}/>
                                 <h3>등록일</h3>
-                                <input type="date" value={formatDate(newMyIng.createdAt ?? new Date)} className={MyIngWriteStyle["ing-regidate"]} name="createdAt" onChange={handleInputChange}/>
+                                <input type="date" value={formatDate(newMyIng.createdAt ?? new Date)} className={MyIngWriteStyle["ing-regidate"]} name="createdAt" onChange={()=>setNewMyIng}/>
                                 <h3>소비기한</h3>
-                                <input type="date" className={MyIngWriteStyle["ing-usedate"]} name="expDate" onChange={handleInputChange}/>
+                                <input type="date" className={MyIngWriteStyle["ing-usedate"]} name="expDate" onChange={()=>setNewMyIng}/>
                             </div>
                         </section>
                     </div>

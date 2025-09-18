@@ -1,6 +1,6 @@
 import axios from "axios";
 import { store } from "../store/store";
-import { type IngItem, type MyIngCreate, type MyIngItem, type MyIngUpdate } from "../type/Ing";
+import { type IngCode, type PagedIngItem } from "../type/Ing";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
@@ -30,6 +30,12 @@ api.interceptors.response.use(
     }
 )
 
+export const getIngCodes = async function () {
+    const response = await api.get<IngCode[]>("/codes");
+    console.log(response.data);
+    return response.data;
+}
+
 // export const getMyIngs = async function (userNo: number | undefined) {
 //     const response = await api.get(`/${userNo}`);
 //     return response.data;
@@ -40,11 +46,11 @@ api.interceptors.response.use(
 //     return response.data;
 // }
 
-export const getMyIng = async function (ingNo: number, userNo:number) {
-    const response = await api.get(`/detail/${ingNo}/${userNo}`);
-    console.log(ingNo);
-    return response.data;
-}
+// export const getMyIng = async function (ingNo: number, userNo:number) {
+//     const response = await api.get(`/detail/${ingNo}/${userNo}`);
+//     console.log(ingNo);
+//     return response.data;
+// }
 
 // export const deleteMyIng = async function (ingNo: number, userNo:number) {
 //     const response = await api.delete(`/detail/${ingNo}/${userNo}`);
@@ -56,11 +62,12 @@ export const getMyIng = async function (ingNo: number, userNo:number) {
 //     return response.data;
 // }
 
-export const searchIngs = async function(searchKeyword:{ingCode:number, keyword: string}){
-    const response = await api.get<IngItem[]>("", {
+export const searchIngs = async function(searchKeyword:{ingCode?:number, keyword?: string, page?:number}){
+    const response = await api.get<PagedIngItem>("", {
         params: {
             ingCode: searchKeyword.ingCode,
-            keyword: searchKeyword.keyword
+            keyword: searchKeyword.keyword,
+            page: searchKeyword.page
         }
     });
     return response.data;

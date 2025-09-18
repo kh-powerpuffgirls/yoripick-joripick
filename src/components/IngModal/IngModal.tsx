@@ -8,12 +8,20 @@ import cx from "classnames";
 import { useNavigate } from "react-router-dom";
 import useInput from "../../hooks/useInput";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { searchIngs } from "../../api/IngApi";
+import { searchIngs } from "../../api/ingApi";
+import Pagination from "../Pagination";
+import type { PageInfo } from "../../api/adminApi";
+import type { IngItem } from "../../type/Ing";
 
 export const IngPopup = () => {
   
-  const handleSelect = (value: string) => {
-    window.opener?.postMessage({ type: 'ING_RESULT', payload: value }, '*');
+  const handleSelect = (ingItem:IngItem) => {
+    window.opener?.postMessage({ type: 'ING_RESULT', payload: {
+      ingNo: ingItem.ingNo,
+      ingName: ingItem.ingName,
+      ingCode: ingItem.ingCode,
+      ingCodeName: ingItem.ingCodeName,
+    }}, '*');
     window.close();
   };
 
@@ -28,25 +36,20 @@ export const IngPopup = () => {
     }
   }, []);
 
-
-  const ingCode = 0;
-  const ingCodeName = ['분류','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
-  const ingResult = ['테스트1','테스트2'];
-
-
-
-
+  const ingCodeName = ['전체','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
 
   const navigate = useNavigate();
 
   const [searchKeyword, onChangeKeyword] = useInput({
       ingCode:0,
-      keyword: ''
+      keyword: '',
+      page: 0
   });
 
   const [submittedKeyword, setSubmittedKeyword] = useState({
       ingCode:0,
-      keyword: ''
+      keyword: '',
+      page: 0
   });
 
   const{data:IngItems, isLoading, isError, error} = useQuery({
@@ -55,80 +58,80 @@ export const IngPopup = () => {
       staleTime: 60*1000
   })
 
+  const [ingPageInfo, setIngPageInfo] = useState<PageInfo>({
+    listCount: 0,
+    currentPage: 0,
+    pageLimit: 0,
+    itemLimit: 0,
+    maxPage: 0,
+    startPage: 0,
+    endPage: 0
+  });  
+
+  useEffect(() => {
+    if (IngItems?.pageInfo) {
+      setIngPageInfo(IngItems.pageInfo);
+      console.log(IngItems?.list);
+    }
+  }, [IngItems]);
+
   const handleSearchIngs = () => {
-    setSubmittedKeyword(searchKeyword);
+    setSubmittedKeyword({ ...searchKeyword, page: 1 });
   };
 
   if(isLoading) return <div>Loading...</div>
   if(isError) return <div className="alert alert-danger">{error.message}</div>
 
+  const fetchIngData = (page:number) => {
+    setSubmittedKeyword({ ...searchKeyword, page: page });
+  };
 
   
   return (
     <div className={ingModalStyle.container}>
       <h3 className={ingModalStyle.title}>재료명 검색</h3>
-      <form action="." method="post" className={ingStyle["search-box"]}>
-        <select name="ingCodeName" className={ingModalStyle["drop-menu"]}>
+      <form action="." method="get" className={cx(ingStyle["search-box"],ingModalStyle["form"])}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSearchIngs();
+        }}>
+        <select name="ingCode" className={ingModalStyle["drop-menu"]} value={searchKeyword.ingCode} onChange={onChangeKeyword}>
             {ingCodeName.map(
                 (item, index) => (
                     <option value={index} className={ingModalStyle["drop-item"]}>{item}</option>
                 )
             )}
         </select>
-        <input className={ingStyle["search-txt"]} type="text" placeholder="내 식재료 검색" />
-        <img src={lodingImg.search} className={ingStyle["search-icon"]} alt="검색 아이콘" />
+        <input className={ingStyle["search-txt"]} type="text" name="keyword" placeholder="내 식재료 검색"
+          onChange={onChangeKeyword} value={searchKeyword.keyword}/>
+        <img src={lodingImg.search} className={ingStyle["search-icon"]}
+          onClick={(e) => {
+          e.preventDefault();
+          handleSearchIngs();
+        }}/>
+        <button type="submit" style={{ display: 'none' }} />
       </form>
       <hr className={ingModalStyle.margin0}/>
       <section className={ingModalStyle.result}>
         <ul>
-          {ingResult.map(
-                (item) => (
+          {IngItems?.list.map(
+                (Ingitem) => (
                   <>
-                    <li className={ingModalStyle["result-item"]}>
-                      <div className={ingModalStyle.category}>{item}</div>
-                      <div className={ingModalStyle.ingName}>{item}</div>
-                    </li>
+                    <li className={ingModalStyle["result-item"]} onClick={()=>handleSelect(Ingitem)}>
+                      <div className={ingModalStyle.category}>{Ingitem.ingCodeName}</div>
+                      <div className={ingModalStyle.ingName}>{Ingitem.ingName}</div>
+                    </li> 
                     <hr className={cx(ingModalStyle.margin0, ingModalStyle.gray)}/>
                   </>
                 )
             )}
-            <li className={ingModalStyle["result-item"]}>
-              <div className={ingModalStyle.category}>aaAAAAaa</div>
-              <div className={ingModalStyle.ingName}>aaaa</div>
-            </li>
-            <hr className={cx(ingModalStyle.margin0, ingModalStyle.gray)}/>
-            <li className={ingModalStyle["result-item"]}>
-              <div className={ingModalStyle.category}>aaAAAAaa</div>
-              <div className={ingModalStyle.ingName}>aaaa</div>
-            </li>
-            <hr className={cx(ingModalStyle.margin0, ingModalStyle.gray)}/>
-            <li className={ingModalStyle["result-item"]}>
-              <div className={ingModalStyle.category}>aaAAAAaa</div>
-              <div className={ingModalStyle.ingName}>aaaa</div>
-            </li>
-            <hr className={cx(ingModalStyle.margin0, ingModalStyle.gray)}/>
-            <li className={ingModalStyle["result-item"]}>
-              <div className={ingModalStyle.category}>aaAAAAaa</div>
-              <div className={ingModalStyle.ingName}>aaaa</div>
-            </li>
-            <hr className={cx(ingModalStyle.margin0, ingModalStyle.gray)}/>
-            
         </ul>
       </section>
       
-
-      <div className={ingModalStyle["pagination-area"]}>
-            <ul className={ingModalStyle["pagination"]}>
-                <li> <a href="#">&lt;&lt;</a></li>
-                <li> <a href="#">&lt;</a></li> 
-                <li> <a href="#" className={cx(ingModalStyle.active, ingModalStyle["page-num"])}>1</a></li>
-                <li> <a href="#" className="page-num">2</a></li>
-                <li> <a href="#" className="page-num">3</a></li>
-                <li> <a href="#" className="page-num">4</a></li>
-                <li> <a href="#">&gt;</a></li>
-                <li><a href="#">&gt;&gt;</a></li>
-            </ul>
-        </div>
+        <Pagination
+          pageInfo={ingPageInfo}
+          onPageChange={(page)=> fetchIngData(page)}
+        />
     </div>
   )
 }

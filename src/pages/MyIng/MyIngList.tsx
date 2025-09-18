@@ -20,26 +20,48 @@ export default function MyIngList() {
     const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState<{[key: string]: boolean}>({});
 
-    // #3. 메뉴 검색 기능
+    // 검색 및 정렬 기능
     const [searchKeyword, onChangeKeyword] = useInput({
+        userNo: 0,
+        sortNo: 1,
         keyword:''
     });
 
-    const [submittedKeyword, setSubmittedKeyword] = useState('');
+    const [submittedKeyword, setSubmittedKeyword] = useState({
+        userNo: 0,
+        sortNo: 1,
+        keyword:''
+    });
+
+    useEffect(() => {
+        if (submittedKeyword.userNo == 0 || !submittedKeyword.userNo) {
+            setSubmittedKeyword({...submittedKeyword, userNo: userNo as number})
+        }
+    }, [userNo]);
 
     const{data:MyIngItems, isLoading, isError, error} = useQuery({
         queryKey: ['MyIngItems', submittedKeyword],
-        queryFn: () => searchMyIngs(submittedKeyword, userNo as number),
+        queryFn: () => searchMyIngs(submittedKeyword),
         staleTime: 60*1000
     })
 
+    useEffect(() => {
+        if (MyIngItems) {
+            const initialCollapsedState: { [key: string]: boolean } = {};
+            MyIngItems.forEach((item: MyIngItem) => {
+                initialCollapsedState[item.ingCodeName] = false;
+            });
+            setCollapsed(initialCollapsedState);
+        }
+    }, [MyIngItems]);
+
     const handleSearchMyIngs = () => {
-        setSubmittedKeyword(searchKeyword.keyword);
-            MyIngItems?.forEach((item:MyIngItem) => {
-            initialCollapsed[item.ingCodeName] = false;
-        });
-        setCollapsed(initialCollapsed);
+        setSubmittedKeyword({...submittedKeyword, keyword: searchKeyword.keyword});
+        searchMyIngs(submittedKeyword);
+        console.log("검색중...");
+        console.log(submittedKeyword);
     };
+
 
     const queryClient = useQueryClient();
     const deleteMenuMutation = useMutation({
@@ -66,7 +88,16 @@ export default function MyIngList() {
         }
         acc[ingCodeName].push(item);
         return acc;
-    }, {});
+    }, {} as GroupedData);
+
+    const sortedGroupedData = Object.keys(groupedData ?? {})
+        .sort((a, b) => {
+            return groupedData![a][0].ingCode - groupedData![b][0].ingCode;
+        })
+        .reduce((acc, key) => {
+            acc[key] = groupedData![key];
+            return acc;
+        }, {} as GroupedData);
 
     // 카테고리 토글 핸들러
     const toggleCategory = (categoryName:string) => {
@@ -82,11 +113,20 @@ export default function MyIngList() {
                 {/* 타이틀 및 검색 */}
                 <div className={myingStyle[`title-area`]}>
                     <h2>내 식재료 관리</h2>
-                    <form action="." method="post" className={ingStyle["search-box"]}>
+                    <form action="." method="post" className={ingStyle["search-box"]}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSearchMyIngs();
+                    }}>
                         <button type="button" className={cx("semi-round-btn", "olive-b")}
                         onClick={() => navigate(`/mypage/inglist/write`)}>재료 등록</button>
-                        <input className={ingStyle["search-txt"]} type="text" placeholder="내 식재료 검색" />
-                        <img src={lodingImg.search} className={ingStyle["search-icon"]} alt="검색 아이콘" />
+                        <input className={ingStyle["search-txt"]} type="text" placeholder="내 식재료 검색"
+                        name="keyword" value={searchKeyword.keyword} onChange={onChangeKeyword}/>
+                        <img src={lodingImg.search} className={ingStyle["search-icon"]} alt="검색 아이콘"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleSearchMyIngs();
+                        }} />
                     </form>
                 </div>
 
@@ -94,15 +134,15 @@ export default function MyIngList() {
 
                 {/* 정렬 버튼 */}
                 <div className={myingStyle["sort-group"]}>
-                    <button type="button" className={cx("click-basic", "round-btn", "green", "selected")}>소비기한순</button>
-                    <button type="button" className={cx("click-basic", "round-btn", "green")}>등록일순</button>
-                    <button type="button" className={cx("click-basic", "round-btn", "green")}>재료명순</button>
+                    <button type="button" className={cx("click-basic", "round-btn", "green", "selected")} onClick={()=>setSubmittedKeyword({...submittedKeyword, sortNo:1})}>소비기한순</button>
+                    <button type="button" className={cx("click-basic", "round-btn", "green")} onClick={()=>setSubmittedKeyword({...submittedKeyword, sortNo:2})}>등록일순</button>
+                    <button type="button" className={cx("click-basic", "round-btn", "green")} onClick={()=>setSubmittedKeyword({...submittedKeyword, sortNo:3})}>재료명순</button>
                 </div>
 
                 <hr />
 
                 {/* 카테고리별 출력 */}
-                {Object.entries(groupedData ?? {}).map(([category, items]) => (
+                {Object.entries(sortedGroupedData ?? {}).map(([category, items]) => (
                     <section key={category} className={cx(myingStyle["mying-group"], myingStyle["content-area"])}>
                         {/* 카테고리 타이틀 (클릭 시 접기/펼치기) */}
                         <div className={myingStyle[`title-area`]} onClick={() => toggleCategory(category)}
@@ -129,8 +169,8 @@ export default function MyIngList() {
                                             {expDateIcon(item)} {/* D-day / 경고 아이콘 */}
                                         </div>
                                         <div className={myingStyle[`mying-title`]}>
-                                            <p>{item.ingName}</p>
-                                            <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel}/>
+                                            <p>{item.ingName} {item.quantity ? `(${item.quantity})` : ''}</p>
+                                            <img className={myingStyle[`cancel-icon`]} src={lodingImg.cancel} onClick={(e) => {e.stopPropagation();handleDelete(item.ingNo);}}/>
                                         </div>
                                     </article>
                                 ))}

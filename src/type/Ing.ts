@@ -1,9 +1,15 @@
+import type { PageInfo } from "../api/adminApi";
+
 export interface IngItem {
     ingNo: number;
     ingName: string;
     ingCode: number;
     ingCodeName: string;
     nutrientNo: number;
+}
+export interface PagedIngItem {
+    list: IngItem[],
+    pageInfo: PageInfo
 }
 export const initialIngItem = {
     ingNo: 0,
@@ -13,8 +19,10 @@ export const initialIngItem = {
     nutrientNo: 0
 }
 
-
-
+export interface IngCode {
+    ingCode: number;
+    ingCodeName: string;
+}
 
 
 

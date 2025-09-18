@@ -17,11 +17,11 @@ ul {
   width: 600px;
   height: 500px;
   background-color: white;
-  padding: 30px;
+  padding: 20px 30px;
   position: relative;
 }
 
-.title, form {
+.title, .form {
   margin-bottom: 20px;
 }
 .margin0 {
