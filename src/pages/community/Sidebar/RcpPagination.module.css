@@ -1,0 +1,39 @@
+.paginationArea {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.pagination {
+  list-style: none;
+  display: flex;
+  align-items: center; /* 수직 정렬을 위해 추가 */
+  padding: 0;
+  gap: 8px;
+}
+
+.pagination button {
+  border: none;
+  background-color: transparent; /* 배경색 없음 */
+  color: #2e8b57; /* 기본 페이지 번호 및 화살표 색상 (SeaGreen) */
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.pagination button:disabled {
+  cursor: auto;
+  opacity: 0.4;
+}
+
+.pagination button:not(:disabled):hover {
+  color: #1e6a42; /* 호버 시 약간 더 진한 녹색 */
+}
+
+/* 활성화된 페이지 번호 스타일 */
+.active {
+  color: #ff4d4d; /* 활성 페이지 색상 (빨간색) */
+  text-decoration: underline;
+}

@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+import type { RootState } from "../../store/store";
 import style from "./alertModal.module.css"
 import { NewChatModal } from "./alertChat";
-import { hideAlert } from "../features/alertSlice";
+import { hideAlert } from "../../features/alertSlice";
 
-export const AlertModal = () => {
-  const { type, visible } = useSelector((state: RootState) => state.alert);
+export const ChatAlertModal = () => {
+  const { type, visible } = useSelector((state: RootState) => state.chatalert);
   const dispatch = useDispatch();
   if (!visible) return null;
   return (

@@ -1,0 +1,384 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+  padding: 2rem;
+  background-color: white;
+  font-family: 'Arial', sans-serif;
+
+}
+
+/* 메인/검색 페이지 공통 헤더 스타일 */
+.mainTitle, .searchTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.viewMore {
+  font-size: 1.25rem;
+  color: #999;
+  cursor: pointer;
+}
+
+/* 카드 목록 Wrapper (메인/검색 페이지 공용) */
+.searchResultWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 카드 스타일 (메인/검색 페이지 공용) */
+.searchResultCard {
+  display: flex;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.searchResultCard:hover {
+  transform: translateY(-5px);
+}
+
+.searchResultImage {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.searchResultContent {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.searchResultTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.searchResultAuthor {
+  font-size: 1rem;
+  color: #777;
+  margin-bottom: 0.5rem;
+}
+
+.searchResultDesc {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.searchResultButtons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.searchJoinButton, .searchReportButton, .settingsButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.searchJoinButton, .settingsButton {
+  background-color: #ff9800;
+  color: white;
+}
+
+.searchJoinButton:hover, .settingsButton:hover {
+  background-color: #e68900;
+}
+
+.searchReportButton {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.searchReportButton:hover {
+  background-color: #ccc;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: #e0e0e0;
+  margin: 2rem 0;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.searchButton, .registerButton {
+  width: 50%;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.searchButton {
+  background-color: #6c757d;
+}
+
+.searchButton:hover {
+  background-color: #5a6268;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.registerButton {
+  background-color: #ff9800;
+}
+
+.registerButton:hover {
+  background-color: #e68900;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 검색 페이지 전용 스타일 */
+.searchSection {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+}
+
+.searchBar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.searchDropdown {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.searchButton_small {
+  padding: 0.75rem 1.5rem;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.searchButton_small:hover {
+  background-color: #e68900;
+}
+
+.searchOptions {
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.checkboxLabel {
+  color: #555;
+}
+
+.noResults {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
+
+/* 등록 페이지 전용 스타일 */
+.formContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.formTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.formSpace {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputField, .contentTextarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #555;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputField:focus, .contentTextarea:focus {
+  outline: none;
+  border-color: #ff9800;
+  box-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
+}
+
+.contentTextarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.imageUploadArea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.uploadText {
+  font-weight: bold;
+  color: #555;
+}
+
+.labelButton {
+  padding: 0.5rem 1rem;
+  background-color: #e0e0e0;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.labelButton:hover {
+  background-color: #ccc;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.imagePreviewContainer {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -0.5rem;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.joinCodeSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.joinCodeLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.submitButton, .cancelButton, .deleteButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton {
+  background-color: #ff9800;
+}
+
+.submitButton:hover {
+  background-color: #e68900;
+}
+
+.cancelButton {
+  background-color: #9e9e9e;
+}
+
+.cancelButton:hover {
+  background-color: #757575;
+}
+
+.deleteButton {
+  background-color: #f44336;
+}
+
+.deleteButton:hover {
+  background-color: #d32f2f;
+}

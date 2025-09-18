@@ -1,0 +1,173 @@
+
+// src/pages/CommunityRecipeList/CommunityRecipeList.tsx
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+// import './CommunityList.css'; // 페이지 전용 CSS
+import list from './CommunityList.module.css'; 
+
+// 샘플 아이콘 import
+import rankingIcon from '../../../assets/sample/순위아이콘.png';
+import crown1 from '../../../assets/sample/1등 왕관.png';
+import crown2 from '../../../assets/sample/2등 왕관.png';
+import crown3 from '../../../assets/sample/3등 왕관.png';
+import crown4 from '../../../assets/sample/4등 왕관.png';
+import CommunityHeader from '../Header/CommunityHeader';
+import CommunitySidebar from '../Sidebar/CommunitySidebar';
+import RecipeCard from './RecipeCard';
+
+import type {  RecipeListItem, RecipePage } from '../../../type/Recipe';
+import RcpPagination from '../Sidebar/RcpPagination';
+import {api} from '../../../api/authApi';
+
+// API 파라미터 타입을 정의합니다. (선택적 프로퍼티로)
+interface ApiParams {
+  page?: number;
+  sort?: string;
+  ingredients?: string;
+  rcpMthNo?: string;
+  rcpStaNo?: string;
+}
+
+const CommunityRecipeList: React.FC = () => {
+    const navigate = useNavigate();
+    
+    // 상태 관리
+    const [recipePage, setRecipePage] = useState<RecipePage>({
+      recipes: [], totalPages: 0, totalElements: 0,
+    });
+    const [rankingRecipes, setRankingRecipes] = useState<RecipeListItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchParams, setSearchParams] = useState<ApiParams>({
+      page: 0, 
+      sort: 'createdAt',
+    });
+
+    // API 호출 함수
+    const fetchRecipes = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get('/api/community/recipe', { params: searchParams });
+            setRecipePage(response.data);
+        } catch (error) {
+            console.error("레시피 데이터를 불러오는데 실패했습니다.", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchParams]);
+
+    // searchParams가 변경될 때마다 레시피 목록을 다시 불러옴
+    useEffect(() => {
+        fetchRecipes();
+    }, [fetchRecipes]);
+
+    // 랭킹 레시피는 페이지 로드 시 한 번만 불러옴
+    useEffect(() => {
+        const fetchRanking = async () => {
+            try {
+                const rankResponse = await api.get('/api/community/recipe/ranking');
+                setRankingRecipes(rankResponse.data);
+            } catch (error) {
+                console.error("랭킹 레시피를 불러오는데 실패했습니다.", error);
+            }
+        };
+        fetchRanking();
+    }, []);
+
+    // 이벤트 핸들러
+    const handleSearch = (sidebarParams: Omit<ApiParams, 'sort' | 'page'>) => {
+        setSearchParams(prev => ({ ...prev, ...sidebarParams, page: 0 }));
+    };
+
+    const handleSort = (sortType: string) => {
+        setSearchParams(prev => ({ ...prev, sort: sortType, page: 0 }));
+    };
+
+    const handlePageChange = (page: number) => {
+        setSearchParams(prev => ({ ...prev, page: page - 1 }));
+    };
+
+    return (
+        <>
+            <CommunityHeader />
+            <div className={list.main}>
+                <CommunitySidebar onSearch={handleSearch} />
+                <div className={list.container}>
+                    <button className={list.write} onClick={() => navigate('/community/recipe/write')}>레시피 작성하기</button>
+
+                    {/* 금주 Pick! 랭킹 섹션 */}
+                    <table className={list.ranking}>
+                        <thead>
+                            <tr>
+                                <th colSpan={4}>
+                                    <div className={list.ranking_title}>
+                                        <img src={rankingIcon} height='50px' width='50px' alt="랭킹 아이콘" />
+                                        금주 Pick!
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {rankingRecipes.map((recipe, index) => (
+                                    <td key={`rank-${recipe.rcpNo}`}>
+                                        {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
+                                        {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
+                                        {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
+                                        {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
+                                        <Link to={`/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
+                                            <RecipeCard recipe={recipe} />
+                                        </Link>
+                                    </td>
+                                ))}
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <br />
+
+                    {/* 전체 레시피 리스트 섹션 */}
+                    <div className={list.list}>
+                        <div className={list.list_header}>
+                            <div 
+                                className={searchParams.sort === 'createdAt' ? list.active_sort : ''}
+                                onClick={() => handleSort('createdAt')}
+                            >
+                                최신순
+                            </div>
+                            <div 
+                                className={searchParams.sort === 'stars' ? list.active_sort : ''}
+                                onClick={() => handleSort('stars')}
+                            >
+                                별점순
+                            </div>
+                        </div>
+                        <hr />
+                        <div className={list.content_container}>
+                            {isLoading ? (
+                                <p style={{textAlign: 'center', fontSize:'18px', color:'#888'}}>레시피를 불러오는 중입니다...</p>
+                            ) : recipePage.recipes.length > 0 ? (
+                                recipePage.recipes.map(recipe => (
+                                    <Link to={`/recipe/${recipe.rcpNo}`} key={recipe.rcpNo} style={{ textDecoration: 'none' }}>
+                                        <RecipeCard recipe={recipe} />
+                                    </Link>
+                                ))
+                            ) : (
+                                <div className={list.empty_list}>
+                                    <p>조건에 맞는 레시피가 없어요. 😢</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <RcpPagination
+                        currentPage={searchParams.page ? searchParams.page + 1 : 1}
+                        totalPages={recipePage.totalPages}
+                        onPageChange={handlePageChange}
+                    />
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default CommunityRecipeList;
