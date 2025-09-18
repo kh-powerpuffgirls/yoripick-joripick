@@ -1,3 +1,5 @@
+import { Client } from "@stomp/stompjs";
+
 export type Message = {
   messageNo?: number;
   content: string;
@@ -35,4 +37,9 @@ export const initialState: ChatState = {
   isOpen: false,
   rooms: [],
   currentRoomId: undefined,
+};
+
+export const stompManager = {
+  client: null as Client | null,
+  subscriptions: new Map<string, any>(),
 };

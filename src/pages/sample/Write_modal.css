@@ -1,0 +1,83 @@
+.modal{
+    width: 600px;
+    border: 1px solid #E8E8E8;
+    border-radius: 20px;
+}
+
+.head_title{
+    background-color: #C7E47E;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-radius: 20px 20px 0 0 ;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+#close{
+    height: 25px ;
+    cursor: pointer;
+}
+#close:hover{
+  filter: brightness(70%);
+  transition: filter 0.3s ease;
+}
+
+.continer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 0 0 20px 20px ;
+    gap: 20px;
+}
+
+.content{
+    display: grid;
+    grid-template-columns: 1fr 5fr; /* 이름, 수치, 바 */
+    align-items: center;
+    justify-content: center;
+    gap:10px;
+    width: 70%;
+    font-size: 20px;
+}
+
+input{
+    border:none;
+    background-color: #E8E8E8;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    height: 40px;
+    text-align: right;
+    padding: 0 20px;
+}
+
+button{
+    color: white;
+    border-radius: 10px;
+    border:none;
+    padding : 10px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#cancel{
+    background-color: #ACACAC ;
+}
+#cancel:hover{
+    background-color: #999999 ;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+#complete {
+    background-color: #636363 ;
+}
+#complete:hover{
+    background-color: #4a4a4a ;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+

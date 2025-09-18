@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./Rcp_Detail.css" rel="stylesheet">
+</head>
+<body>
+    <div class="list_method">
+        <div class="info">
+            <div>조리순서🍳</div>
+            <button>토글버튼</button>
+        </div>
+        <hr>
+        <div id="list">
+            <span style="color : #3E5822; font-weight:bold;">1.</span>
+            <span> 팽이버섯은 아래쪽 뿌리 부분(균사체)을 잘라내 주고, 모양을 살려고 2~3줄 씩 듬성 듬성 찢어주세요. 쪽파와 청양고추는 송송 썰어 주세요</span>
+            <img src="../../assets/sample/recipe.png" id="list_img">
+        </div>
+        <hr>
+        <div id="list">
+            <span style="color : #FE8051; font-weight:bold;">2.</span>
+            <span> 볼에 고추장, 연두순, 참기름, 설탕을 넣고 잘섞어서 양념장을 만들어주세요.</span>
+            <img src="../../assets/sample/recipe.png" id="list_img">
+        </div>
+        <hr>
+        <div id="list">
+            <span style="color : #3E5822; font-weight:bold;">3.</span>
+            <span> 중불의 팬에 기름을 두르고, 팽이버섯을 올려서 숨이 죽어 부드러워질때까지 앞뒤로 구워주세요.(약 2~3분)</span>
+            <img src="../../assets/sample/recipe.png" id="list_img">
+        </div>
+        <hr>
+        <div id="list">
+            <span style="color : #FE8051; font-weight:bold;">4.</span>
+            <span> 팽이버섯 위에 양념장을 고루 발라주고, 약불로 줄여 썬 고추와 쪾파를 얹어 3~5분 동안 더 졸여주세요. 버섯에서 물이 나오면서 양념이 잘 스며들면 완성!</span>
+            <img src="../../assets/sample/recipe.png" id="list_img">
+        </div>
+    </div>
+    <div class="one_method">
+        <div class="info">
+            <div>조리순서🍳</div>
+            <button>토글버튼</button>
+        </div>
+        <hr>
+        <!-- 몇번째 순서인지 알려줌 -->
+        <div id="one_img">
+            <div id="indicator">
+                <div id="indicator-bar"></div>
+            </div>
+            <button class="nav left" onclick="changeSlide(-1)">◀</button>
+            <div id="slide">
+                <img src="../../assets/sample/recipe.png" height="510" width="510">
+            </div>
+            <button class="nav right" onclick="changeSlide(1)">▶</button>
+        </div>
+        <br>
+        <hr>
+        <div id="one_info">
+            <span style="font-size:28px; font-weight: 500;">Step1.</span>
+            <br>
+            <span style="font-size: 18px;">팽이버섯은 아래쪽 뿌리 부분(균사체)을 잘라내 주고, 모양을 살려고 2~3줄 씩 듬성 듬성 찢어주세요. 쪽파와 청양고추는 송송 썰어 주세요</span>
+        </div>
+    </div>    
+</body>
+</html>

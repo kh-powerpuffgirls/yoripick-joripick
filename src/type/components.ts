@@ -1,11 +1,22 @@
+import type { ReactNode } from "react";
 import type { ChatRoomCreate, Message } from "./chatmodal";
 
-export type AlertState = {
+export interface AlertState {
+    htmlComponent: ReactNode;
+    visible: boolean;
+}
+
+export const initialState: AlertState = {
+    htmlComponent: null,
+    visible: false,
+};
+
+export type ChatalertState = {
   type: ChatRoomCreate | null;
   visible: boolean;
 }
 
-export const initialState: AlertState = {
+export const chatInitialState: ChatalertState = {
   type: null,
   visible: false,
 }

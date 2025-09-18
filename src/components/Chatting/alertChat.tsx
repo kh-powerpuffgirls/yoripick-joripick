@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
-import type { ChatModalProps, ChatRoom, ChatRoomCreate } from "../type/chatmodal";
+import type { ChatModalProps, ChatRoom, ChatRoomCreate } from "../../type/chatmodal";
 import axios from "axios";
-import { openChat, resetRoom } from "../features/chatSlice";
-import { hideAlert } from "../features/alertSlice";
+import { openChat, resetRoom } from "../../features/chatSlice";
+import { hideAlert } from "../../features/alertSlice";
 import type { Dispatch, UnknownAction } from "redux";
 import style from "./alertModal.module.css"
-import type { RootState } from "../store/store";
-import type { User } from "../type/authtype";
-import { deleteRooms } from "../api/chatApi";
+import type { RootState } from "../../store/store";
+import type { User } from "../../type/authtype";
+import { deleteRooms } from "../../api/chatApi";
 import { useNavigate } from "react-router-dom";
 
 const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: Dispatch<UnknownAction>) => {

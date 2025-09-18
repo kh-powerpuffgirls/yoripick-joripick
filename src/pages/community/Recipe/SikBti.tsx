@@ -1,0 +1,40 @@
+import React from 'react';
+
+// 컴포넌트가 받을 props의 타입을 정의합니다.
+interface SikBtiProps {
+  sikBti: string;
+}
+
+// ✨ 컴포넌트 이름은 대문자로 시작하는 것이 React의 규칙입니다. (sikBti -> SikBti)
+const SikBti: React.FC<SikBtiProps> = ({ sikBti }) => {
+  // 값에 따라 색상 지정
+  const getColor = (bti: string) => {
+    switch (bti) {
+      case '육식티라노': return '#FF7C7C';
+      case '초식 트리케라톱스': return '#92CA02';
+      case '바다의 연인': return '#2B90CE';
+      case '칼로리 스나이퍼': return '#0902CA';
+      case '열량 폭주기관차': return '#CA0202';
+      case '슴슴슴슴': return '#40E0D0';
+      case '도파민 중독자': return '#FD5CA8';
+      case '푸드 간디': return '#FF6600';
+      default: return 'gray'; // 기본값
+    }
+  };
+  
+  // ✨ CSS를 인라인 스타일 대신 CSS 모듈로 관리하는 것이 더 좋습니다.
+  //    (일단 요청대로 인라인 스타일 유지)
+  return (
+    <div
+      style={{
+        color: getColor(sikBti),
+        fontSize: '7px',
+        fontWeight: '600',
+      }}
+    >
+      {sikBti}
+    </div>
+  );
+};
+
+export default SikBti;
