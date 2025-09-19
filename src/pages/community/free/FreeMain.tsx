@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './FreeMain.module.css';
+import CommunityHeader from '../CommunityHeader';
 
 interface FreePost {
   boardNo: number;
@@ -48,6 +49,8 @@ const FreeMain = () => {
   if (error) return <div className={styles.error}>{error}</div>;
 
   return (
+  <>
+    <CommunityHeader />
     <div className={styles['community-main-container']}>
       <div className={styles['main-content']}>
         {/* 게시글 리스트 */}
@@ -108,6 +111,7 @@ const FreeMain = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

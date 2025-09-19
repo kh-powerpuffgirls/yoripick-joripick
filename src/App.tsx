@@ -77,7 +77,7 @@ function App() {
         <Route path="/community/ckclass/form" element={<CkClassForm />} />
         <Route path="/community/market" element={<MarketMain />} />
         <Route path="/community/market/form" element={<MarketForm />} />
-        <Route path="/community/market/buyform" element={<MarketBuyForm />} />
+        <Route path="/community/market/buyForm/:id" element={<MarketBuyForm />} />
       </Routes>
       <Footer />
     </>

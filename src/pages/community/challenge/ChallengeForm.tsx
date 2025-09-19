@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { store } from "../../../store/store";
 import type { RootState } from "../../../store/store";
 import styles from "./ChallengeForm.module.css";
+import CommunityHeader from "../CommunityHeader";
 
 // API 기본 URL
 const API_BASE = "http://localhost:8081";
@@ -177,6 +178,8 @@ const ChallengeForm = () => {
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
 
   return (
+   <>
+   <CommunityHeader />
     <div className={styles.container}>
       <h1>{isEdit ? "챌린지 수정" : "챌린지 등록"}</h1>
 
@@ -257,6 +260,7 @@ const ChallengeForm = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 

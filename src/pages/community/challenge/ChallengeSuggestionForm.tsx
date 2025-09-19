@@ -24,7 +24,7 @@ api.interceptors.request.use(
 );
 
 interface ChallengeSuggestionFormProps {
-  onClose: () => void; // 모달 전용이라서 필수에여
+  onClose?: () => void; // 모달 전용이라서 필수에여
 }
 
 function ChallengeSuggestionForm({ onClose }: ChallengeSuggestionFormProps) {
@@ -55,7 +55,7 @@ function ChallengeSuggestionForm({ onClose }: ChallengeSuggestionFormProps) {
         userNo: userNo,
       });
       alert("챌린지 신청서가 등록되었습니다.");
-      onClose(); // 등록 후 모달 닫기
+      onClose?.(); // 등록 후 모달 닫기
     } catch (error) {
       console.error("등록 실패", error);
       alert("등록에 실패했습니다.");

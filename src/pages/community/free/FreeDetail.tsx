@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef, type KeyboardEvent } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
 import styles from './FreeDetail.module.css';
+import CommunityHeader from '../CommunityHeader';
 
 // API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
@@ -133,7 +134,7 @@ const FreeDetail = () => {
     fetchPostData();
   }, [boardNo, user]);
 
-  // 댓글이 업데이트될 때마다 자동으로 댓글 끝으로 이동ㅇㅇ
+  // 댓글이 업데이트될 때마다 자동으로 댓글 끝으로 이동
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [replies]);
@@ -208,9 +209,13 @@ const FreeDetail = () => {
         <div key={parent.replyNo} className={styles.commentWrapper}>
           <div className={styles.comment}>
             <div className={styles.commentHeader}>
-              <img src={parentProfileImageUrl} alt="프로필" className={styles.commentProfileImage} />
+              <Link to={`/mypage/${parent.userNo}`}>
+                <img src={parentProfileImageUrl} alt="프로필" className={styles.commentProfileImage} />
+              </Link>
               <div className={styles.commentInfo}>
-                <span className={styles.commentAuthor}>{parent.username}{parent.sik_bti && ` (${parent.sik_bti})`}</span>
+                <Link to={`/mypage/${parent.userNo}`} className={styles.commentAuthor}>
+                  {parent.username}{parent.sik_bti && ` (${parent.sik_bti})`}
+                </Link>
                 <span className={styles.commentDate}>{new Date(parent.createdAt).toLocaleString()}</span>
               </div>
             </div>
@@ -321,9 +326,13 @@ const FreeDetail = () => {
                   return (
                     <div key={child.replyNo} className={styles.commentChild}>
                       <div className={styles.commentHeader}>
-                        <img src={childProfileImageUrl} alt="프로필" className={styles.commentProfileImage} />
+                        <Link to={`/mypage/${child.userNo}`}>
+                          <img src={childProfileImageUrl} alt="프로필" className={styles.commentProfileImage} />
+                        </Link>
                         <div className={styles.commentInfo}>
-                          <span className={styles.commentAuthor}>{child.username}{child.sik_bti && ` (${child.sik_bti})`}</span>
+                          <Link to={`/mypage/${child.userNo}`} className={styles.commentAuthor}>
+                            {child.username}{child.sik_bti && ` (${child.sik_bti})`}
+                          </Link>
                           <span className={styles.commentDate}>{new Date(child.createdAt).toLocaleString()}</span>
                         </div>
                       </div>
@@ -403,11 +412,15 @@ const FreeDetail = () => {
   const validImageUrl = post.serverName ? `${API_BASE}/images/${post.serverName}` : post.imageUrl || null;
 
   return (
+    <>
+     <CommunityHeader />
     <div className={styles.container}>
       <div className={styles.mainCard}>
         <h1 className={styles.heading}>{post.title}</h1>
         <div className={styles.meta}>
-          <span>{post.username}{post.sik_bti ? ` (${post.sik_bti})` : ''}</span>
+          <Link to={`/mypage/${post.userNo}`} className={styles.commentAuthor}>
+            {post.username}{post.sik_bti ? ` (${post.sik_bti})` : ''}
+          </Link>
           <span>작성일: {new Date(post.createdDate).toLocaleString()}</span>
           <span>조회수: {post.views}</span>
         </div>
@@ -441,10 +454,11 @@ const FreeDetail = () => {
         </div>
 
         <div className={styles.backButtonContainer}>
-          <button onClick={() => navigate(-1)} className={styles.backButton}>뒤로가기</button>
+          <button onClick={() => navigate('/community/free')} className={styles.backButton}>목록으로</button>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

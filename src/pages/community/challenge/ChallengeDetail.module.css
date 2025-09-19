@@ -56,7 +56,7 @@
     margin: 0 5px;
 }
 
-.mediaPlaceholder {
+.postImage {
     flex-grow: 1;
     display: flex;
     justify-content: center;
@@ -166,6 +166,7 @@
 
 .commentItem {
     display: flex;
+    flex-direction: column; /* 추가 */
     align-items: flex-start;
     padding: 10px 0;
     border-bottom: 1px solid #f0f0f0;
@@ -197,6 +198,18 @@
     flex-grow: 1;
 }
 
+.commentWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.isReply {
+  margin-left: 60px; /* 부모 댓글 대비 들여쓰기 */
+  background-color: #f9f9f9;
+  border-left: 3px solid #ff9800;
+  padding-left: 10px;
+}
+
 .commentAuthor {
     font-weight: bold;
     margin-right: 10px;
@@ -221,14 +234,6 @@
 .replyBtn, .reportBtn {
     margin-right: 10px;
     cursor: pointer;
-}
-
-/* 답글 들여쓰기 및 배경색 */
-.isReply {
-    margin-left: 60px;
-    background-color: #f9f9f9;
-    border-left: 3px solid #ff9800;
-    padding-left: 10px;
 }
 
 .parentUsername {

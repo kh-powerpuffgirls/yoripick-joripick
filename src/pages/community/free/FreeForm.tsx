@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
 import styles from './FreeForm.module.css';
+import CommunityHeader from '../CommunityHeader';
 
 // API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
@@ -159,6 +160,8 @@ const FreeForm = () => {
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
 
   return (
+    <>
+     <CommunityHeader />
     <div className={styles.container}>
       <h1>{isEdit ? '게시글 수정' : '게시글 작성'}</h1>
 
@@ -240,6 +243,7 @@ const FreeForm = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 

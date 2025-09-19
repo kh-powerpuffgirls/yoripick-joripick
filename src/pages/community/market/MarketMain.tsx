@@ -5,32 +5,37 @@ import CommunityHeader from '../CommunityHeader';
 import axios from 'axios';
 
 interface MarketMain {
-    id: number;
+    productId: number;
     title: string;
     author: string;
     authorProfileUrl: string;
-    imageUrl: string;
+    image: string;
     views: number;
     likes: number;
+    createdAt: string;
 }
 
 const MarketMain = () => {
     const navigate = useNavigate();
     const [popularPosts, setPopularPosts] = useState<MarketMain[]>([]);
     const [recentPosts, setRecentPosts] = useState<MarketMain[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                // 인기 거래 목록 가져오기
-                const popularResponse = await axios.get('http://localhost:8081/community/market/posts/popular');
+                const popularResponse = await axios.get('http://localhost:8081/community/market/popular');
                 setPopularPosts(popularResponse.data);
 
-                // 최신 거래 목록 가져오기
-                const recentResponse = await axios.get('http://localhost:8081/community/market/posts/recent');
+                const recentResponse = await axios.get('http://localhost:8081/community/market/recent');
                 setRecentPosts(recentResponse.data);
-            } catch (error) {
-                console.error("Failed to fetch market posts:", error);
+                
+                setIsLoading(false);
+            } catch (err) {
+                console.error("Failed to fetch market posts:", err);
+                setError('게시글을 불러오는데 실패했습니다.');
+                setIsLoading(false);
             }
         };
 
@@ -45,9 +50,9 @@ const MarketMain = () => {
         navigate('/community/market/my-list');
     };
 
-    const renderPostCard = (post: MarketMain) => (
-        <div key={post.id} className={styles.postCard} onClick={() => navigate(`/community/market/buyForm/${post.id}`)}>
-            <img src={post.imageUrl} alt={post.title} className={styles.postImage} />
+const renderPostCard = (post: MarketMain) => (
+    <div key={post.productId} className={styles.postCard} onClick={() => navigate(`/community/market/buyForm/${post.productId}`)}>
+            <img src={post.image} alt={post.title} className={styles.postImage} />
             <div className={styles.postInfo}>
                 <h3 className={styles.postTitle}>{post.title}</h3>
                 <div className={styles.postAuthor}>
@@ -62,6 +67,14 @@ const MarketMain = () => {
         </div>
     );
 
+    if (isLoading) {
+        return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
+    }
+
+    if (error) {
+        return <div className={styles.error}>{error}</div>;
+    }
+
     return (
         <>
             <CommunityHeader/>
@@ -75,7 +88,7 @@ const MarketMain = () => {
                         <span className={styles.viewMore}>더보기 &gt;</span>
                     </div>
                     <div className={styles.postGrid}>
-                        {popularPosts.length > 0 ? popularPosts.map(renderPostCard) : <p>인기 거래 게시글이 없습니다.</p>}
+                        {popularPosts.length > 0 ? popularPosts.map(renderPostCard) : <p className={styles.noPosts}>인기 거래 게시글이 없습니다.</p>}
                     </div>
                 </div>
 
@@ -86,7 +99,7 @@ const MarketMain = () => {
                         <span className={styles.viewMore}>더보기 &gt;</span>
                     </div>
                     <div className={styles.postGrid}>
-                        {recentPosts.length > 0 ? recentPosts.map(renderPostCard) : <p>최신 거래 게시글이 없습니다.</p>}
+                        {recentPosts.length > 0 ? recentPosts.map(renderPostCard) : <p className={styles.noPosts}>최신 거래 게시글이 없습니다.</p>}
                     </div>
                 </div>
 

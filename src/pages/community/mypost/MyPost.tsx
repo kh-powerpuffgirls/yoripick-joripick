@@ -148,18 +148,23 @@ const MyPost = () => {
             </table>
           </div>
         ) : (
-          <div className={mypostStyles['post-detail-card']}>
-            <button onClick={handleBackToList} className={mypostStyles['back-button']}>
-              &larr; 목록으로 돌아가기
-            </button>
-            <h1>{selectedPost.title || '제목 없음'}</h1>
-            <div className={mypostStyles['post-meta']}>
-              작성일: {new Date(selectedPost.createdDate).toLocaleDateString()} | 조회수: {selectedPost.views} | 종류: {selectedPost.category}
+        <div className={mypostStyles['post-detail-card']}>
+                  <button onClick={handleBackToList} className={mypostStyles['back-button']}>
+                    &larr; 목록으로 돌아가기
+                  </button>
+                  <h1>{selectedPost.title || '제목 없음'}</h1>
+                  <div className={mypostStyles['post-meta']}>
+                    작성일: {new Date(selectedPost.createdDate).toLocaleDateString()} | 조회수: {selectedPost.views} | 종류: {selectedPost.category}
+                  </div>
+                  {/* 챌린지 카테고리일 경우 내용 대신 다른 메시지 표시 */}
+                  {selectedPost.category === 'CHALLENGE' ? (
+                    <p className={mypostStyles['post-description']}>챌린지 게시글은 별도의 내용이 없습니다.</p>
+                  ) : (
+                    <p className={mypostStyles['post-description']}>{selectedPost.description || '내용 없음'}</p>
+                  )}
+                </div>
+              )}
             </div>
-            <p className={mypostStyles['post-description']}>{selectedPost.description || '내용 없음'}</p>
-          </div>
-        )}
-      </div>
     </>
   );
 };

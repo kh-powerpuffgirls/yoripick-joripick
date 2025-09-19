@@ -2,44 +2,171 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CkClass.module.css';
 import CommunityHeader from '../CommunityHeader';
+import CommunityModal from '../CommunityModal';
+import ReportModal from '../ReportModal';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store/store';
+import axios from 'axios';
+import { store } from '../../../store/store';
 
-interface CookingClass {
+const API_BASE = 'http://localhost:8081';
+const getAccessToken = () => store.getState().auth.accessToken;
+
+const api = axios.create({
+    baseURL: API_BASE,
+    withCredentials: true,
+});
+
+api.interceptors.request.use(
+    (config) => {
+        const token = getAccessToken();
+        if (token) config.headers.Authorization = `Bearer ${token}`;
+        return config;
+    },
+    (error) => Promise.reject(error),
+);
+
+interface CkclassDto {
+    roomNo: number;
+    userNo: number;
+    className: string;
+    classInfo: string;
+    originName?: string;
+    serverName?: string; 
+    passcode?: string;
+    deleteStatus?: string;
+    memberCount?: number;
+    unreadCount?: number;
+    username?: string; 
+}
+
+interface CookingClassDisplay {
     id: number;
     name: string;
     description: string;
-    author?: string;
-    imageUrl: string;
+    author: string;
+    imageUrl?: string; 
+    memberCount?: number;
+    unreadCount?: number;
 }
+
+// 신고 대상 데이터 타입
+interface ReportTarget {
+    type: 'CLASS' | 'REPLY';
+    id: number;
+}
+
+interface ModalState {
+    message: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+}
+
+const reportTypes = [
+    { value: 'SPAM', label: '스팸/광고' },
+    { value: 'ABUSE', label: '욕설/비방' },
+    { value: 'OTHER', label: '기타' },
+];
 
 const CkClassMain = () => {
     const navigate = useNavigate();
-    const [myClasses, setMyClasses] = useState<CookingClass[]>([]);
-    const [joinedClasses, setJoinedClasses] = useState<CookingClass[]>([]);
+    const user = useSelector((state: RootState) => state.auth.user);
+
+    const [myClasses, setMyClasses] = useState<CookingClassDisplay[]>([]);
+    const [joinedClasses, setJoinedClasses] = useState<CookingClassDisplay[]>([]);
+    
+    // 모달 상태
+    const [modal, setModal] = useState<ModalState | null>(null);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
+
+    const openModal = (modalData: ModalState) => setModal(modalData);
+    const closeModal = () => setModal(null);
+    const handleConfirm = () => { modal?.onConfirm?.(); closeModal(); };
+    const handleCancel = () => { modal?.onCancel?.(); closeModal(); };
 
     useEffect(() => {
-        // 임시 데이터. 백엔드 API와 연결되면 fetch 호출로 대체
-        const dummyMyClasses = [
-            { id: 1, name: '프랑스 마카롱 만들기', description: '달콤한 디저트의 세계로!', imageUrl: 'https://placehold.co/200x150/ffe6b7/000000?text=Image+1', author: '민지쌤' },
-        ];
-        const dummyJoinedClasses = [
-            { id: 2, name: '김치찌개 마스터', description: '얼큰한 국물의 비밀', imageUrl: 'https://placehold.co/200x150/ffe6b7/000000?text=Image+2', author: '준식쌤' },
-            { id: 3, name: '정통 오일 파스타', description: '본토의 맛을 그대로', imageUrl: 'https://placehold.co/200x150/ffe6b7/000000?text=Image+3', author: '진영쌤' },
-        ];
-        setMyClasses(dummyMyClasses);
-        setJoinedClasses(dummyJoinedClasses);
-    }, []);
+        const fetchClasses = async () => {
+            const userNo = user?.userNo;
+            if (!userNo) {
+                setMyClasses([]);
+                setJoinedClasses([]);
+                return;
+            }
 
+            try {
+                const myRes = await api.get<CkclassDto[]>(`/community/ckclass/my`);
+                const myMappedData: CookingClassDisplay[] = myRes.data
+                .filter(cls => cls.roomNo != null)
+                .map(cls => ({
+                    id: cls.roomNo!,
+                    name: cls.className ?? '',
+                    description: cls.classInfo ?? '',
+                    author: cls.username ?? '알 수 없음',
+                    imageUrl: cls.serverName ? `${API_BASE}/images/${cls.serverName}` : undefined,
+                    memberCount: cls.memberCount ?? 0,
+                    unreadCount: cls.unreadCount ?? 0,
+                }));
+                setMyClasses(myMappedData);
+
+                // 참여중인 클래스 API 호출
+                const joinedRes = await api.get<CkclassDto[]>(`/community/ckclass/joined`);
+                const joinedMappedData: CookingClassDisplay[] = joinedRes.data.map(cls => ({
+                    id: cls.roomNo,
+                    name: cls.className,
+                    description: cls.classInfo,
+                    author: cls.username ?? '알 수 없음',
+                    imageUrl: cls.serverName 
+                        ? `${API_BASE}/images/${cls.serverName}` 
+                        : 'https://placehold.co/200x150/ffe6b7/000000?text=No+Image',
+                    memberCount: cls.memberCount,
+                    unreadCount: cls.unreadCount
+                }));
+
+                setJoinedClasses(joinedMappedData);
+
+            } catch (error) {
+                console.error("클래스 목록을 불러오는 데 실패했습니다:", error);
+                openModal({ message: '클래스 목록을 불러오는 데 실패했습니다.' });
+            }
+        };
+
+        fetchClasses();
+    }, [user]);
+    
+    // 신고 제출
+    const handleReportSubmit = async (type: string, content: string) => {
+        if (!user?.userNo || !reportTarget) {
+            openModal({ message: '로그인 후 신고 가능합니다.' });
+            return;
+        }
+
+        try {
+            await api.post(`/community/report`, {
+                type,
+                content,
+                roomNo: reportTarget.id,
+                refType: 'CLASS'
+            });
+            setIsReportModalOpen(false);
+            setReportTarget(null);
+            openModal({ message: '신고가 접수되었습니다.' });
+        } catch (err: any) {
+            console.error(err);
+            openModal({ message: err.response?.data || '신고 실패' });
+        }
+    };
+    
     const handleSearchClick = () => {
         navigate('/community/ckclass/search');
     };
 
     const handleRegisterClick = () => {
+        if (!user?.userNo) {
+            openModal({ message: '로그인 후 클래스 등록 가능합니다.' });
+            return;
+        }
         navigate('/community/ckclass/form');
-    };
-
-    const handleSettingsClick = (classId: number) => {
-        // 모달창을 띄우는 로직을 여기에 구현
-        console.log(`클래스 ID ${classId}에 대한 설정 모달을 띄웁니다.`);
     };
 
     return (
@@ -57,18 +184,17 @@ const CkClassMain = () => {
                     <div className={styles.searchResultWrapper}>
                         {myClasses.map(cls => (
                             <div key={cls.id} className={styles.searchResultCard}>
-                                <img src={cls.imageUrl} alt={cls.name} className={styles.searchResultImage} />
+                            <img src={cls.imageUrl ?? 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image'} alt={cls.name} className={styles.searchResultImage} />
                                 <div className={styles.searchResultContent}>
                                     <h3 className={styles.searchResultTitle}>{cls.name}</h3>
                                     <p className={styles.searchResultAuthor}>방장: {cls.author}</p>
                                     <p className={styles.searchResultDesc}>{cls.description}</p>
+                                    <p>참여 인원: {cls.memberCount ?? 0}</p>
+                                    <p className={styles.unreadCount}>
+                                        읽지 않은 메시지: {cls.unreadCount ?? 0}
+                                    </p>
                                     <div className={styles.searchResultButtons}>
-                                        <button 
-                                            className={styles.settingsButton}
-                                            onClick={() => handleSettingsClick(cls.id)}
-                                        >
-                                            설정
-                                        </button>
+                                        <button className={styles.settingsButton}>설정</button>
                                     </div>
                                 </div>
                             </div>
@@ -92,9 +218,26 @@ const CkClassMain = () => {
                                     <h3 className={styles.searchResultTitle}>{cls.name}</h3>
                                     <p className={styles.searchResultAuthor}>방장: {cls.author}</p>
                                     <p className={styles.searchResultDesc}>{cls.description}</p>
+                                    <p>참여 인원: {cls.memberCount ?? 0}</p>
+                                    {cls.unreadCount !== undefined && cls.unreadCount > 0 && (
+                                        <p className={styles.unreadCount}>읽지 않은 메시지: {cls.unreadCount}</p>
+                                    )}
                                     <div className={styles.searchResultButtons}>
                                         <button className={styles.searchJoinButton}>참여</button>
-                                        <button className={styles.searchReportButton}>신고</button>
+                                        {/* 신고 버튼 클릭 시 모달 열기 */}
+                                        <button 
+                                            className={styles.searchReportButton}
+                                            onClick={() => {
+                                                if (!user?.userNo) {
+                                                    openModal({ message: '로그인 후 신고 가능합니다.' });
+                                                    return;
+                                                }
+                                                setReportTarget({ type: 'CLASS', id: cls.id });
+                                                setIsReportModalOpen(true);
+                                            }}
+                                        >
+                                            신고
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -112,9 +255,16 @@ const CkClassMain = () => {
                 </div>
             </div>
             
-            {/* 쿠킹 클래스 모달창 여기에...
-                <Modal />
-            */}
+            {/* 일반 알림/확인 모달 */}
+            {modal && <CommunityModal message={modal.message} onConfirm={modal.onConfirm ? handleConfirm : undefined} onCancel={modal.onCancel ? handleCancel : undefined} />}
+
+            {/* 신고 모달 */}
+            <ReportModal
+                isOpen={isReportModalOpen}
+                onClose={() => { setIsReportModalOpen(false); setReportTarget(null); }}
+                onSubmit={handleReportSubmit}
+                reportTypes={reportTypes}
+            />
         </>
     );
 };
