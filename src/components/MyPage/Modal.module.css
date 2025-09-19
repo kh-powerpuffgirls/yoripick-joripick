@@ -11,6 +11,20 @@
   z-index: 1000;
 }
 
+
+.alarmCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.5;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+}
+
+
 .modalContent {
   width: 400px;
   max-width: 90%;
@@ -31,7 +45,45 @@
   font-weight: 600;
   color: #333;
 }
-.modalContent input {
+
+.modalContent .alarmCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600; 
+  color: #333;
+  line-height: 1;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  margin: 4px 0; 
+}
+
+.checkboxList{
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  margin: 20px 0;
+}
+
+.modalContent .alarmCheckbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 16px; 
+  display: block;
+}
+
+.modalContent .alarmCheckbox span {
+  display: inline-block;
+  line-height: 1;
+}
+
+
+.modalContent input[type="text"],
+.modalContent input[type="email"],
+.modalContent input[type="password"] {
   width: 100%;
   padding: 8px 10px;
   font-size: 14px;
@@ -40,18 +92,27 @@
   box-sizing: border-box;
 }
 
+.title {
+  margin: 0 auto;
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-}
-
-.title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #222;
 }
 
 .actions {
@@ -144,7 +205,6 @@
   margin: 4px 0 0 4px;
 }
 
-/* 프로필 모달 이미지 */
 .previewImg {
   width: 100px;
   height: 100px;

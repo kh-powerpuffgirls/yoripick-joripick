@@ -90,9 +90,9 @@
 
 .recipeSummary {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 25px;
   margin: 18px 0;
 }
 
@@ -125,9 +125,9 @@
 
 .mealBtn,
 .fridgeBtn {
-  width: 90px;
+  width: 100px;
   margin: 10px;
-  height: 90px;
+  height: 100px;
   padding: 10px 16px;
   border-radius: 100px;
   border: none;

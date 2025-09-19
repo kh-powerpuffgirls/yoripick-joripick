@@ -1,7 +1,6 @@
 import styles from "./Modal.module.css";
 import type { User } from "../../type/authtype";
 import { useState } from "react";
-import axios from "axios";
 import { api } from "../../api/authApi";
 import { useDispatch } from "react-redux";
 import { updateImageNo, updateProfileImage } from "../../features/authSlice";
@@ -14,7 +13,7 @@ interface ProfileModalProps {
   setProfileImg: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
-const ProfileModal = ({ user, onClose, onUpdateProfile , profileImg, setProfileImg}: ProfileModalProps) => {
+const ProfileModal = ({ user, onClose, profileImg, setProfileImg }: ProfileModalProps) => {
   const dispatch = useDispatch();
   const [previewUrl, setPreviewUrl] = useState<string>(user.profile || "default-profile.png");
   const handleFileChange = (file: File | null) => {
@@ -67,23 +66,21 @@ const ProfileModal = ({ user, onClose, onUpdateProfile , profileImg, setProfileI
           </button>
         </div>
 
-        <img src={previewUrl} alt="profile" className={styles.previewImg} />
+        <div className={styles.modalBody}>
+          <img src={previewUrl} alt="profile" className={styles.previewImg} />
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
-        />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+          />
 
-        {profileImg && <p>선택된 파일: {profileImg.name}</p>}
+          {profileImg && <p>선택된 파일: {profileImg.name}</p>}
+        </div>
 
         <div className={styles.actions}>
-          <button className={styles.saveBtn} onClick={handleSave}>
-            저장
-          </button>
-          <button className={styles.closeBtn} onClick={onClose}>
-            닫기
-          </button>
+          <button className={styles.saveBtn} onClick={handleSave}>저장</button>
+          <button className={styles.closeBtn} onClick={onClose}>닫기</button>
         </div>
       </div>
     </div>

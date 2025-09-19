@@ -16,7 +16,7 @@ const authSlice = createSlice({
       // state.accessToken = action.payload.accessToken;
       // state.user = action.payload.user;
       state.isAuthenticated = true;
-      state.loading = false;      
+      state.loading = false;
     },
     saveUserData: (state, action: PayloadAction<LoginResponse>) => {
       state.accessToken = action.payload.accessToken;
@@ -33,7 +33,7 @@ const authSlice = createSlice({
         state.user.profile = action.payload;
       }
     },
-    updateImageNo : (state, action: PayloadAction<number>) => {
+    updateImageNo: (state, action: PayloadAction<number>) => {
       if (state.user) {
         state.user.imageNo = action.payload;
       }
@@ -47,8 +47,19 @@ const authSlice = createSlice({
         if (action.payload.email) state.user.email = action.payload.email;
       }
     },
+    updateAlarmSettings: (
+      state,
+      action: PayloadAction<Pick<User, "msgNoti" | "replyNoti" | "rvwNoti" | "expNoti">>
+    ) => {
+      if (state.user) {
+        state.user.msgNoti = action.payload.msgNoti;
+        state.user.replyNoti = action.payload.replyNoti;
+        state.user.rvwNoti = action.payload.rvwNoti;
+        state.user.expNoti = action.payload.expNoti;
+      }
+    },
   },
 });
 
-export const { loginSuccess, saveUserData, logout, updateProfileImage, updateImageNo, updateUserInfo,} = authSlice.actions;
+export const { loginSuccess, saveUserData, logout, updateProfileImage, updateImageNo, updateUserInfo, updateAlarmSettings, } = authSlice.actions;
 export default authSlice.reducer;
