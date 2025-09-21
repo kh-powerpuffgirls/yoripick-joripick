@@ -1,3 +1,4 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 .modal_overlay {
   position: fixed;
   top: 0;
@@ -180,7 +181,6 @@
 
 /* ==================Review_modal.css=================== */
 /* 별점 */
-@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 .rate {
     display: inline-block;
     border: 0;

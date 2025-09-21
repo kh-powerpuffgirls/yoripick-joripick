@@ -43,6 +43,7 @@ import CkClassForm from './pages/community/ckclass/CkClassForm'
 import MarketMain from './pages/community/market/MarketMain'
 import MarketForm from './pages/community/market/MarketForm'
 import MarketBuyForm from './pages/community/market/MarketBuyForm'
+import { UserManagement } from './pages/Admin/userManagement'
 
 function App() {
   const dispatch = useDispatch();
@@ -124,6 +125,7 @@ function App() {
             <AdminDashboard />
           </AdminRoute>
         } />
+        <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />

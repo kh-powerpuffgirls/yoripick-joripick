@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import style from './main.module.css';
 import {
     approveRecipe,
+    banUser,
     disproveRecipe,
     fetchChallenges,
     fetchCommReports,
@@ -24,6 +25,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { saveMessage } from '../../api/chatApi';
 import useChat from '../../hooks/useChat';
 import type { RootState } from '../../store/store';
+import { Link } from 'react-router-dom';
 
 export const AdminDashboard = () => {
     const [userReports, setUserReports] = useState<Reports[]>([]);
@@ -145,8 +147,8 @@ export const AdminDashboard = () => {
         }
     };
 
-    // 레시피 승인
-    const approveMutation = useMutation({
+    // 레시피 승인.기각 메시지 전송
+    const mutation = useMutation({
         mutationFn: ({ roomNo, formData }: { roomNo: string | number; formData: FormData }) =>
             saveMessage("admin", roomNo, formData),
         onSuccess: (res, variables) => {
@@ -164,7 +166,7 @@ export const AdminDashboard = () => {
 
             // 채팅방 가져오기
             const chatRoom = await getChatRoom(recipe.userNo);
-            
+
             // 메시지 객체 생성
             const message: Message = {
                 content: `축하합니다! ${recipe.title} 레시피가 공식 레시피로 전환되었습니다.`,
@@ -180,7 +182,7 @@ export const AdminDashboard = () => {
             formData.append("message", messageBlob);
 
             // 뮤테이션 실행
-            approveMutation.mutate({ roomNo: chatRoom.roomNo, formData });
+            mutation.mutate({ roomNo: chatRoom.roomNo, formData });
             dispatch(openChat(chatRoom));
         } catch (err) {
             alert("처리 중 오류가 발생했습니다.");
@@ -194,20 +196,44 @@ export const AdminDashboard = () => {
             await disproveRecipe(recipe.rcpNo);
             setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo));
             fetchRcpData(1);
+
+            // 채팅방 가져오기
             const chatRoom = await getChatRoom(recipe.userNo);
-            dispatch(openChat(chatRoom));
+
+            // 메시지 객체 생성
             const message: Message = {
-                content: `죄송합니다. ${recipe.title} 레시피가 공식 레시피 전환에 실패했습니다.\n기각 사유: ${reason ?? "사유 없음"}`,
-                userNo: recipe.userNo,
-                username: "admin",
+                content: `죄송합니다. ${recipe.title} 레시피가 공식 레시피 전환에 실패했습니다.
+                    기각 사유는 다음과 같습니다: ${reason}`,
+                userNo: user?.userNo as number,
+                username: user?.username as string,
                 createdAt: new Date().toISOString(),
                 roomNo: chatRoom.roomNo
             };
-            sendMessage(message);
+
+            // 서버에 보낼 formData
+            const messageBlob = new Blob([JSON.stringify(message)], { type: "application/json" });
+            const formData = new FormData();
+            formData.append("message", messageBlob);
+
+            // 뮤테이션 실행
+            mutation.mutate({ roomNo: chatRoom.roomNo, formData });
+            dispatch(openChat(chatRoom));
+        } catch (err) {
+            alert("처리 중 오류가 발생했습니다.");
+            console.error(err);
+        }
+    };
+
+    const handleUserBan = async (reportNo: number, userNo: number, banDur: string) => {
+        try {
+            await banUser(userNo, banDur);
+            await resolveReport(reportNo);
+            setUserReports((prev) => prev.filter((c) => c.reportNo !== reportNo));
+            fetchUserData(1);
         } catch {
             alert('처리 중 오류가 발생했습니다.');
         }
-    };
+    }
 
     const handleResolveCh = async (formNo: number) => {
         try {
@@ -222,7 +248,9 @@ export const AdminDashboard = () => {
     return (
         <div className={style.container}>
             <div className={style.section}>
-                <h3>회원관리 🔐</h3>
+                <h3>
+                    <Link to="/admin/users">회원관리 🔐</Link>
+                </h3>
                 <hr />
                 {!loading && !error && userReports.length === 0 && (
                     <div className={style.emptyState}>처리할 신고 내역이 없습니다.</div>
@@ -243,6 +271,14 @@ export const AdminDashboard = () => {
                                 </div>
                                 <div className={style.cardActions}>
                                     <button onClick={() => handleOpenReport(c)}>상세보기</button>
+                                    <select name="banDur" id="banDur"
+                                        onChange={(e) => handleUserBan(c.reportNo, c.refNo, e.target.value)}>
+                                        <option value="">--정지--</option>
+                                        <option value="3">3일</option>
+                                        <option value="7">7일</option>
+                                        <option value="30">30일</option>
+                                        <option value="365">365일</option>
+                                    </select>
                                     <button onClick={() => openConfirm(() => handleResolve(c))}>처리완료</button>
                                 </div>
                             </>

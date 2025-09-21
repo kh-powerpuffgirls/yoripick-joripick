@@ -62,6 +62,15 @@ export const getChatRoom = async (userNo: number) => {
     return response.data;
 };
 
+export const banUser = async (userNo: number, banDur: string) => {
+    await api.post(`/users/${userNo}/${banDur}`);
+};
+
+export const getUsers = async () => {
+    const response = await api.get(`/users`);
+    return response.data;
+};
+
 export type PageInfo = {
     listCount: number;
     currentPage: number;
