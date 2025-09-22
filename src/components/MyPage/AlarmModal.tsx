@@ -12,7 +12,7 @@ interface AlarmModalProps {
 }
 
 const AlarmModal = ({ user, onClose }: AlarmModalProps) => {
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const [settings, setSettings] = useState({
     msgNoti: user.msgNoti === "Y",
@@ -44,7 +44,7 @@ const dispatch = useDispatch();
     try {
       await axios.put(
         `http://localhost:8081/mypage/users/alarm`,
-        payload,  { withCredentials: true }
+        payload, { withCredentials: true }
       );
 
       console.log(payload);
@@ -89,7 +89,7 @@ const dispatch = useDispatch();
             </label>
           </div>
 
-          <div className={styles.modalActions}>
+          <div className={styles.actions}>
             <button className={styles.saveBtn} onClick={handleSave}>설정 완료</button>
             <button className={styles.closeBtn} onClick={onClose}>닫기</button>
           </div>

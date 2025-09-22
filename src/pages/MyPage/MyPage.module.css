@@ -1,5 +1,5 @@
 .container {
-  max-width: 980px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 24px;
   font-family: "Noto Sans KR", "Arial", sans-serif;
@@ -10,6 +10,17 @@
   border-radius: 16px;
   border: 1px solid #ddd;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.allergyCard {
+    border : #afa4a4b4 solid 2px;
+    border-radius: 7px;
+    padding-left: 10px;
+    padding-top: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 50px;
 }
 
 .profileSection {
@@ -135,6 +146,30 @@
   font-weight: bold;
 }
 
+.allergyTag {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 8px;
+  margin-bottom: 6px;
+  border-radius: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.육류 { background: #e73c4a; }
+.갑각류 { background: #f35912; }
+.콩류 { background: #7ec905; }
+.곡류 { background: #ac8847; }
+.야채 { background: #2cac05; }
+.기타 { background: #7f8c8d; }
+.가금류 { background: #f59e4c; }
+.어패류 { background: #489092; }
+.과일 { background: #e4ce07; }
+.유제품 { background: #77a3bd; }
+.너트 { background: #755743; }
+.생선 { background: #0a7fce; }
+.씨앗 { background: #1c583a; }
+
 .mealBtn {
   background: #c9f06a;
   color: #26311a;
@@ -169,29 +204,15 @@
   color: #fff;
 }
 
-.allergyTag:nth-child(1) {
-  background: #e74c3c;
-}
-
-.allergyTag:nth-child(2) {
-  background: #f39c12;
-}
-
-.allergyTag:nth-child(3) {
-  background: #27ae60;
-}
-
-.allergyTag:nth-child(4) {
-  background: #16a085;
-}
-
 .editAllergyBtn {
-  margin-top: 8px;
+  margin-top: 15px;
   padding: 8px 12px;
   background: #efefef;
   border-radius: 8px;
   border: none;
   cursor: pointer;
+   float: right;
+   margin-right: 10px;
 }
 
 .recipeList {

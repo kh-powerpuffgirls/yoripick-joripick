@@ -58,8 +58,11 @@ const authSlice = createSlice({
         state.user.expNoti = action.payload.expNoti;
       }
     },
+    updateUserAllergies: (state, action: PayloadAction<number[]>) => {
+      if (state.user) state.user.allergies = action.payload;
+    },
   },
 });
 
-export const { loginSuccess, saveUserData, logout, updateProfileImage, updateImageNo, updateUserInfo, updateAlarmSettings, } = authSlice.actions;
+export const { loginSuccess, saveUserData, logout, updateProfileImage, updateImageNo, updateUserInfo, updateAlarmSettings,updateUserAllergies, } = authSlice.actions;
 export default authSlice.reducer;

@@ -20,7 +20,7 @@ function App() {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    api.post("http://localhost:8081/auth/tokens/refresh")
+    api.post("auth/tokens/refresh")
       .then(res => {
         dispatch(saveUserData(res.data));
         dispatch(loginSuccess());

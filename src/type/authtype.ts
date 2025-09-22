@@ -12,6 +12,7 @@ export interface User {
   provider?: "local" | "kakao";
   roles: string[]; 
   imageNo: number;
+  allergies: number[]
 }
 
 export interface LoginResponse {

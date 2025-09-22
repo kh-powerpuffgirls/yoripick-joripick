@@ -1,45 +1,54 @@
 import axios from "axios";
 import { store } from "../store/store";
-import { loginSuccess, logout } from "../features/authSlice";
+import { loginSuccess, logout, saveUserData } from "../features/authSlice";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
-}
+};
 
 export const api = axios.create({
-    baseURL : "http://localhost:8081", 
-    withCredentials: true 
-})
-
+    baseURL: "http://localhost:8081",
+    withCredentials: true
+});
 
 api.interceptors.request.use(
     (config) => {
         const token = getAccessToken();
-        if(token){
+        if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
-    }, 
+    },
     (error) => Promise.reject(error)
-)
+);
 
 api.interceptors.response.use(
-    (response) => response, 
+    (response) => response,
     async (err) => {
         const originalRequest = err.config;
 
-        if(err.response?.status === 401){
-            try{
-                const response = await axios.post(`http://localhost:8081/auth/tokens/refresh`,{},{
-                    withCredentials:true
-                });                
-                store.dispatch(loginSuccess(response.data))
+        if (err.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const response = await axios.post(
+                    "http://localhost:8081/auth/tokens/refresh",
+                    {},
+                    { withCredentials: true }
+                );
+
+                store.dispatch(saveUserData(response.data));
+                store.dispatch(loginSuccess());
+
+                const newToken = response.data.accessToken;
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
                 return api(originalRequest);
-            }catch(refreshError){
+            } catch (refreshError) {
                 store.dispatch(logout());
                 return Promise.reject(refreshError);
             }
         }
+
         return Promise.reject(err);
-    } 
-)
+    }
+);
