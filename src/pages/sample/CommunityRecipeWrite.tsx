@@ -4,16 +4,16 @@ import axios from 'axios';
 
 // CSS 모듈 및 자식 컴포넌트 import
 import write from './CommunityRecipeWrite.module.css';
-import NutrientInfo from './NutrientInfo';
-import IngredientModal from './modal/IngredientModal';
+import NutrientInfo from '../community/Recipe/NutrientInfo';
+import IngredientModal from '../community/Recipe/modal/IngredientModal';
 
 // 아이콘 이미지 import
 import scaleIcon from '../../../assets/sample/저울아이콘.png';
 import cookingIcon from '../../../assets/sample/요리아이콘.png';
 import minusIcon from '../../../assets/sample/minus_icon.png';
 import addIcon from '../../../assets/sample/add_icon.png';
-import CommunityHeader from '../Header/CommunityHeader';
-import type { AddedIngredient, CookingStep, CookingStepForForm, NutrientData, SelectOption } from '../../../type/Recipe';
+import CommunityHeader from '../community/Header/CommunityHeader';
+import type { AddedIngredient, CookingStep, CookingStepForForm, NutrientData, SelectOption } from '../../type/Recipe';
 
 // ==========================================================
 // 컴포넌트 시작

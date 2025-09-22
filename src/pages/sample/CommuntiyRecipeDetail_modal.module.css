@@ -136,6 +136,18 @@
     font-weight: 500;;
 }
 
+/* 삭제 */
+.delete {
+    border: none;
+    background: none;
+    color: #adb5bd;
+    cursor: pointer;
+    font-size: 12px;
+}
+.delete:hover {
+    color: #495057;
+}
+
 /* 신고 */
 .report{
     border:none;

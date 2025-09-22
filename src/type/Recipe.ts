@@ -2,7 +2,7 @@
 export interface User {
   userNo: number;
   username: string;
-  sik_bti: string;
+  sikBti: string;
   imageNo?: number;
   serverName?: string; // 프로필 이미지 경로
 }
@@ -45,11 +45,15 @@ export interface CookingStep {
 // 리뷰 정보
 export interface Review {
   reviewNo: number;
-  userInfo: User;
   stars: number;
   content: string;
   serverName?: string; // 리뷰 이미지 경로
   reviewDate: string;
+  userInfo:User;
+
+  // username: string;
+  // userProfileImage?: string;
+  // sikBti?: string; 
 
   rcpSource : 'API' | 'COMM';
   refNo:number; //rcp_no
@@ -131,7 +135,7 @@ export interface SelectOption {
  */
 export interface IngredientModalProps {
   onClose: () => void;
-  onComplete: (ingredient: AddedIngredient) => void;
+  onComplete: (newIngredients: Omit<AddedIngredient, 'id'>[]) => void;
 }
 
 
@@ -173,6 +177,7 @@ export interface RecipeDetail {
   rcpName: string;
   rcpInfo: string;
   createdAt: string;
+  updatedAt :string;
   views: number;
   tag?: string;
   
@@ -194,7 +199,6 @@ export interface RecipeDetail {
 }
 
 
-// --- 모달 Props 타입 ---
 
 export interface WriteReviewModalProps {
   rcpNo: number;

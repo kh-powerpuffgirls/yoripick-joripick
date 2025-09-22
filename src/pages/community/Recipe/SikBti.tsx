@@ -3,10 +3,11 @@ import React from 'react';
 // 컴포넌트가 받을 props의 타입을 정의합니다.
 interface SikBtiProps {
   sikBti: string;
+  style?: React.CSSProperties;
 }
 
 // ✨ 컴포넌트 이름은 대문자로 시작하는 것이 React의 규칙입니다. (sikBti -> SikBti)
-const SikBti: React.FC<SikBtiProps> = ({ sikBti }) => {
+const SikBti: React.FC<SikBtiProps> = ({ sikBti,style }) => {
   // 값에 따라 색상 지정
   const getColor = (bti: string) => {
     switch (bti) {
@@ -22,14 +23,12 @@ const SikBti: React.FC<SikBtiProps> = ({ sikBti }) => {
     }
   };
   
-  // ✨ CSS를 인라인 스타일 대신 CSS 모듈로 관리하는 것이 더 좋습니다.
-  //    (일단 요청대로 인라인 스타일 유지)
   return (
     <div
       style={{
         color: getColor(sikBti),
-        fontSize: '7px',
         fontWeight: '600',
+        ...style
       }}
     >
       {sikBti}

@@ -18,6 +18,7 @@ import { loginSuccess, logout } from './features/authSlice'
 import RecipeWrite from './pages/community/Recipe/RecipeWrite'
 import MyPage from './pages/MyPage/MyPage'
 import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
+import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
         <Route path="/community/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
         <Route path="/community/recipe/write" element={<RecipeWrite />} />
+        <Route path="/community/recipe/edit/:rcpNo" element={<RecipeEditPage />} />
         <Route path="/myPage" element={<MyPage />} />
       </Routes>
       <Footer />

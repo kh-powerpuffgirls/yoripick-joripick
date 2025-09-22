@@ -112,8 +112,15 @@ const RecipeWrite: React.FC = () => {
         }
     };
 
-    const handleAddIngredientFromModal = (newIngredient: AddedIngredient) => {
-        setIngredients(prevIngredients => [...prevIngredients, newIngredient]);
+    const handleAddIngredientFromModal = (newIngredients: Omit<AddedIngredient, 'id'>[]) => {
+        // 1. 모달로부터 받은 새 재료 배열에 각각 고유한 id를 추가해줍니다.
+        const formatted = newIngredients.map(ing => ({ 
+            ...ing, 
+            id: Date.now() + Math.random() 
+        }));
+        
+        // 2. 기존 재료 목록(...prev)에 새로운 재료 목록(...formatted)을 합칩니다.
+        setIngredients(prev => [...prev, ...formatted]);
         setIsModalOpen(false);
     };
 

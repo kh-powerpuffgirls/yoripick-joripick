@@ -16,10 +16,7 @@
     font-size: 24px;
     margin: 0;
 }
-.title_area span {
-    color: #FE8051;
-    font-weight: bold;
-}
+
 .title_area button {
     border: 1px solid #88B2AC;
     background-color: #fff;
@@ -55,7 +52,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 0.3s ease;
 }
 .photo_box:hover img {
@@ -78,15 +75,15 @@
 .sort_area {
     display: flex;
     gap: 10px;
-    color: #868e96;
+    color: #888 !important;
 }
 .sort_area span {
     cursor: pointer;
     font-weight: 500;
 }
-.active_sort {
-    font-weight: bold;
-    color: #343a40;
+.sort_area .active_sort {
+  color: #029D60 ; /* 활성화 시 색상 */
+  font-weight: 700; /* 활성화 시 굵기 */
 }
 .review_container {
     display: flex;
@@ -119,7 +116,8 @@
 }
 .profile_name {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: start;
     gap: 8px;
 }
 .nickname {

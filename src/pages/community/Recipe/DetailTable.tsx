@@ -45,7 +45,7 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
         <div className={styles.writer_profile} onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
           <img src={recipe.writer.serverName || sampleProfileImg} alt={recipe.writer.username} />
           <div className={styles.profile_name}>
-            {recipe.writer.sik_bti && <SikBti sikBti={recipe.writer.sik_bti} />}
+            {recipe.writer.sikBti && <SikBti sikBti={recipe.writer.sikBti} style={{fontSize: '13px' }} />}
             <span className={styles.nickname}>{recipe.writer.username}</span>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { api } from '../../../api/authApi';
@@ -21,8 +21,6 @@ import Reviews from './Reviews';
 const CommunityRecipeDetail: React.FC = () => {
     // 1. URL에서 현재 레시피의 번호(ID)
     const { rcpNo } = useParams<{ rcpNo: string }>(); 
-    
-    // 페이지 이동 함수
     const loginUserNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const navigate = useNavigate();
 
@@ -34,10 +32,10 @@ const CommunityRecipeDetail: React.FC = () => {
     // 좋아요 상태
     const [myLikeStatus, setMyLikeStatus] = useState<'LIKE' | 'DISLIKE' | null>(null);
     const [likeCount, setLikeCount] = useState(0);
+    
 
     // 3. 컴포넌트가 처음 렌더링될 때 API를 호출하여 데이터 요청
-    useEffect(() => {
-        const fetchRecipeDetail = async () => {
+    const fetchRecipeDetail = useCallback(async () => {
         if (!rcpNo) return;
         
         try {
@@ -49,16 +47,20 @@ const CommunityRecipeDetail: React.FC = () => {
             
             setRecipe(response.data);
             setMyLikeStatus(response.data.myLikeStatus || null);
-            setLikeCount(response.data.likeCount);
+            setLikeCount(response.data.likeCount); // 좋아요 개수 state도 함께 업데이트합니다.
+            
         } catch (err) {
             setError('레시피 정보를 불러오는 데 실패했습니다.');
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-        };
+    }, [rcpNo, loginUserNo]); 
+
+    //useEffect는 fetchRecipeDetail 함수를 호출하는 역할
+    useEffect(() => {
         fetchRecipeDetail();
-    }, [rcpNo]); // rcpNo가 바뀔 때마다 데이터를 다시 불러옴
+    }, [fetchRecipeDetail]);
 
     // ✨ 추가: 좋아요/싫어요 버튼 클릭 핸들러
     const handleLikeClick = async (newStatus: 'LIKE' | 'DISLIKE') => {
@@ -66,29 +68,13 @@ const CommunityRecipeDetail: React.FC = () => {
             alert('로그인이 필요한 기능입니다.');
             return;
         }
-
-        // 현재 상태와 같은 버튼을 다시 누르면 '중립' 상태로 변경 (토글 기능)
         const finalStatus = myLikeStatus === newStatus ? 'COMMON' : newStatus;
-        
-        // 1. UI 즉시 업데이트 (Optimistic UI Update)
-        const originalStatus = myLikeStatus;
-        const originalCount = likeCount;
-
-        setMyLikeStatus(finalStatus === 'COMMON' ? null : finalStatus);
-        if(finalStatus === 'LIKE') {
-            setLikeCount(originalStatus === 'LIKE' ? originalCount - 1 : originalCount + 1);
-        } else if (finalStatus === 'COMMON' && originalStatus === 'LIKE') {
-            setLikeCount(originalCount - 1);
-        }
-
-        // 2. 백엔드에 변경사항 전송
         try {
-             await api.post(`/api/community/recipe/${rcpNo}/like/${loginUserNo}`, { status: finalStatus });
+            await api.post(`/api/community/recipe/${rcpNo}/like/${loginUserNo}`, { status: finalStatus });            
+            fetchRecipeDetail();
         } catch (error) {
-            // 3. API 호출 실패 시 UI를 원래대로 되돌림
             alert('오류가 발생했습니다. 다시 시도해주세요.');
-            setMyLikeStatus(originalStatus);
-            setLikeCount(originalCount);
+            // 실패 시에는 별도 처리 없이 다음 fetchRecipeDetail 호출 시 동기화되므로 UI 복원 코드가 필요 없습니다.
         }
     };
 
@@ -96,12 +82,12 @@ const CommunityRecipeDetail: React.FC = () => {
     const handleDelete = async () => {
         if (window.confirm('정말로 이 레시피를 삭제하시겠습니까?')) {
             try {
-            await api.delete(`/api/recipes/${rcpNo}`);
-            alert('레시피가 삭제되었습니다.');
-            navigate('/community/recipes'); // 목록 페이지로 이동
-        } catch (err) {
-            alert('삭제에 실패했습니다.');
-        }
+                await api.delete(`/api/community/recipe/${rcpNo}`);
+                alert('레시피가 삭제되었습니다.');
+                navigate('/community/recipe'); // 목록 페이지 경로 확인
+            } catch (err) {
+                alert('삭제에 실패했습니다.');
+            }
         }
     };
 
@@ -110,21 +96,17 @@ const CommunityRecipeDetail: React.FC = () => {
         navigate(`/community/recipe/edit/${rcpNo}`);
     };
 
-     // 로딩 중일 때
     if (isLoading) {
-    return <div>레시피를 불러오는 중입니다...</div>;
+        return <div>레시피를 불러오는 중입니다...</div>;
     }
 
-    // 에러 발생 시
     if (error || !recipe) {
-    return <div>{error || '레시피를 찾을 수 없습니다.'}</div>;
+        return <div>{error || '레시피를 찾을 수 없습니다.'}</div>;
     }
 
-    //로그인유저, 작성자 같은지 확인
     const isOwner = loginUserNo === recipe.writer.userNo;
 
-   
-
+ 
     // 4. 데이터 로딩 완료 후 화면 렌더링
     return (
         <div className={styles.container}>
@@ -135,11 +117,18 @@ const CommunityRecipeDetail: React.FC = () => {
             <span>★{(recipe.avgStars || 0).toFixed(1)}</span>
             </div>
             <span style={{fontWeight: 'bold', fontSize: '50px'}}>{recipe.rcpName}</span>
-            <span style={{fontSize: '20px', color: '#636363'}}>{new Date(recipe.createdAt).toLocaleString()}</span>
+            <span style={{fontSize: '20px', color: '#636363'}}>
+                {new Date(recipe.createdAt).toLocaleString()} |
+                {recipe.updatedAt && (
+                    <span style={{ marginLeft: '10px' }}>
+                    (수정){new Date(recipe.updatedAt).toLocaleString()}
+                    </span>
+                )}
+            </span>
             <div className={styles.other_info}>
-            좋아요 <span style={{color: '#FF0000'}}>{likeCount}</span> |
-            리뷰 <span style={{color: '#009626'}}>{recipe.reviewCount}</span> |
-            조회수 <span style={{color: '#009626'}}>{recipe.views}</span>
+                좋아요 <span style={{color: '#FF0000'}}>{likeCount}</span> |
+                리뷰 <span style={{color: '#009626'}}>{recipe.reviewCount}</span> |
+                조회수 <span style={{color: '#009626'}}>{recipe.views}</span>
             </div>
         </div>
 
@@ -180,7 +169,7 @@ const CommunityRecipeDetail: React.FC = () => {
             </div>
 
             {/* ✨ 3. 리뷰 영역 자식 컴포넌트 */}
-            <Reviews rcpNo={recipe.rcpNo} />
+            <Reviews rcpNo={recipe.rcpNo} onReviewSubmit={fetchRecipeDetail} reviewCount={recipe.reviewCount} />
         </div>
         </div>
     );

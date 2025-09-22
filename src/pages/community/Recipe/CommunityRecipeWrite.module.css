@@ -40,7 +40,7 @@
     flex-direction: column;
 }
 
-h2{
+.card h2{
     color: #029D60;
     margin-bottom: 10px;
 }
@@ -79,7 +79,7 @@ textarea{
 	border-radius: 6px;
 	font-size: 16px;
 }
-select{
+.info select{
 	width: 100%;
 	padding: 10px;
 	border: 1px solid #81CEB0;
@@ -217,7 +217,13 @@ option {
 
 #how2cook{
     border:0px #5a616b !important;
-
+    resize: none;  
+    font-family: '맑은 고딕', Arial, sans-serif;
+    width: 95%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 16px;
 }
 
 .img_how2cook{

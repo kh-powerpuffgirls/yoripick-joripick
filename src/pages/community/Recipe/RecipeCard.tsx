@@ -23,7 +23,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       <div className={recipecard.profile}>
         <img src={recipe.userProfileImage} alt={recipe.username} />
         <div className={recipecard.profile_name}>
-          {recipe.sikBti && <SikBti sikBti={recipe.sikBti} />}
+          {recipe.sikBti && <SikBti sikBti={recipe.sikBti} style={{fontSize: '8px' }} />}
           <span className={recipecard.nickname}>{recipe.username}</span>
         </div>
 
