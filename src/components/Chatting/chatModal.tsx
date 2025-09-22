@@ -96,7 +96,7 @@ export const ChatModal = () => {
                 };
                 const messageBlob = new Blob([JSON.stringify(botMessage)], { type: "application/json" });
                 const formData = new FormData();
-                formData.append("message", messageBlob)
+                formData.append("message", messageBlob);
                 mutation.mutate(formData);
                 dispatch(sendMessage(botMessage));
             } catch (err) {
@@ -107,7 +107,7 @@ export const ChatModal = () => {
                 };
                 const messageBlob = new Blob([JSON.stringify(botMessage)], { type: "application/json" });
                 const formData = new FormData();
-                formData.append("message", messageBlob)
+                formData.append("message", messageBlob);
                 mutation.mutate(formData);
                 dispatch(sendMessage(botMessage));
             }

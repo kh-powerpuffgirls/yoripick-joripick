@@ -1,5 +1,6 @@
 import axios from "axios";
 import { store } from "../store/store";
+import type { Announcement } from "../components/Admin/newAnnouncement";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
@@ -22,7 +23,7 @@ api.interceptors.request.use(
 )
 
 export const fetchChallenges = async (page: number, size: number) => {
-    const response = await api.get('/challenges',{params: {page, size}});
+    const response = await api.get('/challenges', { params: { page, size } });
     return response.data;
 };
 
@@ -31,7 +32,7 @@ export const resolveChallenge = async (formNo: number) => {
 };
 
 export const fetchRecipes = async (page: number, size: number) => {
-    const response = await api.get('/recipes',{params: {page, size}});
+    const response = await api.get('/recipes', { params: { page, size } });
     return response.data;
 }
 
@@ -44,12 +45,12 @@ export const approveRecipe = async (rcpNo: number) => {
 }
 
 export const fetchUserReports = async (page: number, size: number) => {
-    const response = await api.get('/reports/user',{params: {page, size}});
+    const response = await api.get('/reports/user', { params: { page, size } });
     return response.data;
 }
 
 export const fetchCommReports = async (page: number, size: number) => {
-    const response = await api.get('/reports/comm',{params: {page, size}});
+    const response = await api.get('/reports/comm', { params: { page, size } });
     return response.data;
 }
 
@@ -66,8 +67,43 @@ export const banUser = async (userNo: number, banDur: string) => {
     await api.post(`/users/${userNo}/${banDur}`);
 };
 
-export const getUsers = async () => {
-    const response = await api.get(`/users`);
+export const newChallenge = async function (challenge: FormData) {
+    await api.post(`/challenges`, challenge, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+};
+
+export const newAnnouncement = async function (announcement: Announcement) {
+    await api.post(`/announcements`, announcement);
+};
+
+export const getTotalReports = async function () {
+    const response = await api.get(`/reports`);
+    return response.data;
+};
+
+export const getUsers = async (page: number, size: number) => {
+    const response = await api.get(`/users`, { params: { page, size } });
+    return response.data;
+};
+
+export const getRecipes = async (page: number, size: number) => {
+    const response = await api.get(`/all-recipes`, { params: { page, size } });
+    return response.data;
+};
+
+export const getCommunityData = async (page: number, size: number) => {
+    const response = await api.get(`/communities`, { params: { page, size } });
+    return response.data;
+};
+
+export const getClassData = async (page: number, size: number) => {
+    const response = await api.get(`/classes`, { params: { page, size } });
+    return response.data;
+};
+
+export const getClassInfo = async (roomNo: number) => {
+    const response = await api.get(`/classes/${roomNo}`);
     return response.data;
 };
 

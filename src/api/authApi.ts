@@ -48,3 +48,8 @@ export const getNotiSettings = async (userNo: number | undefined) => {
     const response = await api.get(`/auth/noti/${userNo}`);
     return response.data;
 }
+
+export const getTodayAnn = async function () {
+    const response = await api.get(`/common/announcements`);
+    return response.data;
+};

@@ -1,30 +1,66 @@
 import { Link, useLocation } from "react-router-dom";
 import { lodingImg } from "../assets/images";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useLogout from "../hooks/logout";
 import type { RootState } from "../store/store";
 import { NewAnnouncement } from "./Admin/newAnnouncement";
-import { useState } from "react";
 import { NewChallenge } from "./Admin/newChallenge";
+import { closeModal, openNewAnnouncementModal, openNewChallengeModal } from "../features/adminModalSlice";
+import { useEffect, useState } from "react";
+import { getTodayAnn } from "../api/authApi";
+import { getTotalReports } from "../api/adminApi";
 
 const Header = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
+  const adminPaths = ["/admin", "/admin/users", "/admin/recipes", "/admin/communities", "/admin/classes"];
+  const isAdminPath = adminPaths.includes(loc.pathname);
   const logout = useLogout();
-  const [openNewAnn, setOpenNewAnn] = useState(false);
-  const [openNewCh, setOpenNewCh] = useState(false);
+  const { isOpen, modalType, initialData } = useSelector((state: RootState) => state.adminModal);
+  const dispatch = useDispatch();
+  const [todayAnn, setTodayAnn] = useState("");
+  const [totalReports, setTotalReports] = useState(0);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const todayAnndata = await getTodayAnn();
+        setTodayAnn(todayAnndata.content);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+    fetchAnnouncements();
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchAnnouncements = async () => {
+      try {
+        setTotalReports(await getTotalReports());
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+    fetchAnnouncements();
+  }, [isAdmin]);
 
   return (
     <>
-      {openNewAnn && <NewAnnouncement setOpenNewAnn={setOpenNewAnn}/>}
-      {openNewCh && <NewChallenge setOpenNewCh={setOpenNewCh}/>}
-      <div id="header">
+      {isOpen && modalType === 'newAnnouncement' && <NewAnnouncement setOpenNewAnn={() => dispatch(closeModal())} />}
+      {isOpen && modalType === 'newChallenge' && (
+        <NewChallenge
+          setOpenNewCh={() => dispatch(closeModal())}
+          initialData={initialData}
+        />
+      )}
+      <div id="header" className={isAdminPath ? "admHeader" : "commHeader"}>
         <Link to="/home">
           <img className="logo-image" src={lodingImg.logo} alt="요리Pick! 조리Pick!" />
         </Link>
         <ul className="navbar">
-          {loc.pathname === "/admin" ? (
+          {isAdminPath ? (
             <>
               <li>
                 <Link to="/home" className="nav-link">HOME</Link>
@@ -35,11 +71,15 @@ const Header = () => {
               </li>
               <li className="nav-line"></li>
               <li>
-                <button onClick={() => setOpenNewAnn(true)} className="nav-button">공지작성</button>
+                <button onClick={() => dispatch(openNewAnnouncementModal())} className="nav-button">공지작성</button>
               </li>
               <li className="nav-line"></li>
               <li>
-                <button onClick={() => setOpenNewCh(true)} className="nav-button">챌린지 등록</button>
+                <button onClick={() => dispatch(openNewChallengeModal(null))} className="nav-button">챌린지 등록</button>
+              </li>
+              <li className="nav-line"></li>
+              <li>
+                <button className="nav-button">재료등록</button>
               </li>
             </>
           ) : (
@@ -100,6 +140,15 @@ const Header = () => {
           </div>
         </div>
       </div>
+      {isAdminPath ? (
+        <div className="announcement-bar adm">
+          <span>새롭게 처리해야 할 항목이 {totalReports}건 있습니다.</span>
+        </div>
+      ) :
+        <div className="announcement-bar ann">
+          <span>{todayAnn}</span>
+        </div>
+      }
     </>
   );
 };

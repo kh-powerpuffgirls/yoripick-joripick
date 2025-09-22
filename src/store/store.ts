@@ -7,9 +7,11 @@ import auth from '../features/authSlice'
 import noti from '../features/notiSlice'
 import userReducer from '../features/userSlice';
 import stomp from '../features/stompSlice';
+import adminModal from '../features/adminModalSlice'
 
 export const store = configureStore({
     reducer: {
+        adminModal,
         stomp,
         chatalert,
         alert,

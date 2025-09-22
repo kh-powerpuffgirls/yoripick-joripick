@@ -44,6 +44,9 @@ import MarketMain from './pages/community/market/MarketMain'
 import MarketForm from './pages/community/market/MarketForm'
 import MarketBuyForm from './pages/community/market/MarketBuyForm'
 import { UserManagement } from './pages/Admin/userManagement'
+import { RcpManagement } from './pages/Admin/rcpManagement'
+import { CommManagement } from './pages/Admin/commManagement'
+import { ClassManagement } from './pages/Admin/classManagement'
 
 function App() {
   const dispatch = useDispatch();
@@ -126,6 +129,9 @@ function App() {
           </AdminRoute>
         } />
         <Route path="/admin/users" element={<UserManagement />} />
+        <Route path="/admin/recipes" element={<RcpManagement />} />
+        <Route path="/admin/communities" element={<CommManagement />} />
+        <Route path="/admin/classes" element={<ClassManagement />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />

@@ -25,7 +25,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { saveMessage } from '../../api/chatApi';
 import useChat from '../../hooks/useChat';
 import type { RootState } from '../../store/store';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { openNewChallengeModal } from '../../features/adminModalSlice';
 
 export const AdminDashboard = () => {
     const [userReports, setUserReports] = useState<Reports[]>([]);
@@ -38,23 +39,21 @@ export const AdminDashboard = () => {
     const [chPageInfo, setChPageInfo] = useState<PageInfo | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [openCards, setOpenCards] = useState<{ [key: number | string]: boolean }>({});
-
+    const [openCard, setOpenCard] = useState<string | number | null>(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [confirmInput, setConfirmInput] = useState(false);
     const [confirmTarget, setConfirmTarget] = useState<any>(null);
+    const [confirmMessage, setConfirmMessage] = useState<string>("이 신고내역을 처리 완료 하시겠습니까?");
     const [confirmAction, setConfirmAction] = useState<(value?: string) => void>(() => () => { });
     const { sendChatMessage } = useChat();
     const user = useSelector((state: RootState) => state.auth.user);
 
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
 
     const handleToggleCard = (id: number | string) => {
-        setOpenCards((prev) => ({
-            ...prev,
-            [id]: !prev[id],
-        }));
+        setOpenCard((prev) => (prev === id ? null : id));
     };
 
     const fetchUserData = async (page: number) => {
@@ -89,18 +88,20 @@ export const AdminDashboard = () => {
             setError('관리 내역을 불러오는 데 실패했습니다.');
         } finally {
             setLoading(false);
-            setOpenCards({});
+            setOpenCard(null);
         }
     }, []);
 
     const openConfirm = (
         action: (value?: string) => void,
         input: boolean = false,
-        target: any = null
+        target: any = null,
+        message: string = "이 신고내역을 처리 완료 하시겠습니까?"
     ) => {
         setConfirmAction(() => action);
         setConfirmInput(input);
         setConfirmTarget(target);
+        setConfirmMessage(message);
         setConfirmOpen(true);
     };
 
@@ -245,180 +246,209 @@ export const AdminDashboard = () => {
         }
     };
 
+    const handleRegister = (c: ChallengeForm) => {
+        dispatch(openNewChallengeModal({
+            title: c.chTitle,
+        }));
+    };
+
     return (
-        <div className={style.container}>
-            <div className={style.section}>
-                <h3>
-                    <Link to="/admin/users">회원관리 🔐</Link>
-                </h3>
-                <hr />
-                {!loading && !error && userReports.length === 0 && (
-                    <div className={style.emptyState}>처리할 신고 내역이 없습니다.</div>
-                )}
-                {userReports.map((c) => (
-                    <div key={c.reportNo} className={style.card}>
-                        <div className={style.cardInfo} onClick={() => handleToggleCard(c.reportNo)}>
-                            <span>USER {c.refNo}</span>
-                            <span>{c.detail}</span>
-                            <span>{new Date(c.reportedAt).toLocaleString()}</span>
-                            <span className={style.toggleIcon}>{openCards[c.reportNo] ? '▲' : '▼'}</span>
-                        </div>
-                        {openCards[c.reportNo] && (
-                            <>
-                                <div className={style.cardContent}>
-                                    <strong>USER {c.userNo}</strong>
-                                    <div>{c.content}</div>
-                                </div>
-                                <div className={style.cardActions}>
-                                    <button onClick={() => handleOpenReport(c)}>상세보기</button>
-                                    <select name="banDur" id="banDur"
-                                        onChange={(e) => handleUserBan(c.reportNo, c.refNo, e.target.value)}>
-                                        <option value="">--정지--</option>
-                                        <option value="3">3일</option>
-                                        <option value="7">7일</option>
-                                        <option value="30">30일</option>
-                                        <option value="365">365일</option>
-                                    </select>
-                                    <button onClick={() => openConfirm(() => handleResolve(c))}>처리완료</button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                ))}
-                {userPageInfo && userPageInfo.listCount > 5 && (
-                    <Pagination pageInfo={userPageInfo} onPageChange={(page) => fetchUserData(page)} />
-                )}
+        <div className={style.adminMain}>
+            <div className={style.adminNav}>
+                <button className={`${style.adminNavLink} ${style.active}`}>DASHBOARD</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/users`)}>USER</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/recipes`)}>RECIPE</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/communities`)}>COMMUNITY</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/classes`)}>CLASS</button>
+                <button className={style.adminNavLink}>고객문의</button>
             </div>
-
-            <div className={style.section}>
-                <h3>레시피 관리 🍳</h3>
-                <hr />
-                {!loading && !error && recipes.length === 0 && (
-                    <div className={style.emptyState}>관리할 레시피가 없습니다.</div>
-                )}
-                {recipes.map((c) => (
-                    <div key={`${c.rcpNo}-${c.reportNo}`} className={style.card}>
-                        <div
-                            className={style.cardInfo}
-                            onClick={() => handleToggleCard(`${c.rcpNo}-${c.reportNo}`)}
-                        >
-                            <span>ID {c.rcpNo}</span>
-                            <span>{c.type === 'RECIPE' ? c.title : c.detail}</span>
-                            {c.type === 'REPORT' && <span>{new Date(c.reportedAt).toLocaleString()}</span>}
-                            <span className={style.toggleIcon}>
-                                {openCards[`${c.rcpNo}-${c.reportNo}`] ? '▲' : '▼'}
-                            </span>
-                        </div>
-                        {openCards[`${c.rcpNo}-${c.reportNo}`] && (
-                            <>
-                                <div className={style.cardContent}>
-                                    <strong>USER {c.userNo}</strong>
-                                    <div>{c.type === 'RECIPE' ? c.info : c.content}</div>
-                                </div>
-                                <div className={style.cardActions}>
-                                    <button onClick={() => handleOpenRcp(c)}>상세보기</button>
-                                    {c.type === 'REPORT' ? (
+            <div className={style.container}>
+                <div className={style.section}>
+                    <h3>
+                        <Link to="/admin/users">회원관리 🔐</Link>
+                    </h3>
+                    <hr />
+                    {!loading && !error && userReports.length === 0 && (
+                        <div className={style.emptyState}>처리할 신고 내역이 없습니다.</div>
+                    )}
+                    {userReports.map((c) => (
+                        <div key={c.reportNo} className={style.card}>
+                            <div className={style.cardInfo} onClick={() => handleToggleCard(c.reportNo)}>
+                                <span>USER {c.refNo}</span>
+                                <span>{c.detail}</span>
+                                <span>{new Date(c.reportedAt).toLocaleString()}</span>
+                                <span className={style.toggleIcon}>{openCard === c.reportNo ? '▲' : '▼'}</span>
+                            </div>
+                            {openCard === c.reportNo && (
+                                <>
+                                    <div className={style.cardContent}>
+                                        <strong>USER {c.userNo}</strong>
+                                        <div>{c.content}</div>
+                                    </div>
+                                    <div className={style.cardActions}>
+                                        <button onClick={() => handleOpenReport(c)}>상세보기</button>
+                                        <select name="banDur" id="banDur"
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (!value) return;
+                                                openConfirm(
+                                                    () => handleUserBan(c.reportNo, c.refNo, value),
+                                                    false,
+                                                    c,
+                                                    `해당 유저를 ${value}일 정지하시겠습니까?`
+                                                );
+                                                e.target.value = "";
+                                            }}>
+                                            <option value="">정지</option>
+                                            <option value="3">3일</option>
+                                            <option value="7">7일</option>
+                                            <option value="30">30일</option>
+                                            <option value="365">365일</option>
+                                        </select>
                                         <button onClick={() => openConfirm(() => handleResolve(c))}>처리완료</button>
-                                    ) : (
-                                        <>
-                                            <button onClick={() => openConfirm(() => handleResolveRcp(c))}>승인</button>
-                                            <button
-                                                onClick={() =>
-                                                    openConfirm((reason) => handleDisproveRcp(c, reason), true, c)
-                                                }
-                                            >
-                                                기각
-                                            </button>
-                                        </>
-                                    )}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                ))}
-                {rcpPageInfo && rcpPageInfo.listCount > 5 && (
-                    <Pagination pageInfo={rcpPageInfo} onPageChange={(page) => fetchRcpData(page)} />
-                )}
-            </div>
-
-            <div className={style.section}>
-                <h3>커뮤니티 관리 🎮</h3>
-                <hr />
-                {!loading && !error && commReports.length === 0 && (
-                    <div className={style.emptyState}>처리할 신고 내역이 없습니다.</div>
-                )}
-                {commReports.map((c) => (
-                    <div key={c.reportNo} className={style.card}>
-                        <div className={style.cardInfo} onClick={() => handleToggleCard(c.reportNo)}>
-                            <span>ID {c.reportNo}</span>
-                            <span>{c.detail}</span>
-                            <span>{new Date(c.reportedAt).toLocaleString()}</span>
-                            <span className={style.toggleIcon}>{openCards[c.reportNo] ? '▲' : '▼'}</span>
+                                    </div>
+                                </>
+                            )}
                         </div>
-                        {openCards[c.reportNo] && (
-                            <>
-                                <div className={style.cardContent}>
-                                    <strong>USER {c.userNo}</strong>
-                                    <div>{c.content}</div>
-                                </div>
-                                <div className={style.cardActions}>
-                                    <button onClick={() => handleOpenReport(c)}>상세보기</button>
-                                    <button onClick={() => openConfirm(() => handleResolve(c))}>처리완료</button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                ))}
-                {commPageInfo && commPageInfo.listCount > 5 && (
-                    <Pagination pageInfo={commPageInfo} onPageChange={(page) => fetchCommData(page)} />
-                )}
-            </div>
+                    ))}
+                    {userPageInfo && userPageInfo.listCount > 5 && (
+                        <Pagination pageInfo={userPageInfo} onPageChange={(page) => fetchUserData(page)} />
+                    )}
+                </div>
 
-            <div className={style.section}>
-                <h3>새 챌린지 요청 💌</h3>
-                <hr />
-                {!loading && !error && challenges.length === 0 && (
-                    <div className={style.emptyState}>처리할 신규 요청이 없습니다.</div>
-                )}
-                {challenges.map((c) => (
-                    <div key={c.formNo} className={style.card}>
-                        <div className={style.cardInfo} onClick={() => handleToggleCard(c.formNo)}>
-                            <span>ID {c.formNo}</span>
-                            <span>{c.chTitle}</span>
-                            <span>{new Date(c.createdAt).toLocaleString()}</span>
-                            <span className={style.toggleIcon}>{openCards[c.formNo] ? '▲' : '▼'}</span>
+                <div className={style.section}>
+                    <h3>
+                        <Link to="/admin/recipes">레시피 관리 🍳</Link>
+                    </h3>
+                    <hr />
+                    {!loading && !error && recipes.length === 0 && (
+                        <div className={style.emptyState}>관리할 레시피가 없습니다.</div>
+                    )}
+                    {recipes.map((c) => (
+                        <div key={`${c.rcpNo}-${c.reportNo}`} className={style.card}>
+                            <div
+                                className={style.cardInfo}
+                                onClick={() => handleToggleCard(`${c.rcpNo}-${c.reportNo}`)}
+                            >
+                                <span>ID {c.rcpNo}</span>
+                                <span>{c.type === 'RECIPE' ? c.title : c.detail}</span>
+                                {c.type === 'REPORT' && <span>{new Date(c.reportedAt).toLocaleString()}</span>}
+                                <span className={style.toggleIcon}>
+                                    {openCard === `${c.rcpNo}-${c.reportNo}` ? '▲' : '▼'}
+                                </span>
+                            </div>
+                            {openCard === `${c.rcpNo}-${c.reportNo}` && (
+                                <>
+                                    <div className={style.cardContent}>
+                                        <strong>USER {c.userNo}</strong>
+                                        <div>{c.type === 'RECIPE' ? c.info : c.content}</div>
+                                    </div>
+                                    <div className={style.cardActions}>
+                                        <button onClick={() => handleOpenRcp(c)}>상세보기</button>
+                                        {c.type === 'REPORT' ? (
+                                            <button onClick={() => openConfirm(() => handleResolve(c))}>처리완료</button>
+                                        ) : (
+                                            <>
+                                                <button onClick={() => openConfirm(() => handleResolveRcp(c))}>승인</button>
+                                                <button
+                                                    onClick={() =>
+                                                        openConfirm((reason) => handleDisproveRcp(c, reason), true, c)
+                                                    }
+                                                >
+                                                    기각
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                </>
+                            )}
                         </div>
-                        {openCards[c.formNo] && (
-                            <>
-                                <div className={style.cardContent}>
-                                    <strong>USER {c.userNo}</strong>
-                                    <div>{c.description}</div>
-                                </div>
-                                <div className={style.cardActions}>
-                                    <button onClick={() => handleOpenCh(c)}>상세보기</button>
-                                    <button onClick={() => openConfirm(() => handleResolveCh(c.formNo))}>
-                                        처리완료
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                ))}
-                {chPageInfo && chPageInfo.listCount > 5 && (
-                    <Pagination pageInfo={chPageInfo} onPageChange={(page) => fetchChData(page)} />
-                )}
+                    ))}
+                    {rcpPageInfo && rcpPageInfo.listCount > 5 && (
+                        <Pagination pageInfo={rcpPageInfo} onPageChange={(page) => fetchRcpData(page)} />
+                    )}
+                </div>
+
+                <div className={style.section}>
+                    <h3>
+                        <Link to="/admin/communities">커뮤니티 관리 🎮</Link>
+                    </h3>
+                    <hr />
+                    {!loading && !error && commReports.length === 0 && (
+                        <div className={style.emptyState}>처리할 신고 내역이 없습니다.</div>
+                    )}
+                    {commReports.map((c) => (
+                        <div key={c.reportNo} className={style.card}>
+                            <div className={style.cardInfo} onClick={() => handleToggleCard(c.reportNo)}>
+                                <span>ID {c.reportNo}</span>
+                                <span>{c.detail}</span>
+                                <span>{new Date(c.reportedAt).toLocaleString()}</span>
+                                <span className={style.toggleIcon}>{openCard === c.reportNo ? '▲' : '▼'}</span>
+                            </div>
+                            {openCard === c.reportNo && (
+                                <>
+                                    <div className={style.cardContent}>
+                                        <strong>USER {c.userNo}</strong>
+                                        <div>{c.content}</div>
+                                    </div>
+                                    <div className={style.cardActions}>
+                                        <button onClick={() => handleOpenReport(c)}>상세보기</button>
+                                        <button onClick={() => openConfirm(() => handleResolve(c))}>처리완료</button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    ))}
+                    {commPageInfo && commPageInfo.listCount > 5 && (
+                        <Pagination pageInfo={commPageInfo} onPageChange={(page) => fetchCommData(page)} />
+                    )}
+                </div>
+
+                <div className={style.section}>
+                    <h3>새 챌린지 요청 💌</h3>
+                    <hr />
+                    {!loading && !error && challenges.length === 0 && (
+                        <div className={style.emptyState}>처리할 신규 요청이 없습니다.</div>
+                    )}
+                    {challenges.map((c) => (
+                        <div key={c.formNo} className={style.card}>
+                            <div className={style.cardInfo} onClick={() => handleToggleCard(c.formNo)}>
+                                <span>ID {c.formNo}</span>
+                                <span>{c.chTitle}</span>
+                                <span>{new Date(c.createdAt).toLocaleString()}</span>
+                                <span className={style.toggleIcon}>{openCard === c.formNo ? '▲' : '▼'}</span>
+                            </div>
+                            {openCard === c.formNo && (
+                                <>
+                                    <div className={style.cardContent}>
+                                        <strong>USER {c.userNo}</strong>
+                                        <div>{c.description}</div>
+                                    </div>
+                                    <div className={style.cardActions}>
+                                        <button onClick={() => handleOpenCh(c)}>상세보기</button>
+                                        <button onClick={() => handleRegister(c)}>등록하기</button>
+                                        <button onClick={() => openConfirm(() => handleResolveCh(c.formNo))}>처리완료</button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    ))}
+                    {chPageInfo && chPageInfo.listCount > 5 && (
+                        <Pagination pageInfo={chPageInfo} onPageChange={(page) => fetchChData(page)} />
+                    )}
+                </div>
+                <RcpAlertModal
+                    open={confirmOpen}
+                    title="확인"
+                    message={confirmInput ? "사유를 입력해주세요." : confirmMessage}
+                    input={confirmInput}
+                    onConfirm={(value) => {
+                        confirmAction(value);
+                        setConfirmOpen(false);
+                    }}
+                    onCancel={() => setConfirmOpen(false)}
+                />
             </div>
-            <RcpAlertModal
-                open={confirmOpen}
-                title="확인"
-                message={confirmInput ? "사유를 입력해주세요." : "정말 진행하시겠습니까?"}
-                input={confirmInput}
-                onConfirm={(value) => {
-                    confirmAction(value);
-                    setConfirmOpen(false);
-                }}
-                onCancel={() => setConfirmOpen(false)}
-            />
         </div>
     );
 };

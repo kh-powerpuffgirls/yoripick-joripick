@@ -48,7 +48,7 @@
 }
 
 .confirm {
-    background: #007bff;
+    background: #6a9c22;
     color: #fff;
     border: none;
     padding: 8px 14px;
@@ -57,8 +57,8 @@
 }
 
 .cancel {
-    background: #ccc;
-    color: #000;
+    background: #cf5e40;
+    color: #fff;
     border: none;
     padding: 8px 14px;
     border-radius: 6px;
