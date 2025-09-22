@@ -23,10 +23,22 @@ export const ClassModal: React.FC<ClassModalProps> = ({ isOpen, onClose, chatDat
                             <div key={index} className={style.chatMessage}>
                                 <div className={style.messageHeader}>
                                     <span className={style.messageUser}>{msg.username}</span>
-                                    <span className={style.messageTime}>{new Date(msg.createdAt).toLocaleString()}</span>
+                                    <span className={style.messageTime}>{new Date(msg.time).toLocaleString('ko-KR', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit',
+                                        hour12: false
+                                    })}</span>
                                 </div>
                                 <div className={style.messageBody}>
-                                    {msg.content}
+                                    {msg.imageNo ? (
+                                        <img src={msg.content} alt="이미지" className={style.previewImage} />
+                                    ) : (
+                                        <>{msg.content}</>
+                                    )}
                                 </div>
                             </div>
                         ))

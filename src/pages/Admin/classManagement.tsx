@@ -34,6 +34,7 @@ export const ClassManagement = () => {
     const handleGoToDtl = async (roomNo: number) => {
         try {
             setModalContent(await getClassInfo(roomNo));
+            console.log(await getClassInfo(roomNo));
             setIsModalOpen(true);
         } catch (error) {
             console.error("Failed to fetch class data:", error);
