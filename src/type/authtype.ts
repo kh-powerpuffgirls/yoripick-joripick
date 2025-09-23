@@ -11,6 +11,7 @@ export interface User {
   profile?: string;
   provider?: "local" | "kakao";
   roles?: string[]; 
+  sikBti: string | null;
 }
 
 export interface LoginResponse {

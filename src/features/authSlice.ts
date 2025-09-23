@@ -24,8 +24,13 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.loading = false;
     },
+    updateSikBti(state, action: PayloadAction<string>) {
+      if(state.user) {
+        state.user.sikBti = action.payload;
+      }
+    }
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, updateSikBti } = authSlice.actions;
 export default authSlice.reducer;
