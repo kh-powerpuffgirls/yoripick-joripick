@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { api } from '../../../api/authApi';
 import type { RecipeDetail } from '../../../type/Recipe';
@@ -23,6 +23,7 @@ const CommunityRecipeDetail: React.FC = () => {
     const { rcpNo } = useParams<{ rcpNo: string }>(); 
     const loginUserNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const navigate = useNavigate();
+    const isCommunityRecipe = useMatch('/community/recipe/:rcpNo');
 
     // 2. API로부터 받아온 레시피 데이터를 저장할 state
     const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
@@ -38,10 +39,18 @@ const CommunityRecipeDetail: React.FC = () => {
     const fetchRecipeDetail = useCallback(async () => {
         if (!rcpNo) return;
         
-        try {
-            const url = loginUserNo
-                ? `/api/community/recipe/${rcpNo}/${loginUserNo}`
-                : `/api/community/recipe/${rcpNo}`;
+         try {
+            // ✨ 3. isCommunityRecipe 값에 따라 API 경로를 동적으로 결정합니다.
+            let url = '';
+            if (isCommunityRecipe) {
+                // 사용자 레시피 API 경로
+                url = loginUserNo
+                    ? `/api/community/recipe/${rcpNo}/${loginUserNo}`
+                    : `/api/community/recipe/${rcpNo}`;
+            } else {
+                // 공식 레시피 API 경로
+                url = `/api/recipe/${rcpNo}`;
+            }
             
             const response = await api.get(url);
             
@@ -55,7 +64,7 @@ const CommunityRecipeDetail: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [rcpNo, loginUserNo]); 
+    }, [rcpNo, loginUserNo, isCommunityRecipe]); 
 
     //useEffect는 fetchRecipeDetail 함수를 호출하는 역할
     useEffect(() => {
@@ -104,7 +113,7 @@ const CommunityRecipeDetail: React.FC = () => {
         return <div>{error || '레시피를 찾을 수 없습니다.'}</div>;
     }
 
-    const isOwner = loginUserNo === recipe.writer.userNo;
+    const isOwner = loginUserNo === recipe.writer?.userNo;
 
  
     // 4. 데이터 로딩 완료 후 화면 렌더링

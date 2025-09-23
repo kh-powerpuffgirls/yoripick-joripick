@@ -70,7 +70,7 @@
 	font-size: 16px;
 }
 
-textarea{
+#title textarea {
     resize: none;  
     font-family: '맑은 고딕', Arial, sans-serif;
     width: 95%;
@@ -79,6 +79,7 @@ textarea{
 	border-radius: 6px;
 	font-size: 16px;
 }
+
 .info select{
 	width: 100%;
 	padding: 10px;
@@ -88,9 +89,6 @@ textarea{
     color: #029D60;
 }
 
-option {
-      color: #333;
-}
 
 .info_box{
     display: flex;

@@ -21,11 +21,11 @@ interface DetailTableProps {
 
 const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
   const loginUserNo = useSelector((state: RootState) => state.auth.user?.userNo);
-  const isOwner = loginUserNo === recipe.writer.userNo;
+  const isOwner = loginUserNo === recipe.writer?.userNo;
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    navigate(`/profile/${recipe.writer.userNo}`);
+    navigate(`/profile/${recipe.writer?.userNo}`);
   };
 
   const roundNutrients = (nutrients: typeof recipe.totalNutrient) => {
@@ -43,10 +43,10 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
       {/* --- 작성자 정보 및 신고 버튼 --- */}
       <div className={styles.user_report}>
         <div className={styles.writer_profile} onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
-          <img src={recipe.writer.serverName || sampleProfileImg} alt={recipe.writer.username} />
+          <img src={recipe.writer?.serverName || sampleProfileImg} alt={recipe.writer?.username} />
           <div className={styles.profile_name}>
-            {recipe.writer.sikBti && <SikBti sikBti={recipe.writer.sikBti} style={{fontSize: '13px' }} />}
-            <span className={styles.nickname}>{recipe.writer.username}</span>
+            {recipe.writer?.sikBti && <SikBti sikBti={recipe.writer.sikBti} style={{fontSize: '13px' }} />}
+            <span className={styles.nickname}>{recipe.writer?.username}</span>
           </div>
         </div>
         {!isOwner && (
@@ -80,30 +80,46 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
           </tr>
 
           {/* ✨ 재료 목록을 2열로 표시하는 로직 */}
-          {Array.from({ length: Math.ceil(recipe.ingredients.length / 2) }).map((_, rowIndex) => (
-            <tr key={rowIndex}>
-              <td colSpan={2}>
-                {recipe.ingredients[rowIndex * 2] ? (
-                  <div className={styles.ing}>
-                    <span>✔ </span>
-                    <span>{recipe.ingredients[rowIndex * 2].ingName}</span>
-                    <span>{recipe.ingredients[rowIndex * 2].quantity} </span>
-                    <span>{recipe.ingredients[rowIndex * 2].weight}g</span>
-                  </div>
-                ) : null}
-              </td>
-              <td colSpan={2}>
-                {recipe.ingredients[rowIndex * 2 + 1] ? (
-                  <div className={styles.ing}>
-                    <span>✔</span> 
-                    <span>{recipe.ingredients[rowIndex * 2 + 1].ingName}</span>
-                    <span>{recipe.ingredients[rowIndex * 2 + 1].quantity}</span>
-                    <span>{recipe.ingredients[rowIndex * 2 + 1].weight}g</span>
-                  </div>
-                ) : null}
+          {recipe.rcpIngList ? (
+            // 2-1. 공식 레시피일 경우 (rcpIngList 문자열이 존재)
+            <tr>
+              <td colSpan={4}>
+                <div className={styles.official_ingredients_box}>
+                  <h3>재료</h3>
+                  <p>{recipe.rcpIngList}</p>
+                </div>
               </td>
             </tr>
-          ))}
+          ) : (
+            // 2-2. 사용자 레시피일 경우 (ingredients 배열 사용)
+            // React.Fragment(<></>)를 사용해 여러 <tr>을 감싸줍니다.
+            <>
+              {Array.from({ length: Math.ceil(recipe.ingredients.length / 2) }).map((_, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td colSpan={2}>
+                    {recipe.ingredients[rowIndex * 2] && (
+                      <div className={styles.ing}>
+                        <span>✔ </span>
+                        <span>{recipe.ingredients[rowIndex * 2].ingName}</span>
+                        <span>{recipe.ingredients[rowIndex * 2].quantity} </span>
+                        <span>{recipe.ingredients[rowIndex * 2].weight}g</span>
+                      </div>
+                    )}
+                  </td>
+                  <td colSpan={2}>
+                    {recipe.ingredients[rowIndex * 2 + 1] && (
+                      <div className={styles.ing}>
+                        <span>✔</span> 
+                        <span>{recipe.ingredients[rowIndex * 2 + 1].ingName}</span>
+                        <span>{recipe.ingredients[rowIndex * 2 + 1].quantity}</span>
+                        <span>{recipe.ingredients[rowIndex * 2 + 1].weight}g</span>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </>
+          )}
 
           <tr>
             <td colSpan={4}>

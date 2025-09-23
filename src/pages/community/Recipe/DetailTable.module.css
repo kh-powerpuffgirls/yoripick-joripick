@@ -114,3 +114,13 @@
     border-radius: 10px;
     margin: 4px;
 }
+
+
+
+.official_ingredients_box {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 20px;
+  line-height: 1.6;
+  white-space: pre-wrap; /* 줄바꿈과 공백을 그대로 표시 */
+}

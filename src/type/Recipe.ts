@@ -186,13 +186,14 @@ export interface RecipeDetail {
   rcpSituation: string;
   
   mainImage: string;
-  writer: User;
+  writer: User | null;
   
   totalNutrient: NutrientData;
   ingredients: RecipeIngredient[];
   steps: CookingStep[];
 
   avgStars:number;
+  rcpIngList?: string;
 
   likeCount: number;
   reviewCount: number;
