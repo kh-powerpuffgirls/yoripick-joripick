@@ -13,6 +13,7 @@ export interface User {
   roles: string[]; 
   imageNo: number;
   allergies: number[]
+  sikbti:string;
 }
 
 export interface LoginResponse {

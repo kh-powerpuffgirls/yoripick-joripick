@@ -119,35 +119,6 @@ const MyPage = () => {
         fetchData();
     }, [user, accessToken]);
 
-
-    // useEffect(() => {
-    //     if (!user || !accessToken) return;
-
-    //     const api = axios.create({
-    //         baseURL: "http://localhost:8081/mypage",
-    //         headers: { Authorization: `Bearer ${accessToken}` },
-    //     });
-
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await api.post("/users/profiles", user);
-    //             console.log(user);
-    //             dispatch(updateProfileImage(response.data));
-
-    //             // const recipeRes = await api.get(`/users/${user.userNo}/recipes`);
-    //             // setMyRecipes(recipeRes.data);
-
-    //             const allergyRes = await api.get("/users/allergy",  {params: { userNo: user.userNo }});
-    //             console.log(allergyRes.data)
-    //             setAllergyInfo(allergyRes.data);
-    //         } catch (err) {
-    //             console.error("마이페이지 데이터 불러오기 오류:", err);
-    //         }
-    //     };
-
-    //     fetchData();
-    // }, [user, accessToken]);
-
     return (
         <div className={styles.container}>
             <div className={styles.headerRow}>
@@ -165,7 +136,7 @@ const MyPage = () => {
                     </div>
 
                     <div className={styles.profileInfo}>
-                        {/* <div className={styles.sikbti}>{user.sikbti}</div> */}
+                        <div className={styles.sikbti}>{user.sikbti}</div>
                         <div className={styles.nameRow}>
                             <h2 className={styles.username}>{user.username}</h2>
                             <span className={styles.email}>&nbsp;({user.email})</span>

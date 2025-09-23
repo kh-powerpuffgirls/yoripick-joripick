@@ -4,6 +4,7 @@ import { useState } from "react";
 import { api } from "../../api/authApi";
 import { useDispatch } from "react-redux";
 import { updateImageNo, updateProfileImage } from "../../features/authSlice";
+import errorMessages from "../ErrorMessages";
 
 interface ProfileModalProps {
   user: User;
@@ -47,10 +48,15 @@ const ProfileModal = ({ user, onClose, profileImg, setProfileImg }: ProfileModal
           dispatch(updateImageNo(res.data.imageNo));
         }
       } else {
-        alert(res.data.message);
+        alert(errorMessages[res.data.errorCode as keyof typeof errorMessages] || errorMessages.UPLOAD_FAILED);
       }
-    } catch (err) {
-      console.error("파일 업로드 에러", err);
+    } catch (err: any) {
+      const errorCode = err.response?.data?.errorCode;
+      if (errorCode && errorMessages[errorCode as keyof typeof errorMessages]) {
+        alert(errorMessages[errorCode as keyof typeof errorMessages]);
+      } else {
+        alert(errorMessages.UPLOAD_FAILED);
+      }
     } finally {
       onClose();
     }

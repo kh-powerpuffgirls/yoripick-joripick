@@ -1,5 +1,5 @@
 .container {
-  max-width: 750px;
+  width: 750px;
   margin: 0 auto;
   padding: 24px;
   font-family: "Noto Sans KR", "Arial", sans-serif;
@@ -79,16 +79,16 @@
 .buttonsBox {
   margin-top: 50px;
   display: flex;
-  gap: 10px;
+  gap: 15px;
 }
 
 .buttonsBox button {
   background: #6f6f6f;
   color: #fff;
-  padding: 7px 14px;
+  padding: 7px 20px;
   border: none;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   box-shadow: none;
   line-height: 1.4;
