@@ -13,8 +13,12 @@ import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
+import { MealplanMain } from './pages/Mealplan/main'
 import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import MyPage from './pages/MyPage/MyPage'
+import EatBTIPage from './pages/EatBTI/main'
+import QuestionPage from './pages/EatBTI/question'
+import ResultPage from './pages/EatBTI/result'
 
 function App() {
   const dispatch = useDispatch();
@@ -42,9 +46,13 @@ function App() {
         } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/users" element={<MyPage />} />
+        <Route path="/eatBTI" element={<EatBTIPage />} />
+        <Route path="/eatBTI/question" element={<QuestionPage />} />
+        <Route path="/eatBTI/result" element={<ResultPage />} />
       </Routes>
       <Footer />
     </>
