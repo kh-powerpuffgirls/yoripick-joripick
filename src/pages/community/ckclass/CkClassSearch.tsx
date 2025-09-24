@@ -1,0 +1,395 @@
+import { useState, useEffect, useMemo } from 'react';
+// import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import styles from './CkClass.module.css';
+import CommunityHeader from '../CommunityHeader';
+import CommunityModal from '../CommunityModal';
+import ReportModal from '../../../components/Report/ReportModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { store } from '../../../store/store';
+import type { RootState } from '../../../store/store';
+import { openChat } from '../../../features/chatSlice';
+
+const API_BASE = 'http://localhost:8081';
+const getAccessToken = () => store.getState().auth.accessToken;
+
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
+});
+
+api.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+interface CkclassDto {
+  roomNo: number;
+  className: string;
+  classInfo: string;
+  username?: string;
+  serverName?: string;
+  memberCount?: number;
+  unreadCount?: number | null;
+  passcode?: string | null;
+}
+
+interface CookingClassDisplay {
+  id: number;
+  name: string;
+  description: string;
+  author: string;
+  memberCount?: number;
+  unreadCount?: number;
+  type: 'search';
+  imageUrl?: string;
+  passcode?: string | null;
+}
+
+interface ModalState {
+  message: string;
+  onConfirm?: () => void;
+  showCancel?: boolean;
+}
+
+interface ReportTargetInfo {
+  author: string;
+  title: string;
+  category: string;
+  refNo: number;
+}
+
+interface ReportOption {
+  reportType: string;
+  category: string;
+  detail: string;
+}
+
+type SearchType = 'all' | 'className' | 'userName';
+
+const CkClassSearch = () => {
+  const dispatch = useDispatch();
+  // const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchType, setSearchType] = useState<SearchType>('all');
+  const [excludeCode, setExcludeCode] = useState(false);
+
+  const [allClasses, setAllClasses] = useState<CookingClassDisplay[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const classesPerPage = 10;
+
+  const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState<ModalState | null>(null);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
+  const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
+
+  const openModal = (modalData: ModalState) => setModal(modalData);
+  const closeModal = () => setModal(null);
+  const handleConfirm = () => {
+    modal?.onConfirm?.();
+    closeModal();
+  };
+
+  const fetchClasses = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get<CkclassDto[]>(`/community/ckclass/search`, {
+        params: {
+          keyword: searchTerm,
+          searchType,
+          excludeCode,
+        },
+      });
+      const data = Array.isArray(response.data) ? response.data : [];
+      const mappedData: CookingClassDisplay[] = data.map((cls) => ({
+        id: cls.roomNo,
+        name: cls.className ?? '',
+        description: cls.classInfo ?? '',
+        author: cls.username || '알 수 없음',
+        memberCount: cls.memberCount ?? 0,
+        unreadCount: cls.unreadCount ?? 0,
+        type: 'search',
+        imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : undefined,
+        passcode: cls.passcode,
+      }));
+      setAllClasses(mappedData);
+      setCurrentPage(1);
+    } catch (error: any) {
+      openModal({
+        message: error.response?.data || '클래스 검색 중 오류가 발생했습니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+      setAllClasses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const handleSearch = () => {
+    fetchClasses();
+  };
+
+  const handleJoin = async (cls: CookingClassDisplay) => {
+    if (!user?.userNo) {
+      openModal({
+        message: '로그인 후 참여 가능합니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+      return;
+    }
+
+    if (cls.passcode) {
+      const inputCode = prompt('참여 코드를 입력해주세요:');
+      if (inputCode !== cls.passcode) {
+        openModal({
+          message: '참여 코드가 일치하지 않습니다.',
+          onConfirm: closeModal,
+          showCancel: false,
+        });
+        return;
+      }
+    }
+
+    try {
+      const enrollResponse = await api.post(`/community/ckclass/enroll`, {
+        roomNo: cls.id,
+        userNo: user.userNo,
+      });
+
+      if (enrollResponse.status === 200) {
+          dispatch(openChat({ 
+              roomNo: cls.id, 
+              className: cls.name, 
+              type: "cclass", 
+              messages: []
+          }));      }
+    } catch (error: any) {
+      openModal({
+        message: error.response?.data || '클래스 참여 중 오류가 발생했습니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+    }
+  };
+
+  const fetchReportOptions = async () => {
+    try {
+      const res = await api.get<ReportOption[]>(`/community/report/types?category=COOKING_CLASS`);
+      setReportOptions(res.data);
+    } catch {
+      setReportOptions([]);
+    }
+  };
+
+  const handleReportClick = async (cls: CookingClassDisplay) => {
+    if (!user?.userNo) {
+      openModal({
+        message: '로그인 후 신고 가능합니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+      return;
+    }
+
+    const targetInfo: ReportTargetInfo = {
+      author: cls.author,
+      title: cls.name,
+      category: 'COOKING_CLASS',
+      refNo: cls.id,
+    };
+
+    setReportTargetInfo(targetInfo);
+    await fetchReportOptions();
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reportType: string, content: string, refNo: number) => {
+    if (!user?.userNo || !reportTargetInfo) {
+      openModal({
+        message: '로그인 후 신고 가능합니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+      return;
+    }
+    try {
+      await api.post(`/community/report`, {
+        reportType,
+        content,
+        refNo,
+        refType: reportTargetInfo.category,
+      });
+      openModal({
+        message: '신고가 접수되었습니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+      setIsReportModalOpen(false);
+      setReportTargetInfo(null);
+    } catch (err: any) {
+      openModal({
+        message: err.response?.data || '신고 실패',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+      setIsReportModalOpen(false);
+      setReportTargetInfo(null);
+    }
+  };
+
+  const indexOfLastClass = currentPage * classesPerPage;
+  const indexOfFirstClass = indexOfLastClass - classesPerPage;
+  const currentClasses = useMemo(
+    () => allClasses.slice(indexOfFirstClass, indexOfLastClass),
+    [allClasses, indexOfFirstClass, indexOfLastClass],
+  );
+  const totalPages = Math.max(1, Math.ceil(allClasses.length / classesPerPage));
+  const handlePageChange = (pageNumber: number) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const renderClassCard = (cls: CookingClassDisplay) => (
+    <div key={cls.id} className={styles.classCard}>
+      <div
+        className={styles.classImage}
+        style={{ backgroundImage: cls.imageUrl ? `url(${cls.imageUrl})` : 'none' }}
+      ></div>
+      <div className={styles.cardContent}>
+        <div className={styles.cardHeader}>
+          <div className={styles.classTitle}>
+            {cls.name}
+            {(cls.unreadCount ?? 0) > 0 && (
+              <span className={styles.unreadCountBadge}>{cls.unreadCount}</span>
+            )}
+          </div>
+        </div>
+        <div className={styles.classDescription}>{cls.description}</div>
+        <div className={styles.cardFooter}>
+          <div className={styles.authorInfo}>
+            <div className={styles.classAuthor}>{cls.author}</div>
+            <div className={styles.memberCount}>({cls.memberCount ?? 0}명 참여중...)</div>
+          </div>
+          <div className={styles.joinedButtons}>
+            <button className={styles.joinButton} onClick={() => handleJoin(cls)}>
+              참여
+            </button>
+            <button className={styles.reportButton} onClick={() => handleReportClick(cls)}>
+              신고
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <CommunityHeader />
+      <div className={styles.container}>
+        <div className={styles.searchSection}>
+          <h1 className={styles.searchTitle}>클래스 검색</h1>
+          <div className={styles.searchBar}>
+            <select
+              className={styles.searchDropdown}
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value as SearchType)}
+            >
+              <option value="all">전체</option>
+              <option value="className">클래스명</option>
+              <option value="userName">방장명</option>
+            </select>
+            <input
+              type="text"
+              placeholder="검색어를 입력해주세요"
+              className={styles.searchInput}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <button className={styles.searchButton} onClick={handleSearch}>
+              검색
+            </button>
+          </div>
+          <div className={styles.searchOptions}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={excludeCode}
+                onChange={(e) => setExcludeCode(e.target.checked)}
+              />
+              참여코드 클래스 제외
+            </label>
+          </div>
+        </div>
+        <div className={styles.classCardWrapper}>
+          {loading ? (
+            <p>로딩 중...</p>
+          ) : currentClasses.length > 0 ? (
+            currentClasses.map(renderClassCard)
+          ) : (
+            <p className={styles.noClasses}>검색 결과가 없습니다.</p>
+          )}
+        </div>
+        {totalPages >= 1 && (
+          <div className={styles.pagination}>
+            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+              &lt;
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={i + 1 === currentPage ? styles.active : ''}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              &gt;
+            </button>
+          </div>
+        )}
+      </div>
+      {modal && (
+        <CommunityModal
+          message={modal.message}
+          onConfirm={handleConfirm}
+          showCancel={modal.showCancel}
+          onClose={closeModal}
+        />
+      )}
+      {reportTargetInfo && (
+        <ReportModal
+          isOpen={isReportModalOpen}
+          onClose={() => {
+            setIsReportModalOpen(false);
+            setReportTargetInfo(null);
+          }}
+          onSubmit={handleReportSubmit}
+          reportOptions={reportOptions}
+          targetInfo={reportTargetInfo}
+        />
+      )}
+    </>
+  );
+};
+
+export default CkClassSearch;
