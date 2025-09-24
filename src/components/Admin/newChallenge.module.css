@@ -1,3 +1,15 @@
+.imageUploadContainer {
+    text-align: center;
+}
+
+.previewImage {
+    max-width: 200px;
+    max-height: 200px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    object-fit: contain;
+}
+
 .overlay {
     position: fixed;
     top: 0;

@@ -2,13 +2,14 @@ import { useSelector, useDispatch } from "react-redux";
 import style from "./Notification.module.css";
 import type { RootState } from "../../store/store";
 import { removeNotification, startClosingAnimation } from "../../features/notiSlice";
-import type { Message } from "../../type/chatmodal";
 import { openChat } from "../../features/chatSlice";
 import React, { useEffect, useState } from "react";
+import type { NotificationState } from "../../type/components";
 
 export const Notification = () => {
   const dispatch = useDispatch();
   const notifications = useSelector((state: RootState) => state.noti.list);
+  type NotificationMessage = NotificationState["list"][number];
   const rooms = useSelector((state: RootState) => state.chat.rooms);
   const [isShown, setIsShown] = useState(false);
 
@@ -21,13 +22,11 @@ export const Notification = () => {
     dispatch(startClosingAnimation(messageId));
   };
 
-  const handleClick = (message: Message) => {
+  const handleClick = (message: NotificationMessage) => {
     const room = rooms.find((r) => r.roomNo == message.roomNo);
     if (room) {
       dispatch(openChat(room));
-      if (message.id) {
-        dispatch(removeNotification(message.id));
-      }
+      dispatch(removeNotification(message.id));
     }
   };
 

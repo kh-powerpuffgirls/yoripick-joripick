@@ -15,8 +15,9 @@
     border-radius: 8px;
 }
 
-/* 관리자 네비게이션 */
 .adminNav {
+    width: 100%;
+    max-width: 1000px;
     display: flex;
     border-bottom: 2px solid #eee;
     margin-top: 10px;

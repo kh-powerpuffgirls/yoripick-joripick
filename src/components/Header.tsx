@@ -8,19 +8,19 @@ import { NewChallenge } from "./Admin/newChallenge";
 import { closeModal, openNewAnnouncementModal, openNewChallengeModal } from "../features/adminModalSlice";
 import { useEffect, useState } from "react";
 import { getTodayAnn } from "../api/authApi";
-import { getTotalReports } from "../api/adminApi";
 
 const Header = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
-  const adminPaths = ["/admin", "/admin/users", "/admin/recipes", "/admin/communities", "/admin/classes"];
+  const adminPaths = ["/admin", "/admin/users", "/admin/recipes", "/admin/communities", "/admin/classes", 
+    "/admin/cservices", "/admin/announcements", "/admin/challenges", "/admin/ingredients"];
   const isAdminPath = adminPaths.includes(loc.pathname);
   const logout = useLogout();
   const { isOpen, modalType, initialData } = useSelector((state: RootState) => state.adminModal);
   const dispatch = useDispatch();
   const [todayAnn, setTodayAnn] = useState("");
-  const [totalReports, setTotalReports] = useState(0);
+  const totalReports = useSelector((state: RootState) => state.adminState.totalReports);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -34,25 +34,22 @@ const Header = () => {
     fetchAnnouncements();
   }, []);
 
-  useEffect(() => {
-    if (!isAdmin) return;
-    const fetchAnnouncements = async () => {
-      try {
-        setTotalReports(await getTotalReports());
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      }
-    };
-    fetchAnnouncements();
-  }, [isAdmin]);
+  const handleSuccess = () => {
+    dispatch(closeModal());
+    window.location.reload(); 
+  };
 
   return (
     <>
-      {isOpen && modalType === 'newAnnouncement' && <NewAnnouncement setOpenNewAnn={() => dispatch(closeModal())} />}
+      {isOpen && modalType === 'newAnnouncement' &&
+        <NewAnnouncement
+          setOpenNewAnn={() => dispatch(closeModal())}
+          onSuccess={handleSuccess}
+        />}
       {isOpen && modalType === 'newChallenge' && (
         <NewChallenge
           setOpenNewCh={() => dispatch(closeModal())}
-          initialData={initialData}
+          onSuccess={handleSuccess}
         />
       )}
       <div id="header" className={isAdminPath ? "admHeader" : "commHeader"}>
@@ -141,10 +138,12 @@ const Header = () => {
         </div>
       </div>
       {isAdminPath ? (
+        totalReports > 0 &&
         <div className="announcement-bar adm">
           <span>새롭게 처리해야 할 항목이 {totalReports}건 있습니다.</span>
         </div>
       ) :
+        todayAnn &&
         <div className="announcement-bar ann">
           <span>{todayAnn}</span>
         </div>

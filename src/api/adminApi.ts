@@ -1,6 +1,7 @@
 import axios from "axios";
 import { store } from "../store/store";
 import type { Announcement } from "../components/Admin/newAnnouncement";
+import { loginSuccess, logout } from "../features/authSlice";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
@@ -20,6 +21,27 @@ api.interceptors.request.use(
         return config;
     },
     (error) => Promise.reject(error)
+)
+
+api.interceptors.response.use(
+    (response) => response, 
+    async (err) => {
+        const originalRequest = err.config;
+
+        if(err.response?.status === 401){
+            try{
+                const response = await axios.post(`http://localhost:8081/auth/refresh`,{},{
+                    withCredentials:true
+                });                
+                store.dispatch(loginSuccess(response.data))
+                return api(originalRequest);
+            }catch(refreshError){
+                store.dispatch(logout());
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(err);
+    } 
 )
 
 export const fetchChallenges = async (page: number, size: number) => {
@@ -77,11 +99,6 @@ export const newAnnouncement = async function (announcement: Announcement) {
     await api.post(`/announcements`, announcement);
 };
 
-export const getTotalReports = async function () {
-    const response = await api.get(`/reports`);
-    return response.data;
-};
-
 export const getUsers = async (page: number, size: number) => {
     const response = await api.get(`/users`, { params: { page, size } });
     return response.data;
@@ -104,6 +121,49 @@ export const getClassData = async (page: number, size: number) => {
 
 export const getClassInfo = async (roomNo: number) => {
     const response = await api.get(`/classes/${roomNo}`);
+    return response.data;
+};
+
+export const getCustomerServices = async (page: number, size: number) => {
+    const response = await api.get(`/cservices`, { params: { page, size } });
+    return response.data;
+};
+
+export const getCSinfo = async (roomNo: number) => {
+    const response = await api.get(`/cservices/${roomNo}`);
+    return response.data;
+};
+
+export const getAnnouncements = async (page: number, size: number) => {
+    const response = await api.get(`/announcements`, { params: { page, size } });
+    return response.data;
+};
+
+export const deleteAnnouncement = async (ancmtNo: number) => {
+    await api.delete(`/announcements/${ancmtNo}`);
+};
+
+export const editAnnouncement = async (annoucement: Announcement) => {
+    await api.patch(`/announcements`, annoucement);
+};
+
+export const getChallengeInfos = async (page: number, size: number) => {
+    const response = await api.get(`/challenges/info`, { params: { page, size } });
+    return response.data;
+};
+
+export const editChallenge = async (challenge: FormData) => {
+    await api.put(`/challenges`, challenge, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+};
+
+export const deleteChallenge = async (chInfoNo: number) => {
+    await api.delete(`/challenges/${chInfoNo}`);
+};
+
+export const getIngredients = async (page: number, size: number) => {
+    const response = await api.get(`/ingredients`, { params: { page, size } });
     return response.data;
 };
 

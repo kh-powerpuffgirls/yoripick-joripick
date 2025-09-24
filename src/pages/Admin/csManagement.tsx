@@ -1,30 +1,29 @@
 import style from "./userManagement.module.css";
-import { getClassData, getClassInfo, type PageInfo } from "../../api/adminApi";
+import { getCSinfo, getCustomerServices, type PageInfo } from "../../api/adminApi";
 import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { ClassModal } from "../../components/Admin/classModal";
 
-interface ClassInfo {
+interface CSinfo {
     roomNo: number;
-    className: string;
+    userNo: number;
     username: string;
-    passcode: number;
-    numPpl: number;
-    deleteStatus: string;
+    time: string;
+    content: string;
 };
 
-export const ClassManagement = () => {
+export const CSmanagement = () => {
     const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
-    const [classes, setClasses] = useState<ClassInfo[] | null>(null);
+    const [cservices, setCservices] = useState<CSinfo[] | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<any>(null);
     const navigate = useNavigate();
 
     const fetchData = async (page: number) => {
-        const data = await getClassData(page, 10);
+        const data = await getCustomerServices(page, 10);
         setPageInfo(data.pageInfo);
-        setClasses(data.list);
+        setCservices(data.list);
     };
 
     useEffect(() => {
@@ -33,11 +32,12 @@ export const ClassManagement = () => {
 
     const handleGoToDtl = async (roomNo: number) => {
         try {
-            setModalContent(await getClassInfo(roomNo));
+            setModalContent(await getCSinfo(roomNo));
+            console.log(await getCSinfo(roomNo));
             setIsModalOpen(true);
         } catch (error) {
-            console.error("Failed to fetch class data:", error);
-            alert("쿠킹 클래스 정보를 불러오는 데 실패했습니다.");
+            console.error("Failed to fetch customer service data:", error);
+            alert("고객문의 정보를 불러오는 데 실패했습니다.");
         }
     };
 
@@ -52,8 +52,8 @@ export const ClassManagement = () => {
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/users`)}>USER</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/recipes`)}>RECIPE</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/communities`)}>COMMUNITY</button>
-                <button className={`${style.adminNavLink} ${style.active}`}>CLASS</button>
-                <button className={style.adminNavLink} onClick={() => navigate(`/admin/cservices`)}>CS</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/classes`)}>CLASS</button>
+                <button className={`${style.adminNavLink} ${style.active}`}>CS</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/announcements`)}>ANNOUNCEMENT</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/challenges`)}>CHALLENGE</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/ingredients`)}>INGREDIENT</button>
@@ -62,25 +62,31 @@ export const ClassManagement = () => {
                 <table className={style.userTable}>
                     <thead>
                         <tr>
-                            <th>클래스 번호</th>
-                            <th>클래스 명</th>
-                            <th>개설자</th>
-                            <th>참여코드</th>
-                            <th>참여자 수</th>
-                            <th>삭제여부</th>
+                            <th>문의번호</th>
+                            <th>사용자ID</th>
+                            <th>닉네임</th>
+                            <th>마지막 대화</th>
+                            <th>내용</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {classes && classes.length > 0 ? (
-                            classes.map(c => (
+                        {cservices && cservices.length > 0 ? (
+                            cservices.map(c => (
                                 <tr key={c.roomNo}>
                                     <td>{c.roomNo}</td>
-                                    <td>{c.className}</td>
+                                    <td>{c.userNo}</td>
                                     <td>{c.username}</td>
-                                    <td>{c.passcode}</td>
-                                    <td>{c.numPpl}</td>
-                                    <td>{c.deleteStatus}</td>
+                                    <td>{new Date(c.time).toLocaleString('ko-KR', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit',
+                                        hour12: false
+                                    })}</td>
+                                    <td>{c.content}</td>
                                     <td className={style.actionButtons}>
                                         <button className={style.mypageButton} onClick={() => handleGoToDtl(c.roomNo)}>보기</button>
                                     </td>

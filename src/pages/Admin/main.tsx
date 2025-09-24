@@ -18,8 +18,8 @@ import {
 } from '../../api/adminApi';
 import Pagination from '../../components/Pagination';
 import { useDispatch, useSelector } from 'react-redux';
-import { openChat, sendMessage } from "../../features/chatSlice";
-import type { ChatRoom, Message } from '../../type/chatmodal';
+import { openChat } from "../../features/chatSlice";
+import type { Message } from '../../type/chatmodal';
 import { RcpAlertModal } from '../../components/Admin/rcpAlertModal';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { saveMessage } from '../../api/chatApi';
@@ -27,6 +27,7 @@ import useChat from '../../hooks/useChat';
 import type { RootState } from '../../store/store';
 import { Link, useNavigate } from 'react-router-dom';
 import { openNewChallengeModal } from '../../features/adminModalSlice';
+import { setTotalReports } from '../../features/adminStateSlice';
 
 export const AdminDashboard = () => {
     const [userReports, setUserReports] = useState<Reports[]>([]);
@@ -56,41 +57,89 @@ export const AdminDashboard = () => {
         setOpenCard((prev) => (prev === id ? null : id));
     };
 
-    const fetchUserData = async (page: number) => {
-        const data = await fetchUserReports(page, 5);
-        setUserReports(data.list);
-        setUserPageInfo(data.pageInfo);
-    };
-    const fetchCommData = async (page: number) => {
-        const data = await fetchCommReports(page, 5);
-        setCommReports(data.list);
-        setCommPageInfo(data.pageInfo);
-    };
-    const fetchRcpData = async (page: number) => {
-        const data = await fetchRecipes(page, 5);
-        setRecipes(data.list);
-        setRcpPageInfo(data.pageInfo);
-    };
-    const fetchChData = async (page: number) => {
-        const data = await fetchChallenges(page, 5);
-        setChallenges(data.list);
-        setChPageInfo(data.pageInfo);
-    };
-
-    useEffect(() => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            fetchUserData(1);
-            fetchCommData(1);
-            fetchRcpData(1);
-            fetchChData(1);
-        } catch {
+            const [userData, commData, rcpData, chData] = await Promise.all([
+                fetchUserReports(1, 5),
+                fetchCommReports(1, 5),
+                fetchRecipes(1, 5),
+                fetchChallenges(1, 5)
+            ]);
+
+            setUserReports(userData.list);
+            setUserPageInfo(userData.pageInfo);
+            setCommReports(commData.list);
+            setCommPageInfo(commData.pageInfo);
+            setRecipes(rcpData.list);
+            setRcpPageInfo(rcpData.pageInfo);
+            setChallenges(chData.list);
+            setChPageInfo(chData.pageInfo);
+
+            // Calculate and dispatch the new total count
+            const totalCount = userData.pageInfo.listCount + commData.pageInfo.listCount + rcpData.pageInfo.listCount + chData.pageInfo.listCount;
+            dispatch(setTotalReports(totalCount));
+
+        } catch (err) {
             setError('관리 내역을 불러오는 데 실패했습니다.');
+            console.error(err);
         } finally {
             setLoading(false);
             setOpenCard(null);
         }
+    };
+
+    useEffect(() => {
+        fetchData();
     }, []);
+
+    const handleUserPageChange = async (page: number) => {
+        try {
+            const userData = await fetchUserReports(page, 5);
+            setUserReports(userData.list);
+            setUserPageInfo(userData.pageInfo);
+            setOpenCard(null);
+        } catch (err) {
+            setError('회원 신고 내역을 불러오는 데 실패했습니다.');
+            console.error(err);
+        }
+    };
+
+    const handleCommPageChange = async (page: number) => {
+        try {
+            const commData = await fetchCommReports(page, 5);
+            setCommReports(commData.list);
+            setCommPageInfo(commData.pageInfo);
+            setOpenCard(null);
+        } catch (err) {
+            setError('커뮤니티 신고 내역을 불러오는 데 실패했습니다.');
+            console.error(err);
+        }
+    };
+
+    const handleRcpPageChange = async (page: number) => {
+        try {
+            const rcpData = await fetchRecipes(page, 5);
+            setRecipes(rcpData.list);
+            setRcpPageInfo(rcpData.pageInfo);
+            setOpenCard(null);
+        } catch (err) {
+            setError('레시피 관리 내역을 불러오는 데 실패했습니다.');
+            console.error(err);
+        }
+    };
+
+    const handleChPageChange = async (page: number) => {
+        try {
+            const chData = await fetchChallenges(page, 5);
+            setChallenges(chData.list);
+            setChPageInfo(chData.pageInfo);
+            setOpenCard(null);
+        } catch (err) {
+            setError('챌린지 요청 내역을 불러오는 데 실패했습니다.');
+            console.error(err);
+        }
+    };
 
     const openConfirm = (
         action: (value?: string) => void,
@@ -134,14 +183,14 @@ export const AdminDashboard = () => {
             if ("category" in report) {
                 if (report.category === 'USERS') {
                     setUserReports((prev) => prev.filter((c) => c.reportNo !== report.reportNo));
-                    fetchUserData(1);
+                    fetchData();
                 } else {
                     setCommReports((prev) => prev.filter((c) => c.reportNo !== report.reportNo));
-                    fetchCommData(1);
+                    fetchData();
                 }
             } else {
                 setRecipes((prev) => prev.filter((c) => c.reportNo !== report.reportNo));
-                fetchRcpData(1);
+                fetchData();
             }
         } catch {
             alert('처리 중 오류가 발생했습니다.');
@@ -163,7 +212,7 @@ export const AdminDashboard = () => {
         try {
             await approveRecipe(recipe.rcpNo);
             setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo));
-            fetchRcpData(1);
+            fetchData();
 
             // 채팅방 가져오기
             const chatRoom = await getChatRoom(recipe.userNo);
@@ -196,7 +245,7 @@ export const AdminDashboard = () => {
         try {
             await disproveRecipe(recipe.rcpNo);
             setRecipes(prev => prev.filter(c => c.rcpNo !== recipe.rcpNo));
-            fetchRcpData(1);
+            fetchData();
 
             // 채팅방 가져오기
             const chatRoom = await getChatRoom(recipe.userNo);
@@ -230,7 +279,7 @@ export const AdminDashboard = () => {
             await banUser(userNo, banDur);
             await resolveReport(reportNo);
             setUserReports((prev) => prev.filter((c) => c.reportNo !== reportNo));
-            fetchUserData(1);
+            fetchData();
         } catch {
             alert('처리 중 오류가 발생했습니다.');
         }
@@ -240,7 +289,7 @@ export const AdminDashboard = () => {
         try {
             await resolveChallenge(formNo);
             setChallenges((prev) => prev.filter((c) => c.formNo !== formNo));
-            fetchChData(1);
+            fetchData();
         } catch {
             alert('처리 중 오류가 발생했습니다.');
         }
@@ -255,12 +304,14 @@ export const AdminDashboard = () => {
     return (
         <div className={style.adminMain}>
             <div className={style.adminNav}>
-                <button className={`${style.adminNavLink} ${style.active}`}>DASHBOARD</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/users`)}>USER</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/recipes`)}>RECIPE</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/communities`)}>COMMUNITY</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/classes`)}>CLASS</button>
-                <button className={style.adminNavLink}>고객문의</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/cservices`)}>CS</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/announcements`)}>ANNOUNCEMENT</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/challenges`)}>CHALLENGE</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/ingredients`)}>INGREDIENT</button>
             </div>
             <div className={style.container}>
                 <div className={style.section}>
@@ -312,7 +363,7 @@ export const AdminDashboard = () => {
                         </div>
                     ))}
                     {userPageInfo && userPageInfo.listCount > 5 && (
-                        <Pagination pageInfo={userPageInfo} onPageChange={(page) => fetchUserData(page)} />
+                        <Pagination pageInfo={userPageInfo} onPageChange={handleUserPageChange} />
                     )}
                 </div>
 
@@ -365,7 +416,7 @@ export const AdminDashboard = () => {
                         </div>
                     ))}
                     {rcpPageInfo && rcpPageInfo.listCount > 5 && (
-                        <Pagination pageInfo={rcpPageInfo} onPageChange={(page) => fetchRcpData(page)} />
+                        <Pagination pageInfo={rcpPageInfo} onPageChange={handleRcpPageChange} />
                     )}
                 </div>
 
@@ -400,7 +451,7 @@ export const AdminDashboard = () => {
                         </div>
                     ))}
                     {commPageInfo && commPageInfo.listCount > 5 && (
-                        <Pagination pageInfo={commPageInfo} onPageChange={(page) => fetchCommData(page)} />
+                        <Pagination pageInfo={commPageInfo} onPageChange={handleCommPageChange} />
                     )}
                 </div>
 
@@ -434,7 +485,7 @@ export const AdminDashboard = () => {
                         </div>
                     ))}
                     {chPageInfo && chPageInfo.listCount > 5 && (
-                        <Pagination pageInfo={chPageInfo} onPageChange={(page) => fetchChData(page)} />
+                        <Pagination pageInfo={chPageInfo} onPageChange={handleChPageChange} />
                     )}
                 </div>
                 <RcpAlertModal

@@ -175,10 +175,10 @@ export const ChatModal = () => {
 
             {/* messages */}
             <div ref={bodyRef} className={style.body}>
-                <div>
+                {/* <div>
                     <button>사진첩</button>
                     <button>공지사항</button>
-                </div>
+                </div> */}
                 {currentRoom?.messages.map((msg, index) => {
                     const currentMsgDate = new Date(msg.createdAt as string);
                     const currentDateString = currentMsgDate.toLocaleDateString();

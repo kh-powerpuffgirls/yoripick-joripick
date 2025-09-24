@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import style from "./newAnnouncement.module.css"
-import { newAnnouncement } from "../../api/adminApi";
+import { editAnnouncement, newAnnouncement } from "../../api/adminApi";
 
 interface NewAnnouncementProps {
     setOpenNewAnn: (open: boolean) => void;
+    currentAnnouncement?: Announcement | null;
+    onSuccess: () => void;
 }
 
 export interface Announcement {
@@ -13,10 +15,18 @@ export interface Announcement {
     endDate: string;
 }
 
-export const NewAnnouncement = ({ setOpenNewAnn }: NewAnnouncementProps) => {
+export const NewAnnouncement = ({ setOpenNewAnn, currentAnnouncement, onSuccess }: NewAnnouncementProps) => {
     const [content, setContent] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+
+    useEffect(() => {
+        if (currentAnnouncement) {
+            setContent(currentAnnouncement.content);
+            setStartDate(currentAnnouncement.startDate.substring(0, 10));
+            setEndDate(currentAnnouncement.endDate.substring(0, 10));
+        }
+    }, [currentAnnouncement]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,16 +34,23 @@ export const NewAnnouncement = ({ setOpenNewAnn }: NewAnnouncementProps) => {
             alert("종료일은 시작일보다 빠를 수 없습니다.");
             return;
         }
+        const isEditing = !!currentAnnouncement;
         const announcementData: Announcement = {
             content,
             startDate,
             endDate,
         };
         try {
-            await newAnnouncement(announcementData);
-            alert('공지사항이 성공적으로 등록되었습니다.');
+            if (isEditing) {
+                await editAnnouncement({ ...announcementData, ancmtNo: currentAnnouncement.ancmtNo });
+                alert('공지사항이 성공적으로 수정되었습니다.');
+            } else {
+                await newAnnouncement(announcementData);
+                alert('공지사항이 성공적으로 등록되었습니다.');
+            }
+            onSuccess();
         } catch {
-            alert('새 공지사항 등록 중 오류가 발생했습니다.');
+            alert('처리 중 오류가 발생했습니다.');
         }
         setOpenNewAnn(false);
     };
@@ -42,7 +59,7 @@ export const NewAnnouncement = ({ setOpenNewAnn }: NewAnnouncementProps) => {
         <div className={style.overlay}>
             <form className={style.modal} onSubmit={handleSubmit}>
                 <div className={style.header}>
-                    <h3>NEW ANNOUNCEMENT</h3>
+                    <h3>{currentAnnouncement ? "EDIT ANNOUNCEMENT" : "NEW ANNOUNCEMENT"}</h3>
                 </div>
                 <div className={style.body}>
                     <label>
@@ -58,7 +75,7 @@ export const NewAnnouncement = ({ setOpenNewAnn }: NewAnnouncementProps) => {
                     </label>
                 </div>
                 <div className={style.footer}>
-                    <button className={style.submit} type="submit">공지</button>
+                    <button className={style.submit} type="submit">{currentAnnouncement ? "수정" : "공지"}</button>
                     <button className={style.cancel} onClick={() => setOpenNewAnn(false)}>취소</button>
                 </div>
             </form>

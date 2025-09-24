@@ -47,6 +47,10 @@ import { UserManagement } from './pages/Admin/userManagement'
 import { RcpManagement } from './pages/Admin/rcpManagement'
 import { CommManagement } from './pages/Admin/commManagement'
 import { ClassManagement } from './pages/Admin/classManagement'
+import { CSmanagement } from './pages/Admin/csManagement'
+import { AnnManagement } from './pages/Admin/annManagement'
+import { ClngManagement } from './pages/Admin/clngManagement'
+import { IngManagement } from './pages/Admin/ingManagement'
 
 function App() {
   const dispatch = useDispatch();
@@ -132,6 +136,10 @@ function App() {
         <Route path="/admin/recipes" element={<RcpManagement />} />
         <Route path="/admin/communities" element={<CommManagement />} />
         <Route path="/admin/classes" element={<ClassManagement />} />
+        <Route path="/admin/cservices" element={<CSmanagement />} />
+        <Route path="/admin/announcements" element={<AnnManagement />} />
+        <Route path="/admin/challenges" element={<ClngManagement />} />
+        <Route path="/admin/ingredients" element={<IngManagement />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />

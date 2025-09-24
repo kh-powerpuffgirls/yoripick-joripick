@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import style from './main.module.css'
-import { showAlert } from '../../features/alertSlice';
+import { showAlert } from '../../features/chatalertSlice';
 import type { RootState } from '../../store/store';
 import { openChat } from '../../features/chatSlice';
 

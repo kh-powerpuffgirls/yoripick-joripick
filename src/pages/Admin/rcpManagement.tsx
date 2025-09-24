@@ -36,12 +36,14 @@ export const RcpManagement = () => {
     return (
         <div className={style.adminMain}>
             <div className={style.adminNav}>
-                <button className={style.adminNavLink} onClick={() => navigate(`/admin`)}>DASHBOARD</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/users`)}>USER</button>
                 <button className={`${style.adminNavLink} ${style.active}`}>RECIPE</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/communities`)}>COMMUNITY</button>
                 <button className={style.adminNavLink} onClick={() => navigate(`/admin/classes`)}>CLASS</button>
-                <button className={style.adminNavLink}>고객문의</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/cservices`)}>CS</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/announcements`)}>ANNOUNCEMENT</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/challenges`)}>CHALLENGE</button>
+                <button className={style.adminNavLink} onClick={() => navigate(`/admin/ingredients`)}>INGREDIENT</button>
             </div>
             <div className={style.userManagementContainer}>
                 <table className={style.userTable}>

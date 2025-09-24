@@ -1,3 +1,11 @@
+.previewImage {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
 .modalOverlay {
     position: fixed;
     top: 0;

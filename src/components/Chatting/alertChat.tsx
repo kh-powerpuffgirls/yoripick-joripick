@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { ChatModalProps, ChatRoom, ChatRoomCreate } from "../../type/chatmodal";
 import axios from "axios";
 import { openChat, resetRoom } from "../../features/chatSlice";
-import { hideAlert } from "../../features/alertSlice";
+import { hideAlert } from "../../features/chatalertSlice";
 import type { Dispatch, UnknownAction } from "redux";
 import style from "./alertModal.module.css"
 import type { RootState } from "../../store/store";
@@ -38,7 +38,7 @@ export const NewChatModal = ({ type }: ChatModalProps) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     if (!type) return null;
-    if (type === "admin" && user?.roles.includes("ROLE_ADMIN")) return (
+    if (type === "admin" && user?.roles?.includes("ROLE_ADMIN")) return (
         <>
             <h3>관리자는 관리자 문의를 시작할 수 없습니다.</h3>
             <button className={style.confirm} onClick={() => dispatch(hideAlert())}>확인</button>
