@@ -12,7 +12,7 @@ export default function OAuthUsernamePage() {
       email={email}
       provider={provider}
       providerUserId={providerUserId}
-      onClose={() => (window.location.href = "/")}
+      onClose={() => (window.location.href = "/login")}
     />
   );
 }

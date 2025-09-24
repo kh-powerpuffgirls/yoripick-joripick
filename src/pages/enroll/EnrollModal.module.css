@@ -115,34 +115,34 @@ input:disabled {
 }
 
 .successText {
-  color: #16a34a; /* 초록 */
+  color: #16a34a;
   font-weight: bold;
   margin-top: -10px;
   margin-bottom: 15px;
 }
 
 .errorText {
-  color: #dc2626; /* 빨강 */
+  color: #dc2626;
   font-weight: bold;
   margin-top: -10px;
   margin-bottom: 15px;
 }
 
 .successTextSmall {
-  color: #16a34a; /* 초록 */
+  color: #16a34a;
   font-size: 0.85rem;
   margin-top: -8px;
   margin-bottom: 10px;
 }
 
 .errorTextSmall {
-  color: #dc2626; /* 빨강 */
+  color: #dc2626; 
   font-size: 0.85rem;
   margin-top: -8px;
   margin-bottom: 10px;
 }
 
-/* 중앙 팝업 알림 */
+
 .alertPopup {
   position: fixed;
   top: 50%;
