@@ -1,9 +1,13 @@
-*, *::before, *::after { box-sizing: border-box;}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 #root {
   margin: 0;
   padding: 0px;
-  width:100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -15,4 +19,13 @@ body {
   margin: 0;
   background-color: #ECEEF1;
   font-family: 'Noto Sans KR', sans-serif;
+}
+
+.chatBtn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 800;
+  font-size: 40px;
+  cursor: pointer;
 }
