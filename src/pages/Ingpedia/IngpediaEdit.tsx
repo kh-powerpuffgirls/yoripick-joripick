@@ -49,15 +49,6 @@ export default function IngpediaEdit(){
         };
     }, [newIngPedia]);
 
-    // useEffect(() => {
-    //     if(pairIngs[0] && pairIngs[0].pairNo === 0){
-    //         const newPairIngs = pairIngs.slice(1);
-    //         setpairIngs(newPairIngs);
-    //     }
-    //     setNewIngPedia({...newIngPedia, pairList:pairIngs});
-    //     console.log(newIngPedia);
-    // }, [pairIngs]);
-
         const {data: ingPediaItem, isLoading, isError, error} = useQuery<IngPedia>({
         queryKey: ['ingPedia', ingNo], // 캐시 구분용 키
         queryFn: () => getIngPedia(Number(ingNo)),
@@ -203,16 +194,16 @@ export default function IngpediaEdit(){
                         </table>
                         <div className={ingEditStyle["tip-area"]}>
                             <h3>구매 요령 (Buying Tip)</h3>
-                            <textarea name="buyingTip" placeholder="구매 요령을 입력하세요." value={newIngPedia.ingDetail.buyingTip}
+                            <textarea name="buyingTip" placeholder="구매 요령을 입력하세요." value={newIngPedia.ingDetail.buyingTip ?? ''}
                             onChange={handleAddIngPedia}/>
                             <h3>보관법 (Storage Method)</h3>
-                            <textarea name="storageMethod" placeholder="보관법을 입력하세요." value={newIngPedia.ingDetail.storageMethod}
+                            <textarea name="storageMethod" placeholder="보관법을 입력하세요." value={newIngPedia.ingDetail.storageMethod ?? ''}
                             onChange={handleAddIngPedia}/>
                             <h3>손질법 (Preparation / Handling)</h3>
-                            <textarea name="preparation" placeholder="손질법을 입력하세요." value={newIngPedia.ingDetail.preparation}
+                            <textarea name="preparation" placeholder="손질법을 입력하세요." value={newIngPedia.ingDetail.preparation ?? ''}
                             onChange={handleAddIngPedia}/>
                             <h3>활용 팁 (Usage Tip)</h3>
-                            <textarea name="usageTip" placeholder="활용 팁을 입력하세요." value={newIngPedia.ingDetail.usageTip}
+                            <textarea name="usageTip" placeholder="활용 팁을 입력하세요." value={newIngPedia.ingDetail.usageTip ?? ''}
                             onChange={handleAddIngPedia}/>
                         </div>
                     </div>

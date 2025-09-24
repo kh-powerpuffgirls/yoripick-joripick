@@ -72,7 +72,7 @@ export default function IngpediaList(){
     };
 
     const fetchIngData = (page:number) => {
-        setSubmittedKeyword({ ...searchKeyword, page: page});
+        setSubmittedKeyword({ ...submittedKeyword, page: page});
     };
 
 

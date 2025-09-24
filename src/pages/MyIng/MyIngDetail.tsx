@@ -20,7 +20,7 @@ export default function MyIngDetail(){
     const navigate = useNavigate();
     const {ingNo} = useParams();
     const [newMyIng, handleInputChange, resetMyIng, setNewMyIng] = useInput<MyIngUpdate>(initialUpdateMyIng);
-    const [onUpdate, setOnUpdate] = useState(0);
+    const [onUpdate, setOnUpdate] = useState(false);
 
     const {data: MyIngItem, isLoading, isError, error} = useQuery<MyIngItem>({
         queryKey: ['myIngItem', ingNo], // 캐시 구분용 키
@@ -40,7 +40,7 @@ export default function MyIngDetail(){
                 expDate: expDate ?? undefined,
                 quantity });
         }
-    },[MyIngItem, onUpdate]);
+    },[MyIngItem]);
         
     const editMyIng = (e: FormEvent) => {
         e.preventDefault(); // 제출 방지
@@ -67,6 +67,7 @@ export default function MyIngDetail(){
             mutationFn: (newMyIng:MyIngUpdate) => updateMyIng(Number(ingNo), userNo ?? 0, newMyIng),
             onSuccess: (res) => {
                 // 등록 요청 성공 시
+                setOnUpdate(false);
                 queryClient.invalidateQueries({queryKey:['MyIngItem', ingNo]}); // 메뉴 목록 데이터 캐시 무효화
                 queryClient.invalidateQueries({queryKey:['MyIngs']}); // 메뉴 목록 데이터 캐시 무효화
                 alert("식재료 정보가 수정되었습니다.");
@@ -115,17 +116,17 @@ export default function MyIngDetail(){
                             </select>
                             <input type="text" value={MyIngItem.ingName} className={MyIngDetailStyle["ing-name"]} disabled/>
                             <div className={MyIngDetailStyle["sub-inform"]}>
-                                <h3>수량 / 무게</h3><input type="text" value={newMyIng.quantity ?? ''} className={MyIngDetailStyle["ing-quantity"]} name="quantity" onChange={(e) => {setNewMyIng({...newMyIng, quantity: e.target.value,}); setOnUpdate(1);}}/>
+                                <h3>수량 / 무게</h3><input type="text" value={newMyIng.quantity ?? ''} className={MyIngDetailStyle["ing-quantity"]} name="quantity" onChange={(e) => {setNewMyIng({...newMyIng, quantity: e.target.value,}); setOnUpdate(true);}}/>
                                 <h3>등록일</h3>
-                                <input type="date" value={formatDate(newMyIng.createdAt ?? new Date)} className={MyIngDetailStyle["ing-regidate"]} name="regidate" onChange={(e) => {setNewMyIng({...newMyIng, createdAt: new Date(e.target.value),}); setOnUpdate(1)}}/>
+                                <input type="date" value={formatDate(newMyIng.createdAt ?? new Date)} className={MyIngDetailStyle["ing-regidate"]} name="regidate" onChange={(e) => {setNewMyIng({...newMyIng, createdAt: new Date(e.target.value),}); setOnUpdate(true)}}/>
                                 <h3>소비기한</h3>
-                                <input type="date" value={formatDate(newMyIng.expDate)} className={MyIngDetailStyle["ing-usedate"]} name="usedate" onChange={(e) => {setNewMyIng({...newMyIng, expDate: new Date(e.target.value),}); setOnUpdate(1)}}/>
+                                <input type="date" value={formatDate(newMyIng.expDate) ?? ""} className={MyIngDetailStyle["ing-usedate"]} name="usedate" onChange={(e) => {setNewMyIng({...newMyIng, expDate: new Date(e.target.value),}); setOnUpdate(true)}}/>
                             </div>
                         </form>
                     </div>
                     <section className={MyIngDetailStyle["btn-group"]}>
                         <div className={cx("flex-row", "gap-20", "center")}>
-                            <button type="submit" className={cx("click-basic", "semi-round-btn", "olive")} disabled={mutation.isPending || (onUpdate === 0)} onClick={editMyIng}>수정</button>
+                            <button type="submit" className={cx("click-basic", "semi-round-btn", "olive")} disabled={mutation.isPending || (onUpdate === false)} onClick={editMyIng}>수정</button>
                             <button className={cx("click-basic", "semi-round-btn", "red")}
                             onClick={
                                 (e) => {

@@ -34,10 +34,13 @@ export default function IngpediaDetail(){
         }
     })
     const handleDelete = (ingNo:number) => {
-        deleteIngPediaMutation.mutate(ingNo);
-        navigate(`/ingpedia`, {
-            state: {flash: "재료 관리 정보가 삭제되었습니다."}
-        });
+        const onDelete = confirm("재료 관리 정보를 삭제하시겠습니까?");
+        if(onDelete){
+            deleteIngPediaMutation.mutate(ingNo);
+            navigate(`/ingpedia`, {
+                state: {flash: "재료 관리 정보가 삭제되었습니다."}
+            });
+        }
     };
     
     if(isLoading) return <div>Loading...</div>

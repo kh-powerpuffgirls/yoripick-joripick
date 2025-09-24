@@ -7,8 +7,8 @@
   background-color: #92ca02;
   width: 100%;
   padding: 15px 20px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -22,7 +22,14 @@
   gap: 5px;
   list-style: none;
   align-items: center;
+  padding: 0;
 }
+/* 햄버거 메뉴 넣는다면 사용... */
+/* @media (max-width : 1100px){
+  .navbar {
+    display: none;
+  }
+} */
 
 .nav-line {
   width: 1px;
