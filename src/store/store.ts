@@ -5,6 +5,7 @@ import chat from '../features/chatSlice'
 import boardsReducer from '../features/boardsSlice';
 import auth from '../features/authSlice'
 import noti from '../features/notiSlice'
+import mying from "../features/myIngSlice";
 import userReducer from '../features/userSlice';
 import stomp from '../features/stompSlice';
 
@@ -16,6 +17,7 @@ export const store = configureStore({
         chat,
         auth, 
         noti,
+        mying,
         boards: boardsReducer,
         user: userReducer,
     }

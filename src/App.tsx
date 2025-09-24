@@ -15,6 +15,15 @@ import { useEffect } from 'react'
 import { api } from './api/authApi'
 import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import MyPage from './pages/MyPage/MyPage'
+import MyIng from './pages/MyIng/MyIng'
+import MyIngList from './pages/MyIng/MyIngList'
+import MyIngDetail from './pages/MyIng/MyIngDetail'
+import MyIngWrite from './pages/MyIng/MyIngWrite'
+import { IngPopup } from './components/IngModal/IngModal'
+import Ingpedia from './pages/Ingpedia/Ingpedia'
+import IngpediaList from './pages/Ingpedia/IngpediaList'
+import IngpediaDetail from './pages/Ingpedia/IngpediaDetail'
+import IngpediaWrite from './pages/Ingpedia/IngpediaWrite'
 
 function App() {
 
@@ -46,6 +55,20 @@ function App() {
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />
+
+        <Route path="/mypage/inglist" element={<MyIng/>} >
+          <Route path='' element={<MyIngList/>}/>
+          <Route path='detail/:ingNo' element={<MyIngDetail/>}/>
+          <Route path='write' element={<MyIngWrite/>}/>
+        </Route>
+        <Route path="/ing-popup" element={<IngPopup/>} />
+
+        <Route path="/ingpedia" element={<Ingpedia/>} >
+          <Route path='' element={<IngpediaList/>}/>
+          <Route path='detail' element={<IngpediaDetail/>}/>
+          <Route path='write' element={<IngpediaWrite/>}/>
+        </Route>
+
       </Routes>
       <Footer />
     </>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type IngCode, type IngCreate, type IngPedia, type IngPediaUpdate, type PagedIngItem, type PagedIngListResponse } from "../../type/Ing";
+import { type IngCreate, type IngPedia, type IngPediaUpdate, type PagedIngListResponse } from "../../type/Ing";
 
 const api = axios.create({
     baseURL: `http://localhost:8081/ingpedia`,
@@ -33,23 +33,6 @@ export const updateIngPedia = async function (ingNo: number, newIngPedia:IngPedi
     const response = await api.put(`/detail/${ingNo}`, newIngPedia);
     return response.data;
 }
-
-// export const getMyIngs = async function (userNo: number | undefined) {
-//     const response = await api.get(`/${userNo}`);
-//     return response.data;
-// }
-
-// export const getMyIng = async function (ingNo: number, userNo:number) {
-//     const response = await api.get(`/detail/${ingNo}/${userNo}`);
-//     console.log(ingNo);
-//     return response.data;
-// }
-
-
-// export const updateMyIng = async function (ingNo:number, userNo:number, newMyIng:MyIngUpdate) {
-//     const response = await api.put(`/detail/${ingNo}/${userNo}`, newMyIng);
-//     return response.data;
-// }
 
 export const searchIngPedia = async function(searchKeyword:{ingCode?:number, keyword?: string, page?:number}){
     const response = await api.get<PagedIngListResponse>("", {
