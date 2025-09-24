@@ -14,7 +14,7 @@ import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
-import { loginSuccess, logout } from './features/authSlice'
+import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import RecipeWrite from './pages/community/Recipe/RecipeWrite'
 import MyPage from './pages/MyPage/MyPage'
 import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
@@ -23,11 +23,11 @@ import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
 function App() {
 
   const dispatch = useDispatch();
-
   useEffect(() => {
-    api.post("http://localhost:8081/auth/refresh")
+    api.post("auth/tokens/refresh")
       .then(res => {
-        dispatch(loginSuccess(res.data));
+        dispatch(saveUserData(res.data));
+        dispatch(loginSuccess());
       })
       .catch(err => {
         dispatch(logout());
