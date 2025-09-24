@@ -36,7 +36,7 @@ const CommunityRecipeDetail: React.FC = () => {
     const [myLikeStatus, setMyLikeStatus] = useState<'LIKE' | 'DISLIKE' | null>(null);
     const [likeCount, setLikeCount] = useState(0);
 
-    // 북바크 상태
+    // 북마크 상태
     const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
     const [bookmarkCount, setBookmarkCount] = useState(0);
     

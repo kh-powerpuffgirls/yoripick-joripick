@@ -151,6 +151,9 @@ export interface RecipeListItem {
   sikBti?: string;
   avgStars?: number;
   reviewCount?: number;
+  isOfficial: boolean;
+  bookmarkCount?: number;
+  bookmarked?: boolean;
 }
 
 // 백엔드로부터 받을 페이지 전체 데이터 타입

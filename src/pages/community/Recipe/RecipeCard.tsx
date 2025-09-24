@@ -31,7 +31,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         
         <div className={recipecard.stars}>
           <img src={starIcon} height="12px" width="12px" alt="별점" />
-          {/* ✨ avgStars 데이터를 소수점 첫째 자리까지 표시, 리뷰가 없으면 0.0으로 표시 */}
           <span>{(recipe.avgStars || 0).toFixed(1)}</span>
         </div>
       </div>
