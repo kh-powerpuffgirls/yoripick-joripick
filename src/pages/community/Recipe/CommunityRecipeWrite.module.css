@@ -1,0 +1,280 @@
+
+.main{
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.container{
+    max-width: 1000px;
+    width: 100%;
+    margin: auto;
+    box-sizing: border-box;
+    padding-bottom: 30px;
+}
+
+/* 레시피 작성 */
+.header_card{
+    background-color: #C5E99B;
+    font-size: 40px;
+    font-weight: bold;
+    color: black;
+    border: 1px solid #63636341;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 90px 5% 50px 5%;
+
+    margin-bottom:20px;
+}
+
+/* card_기본정보, 재로정보, 요리순서 */
+.card{
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 30px 5% 30px 5%;
+    
+    margin-bottom:20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card h2{
+    color: #029D60;
+    margin-bottom: 10px;
+}
+
+
+/* 기본정보 */
+.content{
+    margin-left: 5%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+.other_card{
+    flex-grow: 2;
+}
+#title {
+    font-weight: 500;
+    padding: 8px;
+    flex-grow: 10;
+}
+
+#input {
+	width: 95%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 16px;
+}
+
+#title textarea {
+    resize: none;  
+    font-family: '맑은 고딕', Arial, sans-serif;
+    width: 95%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 16px;
+}
+
+.info select{
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #81CEB0;
+	border-radius: 6px;
+	font-size: 16px;
+    color: #029D60;
+}
+
+
+.info_box{
+    display: flex;
+    justify-content: space-between;
+}
+.info{
+    display: flex;
+    justify-content: space-between;
+    gap:20px;
+    align-items: center;
+}
+
+.info img{
+    width: 35px;
+    height: 35px;
+}
+
+
+.img_holder{
+    background-color: #ECEEF1;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+    padding:50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 250px;
+}
+
+
+
+/* 재료정보 */
+
+#ing{
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+
+#ing th{
+    border-bottom: 1px solid #ccc;
+    padding : 8px 20px;
+    width: 50%;
+}
+
+#ing td{
+    padding: 10px;
+    width: 50%;
+}
+
+.ing_title{
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.ing{
+    background-color: #E8E8E8;
+    padding: 10px 20px;
+    /* display: flex; */
+    /* justify-content: space-between; */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+.ing_name{
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.add_ing{
+    background-color: #E8E8E8;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+#minus{
+    padding-left: 10px;
+    width: 20px;
+    justify-content: center;
+}
+#add{
+    padding-left: 10px;
+    width: 20px;
+    justify-content: center;
+}
+
+
+/* 요리순서 */
+
+#cook_box{
+    width: 100%;
+    border: 1px solid #3e58226c;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+#cook_box th{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #3e58226c;
+    background-color: #F1F9D1;
+    padding: 20px;
+}
+
+#icon{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 10px;
+}
+
+#cook_box td{
+    display: flex;
+    padding: 20px;
+}
+
+#how2cook{
+    border:0px #5a616b !important;
+    resize: none;  
+    font-family: '맑은 고딕', Arial, sans-serif;
+    width: 95%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 16px;
+}
+
+.img_how2cook{
+    background-color: #ECEEF1;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 120px;
+}
+
+.add_how2cook{
+    border: 2px solid #029D60;
+	border-radius: 6px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #029D60;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 10px 20px;
+    width: 200px;
+    align-self: center;
+}
+
+.button_area{
+    display: flex;
+    justify-content: center;
+    gap : 30px;
+}
+
+#cancel{
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #92CA02;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 10px 30px;
+}
+
+#complete{
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #029D60;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 10px 30px;
+}
+
+
+
