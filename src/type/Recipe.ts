@@ -195,7 +195,10 @@ export interface RecipeDetail {
   avgStars:number;
   rcpIngList?: string;
 
+  bookmarked?: boolean;
+
   likeCount: number;
+  bookmarkCount?: number;
   reviewCount: number;
 }
 

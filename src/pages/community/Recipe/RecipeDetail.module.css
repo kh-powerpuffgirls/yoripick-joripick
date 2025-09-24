@@ -109,3 +109,27 @@
 .Likes img:hover {
     transform: scale(1.1);
 }
+
+
+
+/* 북마크 버튼 */
+.bookMark{
+    align-self:end;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #3E5822;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.bookMark img{
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.Likes img:hover {
+    transform: scale(1.1);
+}
+

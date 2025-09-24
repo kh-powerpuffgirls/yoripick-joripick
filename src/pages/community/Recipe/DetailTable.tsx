@@ -42,18 +42,22 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
     <div className={styles.food_info}>
       {/* --- 작성자 정보 및 신고 버튼 --- */}
       <div className={styles.user_report}>
-        <div className={styles.writer_profile} onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
-          <img src={recipe.writer?.serverName || sampleProfileImg} alt={recipe.writer?.username} />
-          <div className={styles.profile_name}>
-            {recipe.writer?.sikBti && <SikBti sikBti={recipe.writer.sikBti} style={{fontSize: '13px' }} />}
-            <span className={styles.nickname}>{recipe.writer?.username}</span>
-          </div>
-        </div>
-        {!isOwner && (
-        <button className={styles.report}>
-          <img src={reportIcon} alt="신고" />
-          <span>신고하기</span>
-        </button>
+        { !recipe.isOfficial &&(
+          <>
+            <div className={styles.writer_profile} onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
+              <img src={recipe.writer?.serverName || sampleProfileImg} alt={recipe.writer?.username} />
+              <div className={styles.profile_name}>
+                {recipe.writer?.sikBti && <SikBti sikBti={recipe.writer.sikBti} style={{fontSize: '13px' }} />}
+                <span className={styles.nickname}>{recipe.writer?.username}</span>
+              </div>
+            </div>
+              {!isOwner && (
+                <button className={styles.report}>
+                  <img src={reportIcon} alt="신고" />
+                  <span>신고하기</span>
+                </button>
+              )}
+          </>
         )}
       </div>
       
