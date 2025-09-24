@@ -13,6 +13,7 @@ import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
+import { MealplanMain } from './pages/Mealplan/main'
 import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import MyPage from './pages/MyPage/MyPage'
 
@@ -43,6 +44,7 @@ function App() {
         } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />
