@@ -1,13 +1,13 @@
 import axios from "axios";
-import { store } from "../store/store";
-import { type IngCode, type PagedIngItem } from "../type/Ing";
+import { store } from "../../store/store";
+import { type IngCode, type PagedIngItem } from "../../type/Ing";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
 };
 
 const api = axios.create({
-    baseURL: `http://localhost:8081/api/ingdata`,
+    baseURL: `http://localhost:8081/ingdata`,
     withCredentials: true
 });
 
@@ -32,7 +32,6 @@ api.interceptors.response.use(
 
 export const getIngCodes = async function () {
     const response = await api.get<IngCode[]>("/codes");
-    console.log(response.data);
     return response.data;
 }
 

@@ -1,59 +1,9 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-a {
-  text-decoration: none;
-  color: inherit;
-}
-ul {
-  list-style: none;
-}
-
-/* 공통 */
-
-.container {
-  width: 1000px;
-  min-height: 1000px; /* 창 크기에 따른 크기 변환 방지 */
-  background-color: white;
-  padding: 50px 70px;
-}
-
-h2 {
-  font-size: 24px;
-}
-.title-area{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.content-area{
-  padding: 0px 20px;
-}
-hr{
-  margin-bottom: 20px;
-}
-.margin-10 {
-  margin-bottom: 10px;
-}
 .gray {
   height: 1px;
   background-color: #ccc;
   border: 0;
   flex-grow: 1;
-  margin: 0 0 0 10px;
-}
-.aling-start{
-  align-items: baseline;
-}
-.more-link {
-  font-size: 16px;
-  color: #888;
-  float: right;
-  margin-left: 10px;
+  margin: 20px 0 0 10px;
 }
 
 .sort-group {
@@ -63,12 +13,6 @@ hr{
   gap: 5px;
   margin-bottom: 10px;
 }
-.vt-line {
-  width: 0px;
-  height: 100%;
-  border-right: #ddd solid 2px;
-}
-
 
 
 .ing-detail-section{
@@ -76,7 +20,6 @@ hr{
   flex-direction: row;
   margin-bottom: 20px;
 }
-
 
 .thumb-area {
   display: flex;
@@ -130,7 +73,7 @@ hr{
   gap: 10px;
   width: 100%;
 }
-input {
+.mying-detail input {
   border: #ccc solid 1px;
   border-radius: 4px;
 }

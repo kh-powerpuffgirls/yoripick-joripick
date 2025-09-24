@@ -1,14 +1,14 @@
 import axios from "axios";
-import { store } from "../store/store";
-import type { User } from "../type/authtype";
-import { type IngItem, type MyIngCreate, type MyIngItem, type MyIngUpdate } from "../type/Ing";
+import { store } from "../../store/store";
+import type { User } from "../../type/authtype";
+import { type IngItem, type MyIngCreate, type MyIngItem, type MyIngUpdate } from "../../type/Ing";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
 };
 
 const api = axios.create({
-    baseURL: `http://localhost:8081/api/inglist`,
+    baseURL: `http://localhost:8081/inglist`,
     withCredentials: true
 });
 

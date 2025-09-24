@@ -1,30 +1,56 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ingBn, lodingImg } from "../../assets/images";
 import Pagination from "../../components/Pagination";
 import ingStyle from "./Ingpedia.module.css"
+import "../../assets/css/button.css";
+import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import cx from "classnames";
 import { useEffect, useState } from "react";
 import { initialIngItem, type IngCode, type IngItem } from "../../type/Ing";
-import { getIngCodes, searchIngs } from "../../api/ingApi";
+import { getIngCodes, searchIngs } from "../../api/ing/ingApi";
 import { useQuery } from "@tanstack/react-query";
+import useInput from "../../hooks/useInput";
+import type { PageInfo } from "../../api/adminApi";
+import { searchIngPedia } from "../../api/ing/ingPediaApi";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
 
 export default function IngpediaList(){
 
-    // const ingContent = ['단감aaaaaaaaaaaaaaaaaaaaaaaaaaaa', '연시', '감말랭이', '곶감', '구아바', '한라봉', '천혜향', '레드향', '황금향', '금귤', '다래', '대추', '건대추', '건대추야자', '두리안', '설향딸기', '딸기', '라임', '레몬', '롱안', '리치', '망고', '애플망고', '매실', '매실 당절임', '염장 매실', '머루', '머스켓베일리에이', '왕머루', '감로멜론', '머스크멜론', '모과', '무화과', '바나나', '배', '배 과즙', '버찌', '복분자', '백도복숭아', '천도복숭아'];
-    
+    const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
     const [ingCodeSet, setIngCodeSet] = useState<IngCode[]>([{ingCode:0, ingCodeName:''}]);
-    const [ingContent, setIngContent] = useState<IngItem[]>([initialIngItem]);
+    const navigate = useNavigate();
+
+
+    const [searchKeyword, onChangeKeyword] = useInput({
+        ingCode:0,
+        keyword: '',
+        page: 0
+    });
+    const [submittedKeyword, setSubmittedKeyword] = useState({
+        ingCode:0,
+        keyword: '',
+        page: 0
+    });
+    const [ingPageInfo, setIngPageInfo] = useState<PageInfo>({
+        listCount: 0,
+        currentPage: 0,
+        pageLimit: 0,
+        itemLimit: 0,
+        maxPage: 0,
+        startPage: 0,
+        endPage: 0
+    });
+
 
     const{data:ingCodes} = useQuery({
         queryKey: ['ingCodes'],
         queryFn: () => getIngCodes(),
         staleTime: 60*1000
     })
-
     const{data:ingContents} = useQuery({
-        queryKey: ['ingContents'],
-        // queryFn: () => searchIngs(),
-        queryFn: () => getIngCodes(),
+        queryKey: ['ingPedia', submittedKeyword],
+        queryFn: () => searchIngPedia(submittedKeyword),
         staleTime: 60*1000
     })
 
@@ -34,61 +60,84 @@ export default function IngpediaList(){
         }
     }, [ingCodes]);
 
+    useEffect(() => {
+        if (ingContents?.pageInfo) {
+            setIngPageInfo(ingContents.pageInfo);
+        }
+    }, [ingContents]);
+        
+    const handleSearchIngPedia = () => {
+        setSubmittedKeyword(searchKeyword);
+        searchIngs(submittedKeyword);
+    };
 
+    const fetchIngData = (page:number) => {
+        setSubmittedKeyword({ ...searchKeyword, page: page});
+    };
 
 
 
     return (
         <>
-            <div className={ingStyle.container}>
+            <div className={cx(ingDefaultStyle["ing-default"], ingDefaultStyle["container"])}>
                 <section className={ingStyle["ing-category"]}>
-                    <div className={ingStyle[`title-area`]}>
+                    <div className={ingDefaultStyle[`title-area`]}>
                         <h2>재료 관리</h2>
-                        <form action="." method="post" className={ingStyle["search-box"]}>
-                            <button type="button" className={cx("semi-round-btn", "olive-b")}>등록</button>
-                            <select name="ingCodeName" className={ingStyle["drop-menu"]}>
+                        <form action="." method="post" className={ingDefaultStyle["search-box"]}
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSearchIngPedia();
+                        }}>
+                            {isAdmin && <button type="button" className={cx("semi-round-btn", "olive-b")}
+                            onClick={
+                                (e) => {
+                                    e.stopPropagation();
+                                    navigate(`/ingpedia/write`);
+                                }
+                            }>등록</button>}
+                            <select className={ingStyle["drop-menu"]} name="ingCode" onChange={onChangeKeyword} value={searchKeyword.ingCode}>
                                 {ingCodeSet.map(
                                     (item, index) => (
-                                        <option value={index} className={ingStyle["drop-item"]}>{item.ingCodeName}</option>
+                                        <option key={item.ingCode} value={index} className={ingStyle["drop-item"]}>{item.ingCodeName}</option>
                                     )
                                 )}
                             </select>
-                            <input className={ingStyle["search-txt"]} type="text" placeholder="재료 검색"/>
-                            <img src={lodingImg.search} className={ingStyle["search-icon"]}/>
+                            <input className={ingStyle["search-txt"]} type="text" placeholder="재료 검색" name="keyword" onChange={onChangeKeyword}/>
+                            <img src={lodingImg.search} className={ingDefaultStyle["search-icon"]}
+                                onClick={(e) => {
+                                e.preventDefault();
+                                handleSearchIngPedia();
+                            }}/>
                         </form>
                     </div>
                     <hr/>
                     {/* map 정리 필요 */}
-                    <ul className={cx(ingStyle["category-list"], ingStyle["content-area"])}>
+                    <ul className={cx(ingStyle["category-list"], ingDefaultStyle["content-area"])}>
                         {ingCodeSet.map(
-                        (item, index) => (
-                            <li key={index}><span className={ingStyle.circle}></span><p>{item.ingCodeName}</p></li>
-                        )
-                        )}
+                        (item) => (
+                            <li key={item.ingCode} onClick={()=>setSubmittedKeyword({ingCode:item.ingCode, keyword:'', page:0})}
+                                className={submittedKeyword.ingCode === item.ingCode ? ingStyle.selected : ''}>
+                                <span className={ingStyle.circle}></span><p>{item.ingCodeName}</p>
+                            </li>
+                        ))}
                     </ul>
                 </section>
                 <hr/>
 
-                
-
                 {/* <!-- 목록 --> */}
                 <section className={ingStyle[`ing-content`]}>
-                    {/* ===========================================================css 추가 필요 */}
                     <div className={ingStyle[`category-banner`]}> 
                         <img src={ingBn[0]}/>
-                        <h2 className={ingStyle[`category-banner-stroke`]}>{ingCodeSet[0].ingCodeName??''}</h2>
-                        <h2>{ingCodeSet[0].ingCodeName??''}</h2>
+                        <h2 className={ingStyle[`category-banner-stroke`]}>{ingCodeSet[submittedKeyword.ingCode].ingCodeName}</h2>
+                        <h2>{ingCodeSet[submittedKeyword.ingCode].ingCodeName}</h2>
                     </div>
                     <div className={ingStyle["ing-content-list"]}>
-                        {/* 임시 하드코딩 데이터 */}
                         <ul className={ingStyle["ing-content-grid"]}>
-                            {ingContent.map(
+                            {ingContents?.ingList.map(
                             (item) => (
-                                <li>
-                                    <Link to="/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" className={ingStyle[`ing-item`]}>
-                                        {/* <div className={ingStyle[`ing-item-text`]}>{item}</div> */}
-                                        <img className={ingStyle[`arrow-icon`]} src={lodingImg.arrowRight}/>
-                                    </Link>
+                                <li key={item.ingNo} className={ingStyle[`ing-item`]} onClick={() => navigate(`/ingpedia/detail/${item.ingNo}`)}>
+                                    <div className={ingStyle[`ing-item-text`]}>{item.ingName}</div>
+                                    <img className={ingStyle[`arrow-icon`]} src={lodingImg.arrowRight}/>
                                 </li>
                             )
                             )}
@@ -96,9 +145,11 @@ export default function IngpediaList(){
                     </div>
                 </section>
 
-                {/* <Pagination/> */}
+                <Pagination
+                    pageInfo={ingPageInfo}
+                    onPageChange={(page)=> fetchIngData(page)}
+                />
             </div>
-                <Outlet />
         </>
     )
 }

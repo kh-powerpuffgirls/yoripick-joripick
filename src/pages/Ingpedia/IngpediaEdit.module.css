@@ -157,6 +157,10 @@ tr > td:first-child {
   flex-grow: 1;
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
+}
+.btn-group * {
+  text-wrap: nowrap;
 }
 .ing-btn {
   max-width: 100px;

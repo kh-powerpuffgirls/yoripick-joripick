@@ -1,5 +1,8 @@
 /* Header Component */
-
+#header a {
+  text-decoration: none;
+  color: inherit;
+}
 #header {
   background-color: #92ca02;
   width: 100%;
@@ -31,7 +34,6 @@
   color: black;
   text-decoration: none;
   padding: 10px 20px;
-  border-radius: 6px;
   text-wrap: nowrap;
 }
 
@@ -39,7 +41,6 @@
   border: none;
   background-color: transparent;
   padding: 10px 20px;
-  border-radius: 6px;
   text-wrap: nowrap;
   font-size: 1.03em;
   cursor: pointer;
@@ -50,9 +51,15 @@
   text-decoration: none;
   text-wrap: nowrap;
   font-size: 12px;
+  border: 0px;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav-link:hover, .nav-button:hover {
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -79,20 +86,27 @@
   transition: all 0.2s ease-in-out;
 }
 
-.search-image, .profile-image {
+.search-image {
   width: 25px;
-  height: 25px;
+  aspect-ratio: 1/1;
 }
-
+.profile-image {
+  width: 32px;
+  aspect-ratio: 1/1;
+  position: absolute;
+  right: 4px;
+}
 .profile-icon {
-  width: 90px;
+  width: 100px;
   height: 40px;
   background-color: white;
+  padding-right: 40px;
+  padding-left: 6px;
   border-radius: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding:  0px 7.5px 0px 10px;
+  position: relative;
 }
 
 /* Footer */
@@ -143,53 +157,6 @@
   display: flex;
   justify-content: center;
 }
-  
-.pagination {
-  list-style: none;
-  display: flex;
-  padding: 0;}
-    
-.pagination li {
-  display: inline;
-  text-align: center;}
-
-.pagination a {
-  float: left;
-  display: inline;
-  align-items: center;
-  font-size: 14px;
-  text-decoration: none;
-  width: 30px;
-  height: 30px;
-  color: #96a0ad;
-  border: #96a0ad solid 1px;
-  border-radius: 10px;
-  line-height: 190%;
-  margin-left: 3px;
-}
-
-.pagination a.active {
-  cursor: default;
-  color: #ffffff;}
-  
-.pagination a:active {
-  outline: none;}
-  
-.page-modal .page-num {
-  margin-left: 3px;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  line-height: 190%;
-}
-
-.page-modal .page-num:hover , .page-first:hover, .page-last:hover, .page-left:hover, .page-right:hover{
-  background-color: #67c4a0;
-  color: #ffffff;}
-  
-.page-modal .page-num.active, .page-modal .page-num:active ,.page-first:active, .page-last:active, .page-left:active, .page-right:active{
-  background-color: #029d60;
-  cursor: pointer;}
  
 /* 인라인 설정 태그 ========================================================================================= */
 .flex-row {
@@ -219,8 +186,8 @@
   --ypjp-green: #029d60;
   --ypjp-green-pale: #67c4a0;
   --ypjp-green-dark: #007f4c;
-  --ypjp-ligitgreen: #92ca02;
-  --ypjp-ligitgreen-pale: #b9e156;
+  --ypjp-lightgreen: #92ca02;
+  --ypjp-lightgreen-pale: #b9e156;
   --ypjp-olive: #3e5822;
   --ypjp-olive-dark: #253712;
   --ypjp-orange: #fdbb1b;

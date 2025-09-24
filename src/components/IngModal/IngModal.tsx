@@ -3,24 +3,30 @@ import type { RootState } from "../../store/store";
 import ingModalStyle from "./ingModal.module.css"
 import { useEffect, useState } from 'react';
 import { lodingImg } from "../../assets/images";
-import ingStyle from "../../pages/Ingpedia/Ingpedia.module.css";
+import "../../assets/css/button.css";
 import cx from "classnames";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import useInput from "../../hooks/useInput";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { searchIngs } from "../../api/ingApi";
+import { useQuery } from "@tanstack/react-query";
+import { searchIngs } from "../../api/ing/ingApi";
 import Pagination from "../Pagination";
 import type { PageInfo } from "../../api/adminApi";
 import type { IngItem } from "../../type/Ing";
 
 export const IngPopup = () => {
+
+  const [searchParams] = useSearchParams();
+  const target = searchParams.get('target');
   
   const handleSelect = (ingItem:IngItem) => {
-    window.opener?.postMessage({ type: 'ING_RESULT', payload: {
-      ingNo: ingItem.ingNo,
-      ingName: ingItem.ingName,
-      ingCode: ingItem.ingCode,
-      ingCodeName: ingItem.ingCodeName,
+    window.opener?.postMessage({ 
+      type: 'ING_RESULT', 
+      target,
+      payload: {
+        ingNo: ingItem.ingNo,
+        ingName: ingItem.ingName,
+        ingCode: ingItem.ingCode,
+        ingCodeName: ingItem.ingCodeName,
     }}, '*');
     window.close();
   };
@@ -88,9 +94,9 @@ export const IngPopup = () => {
 
   
   return (
-    <div className={ingModalStyle.container}>
+    <div className={cx(ingModalStyle["ing-modal"], ingModalStyle["ing-modal"], ingModalStyle["container"])}>
       <h3 className={ingModalStyle.title}>재료명 검색</h3>
-      <form action="." method="get" className={cx(ingStyle["search-box"],ingModalStyle["form"])}
+      <form action="." method="get" className={cx(ingModalStyle["search-box"],ingModalStyle["form"])}
         onSubmit={(e) => {
           e.preventDefault();
           handleSearchIngs();
@@ -102,9 +108,9 @@ export const IngPopup = () => {
                 )
             )}
         </select>
-        <input className={ingStyle["search-txt"]} type="text" name="keyword" placeholder="내 식재료 검색"
+        <input className={ingModalStyle["search-txt"]} type="text" name="keyword" placeholder="내 식재료 검색"
           onChange={onChangeKeyword} value={searchKeyword.keyword}/>
-        <img src={lodingImg.search} className={ingStyle["search-icon"]}
+        <img src={lodingImg.search} className={ingModalStyle["search-icon"]}
           onClick={(e) => {
           e.preventDefault();
           handleSearchIngs();
@@ -128,10 +134,13 @@ export const IngPopup = () => {
         </ul>
       </section>
       
+      <div className={ingModalStyle["pagination-aria"]}>
         <Pagination
           pageInfo={ingPageInfo}
           onPageChange={(page)=> fetchIngData(page)}
         />
+      </div>
+      
     </div>
   )
 }

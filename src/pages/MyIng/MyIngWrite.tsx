@@ -1,20 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import { lodingImg } from "../../assets/images";
+import "../../assets/css/button.css";
+import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import MyIngWriteStyle from "./MyIngWrite.module.css"
-import "../../assets/button.css"
 import cx from "classnames";
 import { useSelector } from "react-redux";
 import type { RootState } from '../../store/store';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { initialState, type MyIngCreate, type MyIngItem } from "../../type/Ing";
-import { insertMyIng as createMyIng } from "../../api/myIngApi";
+import { insertMyIng as createMyIng } from "../../api/ing/myIngApi";
 import useInput from "../../hooks/useInput";
 import { useEffect, useState, type FormEvent } from "react";
 import { formatDate, openIngPopup } from "./common";
 
 export default function MyIngWrite(){
-
-    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const navigate = useNavigate();
     const [newMyIng, setNewMyIng] = useState<MyIngCreate>(initialState);
@@ -65,7 +64,6 @@ export default function MyIngWrite(){
 
     const insertMyIng = (e: FormEvent) => {
         e.preventDefault(); // 제출 방지
-        console.log(newMyIng);
         if(newMyIng.ingNo == null || newMyIng.ingNo == 0 ){
             alert('식재료를 선택하세요');
             return;
@@ -81,30 +79,30 @@ export default function MyIngWrite(){
 
     return (
         <>
-            <div className={MyIngWriteStyle.container}>
+            <div className={cx(ingDefaultStyle["ing-default"], ingDefaultStyle["container"], MyIngWriteStyle["mying-write"])}>
                 <section className={MyIngWriteStyle["ing-detail"]}>
-                    <div className={MyIngWriteStyle[`title-area`]}>
+                    <div className={ingDefaultStyle[`title-area`]}>
                         <div className="flex-row gap-10">
                             <h2>내 식재료 관리</h2>
-                            <h2>&gt;</h2>
+                            <h2>＞</h2>
                             <h2>등록하기</h2>
                         </div>
                     </div>
-                    <div className={MyIngWriteStyle[`title-area`]}>
+                    <div className={ingDefaultStyle[`title-area`]}>
                         <h3>새 재료</h3>
                         <hr className={MyIngWriteStyle["gray"]}/>
                     </div>
-                    <div className={cx(MyIngWriteStyle["content-area"], MyIngWriteStyle["ing-detail-section"])}>
+                    <div className={cx(ingDefaultStyle["content-area"], MyIngWriteStyle["ing-detail-section"])}>
                         
                         <div className={MyIngWriteStyle["thumbnail"]}>
                             <img src={lodingImg.plus} className={MyIngWriteStyle["add-img"]}/>
                         </div>
                         <section className={MyIngWriteStyle["ing-inform"]}>
-                            <select name="ingCodeName" className={MyIngWriteStyle["drop-menu"]} onClick={openIngPopup}>
+                            <select name="ingCodeName" className={MyIngWriteStyle["drop-menu"]} onClick={()=>openIngPopup()}>
                                 <option value={newMyIng.ingCode} className={MyIngWriteStyle["drop-item"]}>{newMyIng.ingCodeName}</option>
                             </select>
                             <input type="text" name="ingName" className={MyIngWriteStyle["ing-name"]} placeholder="재료명"
-                            onChange={()=>setNewMyIng}  onClick={openIngPopup} value={newMyIng.ingName}/>
+                            onChange={()=>setNewMyIng}  onClick={()=>openIngPopup()} value={newMyIng.ingName}/>
                             <div className={MyIngWriteStyle["sub-inform"]}>
                                 <h3>수량 / 무게<span className={MyIngWriteStyle["point"]}> *</span></h3><input type="text" className={MyIngWriteStyle["ing-quantity"]} name="quantity" placeholder="ex) 100g / 1개" value={newMyIng.quantity} onChange={(e) => setNewMyIng(prev => ({ ...prev, quantity: e.target.value }))}/>
                                 <h3>등록일</h3>

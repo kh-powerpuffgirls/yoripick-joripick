@@ -1,19 +1,20 @@
-/* 클릭 이벤트 */
-.click-basic:hover {
+/* 클릭 이벤트 및 상태 */
+button.click-basic:hover {
     background-color: #eee;
     cursor: pointer;
     font-weight: bold;
 }
-.click-basic:active {
+button.click-basic:disabled {
+    background-color: #eee;
+    cursor: default;
+    font-weight: bold;
+ }
+button.click-basic:active {
     background-color: #ddd;
 }
-  /*
-  transform: translateY(-3px) scale(1.05);;
-  transition: all 0.3s ease;
-   */
 
 /* 버튼 종류 */
-.icon-btn {
+button.icon-btn {
     border: black solid 3px;
     width: 44px;
     aspect-ratio: 1/1;
@@ -21,14 +22,14 @@
     background-color: white;
     border-radius: 100px;
 }
-.round-btn {
+button.round-btn {
     border: black solid 3px;
     padding: 10px 20px;
     font-size: 14px;
     background-color: white;
     border-radius: 100px;
 }
-.semi-round-btn {
+button.semi-round-btn {
     border: black solid 2px;
     padding: 4px 20px;
     font-size: 16px;
@@ -37,50 +38,76 @@
 }
 
 /* 색 종류 */
-.green {
+button.lightgreen {
+    color: var(--ypjp-lightgreen);
+    border-color: var(--ypjp-lightgreen);
+}
+button.lightgreen-b, button.lightgreen.selected {
+    color: white;
+    background-color: var(--ypjp-lightgreen);
+    border-color: var(--ypjp-lightgreen);
+}
+button.lightgreen-b:hover, button.lightgreen.selected:hover {
+    background-color: var(--ypjp-lightgreen-dark);
+    border-color: var(--ypjp-lightgreen-dark);
+    cursor: pointer;
+}
+
+button.green {
     color: var(--ypjp-green);
     border-color: var(--ypjp-green);
 }
-.green-b, .green.selected {
+button.green-b, button.green.selected {
     color: white;
     background-color: var(--ypjp-green);
     border-color: var(--ypjp-green);
 }
-.green-b:hover, .green.selected:hover {
+button.green-b:hover, button.green.selected:hover {
     background-color: var(--ypjp-green-dark);
     border-color: var(--ypjp-green-dark);
     cursor: pointer;
 }
-.orange {
+button.green-b:disabled {
+    background-color: var(--ypjp-green-pale);
+    cursor: default;
+}
+
+button.orange {
     color: var(--ypjp-salmon);
     border-color: var(--ypjp-salmon);
 }
-.orange-b {
+button.orange-b {
     color: white;
     background-color: var(--ypjp-salmon);
     border-color: var(--ypjp-salmon);
     cursor: pointer;
 }
-.orange-b:hover {
+button.orange-b:hover {
     background-color: var(--ypjp-salmon-dark);
     border-color: var(--ypjp-salmon-dark);
     cursor: pointer;
 }
-.olive {
+button.orange-b:disabled {
+    background-color: var(--ypjp-lightpink);
+    cursor: default;
+}
+
+button.olive {
     color: var(--ypjp-olive);
     border-color: var(--ypjp-olive);
 }
-.olive-b {
+button.olive-b {
     color: white;
     background-color: var(--ypjp-olive);
     border-color: var(--ypjp-olive);
 }
-.olive-b:hover {
+button.olive-b:hover {
     background-color: var(--ypjp-olive-dark);
     border-color: var(--ypjp-olive-dark);
     cursor: pointer;
 }
-.red {
+
+button.red {
     color: var(--ypjp-red);
     border-color: var(--ypjp-red);
 }

@@ -1,32 +1,156 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ingBn, lodingImg } from "../../assets/images";
 import ingWriteStyle from "./IngpediaWrite.module.css"
-import "../../assets/button.css"
+import "../../assets/css/button.css";
+import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import cx from "classnames";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState, type FormEvent } from "react";
+import { initialIng, type IngCreate, type IngPair } from "../../type/Ing";
+import { openIngPopup } from "../MyIng/common";
+import { createIngPedia, getIngPedia, updateIngPedia } from "../../api/ing/ingPediaApi";
 
 export default function IngpediaWrite(){ 
 
-    const ingCodeName = ['대분류명','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
-    const ingContent = ['단감aaaaaaaaaaaaaaaaaaaaaaaaaaaa', '연시', '감말랭이', '곶감', '구아바', '한라봉', '천혜향', '레드향', '황금향', '금귤', '다래', '대추', '건대추', '건대추야자', '두리안', '설향딸기', '딸기', '라임', '레몬', '롱안', '리치', '망고', '애플망고', '매실', '매실 당절임', '염장 매실', '머루', '머스켓베일리에이', '왕머루', '감로멜론', '머스크멜론', '모과', '무화과', '바나나', '배', '배 과즙', '버찌', '복분자', '백도복숭아', '천도복숭아'];
+    const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
+    const [newIng, setNewIng] = useState<IngCreate>(initialIng);
+    const [pairIngs, setpairIngs] = useState<IngPair[]>([{pairNo:0, pairName: '', pairState:'N'}]);
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
+
+    // 이미 등록한 식재료에 잉피디아 정보 추가
+    useEffect(() => {
+        console.log(newIng);
+        const handleMessage = async (event: MessageEvent) => {
+            if (event.data?.type === 'ING_RESULT') {
+                const { ingNo, ingName, ingCode, ingCodeName } = event.data.payload;
+                const target = event.data.target;
+                console.log(target);
+                switch(target){
+                    case "best":
+                        setpairIngs((prev)=>([...prev, {pairNo: ingNo as number, pairName: ingName, pairState: 'B'},]));
+                        break;
+                    case "worst":
+                        setpairIngs((prev)=>([...prev, {pairNo: ingNo as number, pairName: ingName, pairState: 'W'},]));
+                        break;
+                    default:
+                        // // 이전 등록 여부 검사
+                        // if(ingNo == '' ){
+                        //     alert('이미 등록한 재료입니다.');
+                        //     return;
+                        // }
+                        
+                        try {
+                            const ingTemp = await getIngPedia(ingNo);
+        
+                            setNewIng((prev) => ({
+                                ...prev,
+                                ingDetail: {
+                                    ...prev.ingDetail,
+                                    userNo,
+                                    ingNo,
+                                    ingName,
+                                    ingCode,
+                                    ingCodeName,
+                                    energy: ingTemp.ingDetail.energy ?? 0,
+                                    carb: ingTemp.ingDetail.carb ?? 0,
+                                    protein: ingTemp.ingDetail.protein ?? 0,
+                                    fat: ingTemp.ingDetail.fat ?? 0,
+                                    sodium: ingTemp.ingDetail.sodium ?? 0,
+                                },
+                            }));
+                        } catch (error) {
+                            console.error(error);
+                        }
+                }
+            }
+        };
+        
+        window.addEventListener('message', handleMessage);
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, [userNo]);
+
+    // 아예 새로운 식재료? : 후순위...
+
+    useEffect(() => {
+        if(pairIngs[0] && pairIngs[0].pairNo === 0){
+            const newPairIngs = pairIngs.slice(1);
+            setpairIngs(newPairIngs);
+        }
+        setNewIng({...newIng, pairList:pairIngs});
+        console.log(newIng);
+    }, [pairIngs]);
+
+    
+    const mutation = useMutation({
+        mutationFn: (newIng:IngCreate) => createIngPedia(newIng),
+        onSuccess: (res) => {
+            // 등록 요청 성공 시
+            queryClient.invalidateQueries({predicate: (query) => query.queryKey[0] === 'ingPedia',});
+
+            navigate('/ingpedia', {
+                state: {flash: "재료 정보가 등록되었습니다."}
+            });
+        }
+    })
+
+    if(mutation.isPending){
+        return <div>Loading...</div>
+    }
+
+    if(mutation.isError){
+        console.log(newIng);
+        return <div className="alert alert-danger">{mutation.error.message}</div>
+    }
+
+    const insertIngPedia = (e: FormEvent) => {
+        e.preventDefault(); // 제출 방지
+        if(newIng.ingDetail.ingName == null || newIng.ingDetail.ingName == '' ){
+            alert('재료명을 입력하세요');
+            return;
+        }
+        if(newIng.ingDetail.ingCodeName == null || newIng.ingDetail.ingCodeName == '' ){
+            alert('재료 분류를 선택하세요');
+            return;
+        }
+        if((newIng.ingDetail.buyingTip == null || newIng.ingDetail.buyingTip == '') &&
+            (newIng.ingDetail.storageMethod == null || newIng.ingDetail.storageMethod == '') &&
+            (newIng.ingDetail.preparation == null || newIng.ingDetail.preparation == '') &&
+            (newIng.ingDetail.usageTip == null || newIng.ingDetail.usageTip == '')){
+            alert('재료 관리 정보를 한 가지 이상 입력하세요');
+            return;
+        }
+        console.log("newIng:", newIng);
+        mutation.mutate(newIng); //비동기함수 실행
+    }
+
 
     return (
         <>
-            <div className={ingWriteStyle.container}>
+            <div className={cx(ingDefaultStyle["ing-default"], ingDefaultStyle["container"])}>
                 <section className={ingWriteStyle["ing-detail"]}>
-                    <div className={ingWriteStyle[`title-area`]}>
+                    <div className={ingDefaultStyle[`title-area`]}>
                         <div className="flex-row gap-10">
                             <h2>재료 관리</h2>
-                            <h2>&gt;</h2>
+                            <h2>＞</h2>
                             <h2>등록하기</h2>
                         </div>
                     </div>
                     <hr/>
-                    <div className={cx(ingWriteStyle["content-area"], ingWriteStyle["ing-detail-section"])}>
+                    <div className={cx(ingDefaultStyle["content-area"], ingWriteStyle["ing-detail-section"])}>
                         <table className={ingWriteStyle["ing-table"]}>
                             <thead>
-                                <th colSpan={2}>
-                                    <input name="ingName" type="text" className={ingWriteStyle["ing-name"]} placeholder="재료명"/>
-                                </th>
+                                <tr>
+                                    <th colSpan={2}>
+                                        <input name="ingName" type="text" className={ingWriteStyle["ing-name"]} placeholder="재료명"
+                                        value={newIng.ingDetail.ingName} onClick={() => openIngPopup()} readOnly/>
+                                        {/* <button onClick={() => openIngPopup()}>재료 검색</button> */}
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <tr>
@@ -38,60 +162,66 @@ export default function IngpediaWrite(){
                                     <td>분류</td>
                                     <td>
                                         <select name="ingCodeName" className={ingWriteStyle["drop-menu"]}>
-                                            {ingCodeName.map(
+                                            <option value={newIng.ingDetail.ingCode} className={ingWriteStyle["drop-item"]}>{newIng.ingDetail.ingCodeName ?? "전체"}</option>
+
+                                            {/* {ingCodeName.map(
                                                 (item, index) => (
                                                     <option value={index} className={ingWriteStyle["drop-item"]}>{item}</option>
                                                 )
-                                            )}
+                                            )} */}
                                         </select>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>열량</td>
                                     <td className={ingWriteStyle["input-area"]}>
-                                        <input name="ingEnergy" type="number" placeholder="0"/>
+                                        <input name="ingEnergy" type="number" placeholder="0" value={newIng.ingDetail.energy ?? 0} readOnly/>
                                         <span>kcal</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>탄수화물</td>
                                     <td className={ingWriteStyle["input-area"]}>
-                                        <input name="ingCarb" type="number" placeholder="0"/>
+                                        <input name="ingCarb" type="number" placeholder="0" value={newIng.ingDetail.carb ?? 0} readOnly/>
                                         <span>g</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>단백질</td>
                                     <td className={ingWriteStyle["input-area"]}>
-                                        <input name="ingProtein" type="number" placeholder="0"/>
+                                        <input name="ingProtein" type="number" placeholder="0" value={newIng.ingDetail.protein ?? 0} readOnly/>
                                         <span>g</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>지방</td>
                                     <td className={ingWriteStyle["input-area"]}>
-                                        <input name="ingFat" type="number" placeholder="0"/>
+                                        <input name="ingFat" type="number" placeholder="0" value={newIng.ingDetail.fat ?? 0} readOnly/>
                                         <span>g</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>나트륨</td>
                                     <td className={ingWriteStyle["input-area"]}>
-                                        <input name="ingSodium" type="number" placeholder="0"/>
+                                        <input name="ingSodium" type="number" placeholder="0" value={newIng.ingDetail.sodium ?? 0} readOnly/>
                                         <span>g</span>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                         <div className={ingWriteStyle["tip-area"]}>
+                            <h3>구매 요령 (Buying Tip)</h3>
+                            <textarea name="buyingTip" placeholder="구매 요령을 입력하세요."
+                            onChange={(e) => setNewIng(prev => ({ ...prev, ingDetail:{...prev.ingDetail, buyingTip: e.target.value }}))}/>
                             <h3>보관법 (Storage Method)</h3>
-                            <textarea name="storage" placeholder="보관법을 입력하세요."/>
+                            <textarea name="storageMethod" placeholder="보관법을 입력하세요."
+                            onChange={(e) => setNewIng(prev => ({ ...prev, ingDetail:{...prev.ingDetail, storageMethod: e.target.value }}))}/>
                             <h3>손질법 (Preparation / Handling)</h3>
-                            <textarea name="preparation" placeholder="손질법을 입력하세요."/>
-                            <h3>적정 보관 기한 (Shelf Life)</h3>
-                            <textarea name="life" placeholder="적정 보관 기한을 입력하세요."/>
+                            <textarea name="preparation" placeholder="손질법을 입력하세요."
+                            onChange={(e) => setNewIng(prev => ({ ...prev, ingDetail:{...prev.ingDetail, preparation: e.target.value }}))}/>
                             <h3>활용 팁 (Usage Tip)</h3>
-                            <textarea name="tip" placeholder="활용 팁을 입력하세요."/>
+                            <textarea name="usageTip" placeholder="활용 팁을 입력하세요."
+                            onChange={(e) => setNewIng(prev => ({ ...prev, ingDetail:{...prev.ingDetail, usageTip: e.target.value }}))}/>
                         </div>
                     </div>
                 </section>
@@ -103,19 +233,26 @@ export default function IngpediaWrite(){
                             <div className={cx("flex-row", ingWriteStyle["match-content"])}>
                                 <img src={lodingImg.thumbUp}/>
                                 <span className={ingWriteStyle["btn-group"]}>
-                                    <button className={cx("click-basic", "round-btn", "green", ingWriteStyle["ing-btn"])}>재료1</button>
-                                    <button className={cx("icon-btn", "green-b")}>+</button>
+                                    {pairIngs.map((item, index) => (
+                                        (item.pairState == 'B') && <button key={item.pairNo} className={cx("click-basic", "round-btn", "green", "ing-btn")}>
+                                        {item.pairName}
+                                        </button>
+                                    ))}
+                                    <button className={cx("round-btn", "green-b")} onClick={()=>openIngPopup("best")}>+</button>
                                 </span>
                             </div>
                     </div>
-                    <div className={ingWriteStyle["vt-line"]}/>
+                    <div className={ingDefaultStyle["vt-line"]}/>
                     <div className={ingWriteStyle["worst-area"]}>
                         <h3>Worst 궁합</h3>
                             <div className={cx("flex-row", ingWriteStyle["match-content"])}>
                                 <span className={ingWriteStyle["btn-group"]}>
-                                    <button className={cx("click-basic", "round-btn", "orange", ingWriteStyle["ing-btn"])}>재료1</button>
-                                    <button className={cx("click-basic", "round-btn", "orange", ingWriteStyle["ing-btn"])}>재료2</button>
-                                    <button className={cx("icon-btn", "orange-b")}>+</button>
+                                    {pairIngs.map((item, index) => (
+                                        (item.pairState == 'W') && <button key={item.pairNo} className={cx("click-basic", "round-btn", "orange", "ing-btn")}>
+                                        {item.pairName}
+                                        </button>
+                                    ))}
+                                    <button className={cx("round-btn", "orange-b")} onClick={()=>openIngPopup("worst")}>+</button>
                                 </span>
                                 <img src={lodingImg.thumbDown}/>
                             </div>
@@ -125,7 +262,7 @@ export default function IngpediaWrite(){
                 <section className={ingWriteStyle["admin-section"]}>
                     <hr/>
                     <div className={cx("flex-row", "gap-20", "center")}>
-                        <button className={cx("click-basic", "semi-round-btn", "olive")}>등록</button>
+                        <button className={cx("click-basic", "semi-round-btn", "olive")}  onClick={insertIngPedia}>등록</button>
                     </div>
                 </section>
             </div>

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { lodingImg } from "../assets/images";
 import { useSelector } from "react-redux";
 import useLogout from "../hooks/logout";
@@ -12,6 +12,7 @@ const Header = () => {
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
   const logout = useLogout();
+  const navigate = useNavigate();
   const [openNewAnn, setOpenNewAnn] = useState(false);
   const [openNewCh, setOpenNewCh] = useState(false);
 
@@ -89,13 +90,14 @@ const Header = () => {
           <div className="profile-icon">
             {isAuthenticated ? (
               <button className="log-link" onClick={logout}>
-                로그아웃
+                <div>로그아웃</div>
                 <img className="profile-image" src={lodingImg.profile} alt="프로필" />
               </button>
             ) : (
-              <Link to="/login" className="log-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                로그인
-              </Link>
+              <button className="log-link" onClick={() => navigate('/login')}>
+                  <div>로그인</div>
+                  <img className="profile-image" src={lodingImg.profile} alt="프로필" />
+              </button>
             )}
           </div>
         </div>

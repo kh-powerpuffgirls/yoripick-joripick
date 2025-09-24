@@ -1,69 +1,3 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-a {
-  text-decoration: none;
-  color: inherit;
-}
-ul {
-  list-style: none;
-}
-
-/* 공통 */
-
-.container {
-  width: 1000px;
-  min-height: 1000px; /* 창 크기에 따른 크기 변환 방지 */
-  background-color: white;
-  padding: 50px 70px;
-}
-
-h2 {
-  font-size: 24px;
-}
-.title-area{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.content-area{
-  padding: 0px 20px;
-}
-hr{
-  margin-bottom: 20px;
-}
-.search-box {
-  height: 32px;
-  position: relative;
-  display: flex;
-  flex-direction: row;
-}
-.search-box>* {
-  height: 100%;
-  padding: 0px 20px;
-  margin: 2px;
-  border-radius: 5px;
-}
-.drop-menu {
-  height: 100%;
-}
-.search-txt {
-  padding-right: 36px;
-}
-.search-icon {
-  border-radius: 0px;
-  right: 0px;
-  position: absolute;
-  padding: 7px;
-}
-.search-icon:hover {
-  cursor: pointer;
-}
-
 /* 레시피 분류 */
 .ing-category {
   margin-bottom: 20px;
@@ -81,12 +15,17 @@ hr{
 .category-list>li:first-child{
   display: none;
 }
+
+
 .ing-category .circle {
   display: block;
   width: 80px;
   height: 80px;
   border-radius: 50%;
   background-color: #ddd;
+}
+.ing-category .selected .circle {
+  border: #92ca02 solid 3px;
 }
 .ing-category p {
   text-align: center;
@@ -99,10 +38,11 @@ hr{
   transform: scale(1.05);
   transition: all 0.2s ease-in-out;
 }
-.ing-category li:hover p {
+.ing-category li:hover p, .ing-category .selected p {
   color: #92ca02;
   font-weight: bold;
 }
+
 
 
 

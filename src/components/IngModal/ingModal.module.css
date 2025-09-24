@@ -1,19 +1,19 @@
 /* Reset */
-* {
+.ing-modal * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-a {
+.ing-modal a {
   text-decoration: none;
   color: inherit;
 }
-ul {
+.ing-modal ul {
   list-style: none;
 }
 
 /* 공통 */
-.container {
+.ing-modal.container {
   width: 600px;
   height: 500px;
   background-color: white;
@@ -21,41 +21,52 @@ ul {
   position: relative;
 }
 
-.title, .form {
+.ing-modal .title, .ing-modal .form {
   margin-bottom: 20px;
 }
 .margin0 {
   margin: 0px;
 }
-.margin-10 {
-  margin-bottom: 10px;
-}
-.gray {
+.ing-modal .gray {
   height: 1px;
   background-color: #ccc;
   border: 0;
 }
-.aling-start{
-  align-items: baseline;
+
+
+.search-box {
+  height: 32px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
 }
-.more-link {
-  font-size: 16px;
-  color: #888;
-  float: right;
-  margin-left: 10px;
-}
-.aling-start{
-  align-items: baseline;
-}
-.vt-line {
-  width: 0px;
+.search-box > * {
   height: 100%;
-  border-right: #ddd solid 2px;
+  padding: 0px 20px;
+  margin: 2px;
+  border-radius: 5px;
+}
+.drop-menu {
+  height: 100%;
+}
+.search-txt {
+  padding-right: 36px;
+}
+.search-icon {
+  border-radius: 0px;
+  right: 0px;
+  position: absolute;
+  padding: 7px;
+}
+.search-icon:hover {
+  cursor: pointer;
 }
 
-input {
+
+.ing-modal input {
   border: #ccc solid 1px;
   border-radius: 4px;
+  flex-grow: 1;
 }
 .drop-menu {
   height: 100%;
@@ -66,20 +77,20 @@ input {
   border-radius: 4px;
 }
 
-.result {
+.ing-modal .result {
   padding: 0 10px;
 }
-.result-item {
+.ing-modal .result-item {
   display: flex;
   align-items: center;
   font-size: 14px;
 }
-.result-item:hover {
+.ing-modal .result-item:hover {
   color: var(--ypjp-green);
   cursor: pointer;
 }
 
-.category {
+.ing-modal .category {
   min-width: 160px;
   text-align: center;
   font-weight: bold;
@@ -89,28 +100,8 @@ input {
   padding: 0 10px;
 }
 
-.pagination-area {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  left: 0%;
+.pagination-aria {
+  position:absolute;
   bottom: 20px;
-}
-.pagination {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: gray;
-}
-.pagination .active {
-  color: black;
-  text-decoration : underline;
-}
-.pagination li {
-  padding: 0 5px;
-  border-radius: 6px;
-}
-.pagination li:hover {
-  background-color: #ddd;
+  width: 540px;
 }

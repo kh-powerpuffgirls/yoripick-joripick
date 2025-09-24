@@ -24,6 +24,79 @@ export interface IngCode {
     ingCodeName: string;
 }
 
+export interface PagedIngListResponse {
+    ingList: {ingNo: number; ingName: string;}[],
+    pageInfo: PageInfo
+}
+
+export interface IngPair {
+    pairNo: number;
+    pairName: string;
+    pairState: string;
+}
+
+
+export interface IngPedia {
+    ingDetail: {
+        ingNo: number;
+        ingName: string;
+        ingCode: number;
+        ingCodeName: string;
+
+        nutrientNo: number;
+        energy?: number;
+        carb?: number;
+        protein?: number;
+        fat?: number;
+        sodium?: number;
+
+        buyingTip?: string;
+        usageTip?: string;
+        storageMethod?: string;
+        preparation?: string;
+    };
+    pairList?: IngPair[];
+}
+export type IngPediaUpdate = IngPedia;
+export const initialUpdateIngPedia = {
+    ingDetail: {
+        ingNo: 0,
+        ingName: '',
+        ingCode: 0,
+        ingCodeName: '',
+        nutrientNo: 0,
+    }
+}
+
+export interface IngCreate {
+    ingDetail: {
+        userNo?: number;
+        ingNo?: number;
+        ingName: string;
+        ingCode: number;
+        ingCodeName?: string;
+
+        energy?: number;
+        carb?: number;
+        protein?: number;
+        fat?: number;
+        sodium?: number;
+
+        buyingTip?: string;
+        usageTip?: string;
+        storageMethod?: string;
+        preparation?: string;
+    };
+    pairList?: IngPair[];
+}
+export const initialIng = {
+        ingDetail: {
+        ingName: '',
+        ingCode: 0,
+        }
+}
+
+
 
 
 
@@ -48,7 +121,6 @@ export const initialState = {
     userNo: 0,
     ingNo: 0,
     createdAt: new Date,
-    expDate: new Date,
     quantity: '',
     ingName: '',
     ingCode: 0,
@@ -67,7 +139,6 @@ export const initialNewMyIng = {
     userNo: 0,
     ingNo: 0,
     createdAt: new Date,
-    expDate: new Date,
     quantity: ''
 };
 export const initialUpdateMyIng = initialNewMyIng;

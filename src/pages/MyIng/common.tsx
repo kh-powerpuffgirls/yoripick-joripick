@@ -9,11 +9,13 @@ export const newDate = (DateStr:Date) => {
     return new Date(DateStr);
 }
 
-export function formatDate(DateStr:Date) {
-  const date = new Date(DateStr);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
-  const day = String(date.getDate()).padStart(2, '0');
+export function formatDate(DateStr:Date | undefined) {
+    if(!DateStr) return;
+
+    const date = new Date(DateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+    const day = String(date.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
 }
@@ -55,10 +57,10 @@ export const expDateMessage = (item:MyIngItem) => {
     }
 }
 
-export async function openIngPopup () {
+export async function openIngPopup (target?:string) {
 
     const popup = window.open(
-        '/ing-popup',
+        `/ing-popup?target=${target}`,
         'IngPopup',
         'width=602px,height=502px,resizable=no,scrollbars=no'
     );

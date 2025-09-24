@@ -1,109 +1,162 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { lodingImg } from "../../assets/images";
-import ingDetailStyle from "./IngpediaDetail.module.css"
-import "../../assets/button.css"
 import cx from "classnames";
+import ingDetailStyle from "./IngpediaDetail.module.css"
+import "../../assets/css/button.css";
+import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { IngPedia } from "../../type/Ing";
+import { deleteIngPedia, getIngPedia } from "../../api/ing/ingPediaApi";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
 
 export default function IngpediaDetail(){
 
-    const ingCodeName = ['전체','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
-    const ingContent = ['단감aaaaaaaaaaaaaaaaaaaaaaaaaaaa', '연시', '감말랭이', '곶감', '구아바', '한라봉', '천혜향', '레드향', '황금향', '금귤', '다래', '대추', '건대추', '건대추야자', '두리안', '설향딸기', '딸기', '라임', '레몬', '롱안', '리치', '망고', '애플망고', '매실', '매실 당절임', '염장 매실', '머루', '머스켓베일리에이', '왕머루', '감로멜론', '머스크멜론', '모과', '무화과', '바나나', '배', '배 과즙', '버찌', '복분자', '백도복숭아', '천도복숭아'];
+    const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
+    const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
+    const { ingNo } = useParams();
 
+    const {data: IngPediaItem, isLoading, isError, error} = useQuery<IngPedia>({
+        queryKey: ['ingPedia', ingNo], // 캐시 구분용 키
+        queryFn: () => getIngPedia(Number(ingNo)),
+        staleTime: 1000*60, // Fresh 유지 시간
+        gcTime: 1000 *60 * 5, // 캐시 메모리 저장 시간
+        enabled: true
+    });
+    
+    const deleteIngPediaMutation = useMutation({
+        mutationFn: (ingNo:number) => deleteIngPedia(ingNo),
+        onSuccess: () => {
+            queryClient.invalidateQueries({predicate: (query) => query.queryKey[0] === 'ingPedia',});
+        }
+    })
+    const handleDelete = (ingNo:number) => {
+        deleteIngPediaMutation.mutate(ingNo);
+        navigate(`/ingpedia`, {
+            state: {flash: "재료 관리 정보가 삭제되었습니다."}
+        });
+    };
+    
+    if(isLoading) return <div>Loading...</div>
+    if(isError) return <div style={{color:'red'}}>{error.message}</div>
+    if(!IngPediaItem) return <div>값 없음</div>
+    
     return (
         <>
-            <div className={ingDetailStyle.container}>
+            <div className={cx(ingDefaultStyle["ing-default"], ingDefaultStyle["container"])}>
                 <section className={ingDetailStyle["ing-detail"]}>
-                    <div className={ingDetailStyle[`title-area`]}>
+                    <div className={ingDefaultStyle[`title-area`]}>
                         <div className="flex-row gap-10">
                             <h2>재료 관리</h2>
-                            <h2>&gt;</h2>
+                            <h2>＞</h2>
                             <h2>상세보기</h2>
                         </div>
                     </div>
                     <hr/>
-                    <div className={cx(ingDetailStyle["content-area"], ingDetailStyle["ing-detail-section"])}>
-                        <table className={ingDetailStyle["ing-table"]}>
-                            <thead>
-                                <th colSpan={2}>*재료명*</th>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colSpan={2} className={ingDetailStyle["ing-image"]}>
-                                        <img src={lodingImg.noImage}/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>분류</td>
-                                    <td>*카테고리*</td>
-                                </tr>
-                                <tr>
-                                    <td>열량</td>
-                                    <td>*00kcal*</td>
-                                </tr>
-                                <tr>
-                                    <td>탄수화물</td>
-                                    <td>*00g*</td>
-                                </tr>
-                                <tr>
-                                    <td>단백질</td>
-                                    <td>*00g*</td>
-                                </tr>
-                                <tr>
-                                    <td>지방</td>
-                                    <td>*00g*</td>
-                                </tr>
-                                <tr>
-                                    <td>나트륨</td>
-                                    <td>*00mg*</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div className={cx(ingDefaultStyle["content-area"], ingDetailStyle["ing-detail-section"])}>
+                        <div>
+                            <table className={ingDetailStyle["ing-table"]}>
+                                <thead>
+                                    <tr>
+                                        <th colSpan={2} className={ingDetailStyle["ing-name"]}>{IngPediaItem.ingDetail.ingName}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colSpan={2} className={ingDetailStyle["ing-image"]}>
+                                            <img src={lodingImg.noImage}/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>분류</td>
+                                        <td>{IngPediaItem.ingDetail.ingCodeName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>열량</td>
+                                        <td>{IngPediaItem.ingDetail.energy}kcal</td>
+                                    </tr>
+                                    <tr>
+                                        <td>탄수화물</td>
+                                        <td>{IngPediaItem.ingDetail.carb}g</td>
+                                    </tr>
+                                    <tr>
+                                        <td>단백질</td>
+                                        <td>{IngPediaItem.ingDetail.protein}g</td>
+                                    </tr>
+                                    <tr>
+                                        <td>지방</td>
+                                        <td>{IngPediaItem.ingDetail.fat}g</td>
+                                    </tr>
+                                    <tr>
+                                        <td>나트륨</td>
+                                        <td>{IngPediaItem.ingDetail.sodium}mg</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div className={ingDetailStyle["gray"]}>* 100g당 함량 영양 성분</div>
+                        </div>
                         <div className={ingDetailStyle["tip-area"]}>
-                            <h3>보관법 (Storage Method)</h3>
-                            <div>보관법 설명이 없습니다.보관법 설명이 없습니다.보관법 설명이 없습니다.보관법 설명이 없습니다.보관법 설명이 없습니다.보관법 설명이 없습니다.보관법 설명이 없습니다.보관법 설명이 없습니다.보관법 설명이 없습니다.</div>
-                            <h3>손질법 (Preparation / Handling)</h3>
-                            <div>손질법 설명이 없습니다.</div>
-                            <h3>적정 보관 기한 (Shelf Life)</h3>
-                            <div>적정 보관 기한 설명이 없습니다.</div>
-                            <h3>활용 팁 (Usage Tip)</h3>
-                            <div>활용 팁이 없습니다.</div>
+                            {IngPediaItem.ingDetail.buyingTip && <><h3>구매 요령 (Buying Tip)</h3>
+                            <pre>{IngPediaItem.ingDetail.buyingTip}</pre></>}
+                            {IngPediaItem.ingDetail.storageMethod && <><h3>보관법 (Storage Method)</h3>
+                            <pre>{IngPediaItem.ingDetail.storageMethod}</pre></>}
+                            {IngPediaItem.ingDetail.preparation && <><h3>손질법 (Preparation / Handling)</h3>
+                            <pre>{IngPediaItem.ingDetail.preparation}</pre></>}
+                            {IngPediaItem.ingDetail.usageTip && <><h3>활용 팁 (Usage Tip)</h3>
+                            <pre>{IngPediaItem.ingDetail.usageTip}</pre></>}
+
+                            {!IngPediaItem.ingDetail.buyingTip && !IngPediaItem.ingDetail.storageMethod &&
+                            !IngPediaItem.ingDetail.preparation && !IngPediaItem.ingDetail.usageTip &&
+                            <pre>* 관리 정보가 등록되지 않았습니다.</pre>}
                         </div>
                     </div>
-                </section>
-                <hr/>
+                </section><hr/>
                 {/* <!-- 궁합 --> */}
-                <section className={cx(ingDetailStyle["ing-match-section"])}>
-                    <div className={ingDetailStyle["best-area"]}>
-                        <h3>Best 궁합</h3>
-                            <div className={cx("flex-row", ingDetailStyle["match-content"])}>
-                                <img src={lodingImg.thumbUp}/>
-                                <span className={ingDetailStyle["btn-group"]}>
-                                    <button className={cx("click-basic", "round-btn", "green")}>재료1</button>
-                                    <button className={cx("click-basic", "round-btn", "green")}>재료2</button>
-                                </span>
-                            </div>
-                    </div>
-                    <div className={ingDetailStyle["vt-line"]}/>
-                    <div className={ingDetailStyle["worst-area"]}>
-                        <h3>Worst 궁합</h3>
-                            <div className={cx("flex-row", ingDetailStyle["match-content"])}>
-                                <span className={ingDetailStyle["btn-group"]}>
-                                    <button className={cx("click-basic", "round-btn", "orange")}>재료1</button>
-                                    <button className={cx("click-basic", "round-btn", "orange")}>재료2</button>
-                                    <button className={cx("click-basic", "round-btn", "orange")}>재료3</button>
-                                </span>
-                                <img src={lodingImg.thumbDown}/>
-                            </div>
-                    </div>
-                </section>
-                
-                <section className={ingDetailStyle["admin-section"]}>
+                {IngPediaItem.pairList && IngPediaItem.pairList.length > 0 &&
+                <div>
+                    <section className={cx(ingDetailStyle["ing-match-section"])}>
+                        <div className={ingDetailStyle["best-area"]}>
+                            <h3>Best 궁합</h3>
+                                <div className={cx("flex-row", ingDetailStyle["match-content"])}>
+                                    <img src={lodingImg.thumbUp}/>
+                                    <span className={ingDetailStyle["btn-group"]}>
+                                        {IngPediaItem.pairList?.map(
+                                            (item) => item.pairState == "B" ? (
+                                                <button key={item.pairNo} className={cx("click-basic", "round-btn", "green")}
+                                                onClick={()=>navigate(`/ingpedia/detail/${item.pairNo}`)}>{item.pairName}</button>
+                                            ) : null
+                                        )}
+                                    </span>
+                                </div>
+                        </div>
+                        <div className={ingDefaultStyle["vt-line"]}/>
+                        <div className={ingDetailStyle["worst-area"]}>
+                            <h3>Worst 궁합</h3>
+                                <div className={cx("flex-row", ingDetailStyle["match-content"])}>
+                                    <span className={ingDetailStyle["btn-group"]}>
+                                        {IngPediaItem.pairList?.map(
+                                            (item) => item.pairState === "W" ? (
+                                                <button key={item.pairNo} className={cx("click-basic", "round-btn", "orange")}>{item.pairName}</button>
+                                            ) : null
+                                        )}
+                                    </span>
+                                    <img src={lodingImg.thumbDown}/>
+                                </div>
+                        </div>
+                    </section>
                     <hr/>
+                </div>}
+                
+                {isAdmin && <section className={ingDetailStyle["admin-section"]}>
                     <div className={cx("flex-row", "gap-20", "center")}>
-                        <button className={cx("click-basic", "semi-round-btn", "olive")}>수정</button>
-                        <button className={cx("click-basic", "semi-round-btn", "red")}>삭제</button>
+                        <button className={cx("click-basic", "semi-round-btn", "olive")} onClick={() => navigate(`/ingpedia/edit/${IngPediaItem.ingDetail.ingNo}`)}>수정</button>
+                        <button className={cx("click-basic", "semi-round-btn", "red")}
+                        onClick={(e) => {e.stopPropagation(); handleDelete(Number(ingNo));}}>삭제</button>
                     </div>
-                </section>
+                </section>}
             </div>
         </>
     )
