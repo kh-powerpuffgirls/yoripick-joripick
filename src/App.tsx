@@ -6,6 +6,7 @@ import { AlertModal } from './components/Security/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
+import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
 import Login from './pages/login/Login'
 import AlreadyLoginRoute from './components/Security/AlreadyLoginRoute'
 import OAuth2Success from './pages/login/OAuth2Success'
@@ -15,7 +16,10 @@ import { useEffect } from 'react'
 import { api } from './api/authApi'
 import { MealplanMain } from './pages/Mealplan/main'
 import { loginSuccess, logout, saveUserData } from './features/authSlice'
+import RecipeWrite from './pages/community/Recipe/RecipeWrite'
 import MyPage from './pages/MyPage/MyPage'
+import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
+import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
 import EatBTIPage from './pages/EatBTI/main'
 import QuestionPage from './pages/EatBTI/question'
 import ResultPage from './pages/EatBTI/result'
@@ -77,6 +81,12 @@ function App() {
         <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
+        <Route path="/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
+        {/* <Route path="/recipe/list" element={<OfficialRecipeListPage />} /> */}
+        <Route path="/community/recipe" element={<CommunityRecipeList />} />
+        <Route path="/community/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
+        <Route path="/community/recipe/write" element={<RecipeWrite />} />
+        <Route path="/community/recipe/edit/:rcpNo" element={<RecipeEditPage />} />
         <Route path="/myPage" element={<MyPage />} />
         <Route path="/eatBTI" element={<EatBTIPage />} />
         <Route path="/eatBTI/question" element={<QuestionPage />} />

@@ -1,0 +1,181 @@
+/* Reviews.module.css */
+
+.reviews_section {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* 포토리뷰와 일반리뷰 사이 간격 */
+}
+
+/* --- 공통 타이틀 --- */
+.title_area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.title_area h2 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.title_area button {
+    border: 1px solid #88B2AC;
+    background-color: #fff;
+    color: #88B2AC;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.title_area button:hover {
+    background-color: #f1f3f5;
+}
+
+
+/* --- 포토 리뷰 --- */
+.photo_container {
+    padding-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+.photo_box {
+    width: 100%;
+    padding-bottom: 100%; /* 1:1 비율을 만들기 위한 트릭 */
+    background-color: #D9D9D9;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 8px;
+}
+.photo_box img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+.photo_box:hover img {
+    transform: scale(1.1);
+}
+.photo_box_add {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #868e96;
+    font-size: 20px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- 일반 리뷰 --- */
+.sort_area {
+    display: flex;
+    gap: 10px;
+    color: #888 !important;
+}
+.sort_area span {
+    cursor: pointer;
+    font-weight: 500;
+}
+.sort_area .active_sort {
+  color: #029D60 ; /* 활성화 시 색상 */
+  font-weight: 700; /* 활성화 시 굵기 */
+}
+.review_container {
+    display: flex;
+    flex-direction: column;
+}
+.review_item {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+.review_item:last-child {
+    border-bottom: none;
+}
+.profile_img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.profile_content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.profile_name {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 8px;
+}
+.nickname {
+    font-size: 16px;
+    font-weight: 600;
+}
+.stars {
+    color: #FED049;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.stars img {
+    width: 14px;
+    height: 14px;
+}
+.review_actions {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+.action_btn {
+    border: none;
+    background: none;
+    color: #adb5bd;
+    cursor: pointer;
+    font-size: 12px;
+}
+.action_btn:hover {
+    color: #495057;
+}
+.rcp_content {
+    margin: 8px 0;
+    color: #495057;
+    line-height: 1.6;
+}
+.date {
+    font-size: 12px;
+    color: #adb5bd;
+}
+.review_img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.add_btn {
+    text-align: center;
+    padding: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #495057;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+.add_btn:hover {
+    background-color: #e9ecef;
+}

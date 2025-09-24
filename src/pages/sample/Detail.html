@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./Detail.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="head_title">
+            <div class="approval_star">
+                <!-- recipe테이블의 user_no가 null이면 공식, notnull이면 식구 -->
+                <div>식구</div>
+                <!-- 현재 rcp_no 가 review테이블의 rcp_no인  rcp_no들의  stars 평균(0.5단위)-->
+                <span>★3.5</span>
+            </div>
+            <span style="font-weight: bold; font-size:50px">
+                <!-- recipe테이블의 rcp_name : ${rcp_name} -->
+                매콤팽이버섯
+            </span>
+            <span style="font-size:20px; color:#636363">
+                <!-- recipe테이블의 CREATED_AT : ${CREATED_AT} -->
+                2025.07.15  08:00
+            </span>
+            <div class="other_info">
+                <!-- 현재 rcp_no가 likes 테이블의 ref_no인 ref_no들의 수  -->
+                좋아요수 <span style="color : #FF0000"> 50</span> |
+                <!-- 현재 rcp_no 가 review테이블의 rcp_no인  rcp_no들의 수-->
+                리뷰 <span style="color : #009626"> 50</span> |
+                <!-- recipe테이블의 views : ${views} -->
+                조회수 <span style="color : #009626"> 50</span>
+                </span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="user_btn">
+                <button id="action_btn">삭제하기</button>
+                <button id="action_btn">수정하기</button>
+            </div>
+            <div class="basic_info">
+                <!-- recipe테이블의 image_no-->
+                <!-- src -> image테이블의 server_name -->
+                <img src="../../assets/sample/recipe.png" >
+                <!-- recipe테이블의 recp_info -->
+                <span>
+                    매콤꾸덕 소스와 쫄깃한 팽이의 만남 
+                    <br> 초간단 밥도둑 반찬 어때요?
+                </span>
+            </div>
+            <div class="food_info">
+                <div class="user_report">
+                    <div class="writer_profile">
+                        <!-- 작성자정보 : user 테이블의 정보들 -->
+                        <!-- (recipe테이블의 user_no) === (user테이블의 user_no) -->
+    
+                        <!-- user테이블의 user_no | src : image테이블의 server_name  -->
+                        <img src="/src/assets/sample/profile.png" id="profile"/>
+    
+                        <div class="profile_name">
+                            <!-- user테이블의 sik_bti  : ${sik_bti}-->
+                            <span class="eat-bti"> 육식 티라노</span>
+                            <!-- user테이블의 username : ${username} -->
+                            <span class="nickname">망곰eee</span>
+                        </div>
+                    </div>
+                    <button class="report">
+                        <img src="../../assets/sample/신고아이콘_회색.png"/>
+                        <span id="action_btn">신고하기</span>
+                    </button>
+                </div>
+                <table>
+                    <tr style="background-color: #E8E8E8;">
+                        <th>
+                            <!-- recipe 테이블의 tag : # ${tag} -->
+                            <div id="tag"> # 팽이버섯</div>
+                        </th>
+                        <th>
+                            <img src="../../assets/sample/저울아이콘.png" height="25px">
+                            <span>조리방법</span>
+                            <!-- (recipe 테이블의 rcp_mth_no)join(rcp_method테이블의 rcp_method): ${rcp_method} -->
+                            <span style="color: #029D60;">데우기</span>
+                        </th>
+                        <th>
+                            <img src="../../assets/sample/모래시계아이콘.png" height="25px">
+                            <span>요리종류</span>
+                            <!-- (recipe 테이블의 rcp_sta_no)join(rcp_situation 테이블의 rcp_situation): ${rcp_situation} -->
+                            <span style="color: #029D60;">반찬</span>
+                        </th>
+                        <th>
+                            <img src="../../assets/sample/요리아이콘.png" height="25px">
+                            <span>칼로리</span>
+                            <!-- (recipe 테이블의 nutrient_no)join(nutrient 테이블의 energy): ${energy} kcal -->
+                            <span style="color: #029D60;">643kcal</span>
+                        </th>
+                    </tr>
+                    <!-- 추후 생각예정 -->
+                    <tr>
+                        <td colspan="2">
+                            <div class="ing">
+                                <span>✔</span>
+                                <span>팽이버섯</span>
+                                <span>2봉</span>
+                                <span>300g</span>
+                            </div>
+                        </td>
+                        <td colspan="2">
+                            <div class="ing">
+                                <span>✔</span>
+                                <span>팽이버섯</span>
+                                <span>2봉</span>
+                                <span>300g</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="ing">
+                                <span>✔</span>
+                                <span>팽이버섯</span>
+                                <span>2봉</span>
+                                <span>300g</span>
+                            </div>
+                        </td>
+                        <td colspan="2">
+                            <div class="ing">
+                                <span>✔</span>
+                                <span>팽이버섯</span>
+                                <span>2봉</span>
+                                <span>300g</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            
+                            <div class="nutrient">
+                                <!-- 입력 값에 따라 chart,progress의 비율이 달라짐 -->
+                                <div id="cpfn">
+                                    <div id="bars">
+                                        <span>탄수화물</span>
+                                        <span>18g</span>
+                                        <!-- (입력 g수) / (300g) -->
+                                        <div class="progress">
+                                            <div class="bar_progress"></div>
+                                        </div>
+                                    </div>
+                                    <div id="bars">
+                                        <span>단백질</span>
+                                        <span>10.7g</span>
+                                        <!-- (입력 g수) / (60g) -->
+                                        <div class="progress">
+                                            <div class="bar_progress"></div>
+                                        </div>
+                                    </div>
+                                    <div id="bars">
+                                        <span>지방</span>
+                                        <span>1.3g</span>
+                                        <!-- (입력 g수) / (60g) -->
+                                        <div class="progress">
+                                            <div class="bar_progress"></div>
+                                        </div>
+                                    </div>
+                                    <div id="bars">
+                                        <span>나트륨</span>
+                                        <span>510mg</span>
+                                        <!-- (입력 mg수) / (2000mg) -->
+                                        <div class="progress">
+                                            <div class="bar_progress"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="kcal">
+                                    <div class="chart">
+                                        <div class="rad_chart"></div>
+                                    </div>
+                                    <!-- (kcal 입력값) / (2500kcal) -->
+                                    <span>칼로리 108kcal</span>   
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="list_method">
+                <div class="info">
+                    <div>조리순서🍳</div>
+                    <button>토글버튼</button>
+                </div>
+                <hr>
+                <div id="list">
+                    <span style="color : #3E5822; font-weight:bold;">1.</span>
+                    <span> 팽이버섯은 아래쪽 뿌리 부분(균사체)을 잘라내 주고, 모양을 살려고 2~3줄 씩 듬성 듬성 찢어주세요. 쪽파와 청양고추는 송송 썰어 주세요</span>
+                    <img src="../../assets/sample/recipe.png" id="list_img">
+                </div>
+                <hr>
+                <div id="list">
+                    <span style="color : #FE8051; font-weight:bold;">2.</span>
+                    <span> 볼에 고추장, 연두순, 참기름, 설탕을 넣고 잘섞어서 양념장을 만들어주세요.</span>
+                    <img src="../../assets/sample/recipe.png" id="list_img">
+                </div>
+                <hr>
+                <div id="list">
+                    <span style="color : #3E5822; font-weight:bold;">3.</span>
+                    <span> 중불의 팬에 기름을 두르고, 팽이버섯을 올려서 숨이 죽어 부드러워질때까지 앞뒤로 구워주세요.(약 2~3분)</span>
+                    <img src="../../assets/sample/recipe.png" id="list_img">
+                </div>
+                <hr>
+                <div id="list">
+                    <span style="color : #FE8051; font-weight:bold;">4.</span>
+                    <span> 팽이버섯 위에 양념장을 고루 발라주고, 약불로 줄여 썬 고추와 쪾파를 얹어 3~5분 동안 더 졸여주세요. 버섯에서 물이 나오면서 양념이 잘 스며들면 완성!</span>
+                    <img src="../../assets/sample/recipe.png" id="list_img">
+                </div>
+            </div>
+            <div class="one_method">
+                <div class="info">
+                    <div>조리순서🍳</div>
+                    <button>토글버튼</button>
+                </div>
+                <hr>
+                <!-- 몇번째 순서인지 알려줌 -->
+                <div id="one_img">
+                    <div id="indicator">
+                        <div id="indicator-bar"></div>
+                    </div>
+                    <button class="nav left" onclick="changeSlide(-1)">◀</button>
+                    <div id="slide">
+                        <img src="../../assets/sample/recipe.png" height="510" width="510">
+                    </div>
+                    <button class="nav right" onclick="changeSlide(1)">▶</button>
+                </div>
+                <br>
+                <hr>
+                <div id="one_info">
+                    <span style="font-size:28px; font-weight: 500;">Step1.</span>
+                    <br>
+                    <span style="font-size: 18px;">팽이버섯은 아래쪽 뿌리 부분(균사체)을 잘라내 주고, 모양을 살려고 2~3줄 씩 듬성 듬성 찢어주세요. 쪽파와 청양고추는 송송 썰어 주세요</span>
+
+                </div>
+            </div>
+            <!-- LIKES테이블(USER_NO, REF_TYPE(LIKE/DISLIKE/NONE), REF_NO(==RCP_NO), LIKED_AT(좋아요 날짜)) 
+                USER_NO당 게시글에 1개가능
+                좋아요 | 싫어요 : 둘중 하나만 클릭가능.
+                총 좋아요수는 상단 좋아요 수에 적용-->
+            <div class="Likes">
+                <img src="../../assets/sample/like_unclick.png" height="90px">
+                <!-- 클릭시 <img src="../../assets/sample/like_click.png" height="90px"> -->
+                <img src="../../assets/sample/dislike_unclick.png" height="90px">
+                <!-- 클릭시 <img src="../../assets/sample/dislike_click.png" height="90px"> -->
+            </div>
+
+
+            <div class="Reviews">
+                <div id="photoReview">
+                    <div id="title">
+                        <div>
+                            포토리뷰 <span>60</span>
+                        </div>
+                        <button>리뷰작성하기</button>
+                    </div>
+                    <hr>
+                    <div class="photo_container">
+                        <div id="photo_box"></div>
+                        <div id="photo_box"></div>
+                        <div id="photo_box"></div>
+                        <div id="photo_box"></div>
+                        <div id="photo_box_add">
+                            + 더보기<br>50
+                        </div>
+                    </div>
+                </div>
+                <div id="Review">
+                    <div id="title">
+                        <div>
+                            리뷰 <span>60</span>
+                        </div>
+                        <div>
+                            최신순 | 별점순
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="review_container">
+                        <div id="review">
+                            <img src="/src/assets/sample/profile.png" height="55px" width="55px"/>
+                            <div class="profile_content">
+                                <div class="profile">
+                                    <div class="profile_name">
+                                        <span class="eat-bti"> 육식 티라노</span>
+                                        <span class="nickname">망곰eee</span>
+                                    </div>
+                                    <div class="stars">
+                                        <img src="/src/assets/sample/star.png" height="12px" width="12px" />
+                                        <span>40</span>
+                                    </div>
+                                    <button class="delete">삭제하기</button>
+                                    <button class="edit">수정하기</button>
+                                </div>
+                                <div class="rcp_content">
+                                    케찹 1스푼 넣으면 개꿀맛
+                                </div>
+                                <span class="date">25.09.01</span>
+                            </div>
+                            <img src="/src/assets/sample/recipe.png" height="100px" width="100px" id="review_img">
+                        </div>
+
+                        <hr/>
+                        
+                        <div id="review">
+                            <img src="/src/assets/sample/profile.png" height="55px" width="55px"/>
+                            <div class="profile_content">
+                                <div class="profile">
+                                    <div class="profile_name">
+                                        <span class="eat-bti"> 육식 티라노</span>
+                                        <span class="nickname">망곰eee</span>
+                                    </div>
+                                    <div class="stars">
+                                        <img src="/src/assets/sample/star.png" height="12px" width="12px" />
+                                        <span>40</span>
+                                    </div>
+                                    <button class="report">
+                                        <img src="../../assets/sample/신고아이콘_회색.png"/>
+                                        <span id="report">신고</span>
+                                    </button>
+                                </div>
+                                <div class="rcp_content">
+                                    케찹 1스푼 넣으면 개꿀맛
+                                </div>
+                                <span class="date">25.09.01</span>
+                            </div>
+                            <img src="/src/assets/sample/recipe.png" height="100px" width="100px" id="review_img">
+                        </div>
+                    </div>
+                    <div id="add_btn">+ 더보기</div>
+                </div>
+            </div>
+        
+        </div>
+
+    </div>
+    
+</body>
+</html>
