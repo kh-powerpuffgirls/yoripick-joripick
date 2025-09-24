@@ -24,6 +24,8 @@ import Ingpedia from './pages/Ingpedia/Ingpedia'
 import IngpediaList from './pages/Ingpedia/IngpediaList'
 import IngpediaDetail from './pages/Ingpedia/IngpediaDetail'
 import IngpediaWrite from './pages/Ingpedia/IngpediaWrite'
+import AdminRoute from './components/AdminRoute'
+import IngpediaEdit from './pages/Ingpedia/IngpediaEdit'
 
 function App() {
 
@@ -56,18 +58,22 @@ function App() {
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />
 
+        <Route path="/ingpedia" element={<Ingpedia/>} >
+          <Route path='' element={<IngpediaList/>}/>
+          <Route path='write' element={<IngpediaWrite/>}/>
+          <Route path='detail/:ingNo' element={<IngpediaDetail/>}/>
+          <Route path='edit/:ingNo' element={
+            <AdminRoute>
+              <IngpediaEdit/>
+            </AdminRoute>
+          }/>
+        </Route>
         <Route path="/mypage/inglist" element={<MyIng/>} >
           <Route path='' element={<MyIngList/>}/>
           <Route path='detail/:ingNo' element={<MyIngDetail/>}/>
           <Route path='write' element={<MyIngWrite/>}/>
         </Route>
         <Route path="/ing-popup" element={<IngPopup/>} />
-
-        <Route path="/ingpedia" element={<Ingpedia/>} >
-          <Route path='' element={<IngpediaList/>}/>
-          <Route path='detail' element={<IngpediaDetail/>}/>
-          <Route path='write' element={<IngpediaWrite/>}/>
-        </Route>
 
       </Routes>
       <Footer />
