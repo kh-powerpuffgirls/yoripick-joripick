@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import SocialEnrollModal from "../../components/SocialEnrollModal";
+import SocialEnrollModal from "../../components/Security/SocialEnrollModal";
 
 export default function OAuthUsernamePage() {
   const [searchParams] = useSearchParams();
@@ -12,7 +12,7 @@ export default function OAuthUsernamePage() {
       email={email}
       provider={provider}
       providerUserId={providerUserId}
-      onClose={() => (window.location.href = "/")}
+      onClose={() => (window.location.href = "/login")}
     />
   );
 }

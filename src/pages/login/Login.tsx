@@ -1,12 +1,13 @@
 import type { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import EnrollModal from "../enroll/EnrollModal";
 import styles from "./Login.module.css";
-import { loginSuccess } from "../../features/authSlice";
+import { saveUserData } from "../../features/authSlice";
 import { api } from "../../api/authApi";
 import ResetPasswordModal from "./ResetPasswordModal";
+import errorMessages from "../../components/ErrorMessages";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -19,25 +20,32 @@ export default function Login() {
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const location = useLocation();
 
+  const validateForm = () => {
     const idRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const pwRegex =
-      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]{8,15}$/
+      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]{8,15}$/;
 
     if (!email.trim() || !password.trim()) {
-      setError("아이디와 비밀번호를 모두 입력하세요!");
-      return;
+      return "아이디와 비밀번호를 모두 입력하세요!";
     }
-
     if (!idRegex.test(email)) {
-      setError("아이디는 6~12자의 영문과 숫자를 혼합하여 입력해야 합니다.");
-      return;
+      return errorMessages.INVALID_EMAIL;
     }
-
     if (!pwRegex.test(password)) {
-      setError("비밀번호는 8~15자의 영문, 숫자, 특수문자를 모두 포함해야 합니다.");
+      return errorMessages.INVALID_PASSWORD;
+    }
+    return null;
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const from = (location.state as { from?: Location })?.from?.pathname || "/home";
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -50,29 +58,24 @@ export default function Login() {
         { email, password },
         { withCredentials: true }
       );
-      dispatch(loginSuccess(res.data));
-      navigate("/home");
+
+      dispatch(saveUserData(res.data));
+      navigate(from, { replace: true });
     } catch (err) {
-      const error = err as AxiosError;
-      if (error.response?.status === 401) {
-        setError("비밀번호가 잘못되었습니다.");
-        setLoading(false);
-      } else if (error.response?.status === 404) {
-        setError("등록된 계정이 없습니다. 회원가입 후 이용해주세요.");
-        setLoading(false);
+      const error = err as AxiosError<{ errorCode: string; message?: string }>;
+      if (error.response) {
+        const { errorCode, message } = error.response.data;
+        setError(errorMessages[errorCode] || message || "로그인 처리 중 오류가 발생했습니다.");
       } else {
-        setError("로그인 처리 중 오류가 발생했습니다.");
-        setLoading(false);
+        setError("서버와 연결할 수 없습니다.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleKakaoLogin = () => {
-    location.href = "http://localhost:8081/oauth2/authorization/kakao";
-  };
-
-  const handleNaverLogin = () => {
-    location.href = "http://localhost:8081/oauth2/authorization/naver";
+    window.location.href = "http://localhost:8081/oauth2/authorization/kakao";
   };
 
   return (
@@ -86,11 +89,11 @@ export default function Login() {
           </label>
           <input
             id="userid"
-            type="text"
+            type="email"
             className={styles.input}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            autoComplete="userid"
+            autoComplete="email"
           />
 
           <label htmlFor="password" className={styles.label}>
@@ -119,29 +122,35 @@ export default function Login() {
         </div>
 
         <div className={styles.socialGroup}>
-          <button className={`${styles.socialBtn} ${styles.kakao}`} onClick={handleKakaoLogin}>
+          <button
+            type="button"
+            className={`${styles.socialBtn} ${styles.kakao}`}
+            onClick={handleKakaoLogin}
+          >
             카카오로 로그인
-          </button>
-          <button className={`${styles.socialBtn} ${styles.naver}`} onClick={handleNaverLogin}>
-            네이버로 로그인
           </button>
         </div>
 
         <div className={styles.authLinks}>
-          <button type="button" className={styles.linkBtn} onClick={() => setShowEnrollModal(true)}>
+          <button
+            type="button"
+            className={styles.linkBtn}
+            onClick={() => setShowEnrollModal(true)}
+          >
             회원가입
           </button>
-          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          <button type="button" className={styles.linkBtn} onClick={() => setShowResetModal(true)}>
+          <span/><span/><span/><span/><span/><span/><span/><span/><span/><span/>
+          <button
+            type="button"
+            className={styles.linkBtn}
+            onClick={() => setShowResetModal(true)}
+          >
             비밀번호를 잊어버리셨나요？
           </button>
         </div>
       </section>
 
-      {showEnrollModal && (
-        <EnrollModal onClose={() => setShowEnrollModal(false)} />
-      )}
-
+      {showEnrollModal && <EnrollModal onClose={() => setShowEnrollModal(false)} />}
       {showResetModal && (
         <ResetPasswordModal
           onClose={() => setShowResetModal(false)}

@@ -2,17 +2,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 80vh;
   background-color: #f0f2f5;
 }
 
 .card {
   background: #fff;
-  padding: 2rem 3rem;
+  padding: 1rem 3rem;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 600px; 
-  height : 650px;
+  height : 570px;
   box-sizing: border-box;
 }
 
@@ -112,10 +112,6 @@
 .kakao {
   background-color: #ffe500;
   color: #3c1e1e;
-}
-
-.naver {
-  background-color: #03c75a;
 }
 
 .authLinks {
