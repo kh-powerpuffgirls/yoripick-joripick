@@ -49,7 +49,7 @@ const Header = () => {
           ) : (
             <>
               <li>
-                <Link to="/recipe/list" className="nav-link">레시피</Link>
+                <Link to="/recipe" className="nav-link">레시피</Link>
               </li>
               <li className="nav-line"></li>
               <li>
@@ -57,7 +57,7 @@ const Header = () => {
               </li>
               <li className="nav-line"></li>
               <li>
-                <Link to="/community/recipe" className="nav-link">커뮤니티</Link>
+                <Link to="/community" className="nav-link">커뮤니티</Link>
               </li>
               <li className="nav-line"></li>
               <li>

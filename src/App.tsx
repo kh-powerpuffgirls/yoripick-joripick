@@ -82,7 +82,7 @@ function App() {
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
-        {/* <Route path="/recipe/list" element={<OfficialRecipeListPage />} /> */}
+        <Route path="/recipe" element={<CommunityRecipeList />} />
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
         <Route path="/community/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
         <Route path="/community/recipe/write" element={<RecipeWrite />} />

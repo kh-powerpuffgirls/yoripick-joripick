@@ -50,7 +50,7 @@ const OfficialRecipeCard: React.FC<OfficialRecipeCardProps> = ({ recipe }) => {
             </div>
 
             <div className={card.profile}>
-                {recipe.isOfficial ? (
+                {recipe.username ? (
                     <div className={card.official_off}>공식</div>
                 ) : (
                     <>
