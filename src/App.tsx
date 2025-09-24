@@ -13,7 +13,8 @@ import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
 import { useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { api } from './api/authApi'
-import { loginSuccess, logout } from './features/authSlice'
+import { MealplanMain } from './pages/Mealplan/main'
+import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import MyPage from './pages/MyPage/MyPage'
 import EatBTIPage from './pages/EatBTI/main'
 import QuestionPage from './pages/EatBTI/question'
@@ -22,11 +23,11 @@ import ResultPage from './pages/EatBTI/result'
 function App() {
 
   const dispatch = useDispatch();
-
   useEffect(() => {
-    api.post("http://localhost:8081/auth/refresh")
+    api.post("auth/tokens/refresh")
       .then(res => {
-        dispatch(loginSuccess(res.data));
+        dispatch(saveUserData(res.data));
+        dispatch(loginSuccess());
       })
       .catch(err => {
         dispatch(logout());
@@ -46,6 +47,7 @@ function App() {
         } />
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />

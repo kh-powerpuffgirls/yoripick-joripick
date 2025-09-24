@@ -52,7 +52,7 @@ const ResultPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const dbValue: string | undefined = user?.sikBti || (location.state as any)?.dbValue;
+    const dbValue: string | undefined = user?.sikbti || (location.state as any)?.dbValue;
     const description = dbValue ? descriptions[dbValue] : "결과 계산 중...";
 
     if (!dbValue) return <div>결과 계산 중...</div>;

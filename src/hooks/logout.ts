@@ -11,11 +11,11 @@ export default function useLogout() {
     api.post('/auth/logout')
       .then(() => {
         dispatch(logout());
-        navigate(-1);
+        navigate("/home");
       })
       .catch(() => {
         dispatch(logout());
-        navigate(-1);
+        navigate("/home");
       });
   };
 

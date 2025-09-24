@@ -10,8 +10,10 @@ export interface User {
   inactiveDate?: string | null;
   profile?: string;
   provider?: "local" | "kakao";
-  roles?: string[]; 
-  sikBti: string | null;
+  roles: string[]; 
+  imageNo: number;
+  allergies: number[]
+  sikbti:string;
 }
 
 export interface LoginResponse {
