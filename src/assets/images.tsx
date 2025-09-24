@@ -8,6 +8,7 @@ import crown3 from './images/3등 왕관.png'
 import arrowLeft from './images/arrow left.png'
 import arrowRight from './images/arrow right.png'
 import EatBTI from './images/식BTI.png'
+import EatBtiLogo from './images/image-removebg-preview.png'
 
 export const lodingImg = {
     logo: logo,
@@ -19,5 +20,6 @@ export const lodingImg = {
     crown3: crown3,
     arrowLeft: arrowLeft,
     arrowRight: arrowRight,
-    EatBTI: EatBTI
+    EatBTI: EatBTI,
+    EatBtiLogo: EatBtiLogo
 }

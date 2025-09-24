@@ -5,6 +5,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSikBti } from "../../features/authSlice";
 import { saveEatBTI } from "../../api/eatbtiApi";
+import { lodingImg } from "../../assets/images";
 
 interface Question {
     id: number;
@@ -94,9 +95,24 @@ export const codeToDBString: Record<string, string> = {
     M: "육식 티라노",
     V: "초식 트리케라톱스",
     S: "바다의 연인",
-    K: "열량 폭주기관차",
-    T: "슴슴슴슴",
+    Kpos: "열량 폭주기관차",
+    Kneg: "칼로리 저격수",
+    Tpos: "도파민 중독자",
+    Tneg: "슴슴슴슴",
+    N: "푸드 간디"
 };
+
+const calcEatBTI = (scores: Record<string, number>):string => {
+    const maxAbs = Math.max(...Object.values(scores).map(v => Math.abs(v)))
+    const topEntries = Object.entries(scores).filter(([_, v]) => Math.abs(v) === maxAbs)
+
+    if (topEntries.length !== 1) return codeToDBString["N"]
+
+    const [type, value] = topEntries[0]
+    if (type === "K") return value > 0 ? codeToDBString["Kpos"] : codeToDBString["Kneg"]
+    if (type === "T") return value > 0 ? codeToDBString["Tpos"] : codeToDBString["Tneg"]
+    return codeToDBString[type]
+}
 
 const QuestionPage = () => {
     const [current, setCurrent] = useState(0);
@@ -131,9 +147,7 @@ const QuestionPage = () => {
         if (current < questions.length - 1) {
             setCurrent(current + 1);
         } else {
-            const sorted = Object.entries(newScores).sort((a, b) => b[1] - a[1]);
-            const top = sorted.length > 0 ? sorted[0][0] : "?";
-            const dbValue = codeToDBString[top];
+            const dbValue = calcEatBTI(newScores);
             if (user) {
                 try {
                     saveEatBTI(user.userNo, dbValue);
@@ -144,7 +158,7 @@ const QuestionPage = () => {
                     alert("저장 실패...");
                 }
             } else {
-                navigate("/eatBTI/result", { state: { dbValue, top } });
+                navigate("/eatBTI/result", { state: { dbValue } });
             }
         }
     };
@@ -154,7 +168,7 @@ const QuestionPage = () => {
             <div className={style.ebti_header}>
                 <img
                     className={style.ebti_logo}
-                    src="../../assets/sample/image-removebg-preview.png"
+                    src={lodingImg.EatBtiLogo}
                     alt="EBTI Logo"
                 />
             </div>
