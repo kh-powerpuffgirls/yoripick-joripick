@@ -16,6 +16,9 @@ import { api } from './api/authApi'
 import { MealplanMain } from './pages/Mealplan/main'
 import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import MyPage from './pages/MyPage/MyPage'
+import EatBTIPage from './pages/EatBTI/main'
+import QuestionPage from './pages/EatBTI/question'
+import ResultPage from './pages/EatBTI/result'
 
 function App() {
 
@@ -48,6 +51,9 @@ function App() {
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
         <Route path="/myPage" element={<MyPage />} />
+        <Route path="/eatBTI" element={<EatBTIPage />} />
+        <Route path="/eatBTI/question" element={<QuestionPage />} />
+        <Route path="/eatBTI/result" element={<ResultPage />} />
       </Routes>
       <Footer />
     </>

@@ -1,0 +1,61 @@
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+
+}
+
+.ebti_header {
+    background-color: #FFF185;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.ebti_container {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    height: 1500px;
+}
+
+.Q {
+    display: flex;
+    flex-direction: column;
+}
+
+.pagging {
+    background-color: #464646;
+    height: 20px;
+}
+
+#now {
+    background-color: #92CA02;
+    height: 20px;
+    width: 20%;
+}
+
+.ebti_logo {
+    border-radius: 10px;
+    height: 90%;
+}
+
+.card {
+    border: 1px solid #464646;
+    border-radius: 20px;
+    width: 1000px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 500;
+    padding: 40px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
