@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import styles from "./Modal.module.css";
 import type { User } from "../../type/authtype";
 import { api } from "../../api/authApi";
@@ -36,13 +35,13 @@ const AllergyModal = ({ user, onClose }: AllergyModalProps) => {
   const [selectedAllergies, setSelectedAllergies] = useState<number[]>([]);
 
   useEffect(() => {
-    api.get("/mypage/users/allergy-list")
+    api.get("/users/allergy-list")
       .then((res) => {
         setAllergyTree(res.data);
       })
       .catch(() => alert("알레르기 데이터를 불러오는데 실패했습니다."));
 
-    api.get("/mypage/users/allergy", {
+    api.get("/users/allergy", {
       params: { userNo: user.userNo },
     })
       .then((res) => {
@@ -53,7 +52,7 @@ const AllergyModal = ({ user, onClose }: AllergyModalProps) => {
 
   const toggleAllergy = (node: AllergyDto) => {
     const allIds = getAllDescendantIds(node);
-
+    ``
     setSelectedAllergies((prev) => {
       const isAllSelected = allIds.every((id) => prev.includes(id));
       if (isAllSelected) {
@@ -93,7 +92,7 @@ const AllergyModal = ({ user, onClose }: AllergyModalProps) => {
 
 
   const handleSave = () => {
-    api.post("/mypage/update/users/allergy", {
+    api.post("/users/update/allergy", {
       userNo: user.userNo,
       allergyNos: selectedAllergies,
     })

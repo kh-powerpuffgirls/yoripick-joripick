@@ -17,7 +17,6 @@ import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import MyPage from './pages/MyPage/MyPage'
 
 function App() {
-
   const dispatch = useDispatch();
   useEffect(() => {
     api.post("auth/tokens/refresh")
@@ -45,7 +44,7 @@ function App() {
         <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
-        <Route path="/myPage" element={<MyPage />} />
+        <Route path="/users" element={<MyPage />} />
       </Routes>
       <Footer />
     </>

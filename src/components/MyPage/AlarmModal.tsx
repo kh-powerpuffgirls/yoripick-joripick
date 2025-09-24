@@ -43,7 +43,7 @@ const AlarmModal = ({ user, onClose }: AlarmModalProps) => {
 
     try {
       await axios.put(
-        `http://localhost:8081/mypage/users/alarm`,
+        `http://localhost:8081/users/alarm`,
         payload, { withCredentials: true }
       );
 

@@ -39,31 +39,31 @@ const MyPage = () => {
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const navigate = useNavigate();
     const handleInactive = async () => {
-        if (!user) return;
+        // if (!user) return;
 
-        try {
-            // 회원 탈퇴 API 호출
-            await axios.post(
-                `http://localhost:8081/users/${user.userNo}/inactive`,
-                {},
-                { withCredentials: true }
-            );
+        // try {
+        //     // 회원 탈퇴 API 호출
+        //     await axios.post(
+        //         `http://localhost:8081/users/${user.userNo}/inactive`,
+        //         {},
+        //         { withCredentials: true }
+        //     );
 
-            // 쿠키삭제 구현하거나 logout API 호출해서 쿠키삭제유도(추후에 작성할 예정 일단 MyPage의 다른 기능부터 만들고 돌아오자)
+        //     // 쿠키삭제 구현하거나 logout API 호출해서 쿠키삭제유도(추후에 작성할 예정 일단 MyPage의 다른 기능부터 만들고 돌아오자)
 
-            alert("회원 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다 🙏");
-            navigate("/");
-        } catch (err) {
-            console.error("회원 탈퇴 실패:", err);
-            alert("회원 탈퇴 처리 중 오류가 발생했습니다.");
-        }
+        //     alert("회원 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다 🙏");
+        //     navigate("/");
+        // } catch (err) {
+        //     console.error("회원 탈퇴 실패:", err);
+        //     alert("회원 탈퇴 처리 중 오류가 발생했습니다.");
+        // }
     };
 
     useEffect(() => {
         if (!user || !accessToken) return;
 
         const api = axios.create({
-            baseURL: "http://localhost:8081/mypage",
+            baseURL: "http://localhost:8081/users",
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
@@ -71,14 +71,14 @@ const MyPage = () => {
 
         const fetchData = async () => {
             try {
-                const profileRes = await api.post("/users/profiles", user);
+                const profileRes = await api.post("/profiles", user);
                 dispatch(updateProfileImage(profileRes.data));
 
-                const allergyRes = await api.get("/users/allergy", {
+                const allergyRes = await api.get("/allergy", {
                     params: { userNo: user.userNo },
                 });
 
-                const allergyListRes = await api.get("/users/allergy-list");
+                const allergyListRes = await api.get("/allergy-list");
                 const allergyTree = allergyListRes.data;
 
                 const flattenAllergies = (
