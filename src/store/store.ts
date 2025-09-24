@@ -3,6 +3,8 @@ import alert from '../features/alertSlice'
 import chat from '../features/chatSlice'
 import auth from '../features/authSlice'
 import mying from '../features/myIngSlice'
+import boardsReducer from '../features/boardsSlice';
+
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
         chat,
         auth,
         mying,
+        boards: boardsReducer,
+
     }
 })
 

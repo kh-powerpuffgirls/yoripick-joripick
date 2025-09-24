@@ -1,0 +1,134 @@
+.container {
+    padding: 2rem;
+    width: 1000px;
+    background-color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+.mainTitle {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.section {
+    margin-bottom: 3rem;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.viewMore {
+    font-size: 1rem;
+    color: #999;
+    cursor: pointer;
+}
+
+.postGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.postCard {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.postCard:hover {
+    transform: translateY(-5px);
+}
+
+.postImage {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.postInfo {
+    padding: 1rem;
+}
+
+.postTitle {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.postAuthor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 0.5rem;
+}
+
+.profileIcon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.postStats {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.actionButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.registerButton, .myListButton {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.registerButton {
+    background-color: #ff9800;
+}
+
+.registerButton:hover {
+    background-color: #e68900;
+    transform: translateY(-3px);
+}
+
+.myListButton {
+    background-color: #6c757d;
+}
+
+.myListButton:hover {
+    background-color: #5a6268;
+    transform: translateY(-3px);
+}

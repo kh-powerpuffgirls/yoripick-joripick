@@ -1,0 +1,402 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+  padding: 2rem;
+  background-color: white;
+  font-family: 'Arial', sans-serif;
+  margin: 0 auto;
+}
+
+.mainTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sectionHeader h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: #e0e0e0;
+  margin: 2rem 0;
+}
+
+.searchSection {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  margin: 1.5rem auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+}
+
+.searchTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.searchDropdown {
+  padding: 0.7rem 1rem;
+  border: none;
+  border-right: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23333" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.searchDropdown:focus {
+  outline: none;
+}
+
+.searchInput {
+  flex-grow: 1;
+  padding: 0.7rem 1rem;
+  border: none;
+  font-size: 16px;
+}
+
+.searchInput:focus {
+  outline: none;
+}
+
+.searchButton {
+  background-color: #ff9900;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.searchButton:hover {
+  background-color: #e68a00;
+}
+
+.searchOptions {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 14px;
+  color: #555;
+}
+
+.checkboxLabel {
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #ff9900;
+  width: 16px;
+  height: 16px;
+}
+
+.classCardWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.classCard {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.classCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.classImage {
+  width: 150px;
+  height: 150px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.classTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.unreadCountBadge {
+  background-color: #ff4d4d;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+}
+
+.classDescription {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.classAuthor {
+  font-size: 1rem;
+  color: #888;
+}
+
+.memberCount {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.joinedButtons, .myButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settingsButton, .joinButton, .reportButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.settingsButton {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+.settingsButton:hover {
+  background-color: #e0e0e0;
+}
+
+.joinButton {
+  background-color: #ff9800;
+  color: white;
+}
+
+.joinButton:hover {
+  background-color: #e68900;
+}
+
+.reportButton {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.reportButton:hover {
+  background-color: #ccc;
+}
+
+.noClasses {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  padding: 2rem 0;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  gap: 0.5rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination button:hover {
+  background-color: #f0f0f0;
+}
+
+.pagination button.active {
+  background-color: #ff9800;
+  color: white;
+  border-color: #ff9800;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.searchButton, .registerButton {
+  width: 50%;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.searchButton {
+  background-color: #9e9e9e;
+}
+
+.searchButton:hover {
+  background-color: #757575;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.registerButton {
+  background-color: #ff9800;
+}
+
+.registerButton:hover {
+  background-color: #e68900;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.classButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.notificationButton,
+.deleteButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  transition: background-color 0.2s;
+  line-height: 1;
+  text-align: center;
+}
+
+.notificationButton {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 16px;
+}
+
+.notificationButton.on {
+  color: #ff9800;
+}
+
+.notificationButton.off {
+  color: #ccc;
+}
+
+.notificationButton:hover {
+  background-color: #e0e0e0;
+}
+
+.deleteButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: #555;
+  transition: background-color 0.2s;
+
+  display: flex;           /* 추가 */
+  align-items: center;     /* 세로 중앙 */
+  justify-content: center; /* 가로 중앙 */
+}
+
+
+.deleteButton:hover {
+  background-color: #e0e0e0;   /* 호버 배경 */
+}
+

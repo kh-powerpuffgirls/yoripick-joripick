@@ -29,6 +29,23 @@ import MyIngList from './pages/MyIng/MyIngList'
 import MyIngDetail from './pages/MyIng/MyIngDetail'
 import MyIngWrite from './pages/MyIng/MyIngWrite'
 import { IngPopup } from './components/IngModal/IngModal'
+import CommunityMain from './pages/community/CommunityMain'
+import MyPost from './pages/community/mypost/MyPost'
+import FreeForm from './pages/community/free/FreeForm'
+import FreeDetail from './pages/community/free/FreeDetail'
+import FreeMain from './pages/community/free/FreeMain'
+import ChallengeSuggestionForm from './pages/community/challenge/ChallengeSuggestionForm'
+import ChallengeDetail from './pages/community/challenge/ChallengeDetail'
+import ChallengeMain from './pages/community/challenge/ChallengeMain'
+import ChallengeForm from './pages/community/challenge/ChallengeForm'
+import CkClassMain from './pages/community/ckclass/CkClassMain'
+import CkClassSearch from './pages/community/ckclass/CkClassSearch'
+import CkClassForm from './pages/community/ckclass/CkClassForm'
+import MarketMain from './pages/community/market/MarketMain'
+import MarketForm from './pages/community/market/MarketForm'
+import MarketBuyForm from './pages/community/market/MarketBuyForm'
+import MarketMyList from './pages/community/market/MarketMyList'
+import MarketMyDetailPage from './pages/community/market/MarketMyDetailPage'
 
 function App() {
 
@@ -77,7 +94,28 @@ function App() {
           <Route path='write' element={<MyIngWrite/>}/>
         </Route>
         <Route path="/ing-popup" element={<IngPopup/>} />
+
+        <Route path="/community" element={<CommunityMain />} />
+        <Route path="/community/mypost" element={<MyPost />} />
+        <Route path="/community/free/form" element={<FreeForm />} />
+        <Route path="/community/free/form/:boardNo" element={<FreeForm />} />
+        <Route path="/community/free/:boardNo" element={<FreeDetail />} />
+        <Route path="/community/free" element={<FreeMain />} />
+        <Route path="/community/challenge/suggestion" element={<ChallengeSuggestionForm />} />
+        <Route path="/community/challenge/:challengeNo" element={<ChallengeDetail />} />
+        <Route path="/community/challenge" element={<ChallengeMain />} />
+        <Route path="/community/challenge/form/:challengeNo" element={<ChallengeForm />} />
+        <Route path="/community/challenge/form" element={<ChallengeForm />} />
+        <Route path="/community/ckclass" element={<CkClassMain />} />
+        <Route path="/community/ckclass/search" element={<CkClassSearch />} />
+        <Route path="/community/ckclass/form" element={<CkClassForm />} />
+        <Route path="/community/market" element={<MarketMain />} />
+        <Route path="/community/market/form" element={<MarketForm />} />
+        <Route path="/community/market/buyForm/:id" element={<MarketBuyForm />} />
+        <Route path="/community/market/my-list" element={<MarketMyList />} />
+        <Route path="/community/market/my-buy-form/:formId" element={<MarketMyDetailPage />} />
       </Routes>
+
       <Footer />
     </>
   )
