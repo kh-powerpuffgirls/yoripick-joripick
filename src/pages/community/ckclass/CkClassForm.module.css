@@ -1,0 +1,220 @@
+/* Container for the entire form page */
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    font-family: 'Arial', sans-serif;
+   width: 1000px;
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 600px;
+    padding: 2.5rem;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.formTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.formSpace {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formLabel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.required {
+    color: #ff9900;
+}
+
+.inputField {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.inputField::placeholder {
+    color: #aaa;
+}
+
+.inputField:focus {
+    border-color: #ff9900;
+    box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+    outline: none;
+}
+
+.contentTextarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: none; 
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.contentTextarea::placeholder {
+    color: #aaa;
+}
+
+.contentTextarea:focus {
+    border-color: #ff9900;
+    box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+    outline: none;
+}
+
+.imageUploadArea {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.uploadText {
+    font-weight: bold;
+    color: #555;
+}
+
+.imageUploadControl {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px;
+    background-color: #f0f0f0;
+}
+
+.labelButton {
+    background-color: #ff9900;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.labelButton:hover {
+    background-color: #e68a00;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.imagePreviewContainer {
+    width: 100%;
+    height: 200px; 
+    border: 1px solid #ccc; 
+    border-radius: 8px;
+    overflow: hidden; 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.imagePreview {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.joinCodeSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.joinCodeLabel {
+    font-weight: bold;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.joinCodeLabel input[type="checkbox"] {
+    accent-color: #ff9900;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.inputField[disabled] {
+    background-color: #f5f5f5;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.cancelButton, .deleteButton, .submitButton {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.cancelButton {
+    background-color: #e0e0e0;
+    color: #555;
+}
+
+.cancelButton:hover {
+    background-color: #ccc;
+}
+
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+.deleteButton:hover {
+    background-color: #c82333;
+}
+
+.submitButton {
+    background-color: #ff9900;
+    color: white;
+}
+
+.submitButton:hover {
+    background-color: #e68a00;
+}

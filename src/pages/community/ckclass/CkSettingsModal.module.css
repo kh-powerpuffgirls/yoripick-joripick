@@ -1,0 +1,262 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+    background-color: #A3D89D;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.modalHeader h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4CAF50;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #555;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+.tabContainer {
+    display: flex;
+    justify-content: flex-start;
+    border-bottom: 2px solid #ccc;
+    padding: 0 20px;
+}
+
+.tabButton {
+    background-color: transparent;
+    border: none;
+    padding: 15px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #888;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.3s, color 0.3s;
+}
+
+.tabButton.active {
+    color: #4CAF50;
+    font-weight: bold;
+    border-bottom-color: #4CAF50;
+}
+
+.tabContent {
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.settingsForm,
+.membersList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.formGroup label {
+    font-weight: bold;
+    min-width: 80px;
+    color: #555;
+}
+
+.formGroup input[type="text"],
+.formGroup textarea {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    background-color: #f7f7f7;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.formGroup input[type="text"]:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: #A3D89D;
+    box-shadow: 0 0 5px rgba(163, 216, 157, 0.5);
+}
+
+.formGroup input[type="text"][disabled] {
+    background-color: #eee;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.imageUpload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.imagePreview {
+    width: 150px;
+    height: 150px;
+    border-radius: 15px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+}
+
+.imageLabel {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.imageLabel:hover {
+    background-color: #45a049;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.membersList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.membersList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.membersList::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.membersList::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+.memberCard {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #A3D89D;
+    border-radius: 15px;
+    padding: 10px 15px;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.profileImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ddd;
+    background-size: cover;
+    background-position: center;
+}
+
+.memberCard span {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.kickButton {
+    background-color: #E67D7D;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+}
+
+.kickButton:hover {
+    background-color: #d16b6b;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+.cancelButton,
+.submitButton {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cancelButton {
+    background-color: #A3D89D;
+    color: white;
+}
+
+.cancelButton:hover {
+    background-color: #8ec387;
+}
+
+.submitButton {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.submitButton:hover {
+    background-color: #45a049;
+}

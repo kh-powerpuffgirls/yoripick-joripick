@@ -1,0 +1,278 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    background-color: white;
+    width: 1000px;
+    font-family: 'Arial', sans-serif;
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.formHeader {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.titleInput {
+    width: 100%;
+    border: none;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-bottom: 2px solid #ddd;
+    outline: none;
+}
+
+.authorInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.profileIcon {
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 50%;
+}
+
+.date {
+    margin-left: 0.5rem;
+}
+
+.imageUploadSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.imageBox {
+    width: 200px;
+    height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.imagePreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.uploadText {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 0.5rem;
+}
+
+.imageUploadBtn {
+    padding: 0.5rem 1rem;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.noFileText {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.5rem;
+}
+
+.section {
+    margin-bottom: 1.5rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.sectionTitle::before {
+    content: '▪';
+    color: #ff9800;
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+.dateInputs {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dateInputWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.inputLabel {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.dateInput, .timeSelect {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.descriptionTextarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: vertical;
+    font-size: 1rem;
+    color: #555;
+}
+
+.itemInfo {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.itemImagePlaceholder {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f8f8f8;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.itemImagePreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.itemDetails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detailRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detailLabel {
+    width: 50px;
+    color: #555;
+}
+
+.detailInput {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.charCount {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.inputField {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #555;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.submitButton, .cancelButton, .deleteButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submitButton {
+    background-color: #ff9800;
+}
+
+.submitButton:hover {
+    background-color: #e68900;
+}
+
+.cancelButton {
+    background-color: #9e9e9e;
+}
+
+.cancelButton:hover {
+    background-color: #757575;
+}
+
+.deleteButton {
+    background-color: #f44336;
+}
+
+.deleteButton:hover {
+    background-color: #d32f2f;
+}
