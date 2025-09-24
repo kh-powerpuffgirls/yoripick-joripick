@@ -201,7 +201,6 @@ const MarketForm = () => {
       <div className={styles.container}>
         <div className={styles.formContainer}>
           <form onSubmit={handleSubmit}>
-            {/* 폼 헤더 */}
             <div className={styles.formHeader}>
               <input
                 type="text"
@@ -213,17 +212,13 @@ const MarketForm = () => {
                 required
               />
               <div className={styles.authorInfo}>
-                <div className={styles.profileIcon}></div>
                 <span>{user?.username || '로그인된 사용자'}</span>
                 <span className={styles.date}>{new Date().toLocaleDateString()}</span>
               </div>
             </div>
-
-            {/* 메시지 출력 */}
             {message && <div className={styles.messageBox}>{message}</div>}
             {error && <div className={styles.errorBox}>{error}</div>}
 
-            {/* 이미지 업로드 영역 */}
             <div className={styles.imageUploadSection}>
               <div className={styles.imageBox}>
                 {imagePreview ? (

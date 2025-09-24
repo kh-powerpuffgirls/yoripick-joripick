@@ -86,7 +86,7 @@ const MyPost = () => {
         navigate(`/community/challenge/${post.id}`);
         break;
       case 'MARKET':
-        navigate(`/community/marketplace/${post.id}`);
+        navigate(`/community/market/buyForm/${post.id}`);
         break;
       default:
         console.warn('Unknown category:', post.category);
