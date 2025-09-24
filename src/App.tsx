@@ -22,6 +22,8 @@ import MyPage from './pages/MyPage/MyPage'
 import EatBTIPage from './pages/EatBTI/main'
 import QuestionPage from './pages/EatBTI/question'
 import ResultPage from './pages/EatBTI/result'
+import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
+import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
 =======
 import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
 import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
