@@ -1,0 +1,107 @@
+/* Reset */
+.ing-modal * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.ing-modal a {
+  text-decoration: none;
+  color: inherit;
+}
+.ing-modal ul {
+  list-style: none;
+}
+
+/* 공통 */
+.ing-modal.container {
+  width: 600px;
+  height: 500px;
+  background-color: white;
+  padding: 20px 30px;
+  position: relative;
+}
+
+.ing-modal .title, .ing-modal .form {
+  margin-bottom: 20px;
+}
+.margin0 {
+  margin: 0px;
+}
+.ing-modal .gray {
+  height: 1px;
+  background-color: #ccc;
+  border: 0;
+}
+
+
+.search-box {
+  height: 32px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+.search-box > * {
+  height: 100%;
+  padding: 0px 20px;
+  margin: 2px;
+  border-radius: 5px;
+}
+.drop-menu {
+  height: 100%;
+}
+.search-txt {
+  padding-right: 36px;
+}
+.search-icon {
+  border-radius: 0px;
+  right: 0px;
+  position: absolute;
+  padding: 7px;
+}
+.search-icon:hover {
+  cursor: pointer;
+}
+
+
+.ing-modal input {
+  border: #ccc solid 1px;
+  border-radius: 4px;
+  flex-grow: 1;
+}
+.drop-menu {
+  height: 100%;
+  width: 100px;
+  padding-left: 20px;
+  color:var(--ypjp-green);
+  border-color: var(--ypjp-green);
+  border-radius: 4px;
+}
+
+.ing-modal .result {
+  padding: 0 10px;
+}
+.ing-modal .result-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+.ing-modal .result-item:hover {
+  color: var(--ypjp-green);
+  cursor: pointer;
+}
+
+.ing-modal .category {
+  min-width: 160px;
+  text-align: center;
+  font-weight: bold;
+  padding: 5px 0;
+}
+.ingName {
+  padding: 0 10px;
+}
+
+.pagination-aria {
+  position:absolute;
+  bottom: 20px;
+  width: 540px;
+}

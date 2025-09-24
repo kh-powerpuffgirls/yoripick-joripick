@@ -1,18 +1,19 @@
 import { lodingImg } from "../../assets/images";
-import Pagination from "../../components/Pagination";
 import mainStyle from "./Mainpage.module.css"
+import "../../assets/css/button.css";
+import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import cx from "classnames";
 
 export default function Mainpage(){
 
     return (
         <>
-            <div className={mainStyle.container}>
+            <div className={cx(ingDefaultStyle["ing-default"], ingDefaultStyle["container"], mainStyle["mainpage"])}>
 
              <section className={mainStyle["recipe-category"]}>
-                <div className={mainStyle[`title-area`]}>
+                <div className={ingDefaultStyle[`title-area`]}>
                     <h2>레시피 분류</h2>
-                    <a href="#" className={mainStyle[`more-link`]}>세부검색 바로가기</a>
+                    <a href="#" className={ingDefaultStyle[`more-link`]}>세부검색 바로가기</a>
                 </div>
                 <ul className={cx(mainStyle["category-list"], mainStyle["content-area"])}>
                     <li><span className={mainStyle.circle}></span><p>굽기</p></li>
@@ -38,41 +39,41 @@ export default function Mainpage(){
 
                 {/* <!-- 오늘의 PICK --> */}
                 <section className={mainStyle[`today-pick`]}>
-                    <div className={mainStyle[`title-area`]}>
+                    <div className={ingDefaultStyle[`title-area`]}>
                         <h2>오늘의 PICK!</h2>
-                        <a href="#" className={mainStyle[`more-link`]}>레시피 바로가기</a>
+                        <a href="#" className={ingDefaultStyle[`more-link`]}>레시피 바로가기</a>
                     </div>
-                <div className={cx(mainStyle["pick-list"], mainStyle["content-area"])}>
-                    <article className={mainStyle[`pick-item`]}>
-                        <div className="flex-row width-100">
-                            <img className={mainStyle[`rank-icon`]} src={lodingImg.crown1}/>
-                            <p className={mainStyle[`pick-title`]}>(1줄 이상 ...처리) 팽이버섯 무밥 말이 15분 완성!</p>
-                        </div>
-                        <div className={mainStyle[`thumbnail`]}></div>
-                    </article>
-                    <article className={mainStyle[`pick-item`]}>
-                        <div className="flex-row">
-                            <img className={mainStyle[`rank-icon`]} src={lodingImg.crown2}/>
-                            <p className={mainStyle[`pick-title`]}>새송이 버섯 버터 크림소스 볶음</p>
-                        </div>
-                        <div className={mainStyle[`thumbnail`]}></div>
-                    </article>
-                    <article className={mainStyle[`pick-item`]}>
-                        <div className="flex-row">
-                            <img className={mainStyle[`rank-icon`]}src={lodingImg.crown3}/>
-                            <p className={mainStyle[`pick-title`]}>앞다리살 감자 조림</p>
-                        </div>
-                        <div className={mainStyle[`thumbnail`]}></div>
-                    </article>
-                </div>
+                    <div className={cx(mainStyle["pick-list"], ingDefaultStyle["content-area"])}>
+                        <article className={mainStyle[`pick-item`]}>
+                            <div className="flex-row width-100">
+                                <img className={mainStyle[`rank-icon`]} src={lodingImg.crown1}/>
+                                <p className={mainStyle[`pick-title`]}>(1줄 이상 ...처리) 팽이버섯 무밥 말이 15분 완성!</p>
+                            </div>
+                            <div className={mainStyle[`thumbnail`]}></div>
+                        </article>
+                        <article className={mainStyle[`pick-item`]}>
+                            <div className="flex-row">
+                                <img className={mainStyle[`rank-icon`]} src={lodingImg.crown2}/>
+                                <p className={mainStyle[`pick-title`]}>새송이 버섯 버터 크림소스 볶음</p>
+                            </div>
+                            <div className={mainStyle[`thumbnail`]}></div>
+                        </article>
+                        <article className={mainStyle[`pick-item`]}>
+                            <div className="flex-row">
+                                <img className={mainStyle[`rank-icon`]}src={lodingImg.crown3}/>
+                                <p className={mainStyle[`pick-title`]}>앞다리살 감자 조림</p>
+                            </div>
+                            <div className={mainStyle[`thumbnail`]}></div>
+                        </article>
+                    </div>
                 </section>
 
                 {/* <!-- 재료 관리 Tip --> */}
                 <section className={mainStyle[`ingredient-tip`]}>
-                     <div className={mainStyle[`title-area`]}>
+                     <div className={ingDefaultStyle[`title-area`]}>
                         <h2>재료 관리 Tip!</h2>
                      </div>
-                <div className={cx("flex-row", "gap-20", mainStyle["content-area"])}>
+                <div className={cx("flex-row", "gap-20", ingDefaultStyle["content-area"])}>
                         <img src={lodingImg.logo} className={mainStyle[`tip-image`]}/>
                     <div className={mainStyle[`tip-content`]}>
                         <div className={mainStyle[`tip-text`]}>
@@ -83,7 +84,7 @@ export default function Mainpage(){
                                 칼슘이 함유되어 있어aaaaa aaaa aaaa aaaaaaaaa aaaaa aaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa
                             </p>
                         </div>
-                        <a href="#" className={mainStyle[`more-link`]}>더 많은 재료 관리 Tip 보기</a>
+                        <a href="#" className={ingDefaultStyle[`more-link`]}>더 많은 재료 관리 Tip 보기</a>
                         <div className={mainStyle[`carousel-thumbs`]}>
                             <img className={mainStyle[`arrow-icon`]} src={lodingImg.arrowLeft}/>
                             <span className={mainStyle[`thumb`]}></span>
@@ -98,12 +99,12 @@ export default function Mainpage(){
 
                 {/* <!-- 식BTI 검사하기 --> */}
                 <section className={mainStyle[`food-bti`]}>
-                    <div className={mainStyle[`title-area`]}>
+                    <div className={ingDefaultStyle[`title-area`]}>
                         <h2>식BTI 검사하기</h2>
-                        <a href="#" className={mainStyle[`more-link`]}>내 식BTI 검사하기</a>
+                        <a href="#" className={ingDefaultStyle[`more-link`]}>내 식BTI 검사하기</a>
                     </div>
                 <div className={mainStyle[`bti-banner`]}>
-                    <img className={mainStyle[`content-area`]}src={lodingImg.EatBTI} alt="식BTI 검사하기"/>
+                    <img className={ingDefaultStyle[`content-area`]}src={lodingImg.EatBTI} alt="식BTI 검사하기"/>
                 </div>
                 </section>
             </div>
