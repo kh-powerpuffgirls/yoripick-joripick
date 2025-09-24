@@ -103,6 +103,7 @@ const ChallengeDetail = () => {
   const closeModal = () => setModal(null);
   const handleConfirm = () => { modal?.onConfirm?.(); closeModal(); };
   
+// ChallengeDetail.tsx
 useEffect(() => {
   if (!challengeNo || !user) return;
 
@@ -124,7 +125,17 @@ useEffect(() => {
       setPost(postRes.data);
       setReplies(repliesRes.data);
       setLikesCount(likeCountRes.data);
-      setIsLiked(isLikedStatus); // 서버 상태로 정확히 초기화
+      setIsLiked(isLikedStatus);
+
+      try {
+        const navRes = await api.get(`/community/challenge/navigation/${challengeNo}`);
+        setPrevChallengeNo(navRes.data.prev);
+        setNextChallengeNo(navRes.data.next);
+      } catch (navErr) {
+        console.warn('이전/다음 게시글 정보 로드 실패:', navErr);
+        setPrevChallengeNo(null);
+        setNextChallengeNo(null);
+      }
 
       setError(null);
     } catch (err: any) {
@@ -147,26 +158,26 @@ useEffect(() => {
     setReplies(repliesRes.data);
   };
 
-const handleLikeToggle = async () => {
-  if (!user?.userNo) {
-    openModal({ message: '로그인 후 좋아요 가능합니다.' });
-    return;
-  }
-  const prevIsLiked = isLiked;
-  const prevLikesCount = likesCount;
-  setIsLiked(!prevIsLiked);
-  setLikesCount(prevLikesCount + (prevIsLiked ? -1 : 1));
-  try {
-    await api.post(`/community/challenge/like/${challengeNo}`, null, {
-      params: { status: prevIsLiked ? 'COMMON' : 'LIKE' }
-    });
-  } catch (err: any) {
-    console.error(err);
-    setIsLiked(prevIsLiked);
-    setLikesCount(prevLikesCount);
-    openModal({ message: '좋아요 처리 실패' });
-  }
-};
+  const handleLikeToggle = async () => {
+    if (!user?.userNo) {
+      openModal({ message: '로그인 후 좋아요 가능합니다.' });
+      return;
+    }
+    const prevIsLiked = isLiked;
+    const prevLikesCount = likesCount;
+    setIsLiked(!prevIsLiked);
+    setLikesCount(prevLikesCount + (prevIsLiked ? -1 : 1));
+    try {
+      await api.post(`/community/challenge/like/${challengeNo}`, null, {
+        params: { status: prevIsLiked ? 'COMMON' : 'LIKE' }
+      });
+    } catch (err: any) {
+      console.error(err);
+      setIsLiked(prevIsLiked);
+      setLikesCount(prevLikesCount);
+      openModal({ message: '좋아요 처리 실패' });
+    }
+  };
 
   const handleAddComment = async () => {
     if (!user?.userNo || !newComment.trim()) {
@@ -287,25 +298,32 @@ const handleLikeToggle = async () => {
   };
 
   const renderReplies = () => {
-    const parentReplies = replies
-      .filter(r => r.category === 'CHALLENGE')
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-
-    return parentReplies.map(parent => {
-      const childReplies = replies
-        .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
+const parentReplies = replies
+        .filter(r => r.category === 'CHALLENGE')
         .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-      const parentImage = parent.profileImageServerName
-        ? `${API_BASE}/images/${parent.profileImageServerName}`
-        : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
+    return parentReplies.map(parent => {
+        const childReplies = replies
+            .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
+            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-      return (
-        <div key={parent.replyNo} className={styles.commentWrapper}>
-          <div className={styles.commentItem}>
-            <div className={styles.avatar}>
-              <img src={parentImage} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${parent.userNo}`)} />
-            </div>
+        // --- 수정된 부분: 이미지 URL 생성 로직 ---
+        const parentImage = parent.profileImageServerName
+            ? `${API_BASE}/${parent.profileImageServerName}` // 일단 API_BASE 뒤에 경로를 그대로 붙입니다.
+            : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
+
+        // 서버에서 받은 경로에 'images/'가 포함되어 있는지 확인하여 URL을 최종적으로 결정합니다.
+        const finalParentImageUrl = parent.profileImageServerName?.includes('/images/')
+            ? `${API_BASE}${parent.profileImageServerName}`
+            : `${API_BASE}/images/${parent.profileImageServerName}`;
+        // ----------------------------------------
+
+        return (
+            <div key={parent.replyNo} className={styles.commentWrapper}>
+                <div className={styles.commentItem}>
+                    <div className={styles.avatar}>
+                        <img src={finalParentImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${parent.userNo}`)} />
+                    </div>
             <div className={styles.commentBody}>
               <div className={styles.commentHeader}>
                 <span className={styles.commentAuthor} onClick={() => navigate(`/mypage/${parent.userNo}`)}>
@@ -359,12 +377,16 @@ const handleLikeToggle = async () => {
 
           {childReplies.map(child => {
             const childImage = child.profileImageServerName
-              ? `${API_BASE}/images/${child.profileImageServerName}`
-              : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
-            return (
-              <div key={child.replyNo} className={`${styles.commentItem} ${styles.isReply}`}>
+        ? `${API_BASE}/${child.profileImageServerName}`
+        : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
+    
+    const finalChildImageUrl = child.profileImageServerName?.includes('/images/')
+        ? `${API_BASE}${child.profileImageServerName}`
+        : `${API_BASE}/images/${child.profileImageServerName}`;
+    return (
+            <div key={child.replyNo} className={`${styles.commentItem} ${styles.isReply}`}>
                 <div className={styles.avatar}>
-                  <img src={childImage} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${child.userNo}`)} />
+                    <img src={finalChildImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${child.userNo}`)} />
                 </div>
                 <div className={styles.commentBody}>
                   <div className={styles.commentHeader}>
@@ -456,8 +478,9 @@ const handleLikeToggle = async () => {
 
         <div className={styles.actions}>
           <div>
-            <button className={styles.likeButton} onClick={handleLikeToggle}></button>
-    {isLiked ? '❤️' : '🤍'}
+            <button className={styles.likeButton} onClick={handleLikeToggle}>
+              {isLiked ? '❤️' : '🤍'}
+            </button>
           </div>
           <div className={styles.editDeleteButtons}>
             {user?.userNo === post.userNo ? (
