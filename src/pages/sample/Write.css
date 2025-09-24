@@ -1,0 +1,349 @@
+body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+    background-color: #ECEEF1;
+}
+
+.container{
+    max-width: 1000px;
+    margin:auto;
+    padding-bottom: 40px ;
+}
+
+/* 레시피 작성 */
+.header_card{
+    background-color: #C5E99B;
+    color: black;
+    border: 1px solid #63636341;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 30px 5% 10px 5%;
+
+    margin-bottom:20px;
+}
+
+/* card_기본정보, 재로정보, 요리순서 */
+.card{
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 30px 5% 30px 5%;
+    
+    margin-bottom:20px;
+    display: flex;
+    flex-direction: column;
+}
+
+h2{
+    color: #029D60;
+}
+
+
+/* 기본정보 */
+.content{
+    margin-left: 5%;
+    display: flex;
+    justify-content: space-between;
+}
+.other_card{
+    flex-grow: 2;
+}
+#title {
+    font-weight: 500;
+    padding: 8px;
+    flex-grow: 10;
+}
+
+input[type="text"] {
+	width: 95%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 16px;
+}
+
+textarea{
+    resize: none;  
+    font-family: '맑은 고딕', Arial, sans-serif;
+    width: 95%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 16px;
+}
+select{
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #81CEB0;
+	border-radius: 6px;
+	font-size: 16px;
+    color: #029D60;
+}
+
+option {
+      color: #333;
+}
+
+.info_box{
+    display: flex;
+    justify-content: space-between;
+}
+.info{
+    display: flex;
+    justify-content: space-between;
+    gap:20px;
+    align-items: center;
+}
+
+.info img{
+    width: 35px;
+    height: 35px;
+}
+
+/* 안써유 */
+.img_holder{
+    background-color: #ECEEF1;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+    padding:50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+/* 재료정보 */
+
+#ing{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#ing th{
+    border-bottom: 1px solid #ccc;
+    padding : 8px 20px;
+}
+
+#ing td{
+    padding: 10px;
+}
+
+.ing_title{
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.ing{
+    background-color: #E8E8E8;
+    padding: 16px 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+}
+.add_ing{
+    background-color: #E8E8E8;
+     padding: 16px 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+#minus{
+    padding-left: 10px;
+    width: 20px;
+    justify-content: center;
+    cursor: pointer;
+}
+#minus:hover {
+  filter: brightness(70%);
+  transition: filter 0.3s ease;
+}
+
+#add{
+    padding-left: 10px;
+    width: 20px;
+    justify-content: center;
+    cursor:pointer;
+}
+#add:hover {
+  filter: brightness(70%);
+  transition: filter 0.3s ease;
+}
+
+
+/* 영양성분 정보 */
+.nutrient{
+    border: 1px solid #3e58226c;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    padding: 20px 40px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+/* 바 그래프 */
+#cpfn{
+    display: flex;   
+    width: 100%;
+    flex-direction:column ;
+    gap: 10px;
+}
+#bars{
+    /* display: flex;
+    gap : 10px; */
+    display: grid;
+    grid-template-columns: 100px 60px 1fr; /* 이름, 수치, 바 */
+    align-items: center;
+    gap: 10px;
+}
+.progress {
+    width: 100%;
+    height: 15px;
+    background-color: #D9D9D9;
+    font-weight: 600;
+    font-size: .8rem;
+}
+
+.progress .bar_progress {
+    width: 40%;  
+    height: 15px;
+    padding: 0;
+    text-align: center;
+    background-color: #92CA02;
+    color: #111;
+}
+
+
+/* 원그래프 */
+#kcal{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.chart{
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    transition: 0.3s;
+    background:lightgray;
+    display:inline-block;
+}
+.rad_chart{
+    width: inherit;
+    height: inherit;
+    border-radius: 50%;
+    background: conic-gradient(#FEBEA2 60%, #D3EA9A 0deg);
+}
+
+
+/* 요리순서 */
+
+#cook_box{
+    width: 100%;
+    border: 1px solid #3e58226c;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+#cook_box th{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #3e58226c;
+    background-color: #F1F9D1;
+    padding: 20px;
+}
+
+#icon{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0px 10px;
+}
+
+#cook_box td{
+    display: flex;
+    padding: 20px;
+    gap:10px;
+}
+
+#how2cook{
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    border: none;
+}
+
+.img_how2cook{
+    background-color: #ECEEF1;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+    padding:50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10%;
+}
+
+.add_how2cook{
+    border: 2px solid #029D60;
+	border-radius: 6px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #029D60;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 10px 20px;
+    width: 200px;
+    align-self: center;
+}
+.add_how2cook:hover {
+    background-color: #029D60;
+    color: white;
+}
+
+.button_area{
+    display: flex;
+    justify-content: center;
+    gap : 30px;
+}
+
+#cancel{
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #92CA02;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 10px 30px;
+    cursor: pointer;
+}
+
+#cancel:hover {
+    background-color: #7FB400; 
+}
+
+#complete{
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #ffffff;
+    background-color: #029D60;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 10px 30px;
+    cursor: pointer;
+}
+
+#complete:hover {
+    background-color: #02774B; 
+}

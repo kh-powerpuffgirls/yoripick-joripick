@@ -56,7 +56,7 @@ const Header = () => {
               </li>
               <li className="nav-line"></li>
               <li>
-                <Link to="/community" className="nav-link">커뮤니티</Link>
+                <Link to="/community/recipe" className="nav-link">커뮤니티</Link>
               </li>
               <li className="nav-line"></li>
               <li>
