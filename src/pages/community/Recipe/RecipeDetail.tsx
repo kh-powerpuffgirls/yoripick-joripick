@@ -200,8 +200,8 @@ const CommunityRecipeDetail: React.FC = () => {
                 {/* 사용자 레시피의 수정/삭제 버튼 */}
                 {!recipe.isOfficial && isOwner && (
                     <div className={styles.user_btn}>
-                        <button onClick={handleDelete}>삭제하기</button>
-                        <button onClick={handleEdit}>수정하기</button>
+                        <button id={styles.action_btn} onClick={handleDelete}>삭제하기</button>
+                        <button id={styles.action_btn} onClick={handleEdit}>수정하기</button>
                     </div>
                 )}
 
