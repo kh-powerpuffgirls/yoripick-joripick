@@ -19,6 +19,7 @@ export type Ing = {
 }
 
 type myIngAlertState = {
+  content: Message;
   isChecked: boolean;
   ings: Ing[];
 };
