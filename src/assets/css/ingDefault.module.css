@@ -1,0 +1,100 @@
+/* Reset */
+.ing-default * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.ing-default a {
+  text-decoration: none;
+  color: inherit;
+}
+.ing-default ul {
+  list-style: none;
+}
+
+/* 요소명================================================ */
+.ing-default a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.ing-default ul {
+    list-style: none;
+}
+
+.ing-default hr {
+    margin-bottom: 20px;
+}
+
+.ing-default h2 {
+    font-size: 24px;
+}
+.ing-default .margin-10 {
+    margin-bottom: 10px;
+}
+
+/* 1순위================================================ */
+.ing-default.container {
+    width: 1000px;
+    min-height: 1000px; /* 창 크기에 따른 크기 변환 방지 */
+    background-color: white;
+    padding: 50px 70px;
+}
+
+.ing-default .vt-line {
+    width: 0px;
+    height: 100%;
+    border-right: #ddd solid 2px;
+}
+
+.ing-default .more-link {
+    font-size: 16px;
+    color: #888;
+    float: right;
+    margin-left: 10px;
+}
+
+/* 2순위================================================ */
+.ing-default .title-area{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ing-default .content-area{
+    padding: 0px 20px;
+}
+
+.ing-default .align-start{
+    align-items: baseline;
+}
+
+/* 검색창================================================ */
+.ing-default .search-box {
+    height: 32px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+.ing-default .search-box > * {
+    height: 100%;
+  padding: 0px 20px;
+  margin: 2px;
+  border-radius: 5px;
+}
+.ing-default .drop-menu {
+  height: 100%;
+}
+.ing-default .search-txt {
+  padding-right: 36px;
+}
+.ing-default .search-icon {
+  border-radius: 0px;
+  right: 0px;
+  position: absolute;
+  padding: 7px;
+}
+.ing-default .search-icon:hover {
+  cursor: pointer;
+}

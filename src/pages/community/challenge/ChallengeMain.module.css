@@ -1,0 +1,192 @@
+.container {
+  width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.headerButtons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.challengeTitle {
+  margin-top: 30px;
+  background-color: #ff9800;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.popularCardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.recentCardGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.challengeCard {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.challengeCard:hover {
+  transform: translateY(-3px);
+}
+
+.rankBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: gold;
+  color: white;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.imagePlaceholder {
+  height: 250px;
+  width: 100%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
+}
+
+.challengeImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+}
+
+.profileIcon {
+  width: 24px;
+  height: 24px;
+  background-color: #ddd;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.authorName {
+  font-size: 13px;
+  color: #555;
+}
+
+.stats {
+  font-size: 13px;
+  color: #888;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.requestButton, .registerButton {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.requestButton {
+  background-color: white;
+  color: #ff9800;
+  border: 1px solid #ff9800;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pageBtn {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pageBtn.active {
+  background-color: #ff9800;
+  color: white;
+  border-color: #ff9800;
+}
+
+.pageBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.alertOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.alertBox {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+}

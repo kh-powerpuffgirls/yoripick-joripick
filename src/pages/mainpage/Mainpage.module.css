@@ -1,42 +1,5 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-a {
-  text-decoration: none;
-  color: inherit;
-}
-ul {
-  list-style: none;
-}
-
-/* 공통 */
-
-.container {
-  width: 1000px;
-  min-height: 1000px; /* 창 크기에 따른 크기 변환 방지 */
-  background-color: white;
-  padding: 50px 70px;
-}
-
-h2 {
-  font-size: 24px;
-}
-.more-link {
-  font-size: 16px;
-  color: #888;
-  float: right;
-}
-.title-area{
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  margin-bottom: 20px;
-}
-.content-area{
-  padding: 0px 20px;
+.mainpage section {
+  margin-bottom: 40px;
 }
 
 /* 레시피 분류 */
@@ -76,7 +39,7 @@ h2 {
   justify-content: center;
   gap: 10px;
 }
-.pick-item {
+.pick-list .pick-item {
   width: 280px;
   display: flex;
   flex-direction: column;
@@ -86,7 +49,7 @@ h2 {
   padding: 10px;
   position: relative;
 }
-.pick-title {
+.pick-list .pick-title {
   font-size: 16px;
   margin: 0px 10px;
   display: -webkit-box;
@@ -160,19 +123,13 @@ h2 {
 }
 
 /* 식BTI 검사하기 */
-.food-bti {
-  margin-bottom: 60px;
-}
-.food-bti h2 {
-  margin-bottom: 10px;
-}
 .bti-banner img {
   width: 100%;
   border-radius: 12px;
 }
 
 /* 레시피 분류 hover */
-.recipe-category .circle:hover {
+.recipe-category li:hover .circle {
   background-color: #92ca02;
   transform: scale(1.05);
   transition: all 0.2s ease-in-out;
@@ -189,7 +146,7 @@ h2 {
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   transition: all 0.3s ease;
 }
-.pick-item .thumbnail:hover {
+.pick-item:hover .thumbnail {
   opacity: 0.85;
   cursor: pointer;
 }
