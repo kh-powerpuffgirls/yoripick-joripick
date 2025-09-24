@@ -3,22 +3,25 @@ import { lodingImg } from "../assets/images";
 import { useSelector } from "react-redux";
 import useLogout from "../hooks/logout";
 import type { RootState } from "../store/store";
-import { NewAnnouncement } from "./Admin/newAnnouncement";
+// import { NewAnnouncement } from "./Admin/newAnnouncement";
 import { useState } from "react";
-import { NewChallenge } from "./Admin/newChallenge";
+// import { NewChallenge } from "./Admin/newChallenge";
 
 const Header = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
   const logout = useLogout();
   const [openNewAnn, setOpenNewAnn] = useState(false);
   const [openNewCh, setOpenNewCh] = useState(false);
 
+  console.log(window.location.pathname);
+
   return (
     <>
-      {openNewAnn && <NewAnnouncement setOpenNewAnn={setOpenNewAnn}/>}
-      {openNewCh && <NewChallenge setOpenNewCh={setOpenNewCh}/>}
+      {/* {openNewAnn && <NewAnnouncement setOpenNewAnn={setOpenNewAnn}/>}
+      {openNewCh && <NewChallenge setOpenNewCh={setOpenNewCh}/>} */}
       <div id="header">
         <Link to="/home">
           <img className="logo-image" src={lodingImg.logo} alt="요리Pick! 조리Pick!" />
@@ -63,7 +66,7 @@ const Header = () => {
               <li>
                 <Link to="/cservice" className="nav-link">고객센터</Link>
               </li>
-              {isAuthenticated && (
+              {user && (
                 <>
                   <li className="nav-line"></li>
                   <li>
@@ -87,13 +90,13 @@ const Header = () => {
             <img className="search-image" src={lodingImg.search} />
           </div>
           <div className="profile-icon">
-            {isAuthenticated ? (
+            {user ? (
               <button className="log-link" onClick={logout}>
                 로그아웃
                 <img className="profile-image" src={lodingImg.profile} alt="프로필" />
               </button>
             ) : (
-              <Link to="/login" className="log-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Link to="/login" state={{ from: loc }}  className="log-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 로그인
               </Link>
             )}
