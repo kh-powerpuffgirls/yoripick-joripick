@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { loginSuccess } from "../../features/authSlice";
+import { loginSuccess, saveUserData } from "../../features/authSlice";
 import Unauthorized from "../ErrorPage/Unauthorized";
 
 export default function OAuth2Success() {
@@ -17,13 +17,14 @@ export default function OAuth2Success() {
     const accessToken = param.get("accessToken") as string;
 
     axios
-      .get("http://localhost:8081/auth/me", {
+      .get("http://localhost:8081/auth/users/me", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
-        dispatch(loginSuccess({ accessToken, user: res.data }));
+        dispatch(saveUserData({ accessToken, user: res.data }));
+        dispatch(loginSuccess());
         navigate("/home", { state: { flash: "로그인 완료" }, replace: true });
       })
       .catch((error) => {

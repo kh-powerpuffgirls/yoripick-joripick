@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { lodingImg } from "../assets/images";
 import { useSelector } from "react-redux";
 import useLogout from "../hooks/logout";
@@ -9,12 +9,14 @@ import { useState } from "react";
 
 const Header = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
   const logout = useLogout();
-  const navigate = useNavigate();
   const [openNewAnn, setOpenNewAnn] = useState(false);
   const [openNewCh, setOpenNewCh] = useState(false);
+
+  console.log(window.location.pathname);
 
   return (
     <>
@@ -64,7 +66,7 @@ const Header = () => {
               <li>
                 <Link to="/cservice" className="nav-link">고객센터</Link>
               </li>
-              {isAuthenticated && (
+              {user && (
                 <>
                   <li className="nav-line"></li>
                   <li>
@@ -88,16 +90,15 @@ const Header = () => {
             <img className="search-image" src={lodingImg.search} />
           </div>
           <div className="profile-icon">
-            {isAuthenticated ? (
+            {user ? (
               <button className="log-link" onClick={logout}>
-                <div>로그아웃</div>
+                로그아웃
                 <img className="profile-image" src={lodingImg.profile} alt="프로필" />
               </button>
             ) : (
-              <button className="log-link" onClick={() => navigate('/login')}>
-                  <div>로그인</div>
-                  <img className="profile-image" src={lodingImg.profile} alt="프로필" />
-              </button>
+              <Link to="/login" state={{ from: loc }}  className="log-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                로그인
+              </Link>
             )}
           </div>
         </div>

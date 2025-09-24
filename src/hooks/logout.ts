@@ -13,12 +13,12 @@ export default function useLogout() {
       .then(() => {
         dispatch(setRooms([]));
         dispatch(logout());
-        navigate(-1);
+        navigate("/home");
       })
       .catch(() => {
         dispatch(setRooms([]));
         dispatch(logout());
-        navigate(-1);
+        navigate("/home");
       });
   };
 

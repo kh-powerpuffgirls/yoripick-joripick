@@ -15,13 +15,11 @@ export default function ProtectedRoute({
     redirectTo="/login"}:Props){
     
     const {isAuthenticated, user} = useSelector( (state:RootState) => state.auth);
-    // 로그인하지 않은 경우
     if(!isAuthenticated){
         alert("로그인 후 이용해주세요");
         return <Navigate to={redirectTo} replace />
     }
 
-    // 권한이 필요한 경우 권한 확인
     if(requiredRoles.length > 0 && user){
         const hasRequiredRole = requiredRoles.some( role => user.roles.includes(role));
 
