@@ -107,13 +107,11 @@ export const fetchMealStats = async (fromDate: string, toDate: string, userNo: n
 };
 
 export const removeMealItem = async (mealNo: number) => {
-    console.log(mealNo);
     await mealplanApi.delete(`/meals/${mealNo}`);
 };
 
 export const fetchRecent = async (userNo: number | undefined) => {
     const response = await mealplanApi.get<MealItemData[]>(`/recents/${userNo}`);
-    console.log(response.data);
     return response.data;
 };
 

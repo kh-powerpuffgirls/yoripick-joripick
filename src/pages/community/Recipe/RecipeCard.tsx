@@ -17,13 +17,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
   return (
     <div className={recipecard.content}>
       <div className={recipecard.imageBox}>
-        <img src={recipe.serverName } alt={recipe.rcpName} className={recipecard.thumbnail} />
+        <img src={recipe.serverName} alt={recipe.rcpName} className={recipecard.thumbnail} />
       </div>
       <div id={recipecard.title}>{recipe.rcpName}</div>
       <div className={recipecard.profile}>
         <img src={recipe.userProfileImage} alt={recipe.username} />
         <div className={recipecard.profile_name}>
-          {recipe.sikBti && <SikBti sikBti={recipe.sikBti} />}
+          {recipe.sikBti && <SikBti sikBti={recipe.sikBti} style={{fontSize: '8px' }} />}
           <span className={recipecard.nickname}>{recipe.username}</span>
         </div>
 
@@ -31,7 +31,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         
         <div className={recipecard.stars}>
           <img src={starIcon} height="12px" width="12px" alt="별점" />
-          {/* ✨ avgStars 데이터를 소수점 첫째 자리까지 표시, 리뷰가 없으면 0.0으로 표시 */}
           <span>{(recipe.avgStars || 0).toFixed(1)}</span>
         </div>
       </div>

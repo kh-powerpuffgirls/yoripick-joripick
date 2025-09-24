@@ -109,3 +109,14 @@
 .stars img {
     vertical-align: middle;
 }
+
+
+.official_off{
+    background-color: #FECBB5;
+    color: #D7805A;
+    border : 1px solid #D7805A;
+    border-radius: 3px;
+    height: 20px;
+    font-size: 6px;
+    padding: 5px 8px;
+}

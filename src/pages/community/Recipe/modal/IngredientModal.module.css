@@ -116,7 +116,7 @@
   gap: 15px; /* 버튼 사이 간격 */
 }
 
-button{
+.btn button{
     color: white;
     border-radius: 10px;
     border:none;

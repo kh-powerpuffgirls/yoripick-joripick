@@ -2,32 +2,37 @@ import './App.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { Route, Routes } from 'react-router-dom'
+import { AlertModal } from './components/Security/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
 import { CServiceMain } from './pages/CService/main'
-import { useDispatch, useSelector } from 'react-redux'
-import { openChat, setRooms } from './features/chatSlice'
-import { type RootState } from './store/store'
 import CommunityRecipeList from './pages/community/Recipe/CommunityRecipeList'
-import CommunityRecipeDetail_Detail from './pages/community/Recipe/CommunityRecipeDetail_Detail'
 import Login from './pages/login/Login'
 import AlreadyLoginRoute from './components/Security/AlreadyLoginRoute'
-import { useQuery } from '@tanstack/react-query'
-import { getRooms } from './api/chatApi'
-import { useEffect } from 'react'
-import { Notification } from './components/Chatting/Notification'
 import OAuth2Success from './pages/login/OAuth2Success'
 import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
 import { api, getNotiSettings } from './api/authApi'
-import { loginSuccess, logout } from './features/authSlice'
-import MyPage from './pages/MyPage/MyPage'
-import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
-import { ChatAlertModal } from './components/Chatting/chatAlertModal'
 import { MealplanMain } from './pages/Mealplan/main'
-import { AdminDashboard } from './pages/Admin/main'
-import AdminRoute from './components/AdminRoute'
-import CommunityRecipeDetail from './pages/community/Recipe/CommunityRecipeDetail'
+import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import RecipeWrite from './pages/community/Recipe/RecipeWrite'
+import MyPage from './pages/MyPage/MyPage'
+import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
+import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
+import EatBTIPage from './pages/EatBTI/main'
+import QuestionPage from './pages/EatBTI/question'
+import ResultPage from './pages/EatBTI/result'
+import Ingpedia from './pages/Ingpedia/Ingpedia'
+import IngpediaList from './pages/Ingpedia/IngpediaList'
+import IngpediaWrite from './pages/Ingpedia/IngpediaWrite'
+import IngpediaDetail from './pages/Ingpedia/IngpediaDetail'
+import IngpediaEdit from './pages/Ingpedia/IngpediaEdit'
+import MyIng from './pages/MyIng/MyIng'
+import MyIngList from './pages/MyIng/MyIngList'
+import MyIngDetail from './pages/MyIng/MyIngDetail'
+import MyIngWrite from './pages/MyIng/MyIngWrite'
+import { IngPopup } from './components/IngModal/IngModal'
 import CommunityMain from './pages/community/CommunityMain'
 import MyPost from './pages/community/mypost/MyPost'
 import FreeForm from './pages/community/free/FreeForm'
@@ -43,6 +48,17 @@ import CkClassForm from './pages/community/ckclass/CkClassForm'
 import MarketMain from './pages/community/market/MarketMain'
 import MarketForm from './pages/community/market/MarketForm'
 import MarketBuyForm from './pages/community/market/MarketBuyForm'
+import MarketMyList from './pages/community/market/MarketMyList'
+import MarketMyDetailPage from './pages/community/market/MarketMyDetailPage'
+import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
+import type { RootState } from './store/store'
+import { useQuery } from '@tanstack/react-query'
+import { getRooms } from './api/chatApi'
+import { openChat, setRooms } from './features/chatSlice'
+import { ChatAlertModal } from './components/Chatting/chatAlertModal'
+import { Notification } from './components/Chatting/Notification'
+import AdminRoute from './components/AdminRoute'
+import { AdminDashboard } from './pages/Admin/main'
 import { UserManagement } from './pages/Admin/userManagement'
 import { RcpManagement } from './pages/Admin/rcpManagement'
 import { CommManagement } from './pages/Admin/commManagement'
@@ -60,9 +76,10 @@ function App() {
 
   // 로그인 정보 유지
   useEffect(() => {
-    api.post("http://localhost:8081/auth/refresh")
+    api.post("auth/tokens/refresh")
       .then(res => {
-        dispatch(loginSuccess(res.data));
+        dispatch(saveUserData(res.data));
+        dispatch(loginSuccess());
       })
       .catch(err => {
         dispatch(logout());
@@ -108,25 +125,19 @@ function App() {
   return (
     <>
       <Header />
+      <AlertModal />
       <ChatAlertModal />
       <ChatModal />
+      <Notification />
       {rooms && rooms.length > 0 && (
         <p className='chatBtn' onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
       )}
-      <Notification />
-      {/* 만약에 로그인한 사용자가 관리자권한이 있다면? 관리자 문의 채팅방 열릴 때마다
-          거기 roomId 값 가져와서 sockjs로 구독해야함
-          
-          시간되면 로그인한 사용자 쿠킹클래스 채팅방도 stompClient redux로 관리하기 */}
       <Routes>
         <Route path="/login" element={
           <AlreadyLoginRoute>
             <Login />
           </AlreadyLoginRoute>
         } />
-        <Route path="/home" element={<Mainpage />} />
-        <Route path="/cservice" element={<CServiceMain />} />
-        <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/admin" element={
           <AdminRoute>
             <AdminDashboard />
@@ -140,15 +151,36 @@ function App() {
         <Route path="/admin/announcements" element={<AnnManagement />} />
         <Route path="/admin/challenges" element={<ClngManagement />} />
         <Route path="/admin/ingredients" element={<IngManagement />} />
+
+        <Route path="/home" element={<Mainpage />} />
+        <Route path="/cservice" element={<CServiceMain />} />
+        <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
-        <Route path="/myPage" element={<MyPage />} />
-        {/* community/recipe */}
+        <Route path="/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
+        {/* <Route path="/recipe/list" element={<OfficialRecipeListPage />} /> */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
-        {/* <Route path="/community/recipe/write" element={<CommunityRecipeWrite />} /> */}
-        <Route path="/community/recipe/test" element={<CommunityRecipeDetail_Detail />} />
-        <Route path="/community/recipe/detail" element={<CommunityRecipeDetail />} />
+        <Route path="/community/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
         <Route path="/community/recipe/write" element={<RecipeWrite />} />
+        <Route path="/community/recipe/edit/:rcpNo" element={<RecipeEditPage />} />
+        <Route path="/myPage" element={<MyPage />} />
+        <Route path="/eatBTI" element={<EatBTIPage />} />
+        <Route path="/eatBTI/question" element={<QuestionPage />} />
+        <Route path="/eatBTI/result" element={<ResultPage />} />
+
+        <Route path="/ingpedia" element={<Ingpedia/>} >
+          <Route path='' element={<IngpediaList/>}/>
+          <Route path='write' element={<IngpediaWrite/>}/>
+          <Route path='detail/:ingNo' element={<IngpediaDetail/>}/>
+          <Route path='edit/:ingNo' element={<IngpediaEdit/>}/>
+        </Route>
+        <Route path="/mypage/inglist" element={<MyIng/>} >
+          <Route path='' element={<MyIngList/>}/>
+          <Route path='detail/:ingNo' element={<MyIngDetail/>}/>
+          <Route path='write' element={<MyIngWrite/>}/>
+        </Route>
+        <Route path="/ing-popup" element={<IngPopup/>} />
+
         <Route path="/community" element={<CommunityMain />} />
         <Route path="/community/mypost" element={<MyPost />} />
         <Route path="/community/free/form" element={<FreeForm />} />
@@ -165,8 +197,11 @@ function App() {
         <Route path="/community/ckclass/form" element={<CkClassForm />} />
         <Route path="/community/market" element={<MarketMain />} />
         <Route path="/community/market/form" element={<MarketForm />} />
-        <Route path="/community/market/buyform" element={<MarketBuyForm />} />
+        <Route path="/community/market/buyForm/:id" element={<MarketBuyForm />} />
+        <Route path="/community/market/my-list" element={<MarketMyList />} />
+        <Route path="/community/market/my-buy-form/:formId" element={<MarketMyDetailPage />} />
       </Routes>
+
       <Footer />
     </>
   )

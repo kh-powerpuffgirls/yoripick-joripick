@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import chstyles from './CommunityHeader.module.css'; // ✅ 여기 변경됨
+import chstyles from './CommunityHeader.module.css';
 
 const CommunityHeader = () => {
     const [isSearchVisible, setIsSearchVisible] = useState(false);

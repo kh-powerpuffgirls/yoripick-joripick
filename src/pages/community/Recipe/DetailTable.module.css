@@ -1,0 +1,126 @@
+.food_info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user_report {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+/* 프로필 스타일 */
+.writer_profile {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+.writer_profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.profile_name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.eat_bti { /* SikBti 컴포넌트를 직접 사용하므로 이 클래스는 필요 없을 수 있습니다. */
+    font-size: 12px;
+    color: #ff7f50;
+    font-weight: 600;
+}
+.nickname {
+    font-size: 20px;
+    color: #636363;
+    font-weight: 600;
+}
+
+/* 신고 버튼 */
+.report {
+    border:none;
+    background-color: transparent;
+    cursor: pointer;
+    color: #636363;
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+}
+.report img {
+    width: 20px;
+    height: 20px;
+}
+#action_btn{
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+/* 정보 테이블 */
+.info_table {
+    width: 100%;
+    border-radius: 10px;
+    border-collapse: collapse;
+    overflow: hidden; /* radius 적용을 위해 */
+    font-size: 15px;
+    table-layout: fixed;
+    box-shadow: 0 0 0 1px #666666;
+}
+.info_table th{
+    border-bottom: 1px solid #ccc;
+    padding : 20px;
+    width: 50%;
+    background-color: #E8E8E8;
+}
+.info_table td { 
+    padding: 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#tag {
+    border: 2px solid #029D60;
+    border-radius: 10px;
+    background-color: white;
+    color: #029D60;
+    padding: 8px 16px;
+    font-weight: bold;
+    display: inline-block;
+}
+.info_value {
+    color: #029D60;
+    font-weight: bold;
+}
+.info_table th > span, .info_table th > img {
+    vertical-align: middle;
+    margin: 0 4px;
+}
+
+
+/* 재료 목록 */
+.ing {
+    background-color: #E8E8E8;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    border-radius: 10px;
+    margin: 4px;
+}
+
+
+
+.official_ingredients_box {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 20px;
+  line-height: 1.6;
+  white-space: pre-wrap; /* 줄바꿈과 공백을 그대로 표시 */
+}

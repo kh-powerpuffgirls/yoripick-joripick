@@ -80,6 +80,7 @@ const CommunitySidebar: React.FC<SidebarProps> = ({ onSearch }) => {
       <h1>정렬조건</h1>
       <div id={sidebar.box}>
         <label className={sidebar.sidebar_title}>재료</label>
+        <hr />
         <div className={sidebar.input_wrapper}>
           <input 
             type="text" 

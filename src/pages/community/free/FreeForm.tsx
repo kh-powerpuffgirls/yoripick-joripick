@@ -10,14 +10,15 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
 import styles from './FreeForm.module.css';
+import CommunityHeader from '../CommunityHeader';
 
 // API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
 
-// Redux 스토어에서 accessToken을 가져오기
+// Redux 스토어에서 accessToken 가꼬오기
 const getAccessToken = () => store.getState().auth.accessToken;
 
-// API 호출을 위한 axios 인스턴스 생성
+// API 호출 axios
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
@@ -39,9 +40,6 @@ api.interceptors.response.use(
   async (error: AxiosError) => Promise.reject(error),
 );
 
-// 이미지 URL 생성
-const getImageUrl = (serverName: string) => `${API_BASE}/images/${serverName}`;
-
 // 게시글 데이터 타입 정의
 interface FreePost {
   boardNo?: number;
@@ -50,9 +48,10 @@ interface FreePost {
   content: string;
   userNo: number;
   serverName?: string | null;
+  imageUrl?: string | null;
 }
 
-// 게시글 작성 및 수정 폼 컴포넌트
+// 게시글 작성 및 수정 폼
 const FreeForm = () => {
   // URL 파라미터에서 게시글 번호 가져오기
   const { boardNo } = useParams<{ boardNo: string }>();
@@ -61,7 +60,7 @@ const FreeForm = () => {
   // 페이지 이동 함수
   const navigate = useNavigate();
 
-  // 로그인된 사용자 번호 가져오기
+  // 로그인 확인용
   const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
   // 상태 관리
@@ -90,7 +89,7 @@ const FreeForm = () => {
         setTitle(data.title);
         setSubheading(data.subheading || '');
         setContent(data.content);
-        if (data.serverName) setPreviewImage(getImageUrl(data.serverName));
+        if (data.imageUrl) setPreviewImage(data.imageUrl);
       } catch {
         setError('게시글 불러오기 실패 또는 권한 없음');
       } finally {
@@ -107,7 +106,7 @@ const FreeForm = () => {
     setPreviewImage(file ? URL.createObjectURL(file) : null);
   };
 
-  // 폼 제출 (게시글 작성/수정) 처리
+  // 폼 (게시글 작성/수정) 처리
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMessage(null);
@@ -121,7 +120,6 @@ const FreeForm = () => {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
-      formData.append('userNo', String(userNo));
       if (subheading.trim()) formData.append('subheading', subheading);
       if (selectedImage) formData.append('file', selectedImage);
 
@@ -146,7 +144,7 @@ const FreeForm = () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
     try {
-      await api.delete(`/community/free/${boardNo}`, { params: { userNo } });
+      await api.delete(`/community/free/${boardNo}`);
       setMessage('게시글 삭제 완료');
       setTimeout(() => navigate('/community/free'), 1500);
     } catch (e: any) {
@@ -162,6 +160,8 @@ const FreeForm = () => {
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
 
   return (
+    <>
+     <CommunityHeader />
     <div className={styles.container}>
       <h1>{isEdit ? '게시글 수정' : '게시글 작성'}</h1>
 
@@ -243,6 +243,7 @@ const FreeForm = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 

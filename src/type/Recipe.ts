@@ -2,7 +2,7 @@
 export interface User {
   userNo: number;
   username: string;
-  sik_bti: string;
+  sikBti: string;
   imageNo?: number;
   serverName?: string; // 프로필 이미지 경로
 }
@@ -45,11 +45,15 @@ export interface CookingStep {
 // 리뷰 정보
 export interface Review {
   reviewNo: number;
-  userInfo: User;
   stars: number;
   content: string;
   serverName?: string; // 리뷰 이미지 경로
   reviewDate: string;
+  userInfo:User;
+
+  // username: string;
+  // userProfileImage?: string;
+  // sikBti?: string; 
 
   rcpSource : 'API' | 'COMM';
   refNo:number; //rcp_no
@@ -131,7 +135,7 @@ export interface SelectOption {
  */
 export interface IngredientModalProps {
   onClose: () => void;
-  onComplete: (ingredient: AddedIngredient) => void;
+  onComplete: (newIngredients: Omit<AddedIngredient, 'id'>[]) => void;
 }
 
 
@@ -147,6 +151,9 @@ export interface RecipeListItem {
   sikBti?: string;
   avgStars?: number;
   reviewCount?: number;
+  isOfficial: boolean;
+  bookmarkCount?: number;
+  bookmarked?: boolean;
 }
 
 // 백엔드로부터 받을 페이지 전체 데이터 타입
@@ -166,4 +173,48 @@ export interface RcpOption {
 export interface IngredientOption {
   ingNo: number;
   ingName: string;
+}
+
+export interface RecipeDetail {
+  rcpNo: number;
+  rcpName: string;
+  rcpInfo: string;
+  createdAt: string;
+  updatedAt :string;
+  views: number;
+  tag?: string;
+  
+  isOfficial: boolean;
+  rcpMethod: string;
+  rcpSituation: string;
+  
+  mainImage: string;
+  writer: User | null;
+  
+  totalNutrient: NutrientData;
+  ingredients: RecipeIngredient[];
+  steps: CookingStep[];
+
+  avgStars:number;
+  rcpIngList?: string;
+
+  bookmarked?: boolean;
+
+  likeCount: number;
+  bookmarkCount?: number;
+  reviewCount: number;
+}
+
+
+
+export interface WriteReviewModalProps {
+  rcpNo: number;
+  onClose: () => void;
+  onReviewSubmit: () => void;
+}
+
+export interface PhotoReviewModalProps {
+  photoReviews: Review[];
+  initialIndex: number;
+  onClose: () => void;
 }

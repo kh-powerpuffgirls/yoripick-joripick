@@ -10,6 +10,7 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <>
+   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
@@ -17,5 +18,6 @@ createRoot(document.getElementById('root')!).render(
         </BrowserRouter>
       </QueryClientProvider>
     </Provider>
+    </QueryClientProvider>
   </>
 )

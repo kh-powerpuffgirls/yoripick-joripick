@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { lodingImg } from "../assets/images";
 import { useDispatch, useSelector } from "react-redux";
 import useLogout from "../hooks/logout";
@@ -10,17 +10,18 @@ import { useEffect, useState } from "react";
 import { getTodayAnn } from "../api/authApi";
 
 const Header = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
   const adminPaths = ["/admin", "/admin/users", "/admin/recipes", "/admin/communities", "/admin/classes", 
     "/admin/cservices", "/admin/announcements", "/admin/challenges", "/admin/ingredients"];
   const isAdminPath = adminPaths.includes(loc.pathname);
   const logout = useLogout();
-  const { isOpen, modalType, initialData } = useSelector((state: RootState) => state.adminModal);
+  const { isOpen, modalType } = useSelector((state: RootState) => state.adminModal);
   const dispatch = useDispatch();
   const [todayAnn, setTodayAnn] = useState("");
   const totalReports = useSelector((state: RootState) => state.adminState.totalReports);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -38,6 +39,8 @@ const Header = () => {
     dispatch(closeModal());
     window.location.reload(); 
   };
+
+  console.log(window.location.pathname);
 
   return (
     <>
@@ -90,17 +93,17 @@ const Header = () => {
               </li>
               <li className="nav-line"></li>
               <li>
-                <Link to="/community" className="nav-link">커뮤니티</Link>
+                <Link to="/community/recipe" className="nav-link">커뮤니티</Link>
               </li>
               <li className="nav-line"></li>
               <li>
-                <Link to="/eat-bti" className="nav-link">식BTI</Link>
+                <Link to="/eatbti" className="nav-link">식BTI</Link>
               </li>
               <li className="nav-line"></li>
               <li>
                 <Link to="/cservice" className="nav-link">고객센터</Link>
               </li>
-              {isAuthenticated && (
+              {user && (
                 <>
                   <li className="nav-line"></li>
                   <li>
@@ -124,15 +127,16 @@ const Header = () => {
             <img className="search-image" src={lodingImg.search} />
           </div>
           <div className="profile-icon">
-            {isAuthenticated ? (
+            {user ? (
               <button className="log-link" onClick={logout}>
-                로그아웃
-                <img className="profile-image" src={lodingImg.profile} alt="프로필" />
+                <div>로그아웃</div>
+                <img className="profile-image" src={ user.profile ? `${user.profile}` : lodingImg.profile} alt="프로필" />
               </button>
             ) : (
-              <Link to="/login" className="log-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                로그인
-              </Link>
+              <button className="log-link" onClick={() => navigate('/login', { state: { from: loc } })}>
+                  <div>로그인</div>
+                  <img className="profile-image" src={lodingImg.profile} alt="프로필" />
+              </button>
             )}
           </div>
         </div>

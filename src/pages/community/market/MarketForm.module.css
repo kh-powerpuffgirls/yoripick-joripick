@@ -1,4 +1,3 @@
-/* MarketForm.module.css */
 .container {
     display: flex;
     flex-direction: column;
@@ -7,7 +6,6 @@
     background-color: white;
     width: 1000px;
     font-family: 'Arial', sans-serif;
-    /* min-height: 100vh; */
 }
 
 .formContainer {
@@ -174,6 +172,7 @@
 .itemInfo {
     display: flex;
     gap: 1rem;
+    align-items: flex-start;
 }
 
 .itemImagePlaceholder {
@@ -184,6 +183,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f8f8f8;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.itemImagePreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .itemDetails {

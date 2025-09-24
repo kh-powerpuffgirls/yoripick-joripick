@@ -40,7 +40,7 @@
     flex-direction: column;
 }
 
-h2{
+.card h2{
     color: #029D60;
     margin-bottom: 10px;
 }
@@ -70,7 +70,7 @@ h2{
 	font-size: 16px;
 }
 
-textarea{
+#title textarea {
     resize: none;  
     font-family: '맑은 고딕', Arial, sans-serif;
     width: 95%;
@@ -79,7 +79,8 @@ textarea{
 	border-radius: 6px;
 	font-size: 16px;
 }
-select{
+
+.info select{
 	width: 100%;
 	padding: 10px;
 	border: 1px solid #81CEB0;
@@ -88,9 +89,6 @@ select{
     color: #029D60;
 }
 
-option {
-      color: #333;
-}
 
 .info_box{
     display: flex;
@@ -217,7 +215,13 @@ option {
 
 #how2cook{
     border:0px #5a616b !important;
-
+    resize: none;  
+    font-family: '맑은 고딕', Arial, sans-serif;
+    width: 95%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 16px;
 }
 
 .img_how2cook{

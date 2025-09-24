@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import styles from "./MyPage.module.css";
 import kakaoLogo from "./kakaologo.png";
@@ -13,6 +13,8 @@ import type { RootState } from "../../store/store";
 import { useNavigate } from "react-router-dom";
 import defaultProfile from "./defaultprofile.png"
 import InactiveModal from "../../components/MyPage/InactiveModal";
+import { updateProfileImage } from "../../features/authSlice";
+import type { AllergyDto } from "../../type/allergytype";
 
 const MyPage = () => {
     const [isProfileModal, setProfileModal] = useState(false);
@@ -20,12 +22,19 @@ const MyPage = () => {
     const [isMemberInfoModal, setMemberInfoModal] = useState(false);
     const [isAlarmModal, setAlarmModal] = useState(false);
     const [isInactiveModal, setInactiveModal] = useState(false);
-
-    const [allergyInfo, setAllergyInfo] = useState<string[]>([]);
+    const dispatch = useDispatch();
+    const [allergyInfo, setAllergyInfo] = useState<{ id: number; name: string; parent: string }[]>([]);
     const [myRecipes, setMyRecipes] = useState<
         { id: number; title: string; likes: number; img: string }[]
     >([]);
 
+
+    const handleUpdateProfile = (newUrl: string) => {
+        dispatch(updateProfileImage(newUrl));
+    };
+
+
+    const [profileImg, setProfileImg] = useState<File | null>(null);
     const user = useSelector((state: RootState) => state.auth.user);
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const navigate = useNavigate();
@@ -55,16 +64,53 @@ const MyPage = () => {
 
         const api = axios.create({
             baseURL: "http://localhost:8081/mypage",
-            headers: { Authorization: `Bearer ${accessToken}` },
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
         });
 
         const fetchData = async () => {
             try {
-                const recipeRes = await api.get(`/users/${user.userNo}/recipes`);
-                setMyRecipes(recipeRes.data);
+                const profileRes = await api.post("/users/profiles", user);
+                dispatch(updateProfileImage(profileRes.data));
 
-                const allergyRes = await api.get(`/users/${user.userNo}/allergies`);
-                setAllergyInfo(allergyRes.data);
+                const allergyRes = await api.get("/users/allergy", {
+                    params: { userNo: user.userNo },
+                });
+
+                const allergyListRes = await api.get("/users/allergy-list");
+                const allergyTree = allergyListRes.data;
+
+                const flattenAllergies = (
+                    tree: AllergyDto[]
+                ): { id: number; name: string; parent: string }[] => {
+                    const result: { id: number; name: string; parent: string }[] = [];
+
+                    const traverse = (nodes: AllergyDto[], parentName?: string) => {
+                        for (const node of nodes) {
+                            if (node.children && node.children.length > 0) {
+                                traverse(node.children, node.name);
+                            } else {
+                                result.push({
+                                    id: node.allergyNo,
+                                    name: node.name,
+                                    parent: parentName ?? "기타",
+                                });
+                            }
+                        }
+                    };
+
+                    traverse(tree);
+                    return result;
+                };
+
+
+                const flatAllergies = flattenAllergies(allergyTree);
+                const userAllergies = flatAllergies.filter((a) =>
+                    allergyRes.data.includes(a.id)
+                );
+
+                setAllergyInfo(userAllergies);
             } catch (err) {
                 console.error("마이페이지 데이터 불러오기 오류:", err);
             }
@@ -86,14 +132,11 @@ const MyPage = () => {
             {user && (
                 <section className={styles.profileSection}>
                     <div className={styles.leftProfile}>
-                        <img
-                            src={user.profile || defaultProfile}
-                            className={styles.profileImg}
-                        />
+                        <img src={user.profile ? `${user.profile}` : defaultProfile} alt="프로필 이미지" className={styles.profileImg} />
                     </div>
 
                     <div className={styles.profileInfo}>
-                        {/* <div className={styles.sikbti}>{user.sikbti}</div> */}
+                        <div className={styles.sikbti}>{user.sikbti}</div>
                         <div className={styles.nameRow}>
                             <h2 className={styles.username}>{user.username}</h2>
                             <span className={styles.email}>&nbsp;({user.email})</span>
@@ -139,16 +182,21 @@ const MyPage = () => {
 
             <div className={styles.allergySection}>
                 <h3>내 알레르기 정보</h3>
-                <div className={styles.allergyTags}>
-                    {allergyInfo.length > 0 ? (
-                        allergyInfo.map((item, idx) => (
-                            <span key={idx} className={styles.allergyTag}>
-                                {item}
-                            </span>
-                        ))
-                    ) : (
-                        <p>등록된 알레르기 정보가 없습니다.</p>
-                    )}
+                <div className={styles.allergyCard}>
+                    <div className={styles.allergyTags}>
+                        {allergyInfo.length > 0 ? (
+                            allergyInfo.map((item) => (
+                                <span
+                                    key={item.id}
+                                    className={`${styles.allergyTag} ${styles[item.parent] || ""}`}
+                                >
+                                    {item.name}
+                                </span>
+                            ))
+                        ) : (
+                            <p>등록된 알레르기 정보가 없습니다.</p>
+                        )}
+                    </div>
                 </div>
                 <button className={styles.editAllergyBtn} onClick={() => setAllergyModal(true)}>
                     알레르기 정보 수정
@@ -173,7 +221,7 @@ const MyPage = () => {
             </div>
 
             {isProfileModal && (
-                <ProfileModal user={user!} onClose={() => setProfileModal(false)} />
+                <ProfileModal user={user!} onClose={() => setProfileModal(false)} onUpdateProfile={handleUpdateProfile} profileImg={profileImg} setProfileImg={setProfileImg} />
             )}
             {isAllergyModal && (
                 <AllergyModal user={user!} onClose={() => setAllergyModal(false)} />

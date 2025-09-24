@@ -76,8 +76,6 @@
 }
 
 .content{
-    /* display: grid;
-    grid-template-columns: 2fr 5fr;  */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -86,7 +84,7 @@
     font-size: 20px;
 }
 
-input{
+.content input{
     border:none;
     background-color: #E8E8E8;
     box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.25);
@@ -98,7 +96,7 @@ input{
 
 
 
-button{
+.btn button{
     color: white;
     border-radius: 10px;
     border:none;
@@ -133,26 +131,27 @@ button{
     cursor: pointer;
     position: relative;
     background-color: #eee;
-    display: flex;
-    align-self: center;
-    justify-content: center;
     color: #888;
     font-size: 48px;
     user-select: none;
-  }
-  .upload-box img {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.upload-box img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     border-radius: 8px;
-  }
-  .file-name {
+}
+.file-name {
     margin-top: 6px;
     font-size: 12px;
     color: #666;
     text-align: center;
     word-break: break-all;
-  }
-  input[type="file"] {
+}
+input[type="file"] {
     display: none;
-  }
+}

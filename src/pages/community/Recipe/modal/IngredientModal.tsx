@@ -79,7 +79,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({ onClose, onComplete }
       nutrients: calculatedNutrients,
     };
     
-    onComplete(newIngredient);
+    onComplete([newIngredient]);
   };
 
   return (

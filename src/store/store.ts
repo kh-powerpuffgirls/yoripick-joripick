@@ -2,13 +2,14 @@ import { configureStore } from "@reduxjs/toolkit"
 import chatalert from '../features/chatalertSlice'
 import alert from '../features/alertSlice'
 import chat from '../features/chatSlice'
-import boardsReducer from '../features/boardsSlice'
 import auth from '../features/authSlice'
 import noti from '../features/notiSlice'
-import userReducer from '../features/userSlice'
 import stomp from '../features/stompSlice'
 import adminModal from '../features/adminModalSlice'
 import adminState from '../features/adminStateSlice'
+import mying from '../features/myIngSlice'
+import boardsReducer from '../features/boardsSlice';
+
 
 export const store = configureStore({
     reducer: {
@@ -18,10 +19,10 @@ export const store = configureStore({
         chatalert,
         alert,
         chat,
-        auth, 
-        noti,
+        auth,
+        mying,
         boards: boardsReducer,
-        user: userReducer,
+        noti,
     }
 });
 

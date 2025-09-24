@@ -38,15 +38,21 @@
   background-color: #3E5822;
 }
 
+/* #header a { */
 .commHeader {
+  text-decoration: none;
+  color: inherit;
+}
+
+#header {
   background-color: #92ca02;
 }
 
 #header {
   width: 100%;
   padding: 15px 20px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -56,11 +62,18 @@
 
 .navbar {
   display: flex;
-  justify-content: center;
+  justify-content: baseline;
   gap: 5px;
   list-style: none;
   align-items: center;
+  padding: 0;
 }
+/* 햄버거 메뉴 넣는다면 사용... */
+/* @media (max-width : 1100px){
+  .navbar {
+    display: none;
+  }
+} */
 
 .nav-line {
   width: 1px;
@@ -72,7 +85,6 @@
   color: black;
   text-decoration: none;
   padding: 10px 20px;
-  border-radius: 6px;
   text-wrap: nowrap;
 }
 
@@ -80,7 +92,6 @@
   border: none;
   background-color: transparent;
   padding: 10px 20px;
-  border-radius: 6px;
   text-wrap: nowrap;
   font-size: 1.03em;
   cursor: pointer;
@@ -91,10 +102,15 @@
   text-decoration: none;
   text-wrap: nowrap;
   font-size: 12px;
+  border: 0px;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.nav-link:hover,
-.nav-button:hover {
+.nav-link:hover, .nav-button:hover {
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -123,21 +139,27 @@
   transition: all 0.2s ease-in-out;
 }
 
-.search-image,
-.profile-image {
+.search-image {
   width: 25px;
-  height: 25px;
+  aspect-ratio: 1/1;
 }
-
+.profile-image {
+  width: 32px;
+  aspect-ratio: 1/1;
+  position: absolute;
+  right: 4px;
+}
 .profile-icon {
-  width: 90px;
+  width: 110px;
   height: 40px;
   background-color: white;
+  padding-right: 40px;
+  padding-left: 6px;
   border-radius: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 0px 7.5px 0px 10px;
+  position: relative;
 }
 
 /* Footer */
@@ -265,7 +287,10 @@
   display: flex;
   flex-direction: column;
 }
-
+.center {
+  justify-content: center;
+  align-items: center;
+}
 .gap-10 {
   gap: 10px;
 }
@@ -276,4 +301,21 @@
 
 .gap-40 {
   gap: 40px;
+}
+
+/* 공용 컬러 ========================================================================================= */
+:root {
+  --ypjp-green: #029d60;
+  --ypjp-green-pale: #67c4a0;
+  --ypjp-green-dark: #007f4c;
+  --ypjp-lightgreen: #92ca02;
+  --ypjp-lightgreen-pale: #b9e156;
+  --ypjp-olive: #3e5822;
+  --ypjp-olive-dark: #253712;
+  --ypjp-orange: #fdbb1b;
+  --ypjp-yellow: #ffed67;
+  --ypjp-lightpink: #febea2;
+  --ypjp-salmon: #fe8051;
+  --ypjp-salmon-dark: #e45b29;
+  --ypjp-red: #ff4900;
 }
