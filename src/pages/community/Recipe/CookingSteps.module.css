@@ -1,0 +1,142 @@
+/* CookingSteps.module.css */
+
+.container {
+    width: 100%;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.info button {
+    border: 1px solid #88B2AC;
+    background-color: #fff;
+    color: #88B2AC;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 토글 css */
+.toggle-area {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 80px;
+  height: 35px;
+  cursor: pointer;
+}
+
+.slide {
+  background-color: #ccc;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset 3px 4px 4px 2px #aaa;
+  border-radius: 100px;
+}
+
+.toggle-icon {
+  position: absolute;
+  top: 50%;
+  transition: all 0.3s ease-in-out;
+  border-radius: 50%;
+  box-shadow: 3px 4px 4px 2px #aaa;
+}
+
+/* 기본 상태 (isListView = true) */
+.listIcon {
+  transform: translate(0, -50%);
+  opacity: 1;
+}
+.galleryIcon {
+  transform: translate(0, -50%);
+  opacity: 0;
+}
+
+/* 토글된 상태 (isListView = false, .toggled 클래스가 붙었을 때) */
+.toggle-area.toggled .listIcon {
+  transform: translate(45px, -50%);
+  opacity: 0;
+}
+.toggle-area.toggled .galleryIcon {
+  transform: translate(45px, -50%);
+  opacity: 1;
+}
+
+
+/* --- 목록 뷰 스타일 --- */
+.list_method hr, .one_method hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 15px 0;
+}
+
+.list {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    align-items: center;
+    padding: 10px 0;
+    gap: 20px;
+    font-size: 16px;
+}
+
+.list_img {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* --- 슬라이드 뷰 스타일 --- */
+.one_img {
+    display: grid;
+    grid-template-columns: 1fr 6fr 1fr;
+    grid-template-rows: 20px 1fr;
+    align-items: center;
+    text-align: center;
+}
+
+.indicator {
+    grid-column: 1 / span 3;
+    height: 5px;
+    background: #eee;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.indicator_bar {
+    height: 100%;
+    background: #88B2AC;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+.one_slide img {
+  width: 100%;
+  height: 510px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.nav {
+    border: none;
+    background-color: transparent;
+    font-size: 60px;
+    color: #D9D9D9;
+    cursor: pointer;
+}
+.nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.one_info {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}

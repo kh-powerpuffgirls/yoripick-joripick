@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="./Write.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header_card">
+            <h1>🥗 레시피 작성 🥗</h1>
+        </div>
+
+        <div class="card">
+            <h2>기본정보</h2>
+            <div class="content">
+
+                <div class="other_card">
+                    <div id="title">
+                        <span>레시피 제목</span>
+                        <br/>
+                        <input type="text" name="title" >
+                    </div>
+                    <div id="title">
+                        <span>레시피 소개</span>
+                        <br/>
+                        <textarea wrap="hard"  id="intro"></textarea>
+                    </div>
+                    <div id="title">
+                        <span>태그</span>
+                        <br/>
+                        <input type="text" name="tag">
+                    </div>
+                    <div id="title">
+                        <span>요리정보</span>
+                        <br/>
+                        <div class="info_box">
+                            <div class="info">
+                                <img src="../../assets/sample/저울아이콘.png" />
+                                조리방법
+                                <form action="">
+                                    <select name="method">
+                                        <!-- value값은 DB에서 가져올 예정 -->
+                                        <option value="">== 선택 ==</option>
+                                        <option value="method">굽기</option>
+                                        <option value="method">부침</option>
+                                        <option value="method">찜</option>
+                                        <option value="method">볶음</option>
+                                        <option value="method">무치기</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="info">
+                                <img src="../../assets/sample/요리아이콘.png" />
+                                요리종류
+                                <form action="">
+                                    <select name="kind">
+                                        <!-- value값은 DB에서 가져올 예정 -->
+                                        <option value="">== 선택 ==</option>
+                                        <option value="kind">반찬</option>
+                                        <option value="kind">밥/죽/떡</option>
+                                        <option value="kind">국/탕</option>
+                                        <option value="kind">양념</option>
+                                        <option value="kind">빵</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="title">
+                    <span>대표사진</span>
+                    <!-- img_holder 클릭시 첨부파일로 이미지 파일 가져와서 이미지 미리보여주기
+                     이미지 하단에는 파일명 출력 -->
+                    <div class="img_holder">+</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>재료정보</h2>
+            <div id="title">
+                <span>재료 추가</span>
+                <table id="ing">
+                    <tr>
+                        <th>
+                            <div class="ing_title">
+                                <span>지우기</span>
+                                <span>재료명</span>
+                                <span>수량</span>
+                                <span>중량</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="ing_title">
+                                <span>지우기</span>
+                                <span>재료명</span>
+                                <span>수량</span>
+                                <span>중량</span>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ing">
+                                <!-- 모달에 입력한 내용 입력 -->
+                                <img src="../../assets/sample/minus_icon.png" id="minus" />
+                                <span>팽이버섯</span>
+                                <span>2봉</span>
+                                <span>300g</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ing">
+                                <img src="../../assets/sample/minus_icon.png" id="minus" />
+                                <span>조선고추장</span>
+                                <span>2스푼</span>
+                                <span>20g</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="add_ing">
+                                <!-- 클릭시 작성 모달 출력 -->
+                                <!-- 입력완료시 td에 입력내용 출력 -->
+                                <!-- td는 2개 이상 추가시 다음줄로 -->
+                                <img src="../../assets/sample/add_icon.png" id="add" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="title">
+               <span>영양성분 정보</span> 
+                <div class="nutrient">
+                    <!-- 입력 값에 따라 chart,progress의 비율이 달라짐 -->
+                    <div id="cpfn">
+                        <div id="bars">
+                            <span>탄수화물</span>
+                            <span>18g</span>
+                            <!-- (입력 g수) / (300g) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>단백질</span>
+                            <span>10.7g</span>
+                            <!-- (입력 g수) / (60g) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>지방</span>
+                            <span>1.3g</span>
+                            <!-- (입력 g수) / (60g) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                        <div id="bars">
+                            <span>나트륨</span>
+                            <span>510mg</span>
+                            <!-- (입력 mg수) / (2000mg) -->
+                            <div class="progress">
+                                <div class="bar_progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="kcal">
+                        <div class="chart">
+                            <div class="rad_chart"></div>
+                        </div>
+                        <!-- (kcal 입력값) / (2500kcal) -->
+                        <span>칼로리 108kcal</span>   
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+
+        <div class="card">
+            <h2>요리순서</h2>
+            <div id="title">
+                <table id="cook_box">
+                    <tr>
+                        <th>
+                            <!-- step뒤 순서에 맞게 순서출력 -->
+                            <span>step 1</span>
+                            <div id="icon">
+                                <img src="../../assets/sample/add_icon.png" id="add" />
+                                <img src="../../assets/sample/minus_icon.png" id="minus" />
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea wrap="hard"  id="how2cook" placeholder="ex) 소고기를 핏물을 빼어, 양념에 재워둔다." ></textarea>
+                            <div class="img_how2cook">+</div>
+                        </td>
+                    </tr>
+                </table>
+                <!-- add 클릭시 해당 cook_box 뒤에 cook_box 추가, minus클릭시 해당 cook_box 삭제 -->
+            </div>
+            <!-- add_how2cook 클릭시 마지막 순서로 cook_box 추가-->
+            <button class="add_how2cook">요리순서 추가</button>
+        </div>
+
+        <div class="button_area">
+            <button id="cancel">작성 취소</button>
+            <button id="complete">작성 완료</button>
+        </div>
+    </div>
+</body>
+</html>
