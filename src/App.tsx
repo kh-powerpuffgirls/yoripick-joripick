@@ -26,6 +26,10 @@ import IngpediaDetail from './pages/Ingpedia/IngpediaDetail'
 import IngpediaWrite from './pages/Ingpedia/IngpediaWrite'
 import AdminRoute from './components/AdminRoute'
 import IngpediaEdit from './pages/Ingpedia/IngpediaEdit'
+import { MealplanMain } from './pages/Mealplan/main'
+import EatBTIPage from './pages/EatBTI/main'
+import QuestionPage from './pages/EatBTI/question'
+import ResultPage from './pages/EatBTI/result'
 
 function App() {
 
@@ -75,6 +79,9 @@ function App() {
         </Route>
         <Route path="/ing-popup" element={<IngPopup/>} />
 
+        <Route path="/eatBTI" element={<EatBTIPage />} />
+        <Route path="/eatBTI/question" element={<QuestionPage />} />
+        <Route path="/eatBTI/result" element={<ResultPage />} />
       </Routes>
       <Footer />
     </>

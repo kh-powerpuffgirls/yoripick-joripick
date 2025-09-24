@@ -18,6 +18,7 @@ import cancel from './images/icon/cancel.png'
 import toggleList from './images/icon/list.png'
 import toggleGall from './images/icon/gallery.png'
 import calendar from './images/icon/calendar.svg'
+import EatBtiLogo from './images/image-removebg-preview.png'
 
 export const lodingImg = {
     logo: logo,
@@ -38,7 +39,8 @@ export const lodingImg = {
     cancel: cancel,
     toggleList: toggleList,
     toggleGall: toggleGall,
-    calendar: calendar
+    calendar: calendar,
+    EatBtiLogo: EatBtiLogo
 
 }
 

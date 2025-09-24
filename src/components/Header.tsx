@@ -61,7 +61,7 @@ const Header = () => {
               </li>
               <li className="nav-line"></li>
               <li>
-                <Link to="/eat-bti" className="nav-link">식BTI</Link>
+                <Link to="/eatbti" className="nav-link">식BTI</Link>
               </li>
               <li className="nav-line"></li>
               <li>
