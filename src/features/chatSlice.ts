@@ -37,9 +37,10 @@ const chatSlice = createSlice({
                 state.rooms = state.rooms.filter(r => r.roomNo !== room.roomNo);
                 state.rooms.unshift(room);
             }
-        }
+        },
+        resetRooms: () => initialState,
     }
 })
 
-export const { resetRoom, setRooms, openChat, closeChat, sendMessage } = chatSlice.actions;
+export const { resetRoom, setRooms, openChat, closeChat, sendMessage, resetRooms } = chatSlice.actions;
 export default chatSlice.reducer;

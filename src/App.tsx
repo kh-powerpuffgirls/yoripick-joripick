@@ -52,9 +52,9 @@ import MarketMyList from './pages/community/market/MarketMyList'
 import MarketMyDetailPage from './pages/community/market/MarketMyDetailPage'
 import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
 import type { RootState } from './store/store'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getRooms } from './api/chatApi'
-import { openChat, setRooms } from './features/chatSlice'
+import { closeChat, openChat, resetRooms, setRooms } from './features/chatSlice'
 import { ChatAlertModal } from './components/Chatting/chatAlertModal'
 import { Notification } from './components/Chatting/Notification'
 import AdminRoute from './components/AdminRoute'
@@ -69,6 +69,9 @@ import { ClngManagement } from './pages/Admin/clngManagement'
 import { IngManagement } from './pages/Admin/ingManagement'
 
 function App() {
+  const queryClient = useQueryClient();
+  console.log("App state:", useSelector((state: RootState) => state.auth));
+
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const userNo = user?.userNo;
@@ -107,20 +110,27 @@ function App() {
 
   // 채팅방 목록 로딩
   const { data: roomData, refetch } = useQuery({
-    queryKey: ["rooms", userNo],
+    queryKey: ["rooms"],
     queryFn: () => getRooms(userNo),
     enabled: isAuthenticated,
   });
+
   useEffect(() => {
+    console.log("불린당");
     if (isAuthenticated) {
       refetch();
+    } else {
+      dispatch(closeChat());
+      dispatch(resetRooms());
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
     }
-  }, [isAuthenticated, roomData, refetch]);
+  }, [isAuthenticated, refetch, dispatch]);
+
   useEffect(() => {
     if (roomData) {
       dispatch(setRooms(roomData));
     }
-  }, [roomData, refetch]);
+  }, [roomData, dispatch]);
 
   return (
     <>
@@ -168,18 +178,18 @@ function App() {
         <Route path="/eatBTI/question" element={<QuestionPage />} />
         <Route path="/eatBTI/result" element={<ResultPage />} />
 
-        <Route path="/ingpedia" element={<Ingpedia/>} >
-          <Route path='' element={<IngpediaList/>}/>
-          <Route path='write' element={<IngpediaWrite/>}/>
-          <Route path='detail/:ingNo' element={<IngpediaDetail/>}/>
-          <Route path='edit/:ingNo' element={<IngpediaEdit/>}/>
+        <Route path="/ingpedia" element={<Ingpedia />} >
+          <Route path='' element={<IngpediaList />} />
+          <Route path='write' element={<IngpediaWrite />} />
+          <Route path='detail/:ingNo' element={<IngpediaDetail />} />
+          <Route path='edit/:ingNo' element={<IngpediaEdit />} />
         </Route>
-        <Route path="/mypage/inglist" element={<MyIng/>} >
-          <Route path='' element={<MyIngList/>}/>
-          <Route path='detail/:ingNo' element={<MyIngDetail/>}/>
-          <Route path='write' element={<MyIngWrite/>}/>
+        <Route path="/mypage/inglist" element={<MyIng />} >
+          <Route path='' element={<MyIngList />} />
+          <Route path='detail/:ingNo' element={<MyIngDetail />} />
+          <Route path='write' element={<MyIngWrite />} />
         </Route>
-        <Route path="/ing-popup" element={<IngPopup/>} />
+        <Route path="/ing-popup" element={<IngPopup />} />
 
         <Route path="/community" element={<CommunityMain />} />
         <Route path="/community/mypost" element={<MyPost />} />
