@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './CommunityMain.module.css';
-import CommunityHeader from './CommunityHeader';
+import CommunityHeader from './Header/CommunityHeader';
 import { Link } from 'react-router-dom';
 
 interface BoardInfo {
