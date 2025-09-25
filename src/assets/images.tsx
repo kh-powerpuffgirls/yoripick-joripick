@@ -61,18 +61,17 @@ export const lodingIngIcon = [
 ]
 
 export const lodingIngBn = [
-    '/images/ing/banner/anh-nguyen-kcA-c3f_3FE-unsplash.jpg',
-    '/images/ing/banner/fruits.jpg',
-    '/images/ing/banner/nathan-dumlao-bRdRUUtbxO0-unsplash.jpg',
-    '/images/ing/banner/thanh-soledas-Kf1nBG76Xe8-unsplash.jpg',
-    '/images/ing/banner/melissa-askew-y4xZxzN754M-unsplash.jpg',
-    '/images/ing/banner/eiliv-aceron-YlAmh_X_SsE-unsplash.jpg',
-    '/images/ing/banner/jongsun-lee-JnFGgVaFpmE-unsplash.jpg',
-    '/images/ing/banner/ahmadreza-rezaie-eU2s_fonJkg-unsplash.jpg',
-    '/images/ing/banner/maksim-shutov-pUa1On18Jno-unsplash.jpg',
-    '/images/ing/banner/art-rachen-Asj5DFw8UAw-unsplash.jpg',
-    '/images/ing/banner/andra-ion-qsPHXC4T2cY-unsplash.jpg',
-    '/images/ing/banner/kristiana-pinne-FL8NSCfvty0-unsplash.jpg',
-    '/images/ing/banner/victoria-shes-UC0HZdUitWY-unsplash.jpg',
+    '/assets/images/ing/banner/anh-nguyen-kcA-c3f_3FE-unsplash.webp',
+    '/assets/images/ing/banner/fruits.webp',
+    '/assets/images/ing/banner/nathan-dumlao-bRdRUUtbxO0-unsplash.webp',
+    '/assets/images/ing/banner/thanh-soledas-Kf1nBG76Xe8-unsplash.webp',
+    '/assets/images/ing/banner/melissa-askew-y4xZxzN754M-unsplash.webp',
+    '/assets/images/ing/banner/eiliv-aceron-YlAmh_X_SsE-unsplash.webp',
+    '/assets/images/ing/banner/jongsun-lee-JnFGgVaFpmE-unsplash.webp',
+    '/assets/images/ing/banner/ahmadreza-rezaie-eU2s_fonJkg-unsplash.webp',
+    '/assets/images/ing/banner/maksim-shutov-pUa1On18Jno-unsplash.webp',
+    '/assets/images/ing/banner/art-rachen-Asj5DFw8UAw-unsplash.webp',
+    '/assets/images/ing/banner/andra-ion-qsPHXC4T2cY-unsplash.webp',
+    '/assets/images/ing/banner/kristiana-pinne-FL8NSCfvty0-unsplash.webp',
+    '/assets/images/ing/banner/victoria-shes-UC0HZdUitWY-unsplash.webp',
 ]
-

@@ -130,7 +130,7 @@ const Header = () => {
             {user ? (
               <button className="log-link" onClick={logout}>
                 <div>로그아웃</div>
-                <img className="profile-image" src={ user.profile ? `${user.profile}` : lodingImg.profile} alt="프로필" />
+                <img className="profile-image" src={ user.profile ? user.profile : lodingImg.profile} alt="프로필" />
               </button>
             ) : (
               <button className="log-link" onClick={() => navigate('/login', { state: { from: loc } })}>

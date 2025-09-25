@@ -115,6 +115,12 @@
   height: 80px;
   background-color: #ddd;
   border-radius: 4px;
+  object-fit: cover;
+}
+.thumb-image {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
 }
 .arrow-icon{
   width: 30px;

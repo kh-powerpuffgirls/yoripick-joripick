@@ -14,7 +14,6 @@ import type { RootState } from "../../store/store";
 export default function IngpediaDetail(){
 
     const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
-    const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { ingNo } = useParams();
