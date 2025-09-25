@@ -11,9 +11,9 @@ import Login from './pages/login/Login'
 import AlreadyLoginRoute from './components/Security/AlreadyLoginRoute'
 import OAuth2Success from './pages/login/OAuth2Success'
 import OAuthUsernamePage from './pages/enroll/OAuthUsernamePage'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
-import { api } from './api/authApi'
+import { api, getNotiSettings } from './api/authApi'
 import { MealplanMain } from './pages/Mealplan/main'
 import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import RecipeWrite from './pages/community/Recipe/RecipeWrite'
@@ -50,10 +50,34 @@ import MarketForm from './pages/community/market/MarketForm'
 import MarketBuyForm from './pages/community/market/MarketBuyForm'
 import MarketMyList from './pages/community/market/MarketMyList'
 import MarketMyDetailPage from './pages/community/market/MarketMyDetailPage'
+import { setSettingsError, setSettingsLoading, setUserSettings } from './features/notiSlice'
+import type { RootState } from './store/store'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { getRooms } from './api/chatApi'
+import { closeChat, openChat, resetRooms, setRooms } from './features/chatSlice'
+import { ChatAlertModal } from './components/Chatting/chatAlertModal'
+import { Notification } from './components/Chatting/Notification'
+import AdminRoute from './components/AdminRoute'
+import { AdminDashboard } from './pages/Admin/main'
+import { UserManagement } from './pages/Admin/userManagement'
+import { RcpManagement } from './pages/Admin/rcpManagement'
+import { CommManagement } from './pages/Admin/commManagement'
+import { ClassManagement } from './pages/Admin/classManagement'
+import { CSmanagement } from './pages/Admin/csManagement'
+import { AnnManagement } from './pages/Admin/annManagement'
+import { ClngManagement } from './pages/Admin/clngManagement'
+import { IngManagement } from './pages/Admin/ingManagement'
 
 function App() {
+  const queryClient = useQueryClient();
+  console.log("App state:", useSelector((state: RootState) => state.auth));
 
   const dispatch = useDispatch();
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const userNo = user?.userNo;
+  const rooms = useSelector((state: RootState) => state.chat.rooms);
+
+  // 로그인 정보 유지
   useEffect(() => {
     api.post("auth/tokens/refresh")
       .then(res => {
@@ -65,17 +89,79 @@ function App() {
       });
   }, []);
 
+  // 사용자 알림설정 정보
+  useEffect(() => {
+    const fetchSettings = async () => {
+      dispatch(setSettingsLoading(true));
+      dispatch(setSettingsError(null));
+      try {
+        const settings = await getNotiSettings(userNo);
+        dispatch(setUserSettings(settings));
+      } catch (error) {
+        dispatch(setSettingsError("알림 설정을 불러오는 데 실패했습니다."));
+      } finally {
+        dispatch(setSettingsLoading(false));
+      }
+    };
+    if (userNo) {
+      fetchSettings();
+    }
+  }, [dispatch, userNo]);
+
+  // 채팅방 목록 로딩
+  const { data: roomData, refetch } = useQuery({
+    queryKey: ["rooms"],
+    queryFn: () => getRooms(userNo),
+    enabled: isAuthenticated,
+  });
+
+  useEffect(() => {
+    console.log("불린당");
+    if (isAuthenticated) {
+      refetch();
+    } else {
+      dispatch(closeChat());
+      dispatch(resetRooms());
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    }
+  }, [isAuthenticated, refetch, dispatch]);
+
+  useEffect(() => {
+    if (roomData) {
+      dispatch(setRooms(roomData));
+    }
+  }, [roomData, dispatch]);
+
   return (
     <>
       <Header />
       <AlertModal />
+      <ChatAlertModal />
       <ChatModal />
+      <Notification />
+      {rooms && rooms.length > 0 && (
+        <p className='chatBtn' onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
+      )}
       <Routes>
         <Route path="/login" element={
           <AlreadyLoginRoute>
             <Login />
           </AlreadyLoginRoute>
         } />
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } />
+        <Route path="/admin/users" element={<UserManagement />} />
+        <Route path="/admin/recipes" element={<RcpManagement />} />
+        <Route path="/admin/communities" element={<CommManagement />} />
+        <Route path="/admin/classes" element={<ClassManagement />} />
+        <Route path="/admin/cservices" element={<CSmanagement />} />
+        <Route path="/admin/announcements" element={<AnnManagement />} />
+        <Route path="/admin/challenges" element={<ClngManagement />} />
+        <Route path="/admin/ingredients" element={<IngManagement />} />
+
         <Route path="/home" element={<Mainpage />} />
         <Route path="/cservice" element={<CServiceMain />} />
         <Route path="/mypage/mealplan" element={<MealplanMain />} />
@@ -92,18 +178,18 @@ function App() {
         <Route path="/eatBTI/question" element={<QuestionPage />} />
         <Route path="/eatBTI/result" element={<ResultPage />} />
 
-        <Route path="/ingpedia" element={<Ingpedia/>} >
-          <Route path='' element={<IngpediaList/>}/>
-          <Route path='write' element={<IngpediaWrite/>}/>
-          <Route path='detail/:ingNo' element={<IngpediaDetail/>}/>
-          <Route path='edit/:ingNo' element={<IngpediaEdit/>}/>
+        <Route path="/ingpedia" element={<Ingpedia />} >
+          <Route path='' element={<IngpediaList />} />
+          <Route path='write' element={<IngpediaWrite />} />
+          <Route path='detail/:ingNo' element={<IngpediaDetail />} />
+          <Route path='edit/:ingNo' element={<IngpediaEdit />} />
         </Route>
-        <Route path="/mypage/inglist" element={<MyIng/>} >
-          <Route path='' element={<MyIngList/>}/>
-          <Route path='detail/:ingNo' element={<MyIngDetail/>}/>
-          <Route path='write' element={<MyIngWrite/>}/>
+        <Route path="/mypage/inglist" element={<MyIng />} >
+          <Route path='' element={<MyIngList />} />
+          <Route path='detail/:ingNo' element={<MyIngDetail />} />
+          <Route path='write' element={<MyIngWrite />} />
         </Route>
-        <Route path="/ing-popup" element={<IngPopup/>} />
+        <Route path="/ing-popup" element={<IngPopup />} />
 
         <Route path="/community" element={<CommunityMain />} />
         <Route path="/community/mypost" element={<MyPost />} />
