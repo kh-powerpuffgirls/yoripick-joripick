@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './MarketBuyForm.module.css';
-import CommunityHeader from '../Header/CommunityHeader';
+import CommunityHeader from '../CommunityHeader';
 import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
@@ -23,9 +23,7 @@ interface MarketItem {
     deadline: string;
     alwaysOnSale: boolean;
     userNo: number; 
-    username: string; 
-    author: string;
-    sellerProfileImageUrl?: string;
+    username: string;
 }
 
 // Report 관련 인터페이스 정의
@@ -162,35 +160,6 @@ const MarketBuyForm = () => {
         setIsConfirmModalOpen(true);
     };
 
-    // 컴포넌트 내부
-const handleSoftDelete = async () => {
-    if (!id || !user?.userNo) {
-        openCommunityModal({ message: '삭제 권한이 없습니다.', onConfirm: closeCommunityModal, showCancel: false });
-        return;
-    }
-
-    // 사용자에게 삭제 여부를 최종 확인하는 모달을 띄웁니다.
-    openCommunityModal({ 
-        message: '정말로 이 게시글을 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.', 
-        onConfirm: async () => {
-            try {
-                await api.delete(`/community/market/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-                openCommunityModal({ message: '게시글이 삭제되었습니다.', onConfirm: () => navigate('/community/market'), showCancel: false });
-            } catch (err) {
-                const axiosError = err as AxiosError;
-                console.error('Failed to delete post:', axiosError.response || axiosError);
-                const errorMessage = (axiosError.response?.data as any)?.message || '게시글 삭제에 실패했습니다.';
-                openCommunityModal({ message: errorMessage, onConfirm: closeCommunityModal, showCancel: false });
-            }
-        },
-        showCancel: true
-    });
-};
-
     const handleConfirm = async () => {
         setIsConfirmModalOpen(false);
         setError(null);
@@ -307,8 +276,6 @@ const handleSoftDelete = async () => {
         return <div className={styles.loading}>상품 정보를 불러오는 중입니다...</div>;
     }
 
-    const imageUrl = `${API_BASE}${item.imageUrl}`;
-    
     const stockOptions = Array.from({ length: item.quantity }, (_, i) => i + 1);
 
     return (
@@ -318,26 +285,22 @@ const handleSoftDelete = async () => {
                 <div className={styles.formContainer}>
                     <form onSubmit={handleSubmit}>
                         <div className={styles.formHeader}>
-    <input
-        type="text"
-        className={styles.titleInput}
-        value={item.title}
-        readOnly
-    />
-    <div className={styles.authorInfo}>
-        {item.sellerProfileImageUrl ? (
-            <img src={`${API_BASE}${item.sellerProfileImageUrl}`} alt={`${item.username}의 프로필`} className={styles.profileImage} />
-        ) : (
-            <span className={styles.profileIcon}></span>
-        )}
-        <span>{item.author}</span>
-        <span className={styles.date}>{new Date().toLocaleDateString()}</span>
-    </div>
-</div>
+                            <input
+                                type="text"
+                                className={styles.titleInput}
+                                value={item.title}
+                                readOnly
+                            />
+                            <div className={styles.authorInfo}>
+                                <span className={styles.profileIcon}></span>
+                                <span>{user?.username || '사용자'}</span>
+                                <span className={styles.date}>{new Date().toLocaleDateString()}</span>
+                            </div>
+                        </div>
 
                         <div className={styles.imageUploadSection}>
                             <div className={styles.imageBox}>
-                                <img src={imageUrl} alt={item.name} className={styles.imagePreview} />
+                                <img src={item.imageUrl} alt={item.name} className={styles.imagePreview} />
                             </div>
                         </div>
 
@@ -368,7 +331,7 @@ const handleSoftDelete = async () => {
                             </div>
                             <div className={styles.itemInfo}>
                                 <div className={styles.itemImageContainer}>
-                                    <img src={imageUrl} alt={item.name} className={styles.itemImagePreview} />
+                                    <img src={item.imageUrl} alt={item.name} className={styles.itemImagePreview} />
                                 </div>
                                 <div className={styles.itemDetails}>
                                     <div className={styles.detailRow}>
@@ -483,20 +446,11 @@ const handleSoftDelete = async () => {
 
                         {error && <div className={styles.errorBox}>{error}</div>}
 
-                    <div className={styles.buttonGroup}>
-                        {isLoggedIn && user?.userNo === item.userNo ? (
-                            <>
-                                <button type="button" className={styles.deleteButton} onClick={handleSoftDelete}>게시글 삭제</button>
-                                <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>취소</button>
-                            </>
-                        ) : (
-                            <>
-                                <button type="button" className={styles.reportButton} onClick={handleReportClick}>신고하기</button>
-                                <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>취소</button>
-                                <button type="submit" className={styles.submitButton} disabled={item.quantity === 0}>구매 신청</button>
-                            </>
-                        )}
-                    </div>
+                        <div className={styles.buttonGroup}>
+                            <button type="button" className={styles.reportButton} onClick={handleReportClick}>신고하기</button>
+                            <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>취소</button>
+                            <button type="submit" className={styles.submitButton} disabled={item.quantity === 0}>구매 신청</button>
+                        </div>
                     </form>
                 </div>
             </div>

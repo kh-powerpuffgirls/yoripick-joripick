@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './CkClass.module.css';
-import CommunityHeader from '../Header/CommunityHeader';
+import CommunityHeader from '../CommunityHeader';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
 import { useDispatch, useSelector } from 'react-redux';
