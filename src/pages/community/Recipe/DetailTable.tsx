@@ -15,17 +15,41 @@ import NutrientInfo from './NutrientInfo';
 import SikBti from './SikBti';
 import { useSelector } from 'react-redux';
 
-interface DetailTableProps {
-  recipe: RecipeDetail;
+// 신고
+interface ReportTargetInfo {
+  author: string;
+  title: string;
+  category: string;
+  refNo: number;
 }
 
-const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
+interface DetailTableProps {
+  recipe: RecipeDetail;
+  onReportClick: (targetInfo: ReportTargetInfo) => void; // 신고
+}
+
+// 신고
+const DetailTable: React.FC<DetailTableProps> = ({ recipe, onReportClick }) => {
   const loginUserNo = useSelector((state: RootState) => state.auth.user?.userNo);
   const isOwner = loginUserNo === recipe.writer?.userNo;
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
     navigate(`/profile/${recipe.writer?.userNo}`);
+  };
+
+  // 신고
+  const handleReportClick = () => {
+    if (!recipe.writer) return;
+
+    const targetInfo: ReportTargetInfo = {
+      author: recipe.writer.username,
+      title: recipe.rcpName,
+      category: 'RECIPE',
+      refNo: recipe.writer.userNo,
+    };
+    
+    onReportClick(targetInfo);
   };
 
   const roundNutrients = (nutrients: typeof recipe.totalNutrient) => {
@@ -51,8 +75,9 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe }) => {
                 <span className={styles.nickname}>{recipe.writer?.username}</span>
               </div>
             </div>
+             {/* ---  신고 --- */}
               {!isOwner && (
-                <button className={styles.report}>
+                <button className={styles.report} onClick={handleReportClick}>
                   <img src={reportIcon} alt="신고" />
                   <span>신고하기</span>
                 </button>

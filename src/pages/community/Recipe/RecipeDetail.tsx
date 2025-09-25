@@ -19,6 +19,28 @@ import bookMark_unck from '../../../assets/sample/bookMark_unck.png';
 import DetailTable from './DetailTable';
 import CookingSteps from './CookingSteps';
 import Reviews from './Reviews';
+import CommunityModal from '../CommunityModal';
+import ReportModal from '../../../components/Report/ReportModal';
+
+// 신고 모달 인터페이스
+interface ModalState {
+  message: string;
+  onConfirm?: () => void;
+  showCancel?: boolean;
+}
+
+interface ReportOption {
+  reportType: string;
+  category: string;
+  detail: string;
+}
+
+export interface ReportTargetInfo {
+  author: string;
+  title: string;
+  category: string;
+  refNo: number;
+}
 
 const CommunityRecipeDetail: React.FC = () => {
     // 1. URL에서 현재 레시피의 번호(ID)
@@ -39,6 +61,12 @@ const CommunityRecipeDetail: React.FC = () => {
     // 북마크 상태
     const [isBookmarked, setIsBookmarked] = useState<boolean | null>(null);
     const [bookmarkCount, setBookmarkCount] = useState(0);
+
+    // 신고 상태
+    const [modal, setModal] = useState<ModalState | null>(null);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
+    const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
     
     // 3. 컴포넌트가 처음 렌더링될 때 API를 호출하여 데이터 요청
     const fetchRecipeDetail = useCallback(async () => {
@@ -122,6 +150,56 @@ const CommunityRecipeDetail: React.FC = () => {
         }
     };
 
+    // 신고
+    const openModal = (modalData: ModalState) => setModal(modalData);
+    const closeModal = () => setModal(null);
+    const handleModalConfirm = () => {
+        modal?.onConfirm?.();
+        closeModal();
+    };
+
+    const fetchReportOptions = async (category: string) => {
+      try {
+        const res = await api.get<ReportOption[]>(`/community/report/types`);
+        const filteredOptions = res.data.filter(option => option.category === category);
+        setReportOptions(filteredOptions);
+      } catch (err) {
+        console.error('신고 유형 조회 오류:', err);
+        openModal({ message: '신고 유형 조회에 실패했습니다.', showCancel: false });
+        setReportOptions([]);
+      }
+    };
+  
+    const handleReportClick = async (targetInfo: ReportTargetInfo) => {
+      if (!loginUserNo) {
+        openModal({ message: '로그인 후 이용 가능합니다.', showCancel: false });
+        return;
+      }
+      if (loginUserNo === targetInfo.refNo) {
+        openModal({ message: '자신이 작성한 게시물은 신고할 수 없습니다.', showCancel: false });
+        return;
+      }
+  
+      setReportTargetInfo(targetInfo);
+      await fetchReportOptions(targetInfo.category);
+      setIsReportModalOpen(true);
+    };
+    
+    // 신고
+    const handleReportSubmit = async (reportType: string, content: string, refNo: number, refType: string) => {
+      try {
+        await api.post(`/community/report`, { reportType, content, refNo, refType });
+        openModal({ message: '신고가 접수되었습니다.', showCancel: false });
+        setIsReportModalOpen(false);
+        setReportTargetInfo(null);
+      } catch (err: any) {
+        console.error('신고 처리 오류:', err.response?.data?.message || err.message);
+        openModal({ message: err.response?.data?.message || '신고 처리에 실패했습니다.', showCancel: false });
+        setIsReportModalOpen(false);
+        setReportTargetInfo(null);
+      }
+    };
+
     // 삭제 버튼 클릭 시 실행될 핸들러 함수
     const handleDelete = async () => {
         if (window.confirm('정말로 이 레시피를 삭제하시겠습니까?')) {
@@ -151,52 +229,61 @@ const CommunityRecipeDetail: React.FC = () => {
     const isOwner = loginUserNo === recipe.writer?.userNo;
     // 4. 데이터 로딩 완료 후 화면 렌더링
     return (
+        <>
+        {/* 신고 */}
+        {modal && <CommunityModal message={modal.message} onConfirm={handleModalConfirm} onClose={closeModal} showCancel={modal.showCancel} />}
+        {isReportModalOpen && reportTargetInfo && (
+            <ReportModal
+                isOpen={isReportModalOpen}
+                onClose={() => setIsReportModalOpen(false)}
+                onSubmit={handleReportSubmit}
+                reportOptions={reportOptions}
+                targetInfo={reportTargetInfo}
+            />
+        )}
         <div className={styles.container}>
-        {/* ==================== 상단 헤더 ==================== */}
-        <div className={styles.head_title}>
-            <div className={styles.approval_star}>
-            <div>{recipe.isOfficial ? '공식' : '식구'}</div>
-            <span>★{(recipe.avgStars || 0).toFixed(1)}</span>
-            </div>
-            <span style={{fontWeight: 'bold', fontSize: '50px'}}>{recipe.rcpName}</span>
-            <span style={{fontSize: '20px', color: '#636363'}}>
-                {new Date(recipe.createdAt).toLocaleString()}
-                {recipe.updatedAt && (
-                    <span style={{ marginLeft: '10px' }}>
-                    | (수정){new Date(recipe.updatedAt).toLocaleString()}
-                    </span>
-                )}
-            </span>
-            <div className={styles.other_info}>
-                {recipe.isOfficial ? (
-                    <>
-                    북마크 <span style={{color: '#ff0000ff'}}>{bookmarkCount}</span> |
-                    </>
-                ) : (
-                    <>
-                    좋아요 <span style={{color: '#FF0000'}}>{likeCount}</span> |
-                    </>
-                )}
-                리뷰 <span style={{color: '#009626'}}>{recipe.reviewCount}</span> |
-                조회수 <span style={{color: '#009626'}}>{recipe.views}</span>
-            </div>
-        </div>
-
-        <div className={styles.content}>
-
-            {recipe.isOfficial && isBookmarked !== null && (
-                // 1. 공식 레시피일 경우: 북마크 버튼을 표시합니다.
-                <div className={styles.bookMark}>
-                    <img 
-                        src={isBookmarked ? bookMark_ck : bookMark_unck} 
-                        alt="북마크"
-                        onClick={handleBookmarkClick}
-                        className={styles.bookmark_icon}
-                    />
-                    {bookmarkCount}
+            {/* ==================== 상단 헤더 ==================== */}
+            <div className={styles.head_title}>
+                <div className={styles.approval_star}>
+                <div>{recipe.isOfficial ? '공식' : '식구'}</div>
+                <span>★{(recipe.avgStars || 0).toFixed(1)}</span>
                 </div>
-            )}
-                
+                <span style={{fontWeight: 'bold', fontSize: '50px'}}>{recipe.rcpName}</span>
+                <span style={{fontSize: '20px', color: '#636363'}}>
+                    {new Date(recipe.createdAt).toLocaleString()}
+                    {recipe.updatedAt && (
+                        <span style={{ marginLeft: '10px' }}>
+                        | (수정){new Date(recipe.updatedAt).toLocaleString()}
+                        </span>
+                    )}
+                </span>
+                <div className={styles.other_info}>
+                    {recipe.isOfficial ? (
+                        <>
+                        북마크 <span style={{color: '#ff0000ff'}}>{bookmarkCount}</span> |
+                        </>
+                    ) : (
+                        <>
+                        좋아요 <span style={{color: '#FF0000'}}>{likeCount}</span> |
+                        </>
+                    )}
+                    리뷰 <span style={{color: '#009626'}}>{recipe.reviewCount}</span> |
+                    조회수 <span style={{color: '#009626'}}>{recipe.views}</span>
+                </div>
+            </div>
+            <div className={styles.content}>
+                {recipe.isOfficial && isBookmarked !== null && (
+                    <div className={styles.bookMark}>
+                        <img 
+                            src={isBookmarked ? bookMark_ck : bookMark_unck} 
+                            alt="북마크"
+                            onClick={handleBookmarkClick}
+                            className={styles.bookmark_icon}
+                        />
+                        {bookmarkCount}
+                    </div>
+                )}
+                    
                 {/* 사용자 레시피의 수정/삭제 버튼 */}
                 {!recipe.isOfficial && isOwner && (
                     <div className={styles.user_btn}>
@@ -204,42 +291,38 @@ const CommunityRecipeDetail: React.FC = () => {
                         <button id={styles.action_btn} onClick={handleEdit}>수정하기</button>
                     </div>
                 )}
-
-            {/* ==================== 대표 이미지 및 소개 ==================== */}
-            <div className={styles.basic_info}>
-                {recipe.mainImage && <img src={recipe.mainImage} alt={recipe.rcpName} />}
-            <span>{recipe.rcpInfo}</span>
-            </div>
-            
-            {/* ✨ 1. 재료/영양 테이블 자식 컴포넌트 */}
-            <DetailTable recipe={recipe} />
-
-            {/* ✨ 2. 조리 순서 자식 컴포넌트 */}
-            <CookingSteps steps={recipe.steps} />
-
-            {/* ==================== 좋아요/싫어요 버튼 ==================== */}
-            { !recipe.isOfficial&&(
-                <div className={styles.Likes}>
-                    <img 
-                        src={myLikeStatus === 'LIKE' ? likeClick : likeUnclick} 
-                        height="90px" 
-                        alt="좋아요" 
-                        onClick={() => handleLikeClick('LIKE')}
-                    />
-                    <img 
-                        src={myLikeStatus === 'DISLIKE' ? dislikeClick : dislikeUnclick} 
-                        height="90px" 
-                        alt="싫어요"
-                        onClick={() => handleLikeClick('DISLIKE')}
-                    />
+                <div className={styles.basic_info}>
+                    {recipe.mainImage && <img src={recipe.mainImage} alt={recipe.rcpName} />}
+                <span>{recipe.rcpInfo}</span>
                 </div>
-            )}
+                
+                {/* ✨ 1. 재료/영양 테이블 자식 컴포넌트 */}
+                <DetailTable recipe={recipe} onReportClick={handleReportClick} /> {/* ⭐ prop 전달 */}
+                {/* ✨ 2. 조리 순서 자식 컴포넌트 */}
+                <CookingSteps steps={recipe.steps} />
+                {/* ==================== 좋아요/싫어요 버튼 ==================== */}
+                { !recipe.isOfficial&&(
+                    <div className={styles.Likes}>
+                        <img 
+                            src={myLikeStatus === 'LIKE' ? likeClick : likeUnclick} 
+                            height="90px" 
+                            alt="좋아요" 
+                            onClick={() => handleLikeClick('LIKE')}
+                        />
+                        <img 
+                            src={myLikeStatus === 'DISLIKE' ? dislikeClick : dislikeUnclick} 
+                            height="90px" 
+                            alt="싫어요"
+                            onClick={() => handleLikeClick('DISLIKE')}
+                        />
+                    </div>
+                )}
 
-            {/* ✨ 3. 리뷰 영역 자식 컴포넌트 */}
-            <Reviews rcpNo={recipe.rcpNo} onReviewSubmit={fetchRecipeDetail} reviewCount={recipe.reviewCount} />
+                {/* ✨ 3. 리뷰 영역 자식 컴포넌트 */}
+                <Reviews rcpNo={recipe.rcpNo} onReviewSubmit={fetchRecipeDetail} reviewCount={recipe.reviewCount} onReportClick={handleReportClick} />
+            </div>
         </div>
-        </div>
+        </>
     );
 };
-
 export default CommunityRecipeDetail;
