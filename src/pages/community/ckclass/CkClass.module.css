@@ -397,6 +397,30 @@
 
 
 .deleteButton:hover {
-  background-color: #e0e0e0;   /* 호버 배경 */
+  background-color: #e0e0e0;
 }
 
+.leaveButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #f44336;
+  color: white;
+  transition: background-color 0.2s;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leaveButton:hover {
+  background-color: #d32f2f;
+}
+
+.joinedButtons {
+  display: flex;
+  gap: 0.5rem;
+}
