@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import { ingBn, lodingImg } from "../../assets/images";
+import { ingBn, lodingImg, lodingIngBn, lodingIngIcon } from "../../assets/images";
 import Pagination from "../../components/Pagination";
 import ingStyle from "./Ingpedia.module.css"
 import "../../assets/css/button.css";
@@ -115,10 +115,12 @@ export default function IngpediaList(){
                     {/* map 정리 필요 */}
                     <ul className={cx(ingStyle["category-list"], ingDefaultStyle["content-area"])}>
                         {ingCodeSet.map(
-                        (item) => (
+                        (item, index) => (
                             <li key={item.ingCode} onClick={()=>setSubmittedKeyword({ingCode:item.ingCode, keyword:'', page:0})}
                                 className={submittedKeyword.ingCode === item.ingCode ? ingStyle.selected : ''}>
-                                <span className={ingStyle.circle}></span><p>{item.ingCodeName}</p>
+                                <span className={ingStyle.circle}>
+                                    <img src={lodingIngIcon[index-1]} className={ingDefaultStyle["ing-icon"]}/>
+                                </span><p>{item.ingCodeName}</p>
                             </li>
                         ))}
                     </ul>
@@ -128,7 +130,7 @@ export default function IngpediaList(){
                 {/* <!-- 목록 --> */}
                 <section className={ingStyle[`ing-content`]}>
                     <div className={ingStyle[`category-banner`]}> 
-                        <img src={ingBn[0]}/>
+                        <img src={lodingIngBn[submittedKeyword.ingCode]}/>
                         <h2 className={ingStyle[`category-banner-stroke`]}>{ingCodeSet[submittedKeyword.ingCode].ingCodeName}</h2>
                         <h2>{ingCodeSet[submittedKeyword.ingCode].ingCodeName}</h2>
                     </div>
@@ -150,7 +152,7 @@ export default function IngpediaList(){
                     pageInfo={ingPageInfo}
                     onPageChange={(page)=> fetchIngData(page)}
                 />
-                <a href="https://www.flaticon.com/kr/free-icons/" className={ingStyle['gray']} title="과일 아이콘">과일 아이콘 제작자: Freepik - Flaticon</a>
+                <a href="https://www.flaticon.com/kr/free-icons/" className={ingDefaultStyle['more-link']} title="과일 아이콘">과일 아이콘 제작자: Freepik - Flaticon</a>
             </div>
         </>
     )
