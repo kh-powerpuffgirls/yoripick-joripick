@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { initialState, type AlertState } from "../type/components";
 
 const alertSlice = createSlice({
-    name : 'alert',
+    name: 'alert',
     initialState,
     reducers : {
         showAlert : (state, action:PayloadAction<AlertState>) => {
@@ -16,5 +16,5 @@ const alertSlice = createSlice({
     }
 })
 
-export const {showAlert, hideAlert} = alertSlice.actions;
+export const { showAlert, hideAlert } = alertSlice.actions;
 export default alertSlice.reducer;

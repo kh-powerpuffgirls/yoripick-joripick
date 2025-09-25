@@ -1,6 +1,7 @@
 import axios from "axios";
 import { store } from "../store/store";
 import type { NutrientData } from "../components/Mealplan/mealplanNut";
+import { loginSuccess, logout, saveUserData } from "../features/authSlice";
 
 const getAccessToken = () => {
     return store.getState().auth.accessToken;
@@ -21,6 +22,32 @@ mealplanApi.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
+
+mealplanApi.interceptors.response.use(
+    (response) => response,
+    async (err) => {
+        const originalRequest = err.config;
+        if (err.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+                const response = await axios.post(
+                    "http://localhost:8081/auth/tokens/refresh",
+                    {},
+                    { withCredentials: true }
+                );
+                store.dispatch(saveUserData(response.data));
+                store.dispatch(loginSuccess());
+                const newToken = response.data.accessToken;
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                return mealplanApi(originalRequest);
+            } catch (refreshError) {
+                store.dispatch(logout());
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(err);
+    }
+)
 
 export interface MealItemData {
     mealNo: number;
