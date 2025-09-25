@@ -20,6 +20,12 @@ export type ChatRoom = {
   messages: Message[];
   notification?: string;
   lastReadMessageNo?: number;
+  
+  imageUrl?: string;
+  username?: string;
+  description?: string;
+  unreadCount?: number;
+  memberCount?: number;
 };
 
 export type ChatRoomCreate = "admin" | "cclass" | "cservice";

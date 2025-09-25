@@ -10,7 +10,7 @@ import axios from 'axios';
 import { store } from '../../../store/store';
 import CkSettingsModal from './CkSettingsModal';
 import { leaveRooms, openChat } from '../../../features/chatSlice';
-import type { ChatRoomCreate, Message } from '../../../type/chatmodal';
+import type { ChatRoom, ChatRoomCreate, Message } from '../../../type/chatmodal';
 import { saveMessage } from '../../../api/chatApi';
 import useChat from '../../../hooks/useChat';
 
@@ -79,6 +79,7 @@ const CkClassMain = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
+  const rooms = useSelector((state: RootState) => state.chat.rooms);
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
@@ -149,13 +150,13 @@ const CkClassMain = () => {
     fetchClasses();
   }, [user, onUpdate]);
 
-  const handleReportClick = async (cls: CookingClassDisplay) => {
+    const handleReportClick = async (room: ChatRoom) => {
     const category = 'COOKING_CLASS';
     const targetInfo: ReportTargetInfo = {
-      author: cls.author,
-      title: cls.name,
+      author: room.username as string,
+      title: room.className,
       category,
-      refNo: cls.id,
+      refNo: Number(room.roomNo),
     };
 
     setReportTargetInfo(targetInfo);
@@ -318,7 +319,8 @@ const CkClassMain = () => {
   };
 
   const handleJoinedPageChange = (pageNumber: number) => {
-    const totalPages = Math.ceil(joinedClasses.length / joinedClassesPerPage);
+    // const totalPages = Math.ceil(joinedClasses.length / joinedClassesPerPage);
+    const totalPages = Math.ceil(rooms.filter(room => room.type === 'cclass').length / joinedClassesPerPage);
     if (pageNumber >= 1 && pageNumber <= totalPages) setJoinedCurrentPage(pageNumber);
   };
 
@@ -331,77 +333,68 @@ const CkClassMain = () => {
     [myClasses, myCurrentPage, myClassesPerPage]
   );
 
-  const joinedClassesToDisplay = useMemo(
-    () =>
-      joinedClasses.slice(
-        (joinedCurrentPage - 1) * joinedClassesPerPage,
-        joinedCurrentPage * joinedClassesPerPage
-      ),
-    [joinedClasses, joinedCurrentPage, joinedClassesPerPage]
-  );
-
-  const renderClassCard = (cls: CookingClassDisplay) => (
-    <div key={cls.id} className={styles.classCard}>
+  const renderClassCard = (room: ChatRoom) => (
+    <div key={room.roomNo} className={styles.classCard}>
       <div
         className={styles.classImage}
-        style={{ backgroundImage: cls.imageUrl ? `url(${cls.imageUrl})` : 'none' }}
+        style={{ backgroundImage: room.imageUrl ? `url(${room.imageUrl})` : 'none' }}
       ></div>
       <div className={styles.cardContent}>
         <div className={styles.cardHeader}>
           <div className={styles.classTitle}>
-            {cls.name}
+            {room.className}
             {/* 안 읽은 메시지 */}
-            {(cls.unreadCount ?? 0) > 0 && (
-              <span className={styles.unreadCountBadge}>{cls.unreadCount}</span>
+            {(room.unreadCount ?? 0) > 0 && (
+              <span className={styles.unreadCountBadge}>{room.unreadCount}</span>
             )}
           </div>
           <div className={styles.classButtons}>
             <button
-              className={`${styles.notificationButton} ${cls.isNotificationOn ? styles.on : styles.off}`}
-              onClick={() => handleNotificationToggle(cls.id)}
+              className={`${styles.notificationButton} ${room.notification === 'Y' ? styles.on : styles.off}`}
+              onClick={() => handleNotificationToggle(Number(room.roomNo))}
             >
-              {cls.isNotificationOn ? '🔔' : '🔕'}
+              {room.notification === 'Y' ? '🔔' : '🔕'}
             </button>
             {/* 💡 나의 클래스일 경우 '삭제' 버튼 표시 */}
-            {cls.type === 'my' && (
-              <button className={styles.deleteButton} onClick={() => handleDeleteClick(cls.id)}>
+            {room.username === user?.username && (
+              <button className={styles.deleteButton} onClick={() => handleDeleteClick(Number(room.roomNo))}>
                 삭제
               </button>
             )}
             {/* 💡 참여 클래스일 경우 '탈퇴' 버튼 표시 (삭제 버튼과 동일 위치) */}
-            {cls.type !== 'my' && (
+            {room.username !== user?.username && (
               <button
                 className={styles.leaveButton}
-                onClick={() => handleLeaveClassClick(cls.id, cls.name)}
+                onClick={() => handleLeaveClassClick(Number(room.roomNo), room.className)}
               >
                 탈퇴
               </button>
             )}
           </div>
         </div>
-        <div className={styles.classDescription}>{cls.description}</div>
+        <div className={styles.classDescription}>{room.description}</div>
         <div className={styles.cardFooter}>
           <div className={styles.authorInfo}>
-            <div className={styles.classAuthor}>{cls.author}</div>
-            <div className={styles.memberCount}>({cls.memberCount ?? 0}명 참여중...)</div>
+            <div className={styles.classAuthor}>{room.username}</div>
+            <div className={styles.memberCount}>({room.memberCount}명 참여중...)</div>
           </div>
 
-          {cls.type === 'my' ? (
+          {room.username === user?.username ? (
             <div className={styles.myButtons}>
-              <button className={styles.joinButton} onClick={() => handleJoinClick(cls.id)}>
+              <button className={styles.joinButton} onClick={() => handleJoinClick(Number(room.roomNo))}>
                 채팅
               </button>
-              <button className={styles.settingsButton} onClick={() => handleSettingsClick(cls.id)}>
+              <button className={styles.settingsButton} onClick={() => handleSettingsClick(Number(room.roomNo))}>
                 설정
               </button>
             </div>
           ) : (
             <div className={styles.joinedButtons}>
-              <button className={styles.joinButton} onClick={() => handleJoinClick(cls.id)}>
+              <button className={styles.joinButton} onClick={() => handleJoinClick(Number(room.roomNo))}>
                 채팅
               </button>
               {/* 💡 cardFooter에서 탈퇴 버튼 제거됨 - 위 classButtons로 이동 */}
-              <button className={styles.reportButton} onClick={() => handleReportClick(cls)}>
+              <button className={styles.reportButton} onClick={() => handleReportClick(room)}>
                 신고
               </button>
             </div>
@@ -426,7 +419,7 @@ const CkClassMain = () => {
           </div>
           {myClassesToDisplay.length > 0 ? (
             <div className={styles.classCardWrapper}>
-              {myClassesToDisplay.map(renderClassCard)}
+              {/* {myClassesToDisplay.map(renderClassCard)} */}
             </div>
           ) : (
             <div className={styles.noClasses}>아직 개설한 클래스가 없어요.</div>
@@ -459,9 +452,9 @@ const CkClassMain = () => {
           <div className={styles.sectionHeader}>
             <h2>참여중인 클래스 &gt;</h2>
           </div>
-          {joinedClassesToDisplay.length > 0 ? (
+          {rooms.filter(room => room.type === 'cclass').length > 0 ? (
             <div className={styles.classCardWrapper}>
-              {joinedClassesToDisplay.map(renderClassCard)}
+              {rooms.filter(room => room.type === 'cclass').map(renderClassCard)}
             </div>
           ) : (
             <div className={styles.noClasses}>아직 참여중인 클래스가 없어요.</div>
