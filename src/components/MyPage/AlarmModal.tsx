@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateAlarmSettings } from "../../features/authSlice";
 import axios from "axios";
 import type { RootState } from "../../store/store";
+import { api } from "../../api/authApi";
 
 interface AlarmModalProps {
   user: User;
@@ -42,10 +43,7 @@ const AlarmModal = ({ user, onClose }: AlarmModalProps) => {
     };
 
     try {
-      await axios.put(
-        `http://localhost:8081/users/alarm`,
-        payload, { withCredentials: true }
-      );
+      await api.put(`/users/alarm`,payload);
 
       console.log(payload);
 

@@ -1,5 +1,5 @@
 .container {
-  width: 750px;
+  width: 800px;
   margin: 0 auto;
   padding: 24px;
   font-family: "Noto Sans KR", "Arial", sans-serif;
@@ -13,14 +13,14 @@
 }
 
 .allergyCard {
-    border : #afa4a4b4 solid 2px;
-    border-radius: 7px;
-    padding-left: 10px;
-    padding-top: 2px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 50px;
+  border: #afa4a4b4 solid 2px;
+  border-radius: 7px;
+  padding-left: 10px;
+  padding-top: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 50px;
 }
 
 .profileSection {
@@ -39,8 +39,8 @@
 }
 
 .profileImg {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #e6e6e6;
@@ -67,6 +67,7 @@
   margin: 0;
   font-size: 22px;
   font-weight: 800;
+  margin-left: 20px;
   color: #111;
 }
 
@@ -99,22 +100,30 @@
   opacity: 0.92;
 }
 
-.recipeSummary {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  margin: 18px 0;
+.summaryCard {
+  flex: 1 1 120px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  text-align: center;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.summaryCard {
-  text-align: center;
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: 2px solid #d3d3d3;
-  background: #fff;
-  height: 90px;
-  width: 150px;
+.wideCard {
+  flex: 2 1 200px;
+  max-width: 300px;
+}
+
+.recipeSummary {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 24px 0;
+  flex-wrap: wrap;
 }
 
 .summaryCard p {
@@ -156,19 +165,57 @@
   color: #fff;
 }
 
-.육류 { background: #e73c4a; }
-.갑각류 { background: #f35912; }
-.콩류 { background: #7ec905; }
-.곡류 { background: #ac8847; }
-.야채 { background: #2cac05; }
-.기타 { background: #7f8c8d; }
-.가금류 { background: #f59e4c; }
-.어패류 { background: #489092; }
-.과일 { background: #e4ce07; }
-.유제품 { background: #77a3bd; }
-.너트 { background: #755743; }
-.생선 { background: #0a7fce; }
-.씨앗 { background: #1c583a; }
+.육류 {
+  background: #e73c4a;
+}
+
+.갑각류 {
+  background: #f35912;
+}
+
+.콩류 {
+  background: #7ec905;
+}
+
+.곡류 {
+  background: #ac8847;
+}
+
+.야채 {
+  background: #2cac05;
+}
+
+.기타 {
+  background: #7f8c8d;
+}
+
+.가금류 {
+  background: #f59e4c;
+}
+
+.어패류 {
+  background: #489092;
+}
+
+.과일 {
+  background: #e4ce07;
+}
+
+.유제품 {
+  background: #77a3bd;
+}
+
+.너트 {
+  background: #755743;
+}
+
+.생선 {
+  background: #0a7fce;
+}
+
+.씨앗 {
+  background: #1c583a;
+}
 
 .mealBtn {
   background: #c9f06a;
@@ -211,8 +258,8 @@
   border-radius: 8px;
   border: none;
   cursor: pointer;
-   float: right;
-   margin-right: 10px;
+  float: right;
+  margin-right: 10px;
 }
 
 .recipeList {

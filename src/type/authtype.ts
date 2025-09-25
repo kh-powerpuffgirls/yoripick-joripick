@@ -27,3 +27,10 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
 }
+
+export interface AnoterUser{
+  userNo: number;
+  profile?: string;
+  sikbti:string;
+  username: string;
+}

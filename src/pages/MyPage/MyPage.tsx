@@ -10,13 +10,17 @@ import MemberInfoModal from "../../components/MyPage/MemberInfoModal";
 import AlarmModal from "../../components/MyPage/AlarmModal";
 
 import type { RootState } from "../../store/store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import defaultProfile from "./defaultprofile.png"
 import InactiveModal from "../../components/MyPage/InactiveModal";
 import { updateProfileImage } from "../../features/authSlice";
+import type { User } from "../../type/authtype"
 import type { AllergyDto } from "../../type/allergytype";
+import { api } from "../../api/authApi";
+
 
 const MyPage = () => {
+    const { userNo } = useParams();
     const [isProfileModal, setProfileModal] = useState(false);
     const [isAllergyModal, setAllergyModal] = useState(false);
     const [isMemberInfoModal, setMemberInfoModal] = useState(false);
@@ -33,30 +37,40 @@ const MyPage = () => {
         dispatch(updateProfileImage(newUrl));
     };
 
-
     const [profileImg, setProfileImg] = useState<File | null>(null);
-    const user = useSelector((state: RootState) => state.auth.user);
+    const myProfile = useSelector((state: RootState) => state.auth.user);
+    //const user = useSelector((state: RootState) => state.auth.user);
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+    const [user, setUser] = useState<User>();
+
+    const isMyPage = Number(userNo) === myProfile?.userNo;
+
+    useEffect(() => {
+        if (myProfile) {
+            if ((Number(userNo) !== myProfile.userNo)) {
+                api.get(`users/profile/${userNo}`)
+                    .then(res => {
+                        const data = res.data;
+                        if (data.success) {
+                            setUser(data);
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response?.status === 410) {
+                            alert("탈퇴한 회원입니다.");
+                            navigate("/home");
+                        } else {
+                            alert("유저 정보를 불러올 수 없습니다.");
+                        }
+                    });
+            } else {
+                setUser(myProfile);
+            }
+        }
+    }, [myProfile, userNo]);
+
     const navigate = useNavigate();
-    const handleInactive = async () => {
-        // if (!user) return;
-
-        // try {
-        //     // 회원 탈퇴 API 호출
-        //     await axios.post(
-        //         `http://localhost:8081/users/${user.userNo}/inactive`,
-        //         {},
-        //         { withCredentials: true }
-        //     );
-
-        //     // 쿠키삭제 구현하거나 logout API 호출해서 쿠키삭제유도(추후에 작성할 예정 일단 MyPage의 다른 기능부터 만들고 돌아오자)
-
-        //     alert("회원 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다 🙏");
-        //     navigate("/");
-        // } catch (err) {
-        //     console.error("회원 탈퇴 실패:", err);
-        //     alert("회원 탈퇴 처리 중 오류가 발생했습니다.");
-        // }
+    const handleInactive = () => {
     };
 
     useEffect(() => {
@@ -122,89 +136,128 @@ const MyPage = () => {
     return (
         <div className={styles.container}>
             <div className={styles.headerRow}>
-                <button
-                    className={styles.inactiveBtn}
-                    onClick={() => setInactiveModal(true)}
-                >
-                    회원탈퇴
-                </button>
+                {isMyPage ? (
+                    // 내 마이페이지일 때 → 회원탈퇴 버튼
+                    <button
+                        className={styles.inactiveBtn}
+                        onClick={() => setInactiveModal(true)}
+                    >
+                        회원탈퇴
+                    </button>
+                ) : (
+                    // 다른 사람 마이페이지일 때 → 신고하기 버튼
+                    <button
+                        className={styles.reportBtn}
+                        onClick={() => alert("신고가 접수되었습니다.")}
+                    >
+                        🚨 신고하기
+                    </button>
+                )}
             </div>
+
             {user && (
                 <section className={styles.profileSection}>
                     <div className={styles.leftProfile}>
-                        <img src={user.profile ? `${user.profile}` : defaultProfile} alt="프로필 이미지" className={styles.profileImg} />
+                        <img
+                            src={user.profile ? `${user.profile}` : defaultProfile}
+                            alt="프로필 이미지"
+                            className={styles.profileImg}
+                        />
                     </div>
 
                     <div className={styles.profileInfo}>
                         <div className={styles.sikbti}>{user.sikbti}</div>
                         <div className={styles.nameRow}>
                             <h2 className={styles.username}>{user.username}</h2>
-                            <span className={styles.email}>&nbsp;({user.email})</span>
+                            {isMyPage && <span className={styles.email}>({user.email})</span>}
                             {user.provider === "kakao" && (
-                                <img src={kakaoLogo} alt="kakao logo" className={styles.socialLogo} />
+                                <img
+                                    src={kakaoLogo}
+                                    alt="kakao logo"
+                                    className={styles.socialLogo}
+                                />
                             )}
                         </div>
 
-                        <div className={styles.buttonsBox}>
-                            <button onClick={() => setProfileModal(true)}>프로필 변경</button>
-                            <button onClick={() => setMemberInfoModal(true)}>회원정보 수정</button>
-                            <button onClick={() => setAlarmModal(true)}>알림 설정</button>
-                        </div>
+                        {isMyPage ? (
+                            <>
+                                <div className={styles.buttonsBox}>
+                                    <button onClick={() => setProfileModal(true)}>프로필 변경</button>
+                                    <button onClick={() => setMemberInfoModal(true)}>회원정보 수정</button>
+                                    <button onClick={() => setAlarmModal(true)}>알림 설정</button>
+                                </div>
+                            </>
+                        ) : <></>}
                     </div>
                 </section>
             )}
-
             <div className={styles.recipeSummary}>
-                <div className={styles.summaryCard}>
-                    <p>마이 레시피</p>
-                    <span>{myRecipes.length}</span>
-                </div>
-                <div className={styles.summaryCard}>
-                    <p>찜한 레시피</p>
+                <div
+                    className={`${styles.summaryCard} ${!isMyPage ? styles.wideCard : ""}`}
+                >
+                    <p>
+                        {isMyPage ? "마이 레시피 개수" : `${user?.username} 님의 레시피 개수`}
+                    </p>
                     <span>{myRecipes.length}</span>
                 </div>
 
-                <div className={styles.navButtons}>
-                    <button
-                        className={styles.mealBtn}
-                        onClick={() => navigate("/mypage/mealplan")}
-                    >
-                        MY <br /> 식단관리
-                    </button>
-                    <button
-                        className={styles.fridgeBtn}
-                        onClick={() => navigate("/mypage/inglist")}
-                    >
-                        MY <br /> 냉장고
-                    </button>
+                <div
+                    className={`${styles.summaryCard} ${!isMyPage ? styles.wideCard : ""}`}
+                >
+                    <p>
+                        {isMyPage ? "찜한 레시피 개수" : `${user?.username} 님의 찜 레시피 개수`}
+                    </p>
+                    <span>{myRecipes.length}</span>
                 </div>
-            </div>
 
-            <div className={styles.allergySection}>
-                <h3>내 알레르기 정보</h3>
-                <div className={styles.allergyCard}>
-                    <div className={styles.allergyTags}>
-                        {allergyInfo.length > 0 ? (
-                            allergyInfo.map((item) => (
-                                <span
-                                    key={item.id}
-                                    className={`${styles.allergyTag} ${styles[item.parent] || ""}`}
-                                >
-                                    {item.name}
-                                </span>
-                            ))
-                        ) : (
-                            <p>등록된 알레르기 정보가 없습니다.</p>
-                        )}
+                {isMyPage && (
+                    <div className={styles.navButtons}>
+                        <button
+                            className={styles.mealBtn}
+                            onClick={() => navigate("/mypage/mealplan")}
+                        >
+                            MY <br /> 식단관리
+                        </button>
+                        <button
+                            className={styles.fridgeBtn}
+                            onClick={() => navigate("/mypage/inglist")}
+                        >
+                            MY <br /> 냉장고
+                        </button>
                     </div>
-                </div>
-                <button className={styles.editAllergyBtn} onClick={() => setAllergyModal(true)}>
-                    알레르기 정보 수정
-                </button>
+                )}
             </div>
+
+            {isMyPage && (
+                <div className={styles.allergySection}>
+                    <h3>내 알레르기 정보</h3>
+                    <div className={styles.allergyCard}>
+                        <div className={styles.allergyTags}>
+                            {allergyInfo.length > 0 ? (
+                                allergyInfo.map((item) => (
+                                    <span
+                                        key={item.id}
+                                        className={`${styles.allergyTag} ${styles[item.parent] || ""}`}
+                                    >
+                                        {item.name}
+                                    </span>
+                                ))
+                            ) : (
+                                <p>등록된 알레르기 정보가 없습니다.</p>
+                            )}
+                        </div>
+                    </div>
+                    <button
+                        className={styles.editAllergyBtn}
+                        onClick={() => setAllergyModal(true)}
+                    >
+                        알레르기 정보 수정
+                    </button>
+                </div>
+            )}
 
             <div className={styles.recipeList}>
-                <h3>내가 찜한 레시피</h3>
+                <h3>{user?.username} 님의 찜한 레시피</h3>
                 <ul>
                     {myRecipes.length > 0 ? (
                         myRecipes.map((r) => (
@@ -221,7 +274,13 @@ const MyPage = () => {
             </div>
 
             {isProfileModal && (
-                <ProfileModal user={user!} onClose={() => setProfileModal(false)} onUpdateProfile={handleUpdateProfile} profileImg={profileImg} setProfileImg={setProfileImg} />
+                <ProfileModal
+                    user={user!}
+                    onClose={() => setProfileModal(false)}
+                    onUpdateProfile={handleUpdateProfile}
+                    profileImg={profileImg}
+                    setProfileImg={setProfileImg}
+                />
             )}
             {isAllergyModal && (
                 <AllergyModal user={user!} onClose={() => setAllergyModal(false)} />
@@ -240,7 +299,6 @@ const MyPage = () => {
                 />
             )}
         </div>
-
     );
 };
 

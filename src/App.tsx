@@ -18,16 +18,11 @@ import { MealplanMain } from './pages/Mealplan/main'
 import { loginSuccess, logout, saveUserData } from './features/authSlice'
 import RecipeWrite from './pages/community/Recipe/RecipeWrite'
 import MyPage from './pages/MyPage/MyPage'
-<<<<<<< HEAD
 import EatBTIPage from './pages/EatBTI/main'
 import QuestionPage from './pages/EatBTI/question'
 import ResultPage from './pages/EatBTI/result'
 import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
 import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
-=======
-import CommunityRecipeDetail from './pages/community/Recipe/RecipeDetail'
-import RecipeEditPage from './pages/community/Recipe/RecipeEdit'
->>>>>>> origin/community_recipe
 
 function App() {
   const dispatch = useDispatch();
@@ -58,7 +53,7 @@ function App() {
         <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
-        <Route path="/users" element={<MyPage />} />
+        <Route path="/users/:userNo" element={<MyPage />} />
         <Route path="/eatBTI" element={<EatBTIPage />} />
         <Route path="/eatBTI/question" element={<QuestionPage />} />
         <Route path="/eatBTI/result" element={<ResultPage />} />
