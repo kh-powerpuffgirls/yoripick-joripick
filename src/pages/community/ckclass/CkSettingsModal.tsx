@@ -105,19 +105,25 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
   const handleUpdate = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('roomNo', String(classId));
-    formData.append('className', name);
-    formData.append('classInfo', description);
-    if (isCodeEnabled && joinCode) formData.append('passcode', joinCode);
-    if (file) formData.append('file', file);
+    formData.append("roomNo", String(classId));
+    formData.append("className", name);
+    formData.append("classInfo", description);
 
+    if (isCodeEnabled) {
+      formData.append("passcode", joinCode || "");
+    } else {
+      formData.append("passcode", ""); 
+    }
+    if (file) formData.append("file", file);
     try {
-      await api.put(`/community/ckclass`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-      alert('클래스 수정이 완료되었습니다.');
+      await api.put(`/community/ckclass`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("클래스 수정이 완료되었습니다.");
       onUpdate();
     } catch (error) {
-      console.error('클래스 수정 실패:', error);
-      alert('클래스 수정에 실패했습니다.');
+      console.error("클래스 수정 실패:", error);
+      alert("클래스 수정에 실패했습니다.");
     }
   };
 
@@ -134,40 +140,12 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
     }
   };
 
-  const handleLeaveClass = async () => {
-    if (window.confirm('정말로 이 클래스를 나가시겠습니까?')) {
-      try {
-        await api.delete(`/community/ckclass/${classId}/leave`);
-        alert('클래스를 나갔습니다.');
-        onUpdate();
-        onClose();
-      } catch (error) {
-        console.error('클래스 나가기 실패:', error);
-        alert('클래스 나가기에 실패했습니다.');
-      }
-    }
-  };
-
-  const handleToggleNotification = async () => {
-    try {
-      await api.put(`/community/ckclass/${classId}/notification`);
-      setNotificationEnabled(prev => !prev);
-      alert(`알림이 ${notificationEnabled ? '꺼졌습니다' : '켜졌습니다'}.`);
-    } catch (error) {
-      console.error('알림 설정 실패:', error);
-      alert('알림 설정을 변경하는 데 실패했습니다.');
-    }
-  };
-
   const handleMemberClick = (memberUserNo: number) => {
     navigate(`/mypage/${memberUserNo}`);
     onClose();
   };
 
   if (!isOpen) return null;
-
-  const isMyClass = members.some(m => m.userNo === user?.userNo);
-  const isCreator = isMyClass && user?.userNo === members.find(m => m.userNo === user?.userNo)?.userNo;
 
   return (
     <div className={styles.modalOverlay}>
@@ -177,34 +155,77 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
           <button className={styles.closeButton} onClick={onClose}>&times;</button>
         </div>
         <div className={styles.tabContainer}>
-          <button className={`${styles.tabButton} ${activeTab === 'settings' ? styles.active : ''}`} onClick={() => setActiveTab('settings')}>클래스 설정</button>
-          <button className={`${styles.tabButton} ${activeTab === 'members' ? styles.active : ''}`} onClick={() => setActiveTab('members')}>참여자 관리</button>
+          <button
+            className={`${styles.tabButton} ${activeTab === 'settings' ? styles.active : ''}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            클래스 설정
+          </button>
+          <button
+            className={`${styles.tabButton} ${activeTab === 'members' ? styles.active : ''}`}
+            onClick={() => setActiveTab('members')}
+          >
+            참여자 관리
+          </button>
         </div>
         <div className={styles.tabContent}>
           {activeTab === 'settings' && (
             <div className={styles.settingsForm}>
               <div className={styles.formGroup}>
                 <label htmlFor="className">클래스 이름</label>
-                <input type="text" id="className" value={name} onChange={(e) => setName(e.target.value)} maxLength={30} />
+                <input
+                  type="text"
+                  id="className"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  maxLength={30}
+                />
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="classInfo">클래스 소개</label>
-                <textarea id="classInfo" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={30} />
+                <textarea
+                  id="classInfo"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  maxLength={30}
+                />
               </div>
               <div className={styles.formGroup}>
                 <label>이미지</label>
                 <div className={styles.imageUpload}>
-                  {imagePreview && <img src={imagePreview} alt="클래스 이미지" className={styles.imagePreview} />}
+                  {imagePreview && (
+                    <img
+                      src={imagePreview}
+                      alt="클래스 이미지"
+                      className={styles.imagePreview}
+                    />
+                  )}
                   <label htmlFor="image-upload" className={styles.imageLabel}>이미지 선택</label>
-                  <input id="image-upload" type="file" accept="image/*" onChange={handleImageChange} className={styles.hiddenInput} />
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className={styles.hiddenInput}
+                  />
                 </div>
               </div>
               <div className={styles.formGroup}>
                 <label>
-                  <input type="checkbox" checked={isCodeEnabled} onChange={(e) => setIsCodeEnabled(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={isCodeEnabled}
+                    onChange={(e) => setIsCodeEnabled(e.target.checked)}
+                  />
                   참여 코드
                 </label>
-                <input type="text" value={joinCode} onChange={(e) => setJoinCode(e.target.value)} disabled={!isCodeEnabled} maxLength={4} />
+                <input
+                  type="text"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  disabled={!isCodeEnabled}
+                  maxLength={4}
+                />
               </div>
             </div>
           )}
@@ -213,9 +234,27 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
               {members.length > 0 ? (
                 members.map((member) => (
                   <div key={member.userNo} className={styles.memberCard}>
-                    <div className={styles.profileImage} style={{ backgroundImage: `url(${member.serverName ? `${API_BASE}/images/${member.serverName}` : '/images/default_profile.png'})` }} onClick={() => handleMemberClick(member.userNo)}></div>
-                    <span className={styles.username} onClick={() => handleMemberClick(member.userNo)}>{member.username}</span>
-                    {member.userNo !== user?.userNo && <button onClick={() => handleKick(member.userNo)} className={styles.kickButton}>강퇴</button>}
+                    <div
+                      className={styles.profileImage}
+                      style={{
+                        backgroundImage: `url(${member.serverName ? `${API_BASE}/images/${member.serverName}` : '/images/default_profile.png'})`,
+                      }}
+                      onClick={() => handleMemberClick(member.userNo)}
+                    />
+                    <span
+                      className={styles.username}
+                      onClick={() => handleMemberClick(member.userNo)}
+                    >
+                      {member.username}
+                    </span>
+                    {member.userNo !== user?.userNo && (
+                      <button
+                        onClick={() => handleKick(member.userNo)}
+                        className={styles.kickButton}
+                      >
+                        강퇴
+                      </button>
+                    )}
                   </div>
                 ))
               ) : (
@@ -229,16 +268,6 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
             <div className={styles.buttonGroup}>
               <button className={styles.cancelButton} onClick={onClose}>취소</button>
               <button className={styles.submitButton} onClick={handleUpdate}>수정</button>
-            </div>
-          )}
-          {user && user.userNo && !isCreator && (
-            <div className={styles.userActions}>
-              <button className={`${styles.actionButton} ${styles.notificationButton}`} onClick={handleToggleNotification}>
-                알림 {notificationEnabled ? '끄기' : '켜기'}
-              </button>
-              <button className={`${styles.actionButton} ${styles.leaveButton}`} onClick={handleLeaveClass}>
-                채팅방 나가기
-              </button>
             </div>
           )}
         </div>

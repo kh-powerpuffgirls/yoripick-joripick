@@ -102,51 +102,53 @@ const ChallengeDetail = () => {
   const closeModal = () => setModal(null);
   const handleConfirm = () => { modal?.onConfirm?.(); closeModal(); };
   
-// ChallengeDetail.tsx
 useEffect(() => {
-  if (!challengeNo || !user) return;
+    if (!challengeNo) return;
 
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-
-      const [postRes, repliesRes, likeCountRes] = await Promise.all([
-        api.get<ChallengePost>(`/community/challenge/${challengeNo}`),
-        api.get<Reply[]>(`/community/challenge/replies/${challengeNo}`),
-        api.get<number>(`/community/challenge/like/count/${challengeNo}`)
-      ]);
-
-      let isLikedStatus = false;
-      if (user?.userNo) {
-        isLikedStatus = await api.get<boolean>(`/community/challenge/like/status/${challengeNo}`).then(res => res.data);
-      }
-
-      setPost(postRes.data);
-      setReplies(repliesRes.data);
-      setLikesCount(likeCountRes.data);
-      setIsLiked(isLikedStatus);
-
+    const fetchData = async () => {
       try {
-        const navRes = await api.get(`/community/challenge/navigation/${challengeNo}`);
-        setPrevChallengeNo(navRes.data.prev);
-        setNextChallengeNo(navRes.data.next);
-      } catch (navErr) {
-        console.warn('이전/다음 게시글 정보 로드 실패:', navErr);
-        setPrevChallengeNo(null);
-        setNextChallengeNo(null);
+        setIsLoading(true);
+
+        const [postRes, repliesRes, likeCountRes] = await Promise.all([
+          api.get<ChallengePost>(`/community/challenge/${challengeNo}`),
+          api.get<Reply[]>(`/community/challenge/replies/${challengeNo}`),
+          api.get<number>(`/community/challenge/like/count/${challengeNo}`),
+        ]);
+
+        setPost(postRes.data);
+        setReplies(repliesRes.data);
+        setLikesCount(likeCountRes.data);
+
+        let isLikedStatus = false;
+        if (user?.userNo) {
+          try {
+            isLikedStatus = await api.get<boolean>(`/community/challenge/like/status/${challengeNo}`).then(res => res.data);
+          } catch (likeStatusErr) {
+             console.warn('좋아요 상태 로드 실패 (비로그인 사용자 또는 토큰 만료 가능성):', likeStatusErr);
+          }
+        }
+        setIsLiked(isLikedStatus);
+
+        try {
+          const navRes = await api.get(`/community/challenge/navigation/${challengeNo}`);
+          setPrevChallengeNo(navRes.data.prev);
+          setNextChallengeNo(navRes.data.next);
+        } catch (navErr) {
+          console.warn('이전/다음 게시글 정보 로드 실패:', navErr);
+          setPrevChallengeNo(null);
+          setNextChallengeNo(null);
+        }
+
+        setError(null);
+      } catch (err: any) {
+        console.error(err);
+        setError('게시글 정보를 불러오는 데 실패했습니다.'); 
+      } finally {
+        setIsLoading(false);
       }
-
-      setError(null);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.status === 401 ? '로그인이 필요합니다.' : '게시글 정보를 불러오는 데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  fetchData();
-}, [challengeNo, user]);
+    };
+    fetchData();
+}, [challengeNo]);
 
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -248,7 +250,7 @@ useEffect(() => {
     }
     
     let targetInfo: ReportTargetInfo;
-    const category = 'replyNo' in target ? target.category : 'CHALLENGE';
+    const category = 'replyNo' in target ? 'REPLY' : 'CHALLENGE';
 
     if ('replyNo' in target) {
       targetInfo = {
@@ -313,7 +315,6 @@ const parentReplies = replies
         const finalParentImageUrl = parent.profileImageServerName?.includes('/images/')
             ? `${API_BASE}${parent.profileImageServerName}`
             : `${API_BASE}/images/${parent.profileImageServerName}`;
-        // ----------------------------------------
 
         return (
             <div key={parent.replyNo} className={styles.commentWrapper}>
