@@ -9,8 +9,10 @@ import type { RootState, AppDispatch } from '../../../store/store';
 import axios from 'axios';
 import { store } from '../../../store/store';
 import CkSettingsModal from './CkSettingsModal';
-import { openChat } from '../../../features/chatSlice';
-import type { ChatRoomCreate } from '../../../type/chatmodal';
+import { leaveRooms, openChat } from '../../../features/chatSlice';
+import type { ChatRoomCreate, Message } from '../../../type/chatmodal';
+import { saveMessage } from '../../../api/chatApi';
+import useChat from '../../../hooks/useChat';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -36,7 +38,7 @@ interface CkclassDto {
   classInfo: string;
   serverName?: string;
   memberCount?: number;
-  // unreadCount?: number;
+  unreadCount?: number;
   username?: string;
   isNotificationOn?: string;
 }
@@ -73,6 +75,7 @@ interface ReportOption {
 }
 
 const CkClassMain = () => {
+  const { sendChatMessage } = useChat();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -116,7 +119,7 @@ const CkClassMain = () => {
             description: cls.classInfo ?? '',
             author: cls.username ?? '알 수 없음',
             memberCount: cls.memberCount ?? 0,
-            // unreadCount: cls.unreadCount ?? 0,
+            unreadCount: cls.unreadCount ?? 0,
             type: 'my',
             imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
             isNotificationOn: cls.isNotificationOn === 'Y',
@@ -131,7 +134,7 @@ const CkClassMain = () => {
             description: cls.classInfo ?? '',
             author: cls.username ?? '알 수 없음',
             memberCount: cls.memberCount ?? 0,
-            // unreadCount: cls.unreadCount ?? 0,
+            unreadCount: cls.unreadCount ?? 0,
             type: 'joined',
             imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
             isNotificationOn: cls.isNotificationOn === 'Y',
@@ -223,6 +226,25 @@ const CkClassMain = () => {
           await api.delete(`/community/ckclass/${id}/leave`);
           openModal({ message: '클래스에서 성공적으로 탈퇴했습니다.', onConfirm: closeModal });
           setUpdate((prev) => prev + 1);
+          dispatch(leaveRooms(id));
+
+          // 퇴장 메시지 생성
+          const systemMessage: Message = {
+            userNo: 0,
+            username: "SYSTEM",
+            content: `${user?.username} 님이 퇴장하셨습니다`,
+            createdAt: new Date().toISOString(),
+            roomNo: id,
+          };
+
+          // DB 저장
+          let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
+          let formData = new FormData();
+          formData.append("message", messageBlob);
+          await saveMessage("cclass", id, formData);
+
+          // 웹소켓 브로드캐스트
+          sendChatMessage(id, systemMessage);
         } catch (err: any) {
           console.error('클래스 탈퇴 실패:', err);
           openModal({ message: err.response?.data || '클래스 탈퇴에 실패했습니다.', onConfirm: closeModal });
@@ -247,6 +269,7 @@ const CkClassMain = () => {
             await api.delete(`/community/ckclass/${id}`);
             openModal({ message: '클래스가 성공적으로 삭제되었습니다.', onConfirm: closeModal });
             setUpdate((prev) => prev + 1);
+            dispatch(leaveRooms(id));
           } catch (err: any) {
             console.error(err);
             openModal({ message: err.response?.data || '클래스 삭제에 실패했습니다.', onConfirm: closeModal });
@@ -328,9 +351,9 @@ const CkClassMain = () => {
           <div className={styles.classTitle}>
             {cls.name}
             {/* 안 읽은 메시지 */}
-            {/* {(cls.unreadCount ?? 0) > 0 && (
+            {(cls.unreadCount ?? 0) > 0 && (
               <span className={styles.unreadCountBadge}>{cls.unreadCount}</span>
-            )} */}
+            )}
           </div>
           <div className={styles.classButtons}>
             <button

@@ -74,6 +74,7 @@ const useChat = () => {
 
                 if (
                     data.userNo != userNo &&
+                    data.userNo != 0 &&
                     userSettings.newMessage === "Y" &&
                     room.notification === "Y"
                 ) {

@@ -8,9 +8,10 @@ import ReportModal from '../../../components/Report/ReportModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '../../../store/store';
 import type { RootState } from '../../../store/store';
-import { openChat, sendMessage } from '../../../features/chatSlice';
+import { openChat } from '../../../features/chatSlice';
 import type { Message } from '../../../type/chatmodal';
 import { saveMessage } from '../../../api/chatApi';
+import useChat from '../../../hooks/useChat';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -74,6 +75,7 @@ interface ReportOption {
 type SearchType = 'all' | 'className' | 'userName';
 
 const CkClassSearch = () => {
+  const { sendChatMessage } = useChat();
   const dispatch = useDispatch();
   // const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -195,7 +197,7 @@ const CkClassSearch = () => {
         await saveMessage("cclass", cls.id, formData);
 
         // 웹소켓 브로드캐스트
-        dispatch(sendMessage(systemMessage));
+        sendChatMessage(cls.id, systemMessage);
       }
     } catch (error: any) {
       openModal({

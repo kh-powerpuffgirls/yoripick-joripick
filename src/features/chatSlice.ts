@@ -55,8 +55,11 @@ const chatSlice = createSlice({
                 room.lastReadMessageNo = action.payload.lastReadMessageNo;
             }
         },
+        leaveRooms: (state, action: PayloadAction<number>) => {
+            state.rooms = state.rooms.filter(room => room.roomNo !== action.payload);
+        }
     }
 })
 
-export const { resetRoom, setRooms, openChat, closeChat, sendMessage, resetRooms, setLastRead } = chatSlice.actions;
+export const { resetRoom, setRooms, openChat, closeChat, sendMessage, resetRooms, setLastRead, leaveRooms } = chatSlice.actions;
 export default chatSlice.reducer;
