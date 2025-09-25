@@ -48,6 +48,7 @@ const CommunityRecipeList: React.FC = () => {
     });
     
     const [isLoading, setIsLoading] = useState(true);
+
     const [searchParams, setSearchParams] = useState<ApiParams>({
         page: 0, 
         sort: isOfficialListPage ? 'bookmarks_desc' : 'createdAt',
@@ -132,11 +133,13 @@ const CommunityRecipeList: React.FC = () => {
                                 <tr>
                                     {officialRankingRecipes.map((recipe, index) => (
                                         <td key={`rank-${recipe.rcpNo}`}>
-                                            {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
-                                            {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
-                                            {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
-                                            {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
-                                            <Link to={`/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
+                                            <div id={list.wing}>
+                                                {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
+                                                {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
+                                                {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
+                                                {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
+                                            </div>
+                                            <Link to={`/api/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
                                                 <OfficialRecipeCard recipe={recipe} />
                                             </Link>
                                         </td>
@@ -146,7 +149,14 @@ const CommunityRecipeList: React.FC = () => {
                         </table>
                     ): (
                         <>
-                            <button className={list.write} onClick={() => navigate('/community/recipe/write')}>레시피 작성하기</button>
+                            <button className={list.write} onClick={() => {
+                                if (!userNo) {
+                                    alert('로그인 후 이용 가능합니다.');
+                                    return;
+                                }
+                                navigate('/community/recipe/write');}}
+                                >
+                                    레시피 작성하기</button>
                             <table className={list.ranking}>
                                 <thead>
                                     <tr>
@@ -162,10 +172,12 @@ const CommunityRecipeList: React.FC = () => {
                                     <tr>
                                         {rankingRecipes.map((recipe, index) => (
                                             <td key={`rank-${recipe.rcpNo}`}>
-                                                {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
-                                                {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
-                                                {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
-                                                {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
+                                                <div id={list.wing}>
+                                                    {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
+                                                    {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
+                                                    {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
+                                                    {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
+                                                </div>
                                                 <Link to={`/community/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
                                                     <RecipeCard recipe={recipe} />
                                                 </Link>
@@ -203,7 +215,7 @@ const CommunityRecipeList: React.FC = () => {
                                 <p style={{textAlign: 'center', fontSize:'18px', color:'#888'}}>레시피를 불러오는 중입니다...</p>
                             ) : recipePage && recipePage.recipes && recipePage.recipes.length > 0 ? (
                                 recipePage.recipes.map(recipe => (
-                                    <Link to={recipe.isOfficial ? `/recipe/${recipe.rcpNo}` : `/community/recipe/${recipe.rcpNo}`} key={recipe.rcpNo} style={{ textDecoration: 'none' }}>
+                                    <Link to={recipe.isOfficial ? `/api/recipe/${recipe.rcpNo}` : `/community/recipe/${recipe.rcpNo}`} key={recipe.rcpNo} style={{ textDecoration: 'none' }}>
                                         {recipe.isOfficial ? (
                                             <OfficialRecipeCard recipe={recipe} />
                                         ) : (

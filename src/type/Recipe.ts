@@ -5,6 +5,7 @@ export interface User {
   sikBti: string;
   imageNo?: number;
   serverName?: string; // 프로필 이미지 경로
+  profileImage?: string;
 }
 
 //레시피 정보

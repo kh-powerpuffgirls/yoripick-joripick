@@ -73,8 +73,6 @@ const CommunityRecipeDetail: React.FC = () => {
         if (!rcpNo) return;
         
         try {
-            // ✨ 3. isCommunityRecipe 값에 따라 API 경로를 동적으로 결정합니다.
-
             let url = '';
 
             if (isCommunityRecipe) {
@@ -251,7 +249,9 @@ const CommunityRecipeDetail: React.FC = () => {
                 </div>
                 <span style={{fontWeight: 'bold', fontSize: '50px'}}>{recipe.rcpName}</span>
                 <span style={{fontSize: '20px', color: '#636363'}}>
-                    {new Date(recipe.createdAt).toLocaleString()}
+                    { recipe.writer &&(
+                        new Date(recipe.createdAt).toLocaleString()
+                    ) }
                     {recipe.updatedAt && (
                         <span style={{ marginLeft: '10px' }}>
                         | (수정){new Date(recipe.updatedAt).toLocaleString()}
@@ -286,42 +286,7 @@ const CommunityRecipeDetail: React.FC = () => {
                         {bookmarkCount}
                     </div>
                 )}
-                {/* <span style={{fontWeight: 'bold', fontSize: '50px'}}>{recipe.rcpName}</span>
-                <span style={{fontSize: '20px', color: '#636363'}}>
-                    {new Date(recipe.createdAt).toLocaleString()}
-                    {recipe.updatedAt && (
-                        <span style={{ marginLeft: '10px' }}>
-                        | (수정){new Date(recipe.updatedAt).toLocaleString()}
-                        </span>
-                    )}
-                </span>
-                <div className={styles.other_info}>
-                    {recipe.isOfficial ? (
-                        <>
-                        북마크 <span style={{color: '#ff0000ff'}}>{bookmarkCount}</span> |
-                        </>
-                    ) : (
-                        <>
-                        좋아요 <span style={{color: '#FF0000'}}>{likeCount}</span> |
-                        </>
-                    )}
-                    리뷰 <span style={{color: '#009626'}}>{recipe.reviewCount}</span> |
-                    조회수 <span style={{color: '#009626'}}>{recipe.views}</span>
-                </div>
-                </div>
-                <div className={styles.content}>
-                    {recipe.isOfficial && isBookmarked !== null && (
-                        <div className={styles.bookMark}>
-                            <img 
-                                src={isBookmarked ? bookMark_ck : bookMark_unck} 
-                                alt="북마크"
-                                onClick={handleBookmarkClick}
-                                className={styles.bookmark_icon}
-                            />
-                            {bookmarkCount}
-                        </div>
-                    )}
-                        */}
+                
                 {/* 사용자 레시피의 수정/삭제 버튼 */}
                 {(!recipe.isOfficial && isOwner) && (
                     <div className={styles.user_btn}>
@@ -335,7 +300,7 @@ const CommunityRecipeDetail: React.FC = () => {
                 </div>
                 
                 {/* ✨ 1. 재료/영양 테이블 자식 컴포넌트 */}
-                <DetailTable recipe={recipe} onReportClick={handleReportClick} /> {/* ⭐ prop 전달 */}
+                <DetailTable recipe={recipe} onReportClick={handleReportClick} /> 
                 {/* ✨ 2. 조리 순서 자식 컴포넌트 */}
                 <CookingSteps steps={recipe.steps} />
                 {/* ==================== 좋아요/싫어요 버튼 ==================== */}

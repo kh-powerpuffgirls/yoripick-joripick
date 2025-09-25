@@ -89,11 +89,15 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
   // 리뷰 작성 완료 시 실행될 함수
   const handleReviewSubmitted = () => {
     setIsWriteModalOpen(false);
-    // 1. 부모 컴포넌트(RecipeDetail)의 리뷰 개수 등을 새로고침하도록 신호를 보냅니다.
     onReviewSubmit(); 
-    // 2. 현재 컴포넌트의 리뷰 목록도 1페이지부터 다시 불러옵니다.
-    handleSortChange('latest'); 
-    // 3. 포토 리뷰 목록도 새로고침합니다.
+
+    setSort(prev => {
+      if (prev === 'latest') {
+        reloadReviews;
+      }
+      return 'latest';
+    });
+
     const fetchPhotoReviews = async () => {
         const response = await api.get(`/api/community/recipe/${rcpNo}/reviews/photos`);
         setPhotoReviews(response.data);
@@ -147,6 +151,12 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
     setPhotoReviews(prev => prev.filter(review => review.reviewNo !== deletedReviewNo));
     // 부모에게도 리뷰 개수 변경을 알림
     onReviewSubmit(); 
+    reloadReviews;
+  };
+
+  const reloadReviews = () => {
+    setReviews([]);
+    setPage(0);
   };
 
   return (
@@ -210,15 +220,19 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
               <div key={review.reviewNo} className={styles.review_item}>
                 <img src={review.userInfo.serverName || sampleProfileImg} alt={review.userInfo.username} className={styles.profile_img} />
                 <div className={styles.profile_content}>
+
                   <div className={styles.profile}>
-                    <div className={styles.profile_name}>
+                    <div className={styles.user_info}>
                       {review.userInfo.sikBti && <SikBti sikBti={review.userInfo.sikBti} style={{fontSize: '11px' }} />}
-                      <span className={styles.nickname}>{review.userInfo.username}</span>
+                      <div id={styles.text_info}>
+                        <span className={styles.nickname}>{review.userInfo.username}</span>
+                        <div className={styles.stars}>
+                          <img src={starIcon} alt="별점" />
+                          <span>{review.stars.toFixed(1)}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className={styles.stars}>
-                      <img src={starIcon} alt="별점" />
-                      <span>{review.stars.toFixed(1)}</span>
-                    </div>
+
                     <div className={styles.review_actions}>
                       {isOwner && (
                         <button className={styles.action_btn} onClick={()=>handleDeleteReview(review.reviewNo)}>삭제</button>

@@ -20,16 +20,20 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       <div className={recipecard.imageBox}>
         <img src={recipe.serverName} alt={recipe.rcpName} className={recipecard.thumbnail} />
       </div>
+
       <div id={recipecard.title}>{recipe.rcpName}</div>
+
       <div className={recipecard.profile}>
         <img src={recipe.userProfileImage ? recipe.userProfileImage : sampleProfileImg} alt={recipe.username} />
-        <div className={recipecard.profile_name}>
-          {recipe.sikBti && <SikBti sikBti={recipe.sikBti} style={{fontSize: '8px' }} />}
-          <span className={recipecard.nickname}>{recipe.username}</span>
+
+        <div className={recipecard.user_info}>
+          {recipe.sikBti && <SikBti sikBti={recipe.sikBti} style={{fontSize: '9px' }} />}
+          <div id={recipecard.text_info}>
+            <span className={recipecard.nickname}>{recipe.username}</span>
+            <span className={recipecard.date}>{new Date(recipe.createdAt).toLocaleDateString()}</span>
+          </div>
         </div>
 
-        <span className={recipecard.date}>{new Date(recipe.createdAt).toLocaleDateString()}</span>
-        
         <div className={recipecard.stars}>
           <img src={starIcon} height="12px" width="12px" alt="별점" />
           <span>{(recipe.avgStars || 0).toFixed(1)}</span>

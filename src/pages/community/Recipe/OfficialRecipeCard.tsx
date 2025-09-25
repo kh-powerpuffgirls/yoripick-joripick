@@ -3,12 +3,12 @@ import card from './RecipeCard.module.css';
 import type { RecipeListItem } from '../../../type/Recipe'; // 기존 타입 재활용
 import { api } from '../../../api/authApi'; // API 호출용
 
-// 아이콘 import (경로는 실제 위치에 맞게 수정해주세요)
+// 아이콘 import
+import starIcon from '../../../assets/sample/star.png';
 import bookMark_ck from '../../../assets/sample/bookMark_ck.png';
 import bookMark_unck from '../../../assets/sample/bookMark_unck.png';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
-import SikBti from './SikBti';
 
 interface OfficialRecipeCardProps {
   recipe: RecipeListItem;
@@ -45,7 +45,7 @@ const OfficialRecipeCard: React.FC<OfficialRecipeCardProps> = ({ recipe }) => {
     
     // 북마크 클릭 핸들러
     const handleBookmarkClick = async (e: React.MouseEvent) => {
-        e.preventDefault(); // 상위 Link 태그의 페이지 이동을 막습니다.
+        e.preventDefault();
 
         
         if (!loginUserNo) {
@@ -66,7 +66,6 @@ const OfficialRecipeCard: React.FC<OfficialRecipeCardProps> = ({ recipe }) => {
             alert("오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
-    
     return (
         <div className={card.content}>
             <div className={card.imageBox}>
@@ -75,18 +74,16 @@ const OfficialRecipeCard: React.FC<OfficialRecipeCardProps> = ({ recipe }) => {
             <div className={card.info_container}>
                 <div id={card.info_text}>
                     <div className={card.profile}>
-                        {recipe.username==null ? (
+                        {recipe.username==null ? 
                             <div className={card.official_off}>공식</div>
-                        ) : (
-                            <>
-                                <div className={card.official_user}>식구</div> 
-                                <div className={card.profile_name}>
-                                    {recipe.sikBti && <SikBti sikBti={recipe.sikBti} style={{fontSize: '8px' }} />}
-                                    <span className={card.nickname}>{recipe.username}</span>
-                                </div>
-                            </>
-                        )}
+                            : <div className={card.official_user}>식구</div> 
+                        }
+                        <div id={card.starAvg}>
+                            <img src={starIcon} alt="별점" />
+                            <span>{(recipe.avgStars || 0).toFixed(1)}</span>
+                        </div>
                     </div>
+
                     <div className={card.title}>{recipe.rcpName}</div>
                 </div>
                 <div className={card.bookMark}>
