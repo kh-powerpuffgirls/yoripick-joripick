@@ -17,6 +17,10 @@ import { updateProfileImage } from "../../features/authSlice";
 import type { User } from "../../type/authtype"
 import type { AllergyDto } from "../../type/allergytype";
 import { api } from "../../api/authApi";
+import SikBti from "../community/Recipe/SikBti";
+import type { MyPageRecipe } from "../../type/Recipe";
+import Pagination from "../../components/Pagination";
+import type { PageInfo } from "../../api/adminApi";
 
 
 const MyPage = () => {
@@ -28,15 +32,43 @@ const MyPage = () => {
     const [isInactiveModal, setInactiveModal] = useState(false);
     const dispatch = useDispatch();
     const [allergyInfo, setAllergyInfo] = useState<{ id: number; name: string; parent: string }[]>([]);
-    const [myRecipes, setMyRecipes] = useState<
-        { id: number; title: string; likes: number; img: string }[]
-    >([]);
+    const [myRecipes, setMyRecipes] = useState<MyPageRecipe[]>([]);
+    const [likedRecipes, setLikedRecipes] = useState<MyPageRecipe[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 7;
+
+    const [activeTab, setActiveTab] = useState<"my" | "liked">("my");
 
 
     const handleUpdateProfile = (newUrl: string) => {
         dispatch(updateProfileImage(newUrl));
     };
 
+    const paginatedMyRecipes = myRecipes.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+    const paginatedLikedRecipes = likedRecipes.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+    const listCount = activeTab === "my" ? myRecipes.length : likedRecipes.length;
+    const pageLimit = 10;
+    const itemLimit = itemsPerPage;
+
+    const maxPage = Math.ceil(listCount / itemLimit);
+    const startPage = Math.floor((currentPage - 1) / pageLimit) * pageLimit + 1;
+    const endPage = Math.min(startPage + pageLimit - 1, maxPage);
+
+    const pageInfo: PageInfo = {
+        listCount,
+        pageLimit,
+        itemLimit,
+        currentPage,
+        maxPage,
+        startPage,
+        endPage,
+    };
     const [profileImg, setProfileImg] = useState<File | null>(null);
     const myProfile = useSelector((state: RootState) => state.auth.user);
     //const user = useSelector((state: RootState) => state.auth.user);
@@ -125,6 +157,29 @@ const MyPage = () => {
                 );
 
                 setAllergyInfo(userAllergies);
+
+                const myRecipesRes = await api.get(`/${user.userNo}/recipes`);
+                const likedRes = await api.get(`/${user.userNo}/likes`);
+
+                const formattedMyRecipes: MyPageRecipe[] = myRecipesRes.data.map((r: any) => ({
+                    id: r.RCP_NO,
+                    title: r.RCP_NAME,
+                    likes: r.RCP_LIKE,
+                    img: r.SERVER_NAME
+                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
+                        : defaultProfile,
+                }));
+                setMyRecipes(formattedMyRecipes);
+
+                const formattedLikedRecipes: MyPageRecipe[] = likedRes.data.map((r: any) => ({
+                    id: r.RCP_NO,
+                    title: r.RCP_NAME,
+                    likes: r.RCP_LIKE,
+                    img: r.SERVER_NAME
+                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
+                        : defaultProfile,
+                }));
+                setLikedRecipes(formattedLikedRecipes);
             } catch (err) {
                 console.error("마이페이지 데이터 불러오기 오류:", err);
             }
@@ -137,7 +192,6 @@ const MyPage = () => {
         <div className={styles.container}>
             <div className={styles.headerRow}>
                 {isMyPage ? (
-                    // 내 마이페이지일 때 → 회원탈퇴 버튼
                     <button
                         className={styles.inactiveBtn}
                         onClick={() => setInactiveModal(true)}
@@ -145,7 +199,6 @@ const MyPage = () => {
                         회원탈퇴
                     </button>
                 ) : (
-                    // 다른 사람 마이페이지일 때 → 신고하기 버튼
                     <button
                         className={styles.reportBtn}
                         onClick={() => alert("신고가 접수되었습니다.")}
@@ -166,7 +219,7 @@ const MyPage = () => {
                     </div>
 
                     <div className={styles.profileInfo}>
-                        <div className={styles.sikbti}>{user.sikbti}</div>
+                        <SikBti sikBti={user.sikbti} style={{ fontSize: '15px' }} />
                         <div className={styles.nameRow}>
                             <h2 className={styles.username}>{user.username}</h2>
                             {isMyPage && <span className={styles.email}>({user.email})</span>}
@@ -191,40 +244,29 @@ const MyPage = () => {
                     </div>
                 </section>
             )}
-            <div className={styles.recipeSummary}>
-                <div
-                    className={`${styles.summaryCard} ${!isMyPage ? styles.wideCard : ""}`}
-                >
-                    <p>
-                        {isMyPage ? "마이 레시피 개수" : `${user?.username} 님의 레시피 개수`}
-                    </p>
-                    <span>{myRecipes.length}</span>
-                </div>
-
-                <div
-                    className={`${styles.summaryCard} ${!isMyPage ? styles.wideCard : ""}`}
-                >
-                    <p>
-                        {isMyPage ? "찜한 레시피 개수" : `${user?.username} 님의 찜 레시피 개수`}
-                    </p>
-                    <span>{myRecipes.length}</span>
-                </div>
-
+            <div className={styles.my0ptions}>
                 {isMyPage && (
                     <div className={styles.navButtons}>
                         <button
                             className={styles.mealBtn}
                             onClick={() => navigate("/mypage/mealplan")}
                         >
-                            MY <br /> 식단관리
+                            MY <br /> 식단관리 <br />
                         </button>
                         <button
                             className={styles.fridgeBtn}
                             onClick={() => navigate("/mypage/inglist")}
                         >
-                            MY <br /> 냉장고
+                            MY <br /> 냉장고 <br />
+                        </button>
+                        <button
+                            className={styles.myposts}
+                            onClick={() => navigate("/community/mypost")}
+                        >
+                            내가 쓴 글 보러가기
                         </button>
                     </div>
+
                 )}
             </div>
 
@@ -256,21 +298,86 @@ const MyPage = () => {
                 </div>
             )}
 
+            <br />
+
+            <div className={styles.tabContainer}>
+                <button
+                    className={`${styles.tabButton} ${activeTab === "my" ? styles.active : ""}`}
+                    onClick={() => setActiveTab("my")}
+                >
+                    {isMyPage ? `내가 작성한 레시피` : `${user?.username} 님이 작성한 레시피 `}
+                    <div className={styles.badge1}>{myRecipes.length}</div>
+                </button>
+
+                <button
+                    className={`${styles.tabButton} ${activeTab === "liked" ? styles.active : ""}`}
+                    onClick={() => setActiveTab("liked")}
+                >
+                    {isMyPage ? "내가 찜한 레시피" : `${user?.username} 님이 찜한 레시피`}
+                    <div className={styles.badge2}>{likedRecipes.length}</div>
+                </button>
+            </div>
+
             <div className={styles.recipeList}>
-                <h3>{user?.username} 님의 찜한 레시피</h3>
-                <ul>
-                    {myRecipes.length > 0 ? (
-                        myRecipes.map((r) => (
-                            <li key={r.id} className={styles.recipeItem}>
-                                <img src={r.img} alt="recipe" />
-                                <span className={styles.recipeTitle}>{r.title}</span>
-                                <span className={styles.recipeLikes}>👍 {r.likes}</span>
-                            </li>
-                        ))
-                    ) : (
-                        <li className={styles.emptyRow}>찜한 레시피가 없습니다.</li>
-                    )}
-                </ul>
+                {activeTab === "my" ? (
+                    <>
+                        <ul>
+                            {paginatedMyRecipes.length > 0 ? (
+                                paginatedMyRecipes.map((r) => (
+                                    <li
+                                        key={r.id}
+                                        className={styles.recipeItem}
+                                        onClick={() => navigate(`/community/recipe/${r.id}`)}
+                                    >
+                                        <img src={r.img} alt="recipe" />
+                                        <span className={styles.recipeTitle}>{r.title}</span>
+                                        <span className={styles.recipeLikes}>👍 {r.likes}</span>
+                                    </li>
+                                ))
+                            ) : (
+                                <li className={styles.emptyRow}>
+                                    {isMyPage ? "작성한 레시피가 없습니다." : "작성한 레시피가 없습니다."}
+                                </li>
+                            )}
+                        </ul>
+
+                        {myRecipes.length > itemsPerPage && (
+                            <Pagination
+                                pageInfo={pageInfo}
+                                onPageChange={(page) => setCurrentPage(page)}
+                            />
+                        )}
+                    </>
+                ) : (
+                    <>
+                        <ul>
+                            {paginatedLikedRecipes.length > 0 ? (
+                                paginatedLikedRecipes.map((r) => (
+                                    <li
+                                        key={r.id}
+                                        className={styles.recipeItem}
+                                        onClick={() => navigate(`/community/recipe/${r.id}`)}
+                                    >
+                                        <img src={r.img} alt="recipe" />
+                                        <span className={styles.recipeTitle}>{r.title}</span>
+                                        <span className={styles.recipeLikes}>👍 {r.likes}</span>
+                                    </li>
+                                ))
+                            ) : (
+                                <li className={styles.emptyRow}>
+                                    {isMyPage ? "찜한 레시피가 없습니다." : "찜한 레시피가 없습니다."}
+                                </li>
+                            )}
+                        </ul>
+
+                        {likedRecipes.length > itemsPerPage && (
+                            <Pagination
+                                pageInfo={pageInfo}
+                                onPageChange={(page) => setCurrentPage(page)}
+                            />
+                        )}
+                    </>
+                )}
             </div>
 
             {isProfileModal && (

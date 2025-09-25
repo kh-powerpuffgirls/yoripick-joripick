@@ -118,7 +118,7 @@
   max-width: 300px;
 }
 
-.recipeSummary {
+.my0ptions {
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -141,13 +141,19 @@
 .navButtons {
   display: flex;
   gap: 10px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .mealBtn,
-.fridgeBtn {
-  width: 100px;
+.fridgeBtn,
+.myposts
+ {
+  font-size: 20px;
+  width: 200px;
+  height: 70px;
   margin: 10px;
-  height: 100px;
   padding: 10px 16px;
   border-radius: 100px;
   border: none;
@@ -336,4 +342,73 @@
   width: 50px;
   height: 20px;
   object-fit: contain;
+}
+
+.tabContainer {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  border-bottom: 2px solid #eee;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #888;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s, border-bottom 0.3s;
+  border-bottom: 3px solid transparent;
+}
+
+.tabButton:hover {
+  color: #333;
+}
+
+.active {
+  color: #ff7b54;
+  border-bottom: 3px solid #ff7b54;
+  font-weight: 600;
+}
+
+.recipeItem {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.recipeItem:hover {
+  background-color: #f0f0f0;
+}
+
+.recipeItem:active {
+  background-color: #e0e0e0;
+}
+
+.badge1 {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background-color: #1ee01a;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.badge2 {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background-color: #FF69B4;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
 }
