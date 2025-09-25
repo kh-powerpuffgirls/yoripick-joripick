@@ -29,6 +29,21 @@
     align-items: center;
 }
 
+.defaultProfile {
+
+    width: 40px; 
+    height: 40px;
+    border-radius: 50%; 
+    background-color: #ddd; 
+    margin-right: 15px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    font-size: 14px;
+    cursor: pointer;
+}
+
 .postMeta span {
     margin-right: 15px;
 }

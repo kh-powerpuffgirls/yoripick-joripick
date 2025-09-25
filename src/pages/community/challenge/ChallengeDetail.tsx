@@ -50,6 +50,7 @@ interface ChallengePost {
   createdAt: string;
   imageUrl?: string;
   sik_bti?: string;
+  profileImageServerName?: string; 
 }
 
 interface ReportTargetInfo {
@@ -95,14 +96,26 @@ const ChallengeDetail = () => {
   const [nextChallengeNo, setNextChallengeNo] = useState<number | null>(null);
   const [prevChallengeNo, setPrevChallengeNo] = useState<number | null>(null);
 
-
   const commentsEndRef = useRef<HTMLDivElement>(null);
 
   const openModal = (modalData: ModalState) => setModal(modalData);
   const closeModal = () => setModal(null);
   const handleConfirm = () => { modal?.onConfirm?.(); closeModal(); };
   
-useEffect(() => {
+  // const createImageUrl = (serverName?: string) => {
+  //   if (serverName && (serverName.startsWith('http://') || serverName.startsWith('https://'))) {
+  //       return serverName;
+  //   }
+  //   if (serverName && serverName.startsWith('/images/')) {
+  //       return `${API_BASE}${serverName}`;
+  //   }
+  //   if (serverName) {
+  //       return `${API_BASE}/images/${serverName}`;
+  //   }
+  //   return 'https://via.placeholder.com/40x40?text=No+Image'; 
+  // };
+
+  useEffect(() => {
     if (!challengeNo) return;
 
     const fetchData = async () => {
@@ -124,7 +137,7 @@ useEffect(() => {
           try {
             isLikedStatus = await api.get<boolean>(`/community/challenge/like/status/${challengeNo}`).then(res => res.data);
           } catch (likeStatusErr) {
-             console.warn('좋아요 상태 로드 실패 (비로그인 사용자 또는 토큰 만료 가능성):', likeStatusErr);
+               console.warn('좋아요 상태 로드 실패 (비로그인 사용자 또는 토큰 만료 가능성):', likeStatusErr);
           }
         }
         setIsLiked(isLikedStatus);
@@ -148,7 +161,7 @@ useEffect(() => {
       }
     };
     fetchData();
-}, [challengeNo]);
+  }, [challengeNo]);
 
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -299,7 +312,7 @@ useEffect(() => {
   };
 
   const renderReplies = () => {
-const parentReplies = replies
+    const parentReplies = replies
         .filter(r => r.category === 'CHALLENGE')
         .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
@@ -308,83 +321,72 @@ const parentReplies = replies
             .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
             .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-        const parentImage = parent.profileImageServerName
-            ? `${API_BASE}/${parent.profileImageServerName}`
-            : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
-
-        const finalParentImageUrl = parent.profileImageServerName?.includes('/images/')
-            ? `${API_BASE}${parent.profileImageServerName}`
-            : `${API_BASE}/images/${parent.profileImageServerName}`;
+        const finalParentImageUrl = parent.profileImageServerName; 
 
         return (
             <div key={parent.replyNo} className={styles.commentWrapper}>
-                <div className={styles.commentItem}>
-                    <div className={styles.avatar}>
-                        <img src={finalParentImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${parent.userNo}`)} />
-                    </div>
-            <div className={styles.commentBody}>
-              <div className={styles.commentHeader}>
-                <span className={styles.commentAuthor} onClick={() => navigate(`/mypage/${parent.userNo}`)}>
-                  {parent.username} {parent.sik_bti && `(${parent.sik_bti})`}
-                </span>
-                <span className={styles.commentTime}>{new Date(parent.createdAt).toLocaleString()}</span>
-              </div>
-              {editingReplyNo === parent.replyNo ? (
-                <div className={styles.editingBox}>
-                  <input
-                    type="text"
-                    value={editingContent}
-                    onChange={e => setEditingContent(e.target.value)}
-                    className={styles.editingInput}
-                    onKeyPress={(e: KeyboardEvent) => { if (e.key === 'Enter') handleUpdateReply(parent.replyNo, editingContent); }}
-                  />
-                  <button onClick={() => handleUpdateReply(parent.replyNo, editingContent)} className={styles.editingButton}>수정</button>
-                  <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
-                </div>
-              ) : (
-                <p className={styles.commentContent}>{parent.content}</p>
-              )}
-              <div className={styles.commentActions}>
-                {user?.userNo === parent.userNo && (
-                  <>
-                    <span onClick={() => { setEditingReplyNo(parent.replyNo); setEditingContent(parent.content); }}>수정</span>
-                    <span onClick={() => handleDeleteComment(parent.replyNo, parent.userNo)}>삭제</span>
-                  </>
-                )}
-                <span onClick={() => setReplyingToReplyNo(replyingToReplyNo === parent.replyNo ? null : parent.replyNo)}>
-                  {replyingToReplyNo === parent.replyNo ? '취소' : '답글'}
-                </span>
-                {user?.userNo !== parent.userNo && <span onClick={() => handleReportClick(parent)}>신고</span>}
-              </div>
-            </div>
-          </div>
-
-          {replyingToReplyNo === parent.replyNo && (
-            <div className={styles.replyForm}>
-              <textarea
-                value={replyingContent}
-                onChange={(e) => setReplyingContent(e.target.value)}
-                placeholder="답글을 입력하세요..."
-                className={styles.replyInput}
-              />
-              <button onClick={handleReplySubmit} className={styles.replySubmitButton}>
-                답글 등록
-              </button>
-            </div>
-          )}
-
-          {childReplies.map(child => {
-            const childImage = child.profileImageServerName
-        ? `${API_BASE}/${child.profileImageServerName}`
-        : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
-    
-    const finalChildImageUrl = child.profileImageServerName?.includes('/images/')
-        ? `${API_BASE}${child.profileImageServerName}`
-        : `${API_BASE}/images/${child.profileImageServerName}`;
-    return (
-            <div key={child.replyNo} className={`${styles.commentItem} ${styles.isReply}`}>
+              <div className={styles.commentItem}>
                 <div className={styles.avatar}>
-                    <img src={finalChildImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${child.userNo}`)} />
+                  <img src={finalParentImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${parent.userNo}`)} />
+                </div>
+              <div className={styles.commentBody}>
+                <div className={styles.commentHeader}>
+                  <span className={styles.commentAuthor} onClick={() => navigate(`/mypage/${parent.userNo}`)}>
+                    {parent.username} {parent.sik_bti && `(${parent.sik_bti})`}
+                  </span>
+                  <span className={styles.commentTime}>{new Date(parent.createdAt).toLocaleString()}</span>
+                </div>
+                {editingReplyNo === parent.replyNo ? (
+                  <div className={styles.editingBox}>
+                    <input
+                      type="text"
+                      value={editingContent}
+                      onChange={e => setEditingContent(e.target.value)}
+                      className={styles.editingInput}
+                      onKeyPress={(e: KeyboardEvent) => { if (e.key === 'Enter') handleUpdateReply(parent.replyNo, editingContent); }}
+                    />
+                    <button onClick={() => handleUpdateReply(parent.replyNo, editingContent)} className={styles.editingButton}>수정</button>
+                    <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
+                  </div>
+                ) : (
+                  <p className={styles.commentContent}>{parent.content}</p>
+                )}
+                <div className={styles.commentActions}>
+                  {user?.userNo === parent.userNo && (
+                    <>
+                      <span onClick={() => { setEditingReplyNo(parent.replyNo); setEditingContent(parent.content); }}>수정</span>
+                      <span onClick={() => handleDeleteComment(parent.replyNo, parent.userNo)}>삭제</span>
+                    </>
+                  )}
+                  <span onClick={() => setReplyingToReplyNo(replyingToReplyNo === parent.replyNo ? null : parent.replyNo)}>
+                    {replyingToReplyNo === parent.replyNo ? '취소' : '답글'}
+                  </span>
+                  {user?.userNo !== parent.userNo && <span onClick={() => handleReportClick(parent)}>신고</span>}
+                </div>
+              </div>
+            </div>
+
+            {replyingToReplyNo === parent.replyNo && (
+              <div className={styles.replyForm}>
+                <textarea
+                  value={replyingContent}
+                  onChange={(e) => setReplyingContent(e.target.value)}
+                  placeholder="답글을 입력하세요..."
+                  className={styles.replyInput}
+                />
+                <button onClick={handleReplySubmit} className={styles.replySubmitButton}>
+                  답글 등록
+                </button>
+              </div>
+            )}
+
+            {childReplies.map(child => {
+              const finalChildImageUrl = child.profileImageServerName;
+
+    return (
+              <div key={child.replyNo} className={`${styles.commentItem} ${styles.isReply}`}>
+                <div className={styles.avatar}>
+                  <img src={finalChildImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${child.userNo}`)} />
                 </div>
                 <div className={styles.commentBody}>
                   <div className={styles.commentHeader}>
@@ -422,8 +424,8 @@ const parentReplies = replies
               </div>
             );
           })}
-        </div>
-      );
+            </div>
+        );
     });
   };
 
@@ -452,6 +454,16 @@ const parentReplies = replies
         <div className={styles.postHeader}>
           <h1 className={styles.title}>{post.title}</h1>
           <div className={styles.postMeta}>
+            {post.profileImageServerName ? (
+                <img 
+                    src={post.profileImageServerName}
+                    alt="프로필" 
+                    className={styles.profileImage} 
+                    onClick={() => navigate(`/mypage/${post.userNo}`)} 
+                />
+            ) : (
+                <div className={styles.defaultProfile} onClick={() => navigate(`/mypage/${post.userNo}`)}></div>
+            )}
             <span onClick={() => navigate(`/mypage/${post.userNo}`)} style={{ cursor: 'pointer', fontWeight: 'bold' }}>
               {post.username} {post.sik_bti && `(${post.sik_bti})`}
             </span>

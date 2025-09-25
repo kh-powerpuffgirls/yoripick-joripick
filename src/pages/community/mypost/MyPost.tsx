@@ -7,19 +7,15 @@ import mypostStyles from './MyPost.module.css';
 import { useNavigate } from 'react-router-dom';
 import CommunityHeader from '../Header/CommunityHeader';
 
-// API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
 
-// Redux 스토어에서 accessToken을 가져오기
 const getAccessToken = () => store.getState().auth.accessToken;
 
-// API 호출
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
 });
 
-// 토큰 주입
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -45,11 +41,9 @@ const MyPost = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // 로그인 됐나?
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    // 로그인 상태 확인
     if (!user) {
       setError('로그인이 필요합니다.');
       setLoading(false);

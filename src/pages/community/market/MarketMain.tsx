@@ -11,6 +11,7 @@ interface MarketMain {
     productId: number;
     title: string;
     author: string;
+    authorNo: number; 
     authorProfileUrl: string;
     imageUrl: string;
     views: number;

@@ -12,6 +12,7 @@ interface ReportTargetInfo {
   title: string;
   category: string;
   refNo: number;
+  reportedUserProfileImageUrl?: string;
 }
 
 interface Props {
@@ -28,6 +29,10 @@ function ReportModal({ isOpen, onClose, onSubmit, reportOptions, targetInfo }: P
   const [isAgreed, setIsAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportStatus, setReportStatus] = useState<'pending' | 'success' | 'failed'>('pending');
+
+  const defaultProfileUrl = '/resources/images/default-profile.png';
+  
+  const profileImageUrl = targetInfo.reportedUserProfileImageUrl || defaultProfileUrl;
 
   const filteredOptions = useMemo(
     () => reportOptions.filter(option => option.category === targetInfo.category),
@@ -62,7 +67,7 @@ function ReportModal({ isOpen, onClose, onSubmit, reportOptions, targetInfo }: P
   const handleClose = () => {
     setReportStatus('pending');
     setContent('');
-    setSelectedType('');
+    setSelectedType(filteredOptions.length > 0 ? filteredOptions[0].reportType : '');
     setIsAgreed(false);
     onClose();
   };
@@ -84,7 +89,14 @@ function ReportModal({ isOpen, onClose, onSubmit, reportOptions, targetInfo }: P
           <>
             <h2>해당 게시글을 신고하시겠습니까?</h2>
             <div className={styles.targetInfo}>
-              <div className={styles.authorName}>{targetInfo.author}</div>
+              <div className={styles.authorLine}> 
+                  <img
+                      src={profileImageUrl}
+                      alt={`${targetInfo.author}님의 프로필 사진`}
+                      className={styles.authorProfilePhoto}
+                  />
+                  <div className={styles.authorName}>{targetInfo.author}</div>
+              </div>              
               <div className={styles.postTitle}>{targetInfo.title}</div>
             </div>
             <div className={styles.reportForm}>
