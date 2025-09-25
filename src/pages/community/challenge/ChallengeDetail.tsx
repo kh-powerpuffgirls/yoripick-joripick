@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import axios from 'axios';
-import CommunityHeader from '../CommunityHeader';
+import CommunityHeader from '../Header/CommunityHeader';
 import styles from './ChallengeDetail.module.css';
 import { store } from '../../../store/store';
 import CommunityModal from '../CommunityModal';
@@ -92,7 +92,6 @@ const ChallengeDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Navigation state
   const [nextChallengeNo, setNextChallengeNo] = useState<number | null>(null);
   const [prevChallengeNo, setPrevChallengeNo] = useState<number | null>(null);
 
@@ -307,12 +306,10 @@ const parentReplies = replies
             .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
             .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-        // --- 수정된 부분: 이미지 URL 생성 로직 ---
         const parentImage = parent.profileImageServerName
-            ? `${API_BASE}/${parent.profileImageServerName}` // 일단 API_BASE 뒤에 경로를 그대로 붙입니다.
+            ? `${API_BASE}/${parent.profileImageServerName}`
             : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
 
-        // 서버에서 받은 경로에 'images/'가 포함되어 있는지 확인하여 URL을 최종적으로 결정합니다.
         const finalParentImageUrl = parent.profileImageServerName?.includes('/images/')
             ? `${API_BASE}${parent.profileImageServerName}`
             : `${API_BASE}/images/${parent.profileImageServerName}`;

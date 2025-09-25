@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
 import styles from './MarketForm.module.css';
-import CommunityHeader from '../CommunityHeader';
+import CommunityHeader from '../Header/CommunityHeader';
 import SellerModal from './SellerModal'; // SellerModal 컴포넌트 import
 
 // Redux 스토어에서 accessToken 가져오기
