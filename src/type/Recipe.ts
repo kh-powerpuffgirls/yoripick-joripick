@@ -244,3 +244,9 @@ export type OfficialRecipeResponse = {
   bookmarkCount: number;
   isBookmarked: boolean;
 };
+export interface MyPageRecipe {
+  id: number;
+  title: string;
+  likes: number; 
+  img: string;
+}

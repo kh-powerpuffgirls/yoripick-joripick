@@ -5,6 +5,7 @@ import type { User } from "../../type/authtype";
 import errorMessages from "../ErrorMessages";
 import { useDispatch } from "react-redux";
 import { updateUserInfo } from "../../features/authSlice";
+import { api } from "../../api/authApi";
 
 interface MemberInfoModalProps {
   user: User;
@@ -166,7 +167,7 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
     }
 
     try {
-      const res = await axios.put("http://localhost:8081/mypage/update", updatePayload);
+      const res = await api.put("/users/update", updatePayload);
       alert(res.data.message);
 
       dispatch(updateUserInfo({
