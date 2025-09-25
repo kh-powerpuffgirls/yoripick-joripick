@@ -37,16 +37,20 @@ const CommunityRecipeList: React.FC = () => {
     const userNo = useSelector((state: RootState) => state.auth?.user?.userNo);
     
     const isOfficialListPage = useMatch('/api/recipe');
+
+    // 공식 레시피 랭킹 state
+    const [officialRankingRecipes, setOfficialRankingRecipes] = useState<RecipeListItem[]>([]);
+    const [rankingRecipes, setRankingRecipes] = useState<RecipeListItem[]>([]); 
     
     // 상태 관리
     const [recipePage, setRecipePage] = useState<RecipePage>({
       recipes: [], totalPages: 0, totalElements: 0,
     });
-    const [rankingRecipes, setRankingRecipes] = useState<RecipeListItem[]>([]);
+    
     const [isLoading, setIsLoading] = useState(true);
     const [searchParams, setSearchParams] = useState<ApiParams>({
-      page: 0, 
-      sort: isOfficialListPage ? 'bookmarks_desc' : 'createdAt',
+        page: 0, 
+        sort: isOfficialListPage ? 'bookmarks_desc' : 'createdAt',
     });
 
     // API 호출 함수
@@ -71,17 +75,25 @@ const CommunityRecipeList: React.FC = () => {
 
     // 랭킹 레시피는 페이지 로드 시 한 번만 불러옴
     useEffect(() => {
-        if (!isOfficialListPage) {
-            const fetchRanking = async () => {
+        const fetchRanking = async () => {
+            if (isOfficialListPage) {
+                // 공식 레시피 페이지일 경우
                 try {
-                    const rankResponse = await api.get('/api/community/recipe/ranking');
-                    setRankingRecipes(rankResponse.data);
+                    const response = await api.get('/api/recipe/ranking'); 
+                    setOfficialRankingRecipes(response.data);
+                } catch (error) {
+                    console.error("공식 랭킹 레시피를 불러오는데 실패했습니다.", error);
+                }
+            } else {
+                try {
+                    const response = await api.get('/api/community/recipe/ranking');
+                    setRankingRecipes(response.data);
                 } catch (error) {
                     console.error("랭킹 레시피를 불러오는데 실패했습니다.", error);
                 }
-            };
-            fetchRanking();
-        }
+            }
+        };
+        fetchRanking();
     }, [isOfficialListPage]);
 
     const handleSort = (sortType: string) => {
@@ -99,46 +111,73 @@ const CommunityRecipeList: React.FC = () => {
 
     return (
         <>
-            <CommunityHeader />
+            {!isOfficialListPage &&
+                <CommunityHeader />
+            }
             <div className={list.main}>
                 <CommunitySidebar isOfficial={!!isOfficialListPage}  onSearch={handleSearch} />
                 <div className={list.container}>
-                    { !isOfficialListPage&&(
-                        <button className={list.write} onClick={() => navigate('/community/recipe/write')}>레시피 작성하기</button>
-                    )}
-
-                    {/* 금주 Pick! 랭킹 섹션 */}
-                    <table className={list.ranking}>
-                        <thead>
-                            <tr>
-                                <th colSpan={4}>
+                    { isOfficialListPage ?(
+                        // 공식 레시피 "금주 Pick!"
+                        <table className={list.ranking}>
+                            <thead>
+                                <tr><th colSpan={4}>
                                     <div className={list.ranking_title}>
                                         <img src={rankingIcon} height='50px' width='50px' alt="랭킹 아이콘" />
-                                        금주 Pick!
+                                        인기 Pick!
                                     </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {rankingRecipes.map((recipe, index) => (
-                                    <td key={`rank-${recipe.rcpNo}`}>
-                                        {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
-                                        {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
-                                        {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
-                                        {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
-                                        <Link to={`/community/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
-                                            {recipe.isOfficial ? (
+                                </th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {officialRankingRecipes.map((recipe, index) => (
+                                        <td key={`rank-${recipe.rcpNo}`}>
+                                            {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
+                                            {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
+                                            {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
+                                            {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
+                                            <Link to={`/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
                                                 <OfficialRecipeCard recipe={recipe} />
-                                            ):(
-                                                <RecipeCard recipe={recipe} />
-                                            )}
-                                        </Link>
-                                    </td>
-                                ))}
-                            </tr>
-                        </tbody>
-                    </table>
+                                            </Link>
+                                        </td>
+                                    ))}
+                                </tr>
+                            </tbody>
+                        </table>
+                    ): (
+                        <>
+                            <button className={list.write} onClick={() => navigate('/community/recipe/write')}>레시피 작성하기</button>
+                            <table className={list.ranking}>
+                                <thead>
+                                    <tr>
+                                        <th colSpan={4}>
+                                            <div className={list.ranking_title}>
+                                                <img src={rankingIcon} height='50px' width='50px' alt="랭킹 아이콘" />
+                                                금주 Pick!
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {rankingRecipes.map((recipe, index) => (
+                                            <td key={`rank-${recipe.rcpNo}`}>
+                                                {index === 0 && <img src={crown1} id={list.crown} alt="1등" />}
+                                                {index === 1 && <img src={crown2} id={list.crown} alt="2등" />}
+                                                {index === 2 && <img src={crown3} id={list.crown} alt="3등" />}
+                                                {index === 3 && <img src={crown4} id={list.crown} alt="4등" />}
+                                                <Link to={`/community/recipe/${recipe.rcpNo}`} style={{ textDecoration: 'none' }}>
+                                                    <RecipeCard recipe={recipe} />
+                                                </Link>
+                                            </td>
+                                        ))}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </>
+                    )}
+                    
+
 
                     <br />
 

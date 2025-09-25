@@ -26,6 +26,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
+    margin-bottom: 10px;
 }
 .title_area button:hover {
     background-color: #f1f3f5;

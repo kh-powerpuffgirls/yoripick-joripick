@@ -8,6 +8,7 @@
     padding: 15px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     transition: box-shadow 0.3s ease;
+    max-height: 250px;
 }
 
 .content:hover {
@@ -119,6 +120,7 @@
 .info_container{
     display: flex;
     justify-content: space-between;
+    align-items: center;
     
 }
 
