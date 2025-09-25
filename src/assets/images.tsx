@@ -19,20 +19,6 @@ import toggleGall from './images/icon/gallery.png'
 import calendar from './images/icon/calendar.svg'
 import EatBtiLogo from './images/image-removebg-preview.png'
 
-import ingBn0 from './images/ing/banner/anh-nguyen-kcA-c3f_3FE-unsplash.jpg'
-import ingBn1 from './images/ing/banner/fruits.jpg'
-import ingBn2 from './images/ing/banner/nathan-dumlao-bRdRUUtbxO0-unsplash.jpg'
-import ingBn3 from './images/ing/banner/thanh-soledas-Kf1nBG76Xe8-unsplash.jpg'
-import ingBn4 from './images/ing/banner/melissa-askew-y4xZxzN754M-unsplash.jpg'
-import ingBn5 from './images/ing/banner/eiliv-aceron-YlAmh_X_SsE-unsplash.jpg'
-import ingBn6 from './images/ing/banner/jongsun-lee-JnFGgVaFpmE-unsplash.jpg'
-import ingBn7 from './images/ing/banner/ahmadreza-rezaie-eU2s_fonJkg-unsplash.jpg'
-import ingBn8 from './images/ing/banner/maksim-shutov-pUa1On18Jno-unsplash.jpg'
-import ingBn9 from './images/ing/banner/art-rachen-Asj5DFw8UAw-unsplash.jpg'
-import ingBn10 from './images/ing/banner/andra-ion-qsPHXC4T2cY-unsplash.jpg'
-import ingBn11 from './images/ing/banner/kristiana-pinne-FL8NSCfvty0-unsplash.jpg'
-import ingBn12 from './images/ing/banner/victoria-shes-UC0HZdUitWY-unsplash.jpg'
-
 import ingIcon1 from './images/ing/icon/fruits.png'
 import ingIcon2 from './images/ing/icon/vegetable.png'
 import ingIcon3 from './images/ing/icon/mushrooms.png'
@@ -75,13 +61,18 @@ export const lodingIngIcon = [
 ]
 
 export const lodingIngBn = [
-    ingBn0,
-    ingBn1, ingBn2, ingBn3, ingBn4, ingBn5, ingBn6,
-    ingBn7, ingBn8, ingBn9, ingBn10, ingBn11, ingBn12
-]
-
-// 카테고리 no에 맞게 이미지 추가 필요
-export const ingBn = [
-    ingBn1, ingBn1
+    '/images/ing/banner/anh-nguyen-kcA-c3f_3FE-unsplash.jpg',
+    '/images/ing/banner/fruits.jpg',
+    '/images/ing/banner/nathan-dumlao-bRdRUUtbxO0-unsplash.jpg',
+    '/images/ing/banner/thanh-soledas-Kf1nBG76Xe8-unsplash.jpg',
+    '/images/ing/banner/melissa-askew-y4xZxzN754M-unsplash.jpg',
+    '/images/ing/banner/eiliv-aceron-YlAmh_X_SsE-unsplash.jpg',
+    '/images/ing/banner/jongsun-lee-JnFGgVaFpmE-unsplash.jpg',
+    '/images/ing/banner/ahmadreza-rezaie-eU2s_fonJkg-unsplash.jpg',
+    '/images/ing/banner/maksim-shutov-pUa1On18Jno-unsplash.jpg',
+    '/images/ing/banner/art-rachen-Asj5DFw8UAw-unsplash.jpg',
+    '/images/ing/banner/andra-ion-qsPHXC4T2cY-unsplash.jpg',
+    '/images/ing/banner/kristiana-pinne-FL8NSCfvty0-unsplash.jpg',
+    '/images/ing/banner/victoria-shes-UC0HZdUitWY-unsplash.jpg',
 ]
 

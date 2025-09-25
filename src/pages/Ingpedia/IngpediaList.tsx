@@ -1,11 +1,11 @@
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import { ingBn, lodingImg, lodingIngBn, lodingIngIcon } from "../../assets/images";
+import { lodingImg, lodingIngBn, lodingIngIcon } from "../../assets/images";
 import Pagination from "../../components/Pagination";
 import ingStyle from "./Ingpedia.module.css"
 import "../../assets/css/button.css";
 import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import cx from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { initialIngItem, type IngCode, type IngItem } from "../../type/Ing";
 import { getIngCodes, searchIngs } from "../../api/ing/ingApi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,13 +15,21 @@ import { searchIngPedia } from "../../api/ing/ingPediaApi";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 
-export default function IngpediaList(){
+const bannerImg = lodingIngBn;
 
+export default function IngpediaList(){
+    
     const queryClient = useQueryClient();
     const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
     const [ingCodeSet, setIngCodeSet] = useState<IngCode[]>([{ingCode:0, ingCodeName:''}]);
     const navigate = useNavigate();
-
+    
+    const preloadImages = (imageUrls: string[]) => {
+        imageUrls.forEach((url) => {
+            const img = new Image();
+            img.src = url;
+        });
+    };
 
     const [searchKeyword, onChangeKeyword] = useInput({
         ingCode:0,
@@ -56,27 +64,21 @@ export default function IngpediaList(){
     })
 
     useEffect(() => {
-        if (ingCodes) {
-            setIngCodeSet(ingCodes);
-        }
-    }, [ingCodes]);
-
+        if (ingCodes) {setIngCodeSet(ingCodes);}
+        if (ingContents?.pageInfo) {setIngPageInfo(ingContents.pageInfo);}
+    }, [ingCodes, ingContents]);
+    
     useEffect(() => {
-        if (ingContents?.pageInfo) {
-            setIngPageInfo(ingContents.pageInfo);
-        }
-    }, [ingContents]);
-        
+        preloadImages(bannerImg);
+    }, []);
+
     const handleSearchIngPedia = () => {
         setSubmittedKeyword(searchKeyword);
-        searchIngs(submittedKeyword);
     };
 
     const fetchIngData = (page:number) => {
         setSubmittedKeyword({ ...submittedKeyword, page: page});
     };
-
-
 
     return (
         <>
@@ -130,7 +132,7 @@ export default function IngpediaList(){
                 {/* <!-- 목록 --> */}
                 <section className={ingStyle[`ing-content`]}>
                     <div className={ingStyle[`category-banner`]}> 
-                        <img src={lodingIngBn[submittedKeyword.ingCode]}/>
+                        <img src={bannerImg[submittedKeyword.ingCode]}/>
                         <h2 className={ingStyle[`category-banner-stroke`]}>{ingCodeSet[submittedKeyword.ingCode].ingCodeName}</h2>
                         <h2>{ingCodeSet[submittedKeyword.ingCode].ingCodeName}</h2>
                     </div>

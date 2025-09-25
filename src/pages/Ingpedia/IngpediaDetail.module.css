@@ -3,6 +3,7 @@
   flex-direction: row;
   margin-bottom: 20px;
 }
+
 /* 재료 정보 */
 .ing-table {
   background-color: var(--ypjp-green);
@@ -95,4 +96,16 @@
   flex-grow: 1;
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
+}
+.btn-group * {
+  text-wrap: nowrap;
+}
+.ing-btn {
+  max-width: 100px;
+  text-wrap: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

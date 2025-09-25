@@ -1,29 +1,22 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import{ initialState, type Ing, type Message } from "../type/ingmodal";
+import{ notiInitialState, type Ing, type Message } from "../type/ingmodal";
 
 const myIngSlice = createSlice({
     name: "myIng",
-    initialState,
+    initialState: notiInitialState,
     reducers: {
-        // resetRoom: (state, action: PayloadAction<string>) => {
-        //     const target = state.ings.find(ing => ing.type === action.payload);
-        //     if (target) {
-        //         target.messages = [];
-        //     }
-        // },
         setNotification: (state, action: PayloadAction<Message>) => {
             const newNotification = {
                 ...action.payload,
-                id: Math.random().toString(36).substring(2, 9),
                 isClosing: false,
             };
-            state.list.push(newNotification);
+            state.message = newNotification;
         },
         removeNotification: (state, action: PayloadAction<string>) => {
-            state.list = state.list.filter((noti) => noti.id !== action.payload);
+            state.message = state.message = undefined;
         },
         startClosingAnimation: (state, action: PayloadAction<string>) => {
-            const notification = state.list.find((noti) => noti.id === action.payload);
+            const notification = state.mes.find((noti) => noti.id === action.payload);
             if (notification) {
                 notification.isClosing = true;
             }
@@ -43,5 +36,11 @@ const myIngSlice = createSlice({
     }
 })
 
-export const { checkAlert } = myIngSlice.actions;
+export const { 
+    removeNotification, 
+    startClosingAnimation,
+    setSettingsLoading,
+    setSettingsError,
+    setUserSettings 
+ } = myIngSlice.actions;
 export default myIngSlice.reducer;

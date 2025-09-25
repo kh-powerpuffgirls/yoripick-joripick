@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ingBn, lodingImg } from "../../assets/images";
+import { lodingImg } from "../../assets/images";
 import ingEditStyle from "./IngpediaEdit.module.css"
 import "../../assets/css/button.css";
 import ingDefaultStyle from "../../assets/css/ingDefault.module.css";

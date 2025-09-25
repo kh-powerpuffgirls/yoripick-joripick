@@ -3,8 +3,99 @@ import mainStyle from "./Mainpage.module.css"
 import "../../assets/css/button.css";
 import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import cx from "classnames";
+import { Link, useNavigate } from "react-router";
+import { useCallback, useEffect, useState } from "react";
+import type { IngredientOption, RcpOption, RecipeListItem, RecipePage } from "../../type/Recipe";
+import { api } from "../../api/authApi";
+
+interface SearchParams {
+  ingredients?: string;
+  rcpMthNo?: string;
+  rcpStaNo?: string;
+}
+
+
+interface ApiParams {
+  page?: number;
+  sort?: string;
+  ingredients?: string;
+  rcpMthNo?: string;
+  rcpStaNo?: string;
+}
 
 export default function Mainpage(){
+
+    const navigate = useNavigate();
+    
+    // 상태 관리
+    const [recipePage, setRecipePage] = useState<RecipePage>({
+      recipes: [], totalPages: 0, totalElements: 0,
+    });
+    const [rankingRecipes, setRankingRecipes] = useState<RecipeListItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchParams, setSearchParams] = useState<ApiParams>({
+      page: 0, 
+      sort: 'createdAt',
+    });
+
+    // 레시피 분류
+    const [selectedIngredients, setSelectedIngredients] = useState<IngredientOption[]>([]);
+    const [rcpMthNo, setRcpMthNo] = useState('');
+    const [rcpStaNo, setRcpStaNo] = useState('');
+    const [ingredientInput, setIngredientInput] = useState('');
+    const [searchResults, setSearchResults] = useState<IngredientOption[]>([]);
+    const [methodOptions, setMethodOptions] = useState<RcpOption[]>([]);
+    const [typeOptions, setTypeOptions] = useState<RcpOption[]>([]);
+
+    useEffect(() => {
+    const fetchOptions = async () => {
+        try {
+        const [methodRes, typeRes] = await Promise.all([
+            api.get('/api/options/methods'),
+            api.get('/api/options/situations')
+        ]);
+        setMethodOptions(methodRes.data.map((item: any) => ({ id: item.rcpMthNo, name: item.rcpMethod })));
+        setTypeOptions(typeRes.data.map((item: any) => ({ id: item.rcpStaNo, name: item.rcpSituation })));
+        } catch (error) {
+        console.error('레시피 분류 로딩 실패', error);
+        }
+    };
+
+    fetchOptions();
+    }, []);
+
+    useEffect(() => {
+        // "기타"를 마지막으로 이동
+        const reordered = [
+        ...typeOptions.filter(option => option.name !== '기타'),
+        ...typeOptions.filter(option => option.name === '기타'),
+        ];
+        setTypeOptions(reordered);
+    }, []);
+
+    const navigateRecipe = (name?: string, value?: number) => {
+        if(name && value){
+            const updatedParams = {[name]: String(value)};
+            setSearchParams(updatedParams);
+            const query = new URLSearchParams(updatedParams).toString();
+            navigate(`/api/recipe?${query}`);
+        } else {
+            navigate(`/api/recipe`);
+        }
+    };
+
+    // 랭킹 레시피
+    useEffect(() => {
+        const fetchRanking = async () => {
+            try {
+                const rankResponse = await api.get('/api/community/recipe/ranking');
+                setRankingRecipes(rankResponse.data);
+            } catch (error) {
+                console.error("랭킹 레시피를 불러오는데 실패했습니다.", error);
+            }
+        };
+        fetchRanking();
+    }, []);
 
     return (
         <>
@@ -13,27 +104,25 @@ export default function Mainpage(){
              <section className={mainStyle["recipe-category"]}>
                 <div className={ingDefaultStyle[`title-area`]}>
                     <h2>레시피 분류</h2>
-                    <a href="#" className={ingDefaultStyle[`more-link`]}>세부검색 바로가기</a>
+                    <Link to={'/api/recipe'} className={ingDefaultStyle[`more-link`]}>세부검색 바로가기</Link>
                 </div>
                 <ul className={cx(mainStyle["category-list"], mainStyle["content-area"])}>
-                    <li><span className={mainStyle.circle}></span><p>굽기</p></li>
-                    <li><span className={mainStyle.circle}></span><p>부침</p></li>
-                    <li><span className={mainStyle.circle}></span><p>찜</p></li>
-                    <li><span className={mainStyle.circle}></span><p>볶음</p></li>
-                    <li><span className={mainStyle.circle}></span><p>무침</p></li>
-                    <li><span className={mainStyle.circle}></span><p>끓이기</p></li>
-                    <li><span className={mainStyle.circle}></span><p>반찬</p></li>
-                    <li><span className={mainStyle.circle}></span><p>밥/죽/떡</p></li>
-                    <li><span className={mainStyle.circle}></span><p>국/탕</p></li>
-                    <li><span className={mainStyle.circle}></span><p>양념</p></li>
-                    <li><span className={mainStyle.circle}></span><p>빵</p></li>
-                    <li><span className={mainStyle.circle}></span><p>장류</p></li>
-                    <li><span className={mainStyle.circle}></span><p>일상</p></li>
-                    <li><span className={mainStyle.circle}></span><p>영양식</p></li>
-                    <li><span className={mainStyle.circle}></span><p>손님접대</p></li>
-                    <li><span className={mainStyle.circle}></span><p>간식</p></li>
-                    <li><span className={mainStyle.circle}></span><p>술안주</p></li>
-                    <li><span className={mainStyle.circle}></span><p>다이어트</p></li>
+                    {methodOptions.map(
+                        (item) => (
+                            (item.name != '기타') && 
+                            <li key={item.id}
+                            onClick={() => navigateRecipe("rcpMthNo", item.id)}>
+                                <span className={mainStyle.circle}></span><p>{item.name}</p></li>
+                        )
+                    )}
+                    {typeOptions.map(
+                        (item) => (
+                            <li key={item.id}
+                            onClick={() => navigateRecipe("rcpStaNo", item.id)}>
+                                <span className={mainStyle.circle}></span><p>{item.name}</p>
+                            </li>
+                        )
+                    )}
                 </ul>
                 </section>
 
@@ -41,7 +130,7 @@ export default function Mainpage(){
                 <section className={mainStyle[`today-pick`]}>
                     <div className={ingDefaultStyle[`title-area`]}>
                         <h2>오늘의 PICK!</h2>
-                        <a href="#" className={ingDefaultStyle[`more-link`]}>레시피 바로가기</a>
+                        <Link to={'/api/recipe'} className={ingDefaultStyle[`more-link`]}>레시피 바로가기</Link>
                     </div>
                     <div className={cx(mainStyle["pick-list"], ingDefaultStyle["content-area"])}>
                         <article className={mainStyle[`pick-item`]}>
@@ -84,14 +173,12 @@ export default function Mainpage(){
                                 칼슘이 함유되어 있어aaaaa aaaa aaaa aaaaaaaaa aaaaa aaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaa
                             </p>
                         </div>
-                        <a href="#" className={ingDefaultStyle[`more-link`]}>더 많은 재료 관리 Tip 보기</a>
+                        <Link to={'/api/recipe'} className={ingDefaultStyle[`more-link`]}>더 많은 재료 관리 Tip 보기</Link>
                         <div className={mainStyle[`carousel-thumbs`]}>
-                            <img className={mainStyle[`arrow-icon`]} src={lodingImg.arrowLeft}/>
                             <span className={mainStyle[`thumb`]}></span>
                             <span className={mainStyle[`thumb`]}></span>
                             <span className={mainStyle[`thumb`]}></span>
                             <span className={mainStyle[`thumb`]}></span>
-                            <img className={mainStyle[`arrow-icon`]}src={lodingImg.arrowRight}/>
                         </div>
                     </div>
                 </div>
@@ -101,7 +188,7 @@ export default function Mainpage(){
                 <section className={mainStyle[`food-bti`]}>
                     <div className={ingDefaultStyle[`title-area`]}>
                         <h2>식BTI 검사하기</h2>
-                        <a href="#" className={ingDefaultStyle[`more-link`]}>내 식BTI 검사하기</a>
+                        <Link to={'/api/recipe'} className={ingDefaultStyle[`more-link`]}>내 식BTI 검사하기</Link>
                     </div>
                 <div className={mainStyle[`bti-banner`]}>
                     <img className={ingDefaultStyle[`content-area`]}src={lodingImg.EatBTI} alt="식BTI 검사하기"/>

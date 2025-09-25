@@ -1,7 +1,7 @@
 
 // src/pages/CommunityRecipeList/CommunityRecipeList.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 // import './CommunityList.css'; // 페이지 전용 CSS
 import list from './CommunityList.module.css'; 
@@ -31,6 +31,10 @@ interface ApiParams {
 
 const CommunityRecipeList: React.FC = () => {
     const navigate = useNavigate();
+    const [urlParam, setUrlParam] = useSearchParams();
+
+    const rcpMthNo = urlParam.get('rcpMthNo');
+    const rcpStaNo = urlParam.get('rcpStaNo');
     
     // 상태 관리
     const [recipePage, setRecipePage] = useState<RecipePage>({
@@ -41,6 +45,8 @@ const CommunityRecipeList: React.FC = () => {
     const [searchParams, setSearchParams] = useState<ApiParams>({
       page: 0, 
       sort: 'createdAt',
+      ...(rcpMthNo ? { rcpMthNo: rcpMthNo } : {}),
+      ...(rcpStaNo ? { rcpStaNo: rcpStaNo } : {}),
     });
 
     // API 호출 함수

@@ -1,8 +1,8 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ingBn, lodingImg } from "../../assets/images";
+import { lodingImg } from "../../assets/images";
+import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import ingWriteStyle from "./IngpediaWrite.module.css"
 import "../../assets/css/button.css";
-import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import cx from "classnames";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
@@ -82,8 +82,11 @@ export default function IngpediaWrite(){
             setpairIngs(newPairIngs);
         }
         setNewIng({...newIng, pairList:pairIngs});
-        console.log(newIng);
     }, [pairIngs]);
+
+    useEffect(() => {
+        
+    }, [newIng]);
 
     
     const mutation = useMutation({
@@ -128,6 +131,14 @@ export default function IngpediaWrite(){
         mutation.mutate(newIng); //비동기함수 실행
     }
 
+    const handleSubIngPedia = (pairNo: number) => {
+        const onDelete = confirm("관련 식재료를 삭제하시겠습니까?");
+        onDelete && setNewIng({
+            ...newIng,
+            pairList: newIng.pairList?.filter((item) => !(item.pairNo === pairNo)),
+        });
+        console.log(newIng);
+    };
 
     return (
         <>
@@ -234,7 +245,9 @@ export default function IngpediaWrite(){
                                 <img src={lodingImg.thumbUp}/>
                                 <span className={ingWriteStyle["btn-group"]}>
                                     {pairIngs.map((item, index) => (
-                                        (item.pairState == 'B') && <button key={item.pairNo} className={cx("click-basic", "round-btn", "green", "ing-btn")}>
+                                        (item.pairState == 'B') &&
+                                        <button key={item.pairNo} className={cx("click-basic", "round-btn", "green", "ing-btn")}
+                                        onClick={() => handleSubIngPedia(item.pairNo)}>
                                         {item.pairName}
                                         </button>
                                     ))}
@@ -248,7 +261,9 @@ export default function IngpediaWrite(){
                             <div className={cx("flex-row", ingWriteStyle["match-content"])}>
                                 <span className={ingWriteStyle["btn-group"]}>
                                     {pairIngs.map((item, index) => (
-                                        (item.pairState == 'W') && <button key={item.pairNo} className={cx("click-basic", "round-btn", "orange", "ing-btn")}>
+                                        (item.pairState == 'W') &&
+                                        <button key={item.pairNo} className={cx("click-basic", "round-btn", "orange", "ing-btn")}
+                                        onClick={() => handleSubIngPedia(item.pairNo)}>
                                         {item.pairName}
                                         </button>
                                     ))}
