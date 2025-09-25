@@ -3,6 +3,7 @@
   flex-direction: row;
   margin-bottom: 20px;
 }
+
 /* 재료 정보 */
 .ing-table {
   background-color: var(--ypjp-green);
@@ -17,13 +18,13 @@
 .ing-table th input {
   height: 42px;
 }
-tr > td:first-child {
+.ing-table tr > td:first-child {
   color: white;
   font-weight: bold;
   text-align: center;
   max-width: 100px;
 }
-.ing-image, tr > td:nth-child(2) {
+.ing-image, .ing-table tr > td:nth-child(2) {
   color: black;
   background-color: white;
 }
@@ -42,14 +43,6 @@ tr > td:first-child {
   display: block;
 }
 
-
-
-
-
-
-
-
-
 .ing-table th button {
   text-wrap: nowrap;
 }
@@ -58,7 +51,7 @@ tr > td:first-child {
   margin-right: 10px;
   text-align: center;
 }
-.ing-image, tr > td:nth-child(2) {
+.ing-image, .ing-table tr > td:nth-child(2) {
   color: black;
   background-color: white;
 }

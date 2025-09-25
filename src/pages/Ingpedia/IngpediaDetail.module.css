@@ -6,7 +6,7 @@
 /* 재료 정보 */
 .ing-table {
   background-color: var(--ypjp-green);
-  width:300px;
+  width: 300px;
   height: fit-content;
   flex-shrink: 0;
   border-spacing: 2px;
@@ -14,13 +14,16 @@
 .ing-table * {
   padding: 10px 20px;
 }
-.ing-name, tr > td:first-child {
+.ing-table th input {
+  height: 42px;
+}
+.ing-name, .ing-table tr > td:first-child {
   color: white;
   font-weight: bold;
   text-align: center;
   max-width: 100px;
 }
-.ing-image, tr > td:nth-child(2) {
+.ing-image, .ing-table tr > td:nth-child(2) {
   color: black;
   background-color: white;
 }
