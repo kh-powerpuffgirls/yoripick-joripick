@@ -74,6 +74,7 @@ function App() {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const userNo = user?.userNo;
   const rooms = useSelector((state: RootState) => state.chat.rooms);
+  const totalUnread = rooms?.reduce((sum, room) => sum + (room.unreadCount || 0), 0);
 
   // 로그인 정보 유지
   useEffect(() => {
@@ -82,7 +83,7 @@ function App() {
         dispatch(saveUserData(res.data));
         dispatch(loginSuccess());
       })
-      .catch(err => {
+      .catch(() => {
         dispatch(logout());
       });
   }, []);
@@ -137,7 +138,8 @@ function App() {
       <ChatModal />
       <Notification />
       {rooms && rooms.length > 0 && (
-        <p className='chatBtn' onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
+        <p className={`chatBtn ${totalUnread > 0 ? "blink" : ""}`} 
+        onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
       )}
       <Routes>
         <Route path="/login" element={

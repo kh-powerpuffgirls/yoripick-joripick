@@ -9,9 +9,10 @@ import {
     removeSubscribedRoom,
     clearSubscribedRooms,
 } from "../features/stompSlice";
-import { sendMessage } from "../features/chatSlice";
+import { sendMessage, setRooms } from "../features/chatSlice";
 import { addNotification, startClosingAnimation } from "../features/notiSlice";
 import { stompManager } from "../type/chatmodal";
+import { getRooms } from "../api/chatApi";
 
 const useChat = () => {
     const dispatch = useDispatch();
@@ -44,7 +45,6 @@ const useChat = () => {
                 dispatch(setConnected(false));
             },
         });
-
         stompManager.client = client;
         client.activate();
 
@@ -59,7 +59,6 @@ const useChat = () => {
 
     useEffect(() => {
         if (!stompManager.client?.connected || !userSettings) return;
-
         rooms.forEach((room) => {
             const roomNo = String(room.roomNo);
 
@@ -71,7 +70,7 @@ const useChat = () => {
             const sub = stompManager.client.subscribe(`/topic/${roomNo}`, (msg: Message) => {
                 const data = JSON.parse(msg.body);
                 dispatch(sendMessage(data));
-
+                getRooms(userNo).then(res => dispatch(setRooms(res)));
                 if (
                     data.userNo != userNo &&
                     data.userNo != 0 &&
@@ -95,12 +94,9 @@ const useChat = () => {
                     }
                 }
             });
-
             stompManager.subscriptions.set(roomNo, sub);
             dispatch(addSubscribedRoom(roomNo));
-            console.log("구독 완료:", roomNo);
         });
-
         // rooms에 없는 방은 구독 해제
         subscribedRooms.forEach((roomNo) => {
             if (!rooms.find((r) => String(r.roomNo) === roomNo)) {
@@ -122,8 +118,6 @@ const useChat = () => {
             console.warn("STOMP가 연결되어 있지 않습니다.");
         }
     };
-
     return { sendChatMessage };
 };
-
 export default useChat;

@@ -4,11 +4,12 @@ import styles from './CkClassForm.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
 import axios from 'axios';
 import { store, type RootState } from '../../../store/store';
-import type { Message } from '../../../type/chatmodal';
-import { saveMessage } from '../../../api/chatApi';
-import { openChat } from '../../../features/chatSlice';
+import type { ChatRoom, Message } from '../../../type/chatmodal';
+import { getRooms, saveMessage } from '../../../api/chatApi';
+import { openChat, setRooms } from '../../../features/chatSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import useChat from '../../../hooks/useChat';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -32,6 +33,7 @@ interface CookingClassFormProps {
 }
 
 const CkClassForm = ({ isEdit = false }: CookingClassFormProps) => {
+    const queryClient = useQueryClient();
     const { sendChatMessage } = useChat();
     const user = useSelector((state: RootState) => state.auth.user);
     const dispatch = useDispatch();
@@ -97,6 +99,44 @@ const CkClassForm = ({ isEdit = false }: CookingClassFormProps) => {
         }
     };
 
+    // 클래스 생성 로직
+    const mutation = useMutation({
+        mutationFn: (formData: FormData) =>
+            api.post(`/community/ckclass`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            }),
+        onSuccess: (res) => {
+            alert('클래스 등록이 완료되었습니다.');
+            queryClient.invalidateQueries({ queryKey: ["rooms"] });
+            getRooms(user?.userNo)
+                .then((rooms: ChatRoom[]) => {
+                    dispatch(setRooms(rooms));
+
+                    const newRoom = rooms.find(r => r.roomNo === res.data);
+                    if (!newRoom) return;
+                    dispatch(openChat(newRoom));
+
+                    // 등록 메시지 생성
+                    const systemMessage: Message = {
+                        userNo: 0,
+                        username: "SYSTEM",
+                        content: `${newRoom.className} 에 오신 것을 환영합니다`,
+                        createdAt: new Date().toISOString(),
+                        roomNo: newRoom.roomNo,
+                    };
+
+                    // DB 저장
+                    let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
+                    let formData = new FormData();
+                    formData.append("message", messageBlob);
+                    saveMessage("cclass", newRoom.roomNo, formData);
+
+                    // 웹소켓 브로드캐스트
+                    sendChatMessage(newRoom.roomNo, systemMessage);
+                });
+        }
+    });
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (isCodeEnabled && passcodeError) {
@@ -123,35 +163,7 @@ const CkClassForm = ({ isEdit = false }: CookingClassFormProps) => {
                 });
                 alert('클래스 수정이 완료되었습니다.');
             } else {
-                const response = await api.post(`/community/ckclass`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-                alert('클래스 등록이 완료되었습니다.');
-
-                dispatch(openChat({
-                    roomNo: response.data,
-                    className: name,
-                    type: "cclass",
-                    messages: []
-                }));
-
-                // 입장 메시지 생성
-                const systemMessage: Message = {
-                    userNo: 0,
-                    username: "SYSTEM",
-                    content: `${user?.username} 님이 입장하셨습니다`,
-                    createdAt: new Date().toISOString(),
-                    roomNo: response.data,
-                };
-
-                // DB 저장
-                let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
-                let msgFormData = new FormData();
-                msgFormData.append("message", messageBlob);
-                await saveMessage("cclass", response.data, msgFormData);
-
-                // 웹소켓 브로드캐스트
-                sendChatMessage(response.data, systemMessage);
+                mutation.mutate(formData);
             }
             navigate('/community/ckclass/');
         } catch (error: any) {

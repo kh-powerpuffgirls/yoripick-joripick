@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CkClass.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
@@ -9,10 +9,11 @@ import type { RootState, AppDispatch } from '../../../store/store';
 import axios from 'axios';
 import { store } from '../../../store/store';
 import CkSettingsModal from './CkSettingsModal';
-import { leaveRooms, openChat } from '../../../features/chatSlice';
+import { leaveRooms, openChat, setRooms } from '../../../features/chatSlice';
 import type { ChatRoom, ChatRoomCreate, Message } from '../../../type/chatmodal';
-import { saveMessage } from '../../../api/chatApi';
+import { getRooms, saveMessage } from '../../../api/chatApi';
 import useChat from '../../../hooks/useChat';
+import { useQueryClient } from '@tanstack/react-query';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -30,30 +31,6 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
-interface CkclassDto {
-  roomNo: number;
-  userNo: number;
-  className: string;
-  classInfo: string;
-  serverName?: string;
-  memberCount?: number;
-  unreadCount?: number;
-  username?: string;
-  isNotificationOn?: string;
-}
-
-interface CookingClassDisplay {
-  id: number;
-  name: string;
-  description: string;
-  author: string;
-  memberCount?: number;
-  unreadCount?: number;
-  type: 'my' | 'joined';
-  imageUrl?: string;
-  isNotificationOn?: boolean;
-}
 
 interface ModalState {
   message: string;
@@ -75,6 +52,7 @@ interface ReportOption {
 }
 
 const CkClassMain = () => {
+  const queryClient = useQueryClient();
   const { sendChatMessage } = useChat();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -83,15 +61,22 @@ const CkClassMain = () => {
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
-  const [myClasses, setMyClasses] = useState<CookingClassDisplay[]>([]);
-  const [joinedClasses, setJoinedClasses] = useState<CookingClassDisplay[]>([]);
+
+  const myClasses = useMemo(
+    () => rooms.filter(room => room.type === 'cclass' && room.username === user?.username),
+    [rooms, user?.username]
+  );
+  const joinedClasses = useMemo(
+    () => rooms.filter(room => room.type === 'cclass' && room.username !== user?.username),
+    [rooms, user?.username]
+  );
+
   const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
   const [myCurrentPage, setMyCurrentPage] = useState(1);
   const [joinedCurrentPage, setJoinedCurrentPage] = useState(1);
-  const [onUpdate, setUpdate] = useState(0);
 
   const myClassesPerPage = 3;
   const joinedClassesPerPage = 3;
@@ -103,54 +88,7 @@ const CkClassMain = () => {
     closeModal();
   };
 
-  useEffect(() => {
-    const fetchClasses = async () => {
-      if (!user?.userNo) {
-        setMyClasses([]);
-        setJoinedClasses([]);
-        return;
-      }
-
-      try {
-        const myRes = await api.get<CkclassDto[]>('/community/ckclass/my');
-        setMyClasses(
-          myRes.data.map((cls) => ({
-            id: cls.roomNo,
-            name: cls.className ?? '',
-            description: cls.classInfo ?? '',
-            author: cls.username ?? '알 수 없음',
-            memberCount: cls.memberCount ?? 0,
-            unreadCount: cls.unreadCount ?? 0,
-            type: 'my',
-            imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
-            isNotificationOn: cls.isNotificationOn === 'Y',
-          }))
-        );
-
-        const joinedRes = await api.get<CkclassDto[]>('/community/ckclass/joined');
-        setJoinedClasses(
-          joinedRes.data.map((cls) => ({
-            id: cls.roomNo,
-            name: cls.className ?? '',
-            description: cls.classInfo ?? '',
-            author: cls.username ?? '알 수 없음',
-            memberCount: cls.memberCount ?? 0,
-            unreadCount: cls.unreadCount ?? 0,
-            type: 'joined',
-            imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
-            isNotificationOn: cls.isNotificationOn === 'Y',
-          }))
-        );
-      } catch (err) {
-        console.error(err);
-        openModal({ message: '클래스 목록을 불러오는 데 실패했습니다.', onConfirm: closeModal });
-      }
-    };
-
-    fetchClasses();
-  }, [user, onUpdate]);
-
-    const handleReportClick = async (room: ChatRoom) => {
+  const handleReportClick = async (room: ChatRoom) => {
     const category = 'COOKING_CLASS';
     const targetInfo: ReportTargetInfo = {
       author: room.username as string,
@@ -212,9 +150,8 @@ const CkClassMain = () => {
       roomNo: id,
       type: 'cclass' as ChatRoomCreate,
       messages: [],
-      className: myClasses.find((cls) => cls.id === id)?.name || joinedClasses.find((cls) => cls.id === id)?.name || '클래스',
+      className: myClasses.find((cls) => cls.roomNo == id)?.className || joinedClasses.find((cls) => cls.roomNo == id)?.className || '클래스',
     };
-
     dispatch(openChat(room));
   };
 
@@ -226,8 +163,8 @@ const CkClassMain = () => {
         try {
           await api.delete(`/community/ckclass/${id}/leave`);
           openModal({ message: '클래스에서 성공적으로 탈퇴했습니다.', onConfirm: closeModal });
-          setUpdate((prev) => prev + 1);
           dispatch(leaveRooms(id));
+          queryClient.invalidateQueries({ queryKey: ["rooms"] });
 
           // 퇴장 메시지 생성
           const systemMessage: Message = {
@@ -256,7 +193,7 @@ const CkClassMain = () => {
   };
 
   const handleDeleteClick = async (id: number) => {
-    const classToDelete = myClasses.find((cls) => cls.id === id);
+    const classToDelete = myClasses.find((cls) => cls.roomNo == id);
     if (!classToDelete) {
       openModal({ message: '클래스를 찾을 수 없습니다.', onConfirm: closeModal });
       return;
@@ -264,13 +201,13 @@ const CkClassMain = () => {
 
     const confirmDelete = () => {
       openModal({
-        message: `정말로 "${classToDelete.name}" 클래스를 삭제하시겠습니까?`,
+        message: `정말로 "${classToDelete.className}" 클래스를 삭제하시겠습니까?`,
         onConfirm: async () => {
           try {
             await api.delete(`/community/ckclass/${id}`);
             openModal({ message: '클래스가 성공적으로 삭제되었습니다.', onConfirm: closeModal });
-            setUpdate((prev) => prev + 1);
             dispatch(leaveRooms(id));
+            queryClient.invalidateQueries({ queryKey: ["rooms"] });
           } catch (err: any) {
             console.error(err);
             openModal({ message: err.response?.data || '클래스 삭제에 실패했습니다.', onConfirm: closeModal });
@@ -284,21 +221,14 @@ const CkClassMain = () => {
   };
 
   const handleNotificationToggle = async (id: number) => {
-    const isMyClass = myClasses.find(cls => cls.id === id);
-    const isJoinedClass = joinedClasses.find(cls => cls.id === id);
-
-    const currentStatus = isMyClass?.isNotificationOn ?? isJoinedClass?.isNotificationOn ?? false;
-    const newStatus = !currentStatus;
-    setMyClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: newStatus } : cls));
-    setJoinedClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: newStatus } : cls));
-
     try {
       await api.post(`/community/ckclass/${id}/toggleNotification`);
+      const updatedRooms = await getRooms(user?.userNo);
+      dispatch(setRooms(updatedRooms));
+      // queryClient.invalidateQueries({ queryKey: ["rooms"] }); 필요할지 필요없을지 아직 잘 모르겠음..
     } catch (err: any) {
       console.error(err);
       openModal({ message: err.response?.data || '알림 설정 변경에 실패했습니다.', onConfirm: closeModal });
-      setMyClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: currentStatus } : cls));
-      setJoinedClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: currentStatus } : cls));
     }
   };
 
@@ -310,7 +240,6 @@ const CkClassMain = () => {
   const closeSettingsModal = () => {
     setIsSettingsModalOpen(false);
     setSelectedClassId(null);
-    setUpdate((prev) => prev + 1);
   };
 
   const handleMyPageChange = (pageNumber: number) => {
@@ -319,8 +248,7 @@ const CkClassMain = () => {
   };
 
   const handleJoinedPageChange = (pageNumber: number) => {
-    // const totalPages = Math.ceil(joinedClasses.length / joinedClassesPerPage);
-    const totalPages = Math.ceil(rooms.filter(room => room.type === 'cclass').length / joinedClassesPerPage);
+    const totalPages = Math.ceil(joinedClasses.length / joinedClassesPerPage);
     if (pageNumber >= 1 && pageNumber <= totalPages) setJoinedCurrentPage(pageNumber);
   };
 
@@ -419,7 +347,7 @@ const CkClassMain = () => {
           </div>
           {myClassesToDisplay.length > 0 ? (
             <div className={styles.classCardWrapper}>
-              {/* {myClassesToDisplay.map(renderClassCard)} */}
+              {myClassesToDisplay.map(renderClassCard)}
             </div>
           ) : (
             <div className={styles.noClasses}>아직 개설한 클래스가 없어요.</div>
@@ -452,9 +380,9 @@ const CkClassMain = () => {
           <div className={styles.sectionHeader}>
             <h2>참여중인 클래스 &gt;</h2>
           </div>
-          {rooms.filter(room => room.type === 'cclass').length > 0 ? (
+          {joinedClasses.length > 0 ? (
             <div className={styles.classCardWrapper}>
-              {rooms.filter(room => room.type === 'cclass').map(renderClassCard)}
+              {joinedClasses.map(renderClassCard)}
             </div>
           ) : (
             <div className={styles.noClasses}>아직 참여중인 클래스가 없어요.</div>
@@ -525,7 +453,6 @@ const CkClassMain = () => {
           onClose={closeSettingsModal}
           classId={selectedClassId}
           onUpdate={() => {
-            setUpdate(prev => prev + 1);
             closeSettingsModal();
           }}
         />
