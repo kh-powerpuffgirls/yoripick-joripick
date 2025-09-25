@@ -36,7 +36,7 @@ interface CkclassDto {
   classInfo: string;
   serverName?: string;
   memberCount?: number;
-  unreadCount?: number;
+  // unreadCount?: number;
   username?: string;
   isNotificationOn?: string;
 }
@@ -116,7 +116,7 @@ const CkClassMain = () => {
             description: cls.classInfo ?? '',
             author: cls.username ?? '알 수 없음',
             memberCount: cls.memberCount ?? 0,
-            unreadCount: cls.unreadCount ?? 0,
+            // unreadCount: cls.unreadCount ?? 0,
             type: 'my',
             imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
             isNotificationOn: cls.isNotificationOn === 'Y',
@@ -131,7 +131,7 @@ const CkClassMain = () => {
             description: cls.classInfo ?? '',
             author: cls.username ?? '알 수 없음',
             memberCount: cls.memberCount ?? 0,
-            unreadCount: cls.unreadCount ?? 0,
+            // unreadCount: cls.unreadCount ?? 0,
             type: 'joined',
             imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
             isNotificationOn: cls.isNotificationOn === 'Y',
@@ -211,24 +211,27 @@ const CkClassMain = () => {
       className: myClasses.find((cls) => cls.id === id)?.name || joinedClasses.find((cls) => cls.id === id)?.name || '클래스',
     };
 
-    const userNo = user?.userNo;
-
-    try {
-      if (userNo) {
-        await api.put('/community/ckclass/read-count', {
-          roomNo: id,
-          userNo,
-        });
-
-        setMyClasses((prev) => prev.map((cls) => (cls.id === id ? { ...cls, unreadCount: 0 } : cls)));
-        setJoinedClasses((prev) => prev.map((cls) => (cls.id === id ? { ...cls, unreadCount: 0 } : cls)));
-      }
-    } catch (error) {
-      console.error('안 읽음 처리 API 호출 실패:', error);
-    }
-
     dispatch(openChat(room));
   };
+
+  // handleDeleteClick 바깥에 선언
+  const handleLeaveClassClick = (id: number, className: string) => {
+    openModal({
+      message: `정말로 "${className}" 클래스에서 탈퇴하시겠습니까?`,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/community/ckclass/${id}/leave`);
+          openModal({ message: '클래스에서 성공적으로 탈퇴했습니다.', onConfirm: closeModal });
+          setUpdate((prev) => prev + 1);
+        } catch (err: any) {
+          console.error('클래스 탈퇴 실패:', err);
+          openModal({ message: err.response?.data || '클래스 탈퇴에 실패했습니다.', onConfirm: closeModal });
+        }
+      },
+      showCancel: true,
+    });
+  };
+
   const handleDeleteClick = async (id: number) => {
     const classToDelete = myClasses.find((cls) => cls.id === id);
     if (!classToDelete) {
@@ -252,18 +255,16 @@ const CkClassMain = () => {
         showCancel: true,
       });
     };
+
     confirmDelete();
   };
 
   const handleNotificationToggle = async (id: number) => {
-    // 현재 상태 가져오기
     const isMyClass = myClasses.find(cls => cls.id === id);
     const isJoinedClass = joinedClasses.find(cls => cls.id === id);
 
     const currentStatus = isMyClass?.isNotificationOn ?? isJoinedClass?.isNotificationOn ?? false;
-    const newStatus = !currentStatus; 
-
-    // 상태 먼저 업데이트
+    const newStatus = !currentStatus;
     setMyClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: newStatus } : cls));
     setJoinedClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: newStatus } : cls));
 
@@ -326,9 +327,10 @@ const CkClassMain = () => {
         <div className={styles.cardHeader}>
           <div className={styles.classTitle}>
             {cls.name}
-            {(cls.unreadCount ?? 0) > 0 && (
+            {/* 안 읽은 메시지 */}
+            {/* {(cls.unreadCount ?? 0) > 0 && (
               <span className={styles.unreadCountBadge}>{cls.unreadCount}</span>
-            )}
+            )} */}
           </div>
           <div className={styles.classButtons}>
             <button
@@ -337,9 +339,19 @@ const CkClassMain = () => {
             >
               {cls.isNotificationOn ? '🔔' : '🔕'}
             </button>
+            {/* 💡 나의 클래스일 경우 '삭제' 버튼 표시 */}
             {cls.type === 'my' && (
               <button className={styles.deleteButton} onClick={() => handleDeleteClick(cls.id)}>
                 삭제
+              </button>
+            )}
+            {/* 💡 참여 클래스일 경우 '탈퇴' 버튼 표시 (삭제 버튼과 동일 위치) */}
+            {cls.type !== 'my' && (
+              <button
+                className={styles.leaveButton}
+                onClick={() => handleLeaveClassClick(cls.id, cls.name)}
+              >
+                탈퇴
               </button>
             )}
           </div>
@@ -365,6 +377,7 @@ const CkClassMain = () => {
               <button className={styles.joinButton} onClick={() => handleJoinClick(cls.id)}>
                 채팅
               </button>
+              {/* 💡 cardFooter에서 탈퇴 버튼 제거됨 - 위 classButtons로 이동 */}
               <button className={styles.reportButton} onClick={() => handleReportClick(cls)}>
                 신고
               </button>
@@ -490,17 +503,17 @@ const CkClassMain = () => {
         />
       )}
 
-    {isSettingsModalOpen && selectedClassId !== null && (
-      <CkSettingsModal
-        isOpen={isSettingsModalOpen}
-        onClose={closeSettingsModal}
-        classId={selectedClassId}
-        onUpdate={() => {
-          setUpdate(prev => prev + 1);
-          closeSettingsModal();
-        }}
-          />
-    )}
+      {isSettingsModalOpen && selectedClassId !== null && (
+        <CkSettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={closeSettingsModal}
+          classId={selectedClassId}
+          onUpdate={() => {
+            setUpdate(prev => prev + 1);
+            closeSettingsModal();
+          }}
+        />
+      )}
     </>
   );
 };
