@@ -60,7 +60,7 @@ export default function Login() {
       );
 
       dispatch(saveUserData(res.data));
-      navigate(from, { replace: true });
+      window.location.href = from;
     } catch (err) {
       const error = err as AxiosError<{ errorCode: string; message?: string }>;
       if (error.response) {

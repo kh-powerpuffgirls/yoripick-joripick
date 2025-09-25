@@ -70,8 +70,6 @@ import { IngManagement } from './pages/Admin/ingManagement'
 
 function App() {
   const queryClient = useQueryClient();
-  console.log("App state:", useSelector((state: RootState) => state.auth));
-
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const userNo = user?.userNo;
@@ -116,7 +114,6 @@ function App() {
   });
 
   useEffect(() => {
-    console.log("불린당");
     if (isAuthenticated) {
       refetch();
     } else {
