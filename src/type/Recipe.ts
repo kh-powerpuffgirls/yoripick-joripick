@@ -218,3 +218,10 @@ export interface PhotoReviewModalProps {
   initialIndex: number;
   onClose: () => void;
 }
+
+export interface MyPageRecipe {
+  id: number;
+  title: string;
+  likes: number; 
+  img: string;
+}
