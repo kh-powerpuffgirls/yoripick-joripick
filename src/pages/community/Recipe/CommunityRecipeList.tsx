@@ -20,6 +20,8 @@ import type {  RecipeListItem, RecipePage } from '../../../type/Recipe';
 import RcpPagination from '../Sidebar/RcpPagination';
 import {api} from '../../../api/authApi';
 import OfficialRecipeCard from './OfficialRecipeCard';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store/store';
 
 // API 파라미터 타입을 정의합니다. (선택적 프로퍼티로)
 interface ApiParams {
@@ -32,7 +34,8 @@ interface ApiParams {
 
 const CommunityRecipeList: React.FC = () => {
     const navigate = useNavigate();
-
+    const userNo = useSelector((state: RootState) => state.auth?.user?.userNo);
+    
     const isOfficialListPage = useMatch('/api/recipe');
     
     // 상태 관리
@@ -50,12 +53,9 @@ const CommunityRecipeList: React.FC = () => {
     const fetchRecipes = useCallback(async () => {
         setIsLoading(true);
         try {
-            const endpoint = isOfficialListPage ? '/api/recipe' : '/api/community/recipe';
+            const endpoint = isOfficialListPage ? `/api/recipe/${userNo}` : '/api/community/recipe';
             const response = await api.get(endpoint, { params: searchParams });
 
-            console.log("백엔드로부터 받은 실제 응답:", response);
-            console.log("State에 저장하려는 값 (response.data):", response.data);
-            
             setRecipePage(response.data);
         } catch (error) {
             console.error("레시피 데이터를 불러오는데 실패했습니다.", error);
@@ -103,7 +103,9 @@ const CommunityRecipeList: React.FC = () => {
             <div className={list.main}>
                 <CommunitySidebar isOfficial={!!isOfficialListPage}  onSearch={handleSearch} />
                 <div className={list.container}>
-                    <button className={list.write} onClick={() => navigate('/community/recipe/write')}>레시피 작성하기</button>
+                    { !isOfficialListPage&&(
+                        <button className={list.write} onClick={() => navigate('/community/recipe/write')}>레시피 작성하기</button>
+                    )}
 
                     {/* 금주 Pick! 랭킹 섹션 */}
                     <table className={list.ranking}>
@@ -162,7 +164,7 @@ const CommunityRecipeList: React.FC = () => {
                                 <p style={{textAlign: 'center', fontSize:'18px', color:'#888'}}>레시피를 불러오는 중입니다...</p>
                             ) : recipePage && recipePage.recipes && recipePage.recipes.length > 0 ? (
                                 recipePage.recipes.map(recipe => (
-                                    <Link to={`/community/recipe/${recipe.rcpNo}`} key={recipe.rcpNo} style={{ textDecoration: 'none' }}>
+                                    <Link to={recipe.isOfficial ? `/recipe/${recipe.rcpNo}` : `/community/recipe/${recipe.rcpNo}`} key={recipe.rcpNo} style={{ textDecoration: 'none' }}>
                                         {recipe.isOfficial ? (
                                             <OfficialRecipeCard recipe={recipe} />
                                         ) : (

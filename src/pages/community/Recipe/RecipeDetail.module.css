@@ -129,7 +129,7 @@
     transition: transform 0.2s;
 }
 
-.Likes img:hover {
+.bookMark img:hover {
     transform: scale(1.1);
 }
 

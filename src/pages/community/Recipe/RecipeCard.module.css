@@ -81,6 +81,12 @@
     font-size: 10px;
     color: #636363;
     font-weight: 600;
+    width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+    display: block;
 }
 
 /* 날짜와 조회수 */
@@ -110,13 +116,71 @@
     vertical-align: middle;
 }
 
+.info_container{
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+#info_text{
+    display: flex;
+    flex-direction: column;
+    width: 120px;
+}
+
+.bookMark{
+    margin-top: 15px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #3E5822;
+    font-size: 15px;
+    font-weight: 500;
+}
+.bookMark img{
+    height: 30px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.bookMark img:hover {
+    transform: scale(1.1);
+}
+
+
+.title{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+    display: block;
+    padding-top :5px;
+
+    font-weight: bold;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.4;
+}
+
 
 .official_off{
     background-color: #FECBB5;
     color: #D7805A;
-    border : 1px solid #D7805A;
-    border-radius: 3px;
+    border : 1.5px solid #D7805A;
+    border-radius: 5px;
     height: 20px;
-    font-size: 6px;
-    padding: 5px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    padding: 0px 10px;
+}
+.official_user{
+    background-color: #CCDDBB;
+    color: #3E5822;
+    border : 1.5px solid #3E5822;
+    border-radius: 5px;
+    height: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    padding: 0px 10px;
 }

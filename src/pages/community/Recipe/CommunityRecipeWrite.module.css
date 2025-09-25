@@ -148,15 +148,18 @@
 
 .ing{
     background-color: #E8E8E8;
-    padding: 10px 20px;
-    /* display: flex; */
-    /* justify-content: space-between; */
+    padding: 10px  10px 10px 20px;
+    /* display: flex;
+    justify-content: space-between; */
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    justify-content: center;
+    grid-template-columns: 50px 2.5fr 1fr 1.8fr;
+    gap:10px;
     align-items: center;
+    text-align: center;
+    justify-items: center;
     border-radius: 10px;
 }
+
 .ing_name{
     max-width: 80px;
     white-space: nowrap;

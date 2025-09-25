@@ -4,6 +4,7 @@ import recipecard from './RecipeCard.module.css'; // RecipeCard 전용 CSS (기�
 // 샘플 이미지 import
 import starIcon from '../../../assets/sample/star.png';
 import type { RecipeListItem } from '../../../type/Recipe';
+import sampleProfileImg from '../../../assets/sample/profile.png';
 import SikBti from './SikBti';
 
 
@@ -21,7 +22,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
       </div>
       <div id={recipecard.title}>{recipe.rcpName}</div>
       <div className={recipecard.profile}>
-        <img src={recipe.userProfileImage} alt={recipe.username} />
+        <img src={recipe.userProfileImage ? recipe.userProfileImage : sampleProfileImg} alt={recipe.username} />
         <div className={recipecard.profile_name}>
           {recipe.sikBti && <SikBti sikBti={recipe.sikBti} style={{fontSize: '8px' }} />}
           <span className={recipecard.nickname}>{recipe.username}</span>

@@ -145,6 +145,7 @@ export interface RecipeListItem {
   rcpNo: number;
   rcpName: string;
   createdAt: string;
+  userNo : number;
   username: string;
   serverName?: string;
   userProfileImage?: string;
@@ -153,7 +154,7 @@ export interface RecipeListItem {
   reviewCount?: number;
   isOfficial: boolean;
   bookmarkCount?: number;
-  bookmarked?: boolean;
+  isBookmarked?: boolean;
 }
 
 // 백엔드로부터 받을 페이지 전체 데이터 타입

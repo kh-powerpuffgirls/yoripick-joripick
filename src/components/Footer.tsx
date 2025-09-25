@@ -8,7 +8,7 @@ const Footer = () => {
                     <Link to="/" className="footer-nav-link">Home</Link>
                 </li>
                 <li className="footer-nav-item">
-                    <Link to="/recipe/list" className="footer-nav-link">레시피</Link>
+                    <Link to="/api/recipe" className="footer-nav-link">레시피</Link>
                 </li>
                 <li className="footer-nav-item">
                     <Link to="/eat-bti" className="footer-nav-link">식BTI</Link>

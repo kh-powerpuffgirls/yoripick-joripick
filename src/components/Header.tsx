@@ -85,7 +85,7 @@ const Header = () => {
           ) : (
             <>
               <li>
-                <Link to="/recipe" className="nav-link">레시피</Link>
+                <Link to="/api/recipe" className="nav-link">레시피</Link>
               </li>
               <li className="nav-line"></li>
               <li>
