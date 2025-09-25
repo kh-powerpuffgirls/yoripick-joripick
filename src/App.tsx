@@ -167,6 +167,10 @@ function App() {
         <Route path="/mypage/mealplan" element={<MealplanMain />} />
         <Route path="/oauth2/success" element={<OAuth2Success />} />
         <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
+        <Route path="/users/:userNo" element={<MyPage />} />
+        <Route path="/eatBTI" element={<EatBTIPage />} />
+        <Route path="/eatBTI/question" element={<QuestionPage />} />
+        <Route path="/eatBTI/result" element={<ResultPage />} />
         <Route path="/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
         {/* <Route path="/recipe/list" element={<OfficialRecipeListPage />} /> */}
         <Route path="/community/recipe" element={<CommunityRecipeList />} />
