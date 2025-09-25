@@ -36,7 +36,7 @@ interface CkclassDto {
   classInfo: string;
   serverName?: string;
   memberCount?: number;
-  // unreadCount?: number;
+  unreadCount?: number;
   username?: string;
   isNotificationOn?: string;
 }
@@ -116,7 +116,7 @@ const CkClassMain = () => {
             description: cls.classInfo ?? '',
             author: cls.username ?? '알 수 없음',
             memberCount: cls.memberCount ?? 0,
-            // unreadCount: cls.unreadCount ?? 0,
+            unreadCount: cls.unreadCount ?? 0,
             type: 'my',
             imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
             isNotificationOn: cls.isNotificationOn === 'Y',
@@ -131,7 +131,7 @@ const CkClassMain = () => {
             description: cls.classInfo ?? '',
             author: cls.username ?? '알 수 없음',
             memberCount: cls.memberCount ?? 0,
-            // unreadCount: cls.unreadCount ?? 0,
+            unreadCount: cls.unreadCount ?? 0,
             type: 'joined',
             imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : '',
             isNotificationOn: cls.isNotificationOn === 'Y',
@@ -214,7 +214,6 @@ const CkClassMain = () => {
     dispatch(openChat(room));
   };
 
-  // handleDeleteClick 바깥에 선언
   const handleLeaveClassClick = (id: number, className: string) => {
     openModal({
       message: `정말로 "${className}" 클래스에서 탈퇴하시겠습니까?`,
@@ -255,7 +254,6 @@ const CkClassMain = () => {
         showCancel: true,
       });
     };
-
     confirmDelete();
   };
 
@@ -328,9 +326,9 @@ const CkClassMain = () => {
           <div className={styles.classTitle}>
             {cls.name}
             {/* 안 읽은 메시지 */}
-            {/* {(cls.unreadCount ?? 0) > 0 && (
+            {(cls.unreadCount ?? 0) > 0 && (
               <span className={styles.unreadCountBadge}>{cls.unreadCount}</span>
-            )} */}
+            )}
           </div>
           <div className={styles.classButtons}>
             <button
@@ -339,13 +337,11 @@ const CkClassMain = () => {
             >
               {cls.isNotificationOn ? '🔔' : '🔕'}
             </button>
-            {/* 💡 나의 클래스일 경우 '삭제' 버튼 표시 */}
             {cls.type === 'my' && (
               <button className={styles.deleteButton} onClick={() => handleDeleteClick(cls.id)}>
                 삭제
               </button>
             )}
-            {/* 💡 참여 클래스일 경우 '탈퇴' 버튼 표시 (삭제 버튼과 동일 위치) */}
             {cls.type !== 'my' && (
               <button
                 className={styles.leaveButton}
@@ -377,7 +373,6 @@ const CkClassMain = () => {
               <button className={styles.joinButton} onClick={() => handleJoinClick(cls.id)}>
                 채팅
               </button>
-              {/* 💡 cardFooter에서 탈퇴 버튼 제거됨 - 위 classButtons로 이동 */}
               <button className={styles.reportButton} onClick={() => handleReportClick(cls)}>
                 신고
               </button>

@@ -1,26 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from '../../../store/store';
+import type { RootState } from "../../../store/store";
 import styles from "./ChallengeMain.module.css";
 import CommunityHeader from "../Header/CommunityHeader";
 import axios from "axios";
-import { store } from '../../../store/store';
+import { store } from "../../../store/store";
 import ChallengeSuggestionForm from "./ChallengeSuggestionForm";
 
-// API 기본 URL 정의
 const API_BASE_URL = "http://localhost:8081";
 
-// Redux 스토어에서 accessToken을 가져오기
 const getAccessToken = () => store.getState().auth.accessToken;
 
-// API 호출을 위한 axios 인스턴스 생성
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
-// 모든 요청에 토큰 추가
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -30,7 +26,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// 챌린지 아이템 데이터 타입 정의
 interface ChallengeItem {
   challengeNo: number;
   username: string;
@@ -38,10 +33,9 @@ interface ChallengeItem {
   views: number;
   likes: number;
   serverName?: string;
-  sik_bti?: string; 
+  sik_bti?: string;
 }
 
-// 현재 진행 중인 챌린지 데이터 타입 정의
 interface ActiveChallenge {
   chInfoNo: number;
   title: string;
@@ -49,7 +43,6 @@ interface ActiveChallenge {
   endDate: string;
 }
 
-// 챌린지 커뮤니티 메인 페이지 컴포넌트
 const ChallengeMain = () => {
   const [popularChallenges, setPopularChallenges] = useState<ChallengeItem[]>([]);
   const [recentChallenges, setRecentChallenges] = useState<ChallengeItem[]>([]);
@@ -59,17 +52,26 @@ const ChallengeMain = () => {
 
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
-  
+
+  const isChallengeRegistrationClosed = (challenge: ActiveChallenge | null): boolean => {
+    if (!challenge) return true;
+    const endDate = new Date(challenge.endDate);
+    const today = new Date();
+    endDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    return today > endDate;
+  };
+
+  const isClosed = isChallengeRegistrationClosed(activeChallenge);
+
   const fetchData = async () => {
     try {
       const [activeResponse, recentResponse] = await Promise.all([
         api.get<ActiveChallenge[]>("/community/challenge/active"),
         api.get<ChallengeItem[]>("/community/challenge"),
       ]);
-
       setActiveChallenge(activeResponse.data?.[0] || null);
       setRecentChallenges(recentResponse.data);
-
       const sortedPopular = [...recentResponse.data].sort((a, b) => b.likes - a.likes).slice(0, 3);
       setPopularChallenges(sortedPopular);
     } catch (error) {
@@ -84,6 +86,10 @@ const ChallengeMain = () => {
   const handleRegisterClick = () => {
     if (!user) {
       setErrorMessage("로그인 후 이용해주세요.");
+      return;
+    }
+    if (isClosed) {
+      setErrorMessage("현재 챌린지 등록 기간이 마감되었습니다. 새로운 챌린지를 기대해주세요!");
       return;
     }
     navigate("/community/challenge/form");
@@ -102,10 +108,18 @@ const ChallengeMain = () => {
   };
 
   const renderChallengeCard = (challenge: ChallengeItem) => (
-    <div key={challenge.challengeNo} className={styles.challengeCard} onClick={() => handleCardClick(challenge.challengeNo)}>
+    <div
+      key={challenge.challengeNo}
+      className={styles.challengeCard}
+      onClick={() => handleCardClick(challenge.challengeNo)}
+    >
       <div className={styles.imagePlaceholder}>
         {challenge.serverName ? (
-          <img src={`${API_BASE_URL}/images/${challenge.serverName}`} alt={challenge.title} className={styles.challengeImage} />
+          <img
+            src={`${API_BASE_URL}/images/${challenge.serverName}`}
+            alt={challenge.title}
+            className={styles.challengeImage}
+          />
         ) : (
           <div className={styles.defaultImage}>이미지 없음</div>
         )}
@@ -119,7 +133,7 @@ const ChallengeMain = () => {
         </div>
         <div className={styles.stats}>
           <span>👁️ {challenge.views}</span>
-          <span>❤️ {challenge.likes}</span> {/* 좋아요 숫자만 표시, 클릭 기능 제거 */}
+          <span>❤️ {challenge.likes}</span>
         </div>
       </div>
     </div>
@@ -130,33 +144,37 @@ const ChallengeMain = () => {
       <CommunityHeader />
       <div className={styles.container}>
         {errorMessage && <div className={styles.errorBox}>{errorMessage}</div>}
-
         <div className={styles.headerButtons}>
           <div className={styles.challengeTitle}>
             {activeChallenge?.title || "챌린지 제목 없음"}
           </div>
         </div>
-
         <div className={styles.section}>
           <h2>인기 챌린지 &gt;</h2>
           <div className={styles.popularCardGrid}>
             {popularChallenges.map(renderChallengeCard)}
           </div>
         </div>
-
         <div className={styles.section}>
           <h2>최신 챌린지 &gt;</h2>
           <div className={styles.recentCardGrid}>
             {recentChallenges.map(renderChallengeCard)}
           </div>
         </div>
-
         <div className={styles.actionButtons}>
           <button className={styles.requestButton} onClick={handleSuggestionClick}>
             새 챌린지 요청
           </button>
-          <button className={styles.registerButton} onClick={handleRegisterClick}>
-            등록하기
+          <button
+            className={styles.registerButton}
+            onClick={handleRegisterClick}
+            disabled={isClosed}
+            style={{
+              backgroundColor: isClosed ? "#ccc" : "",
+              cursor: isClosed ? "not-allowed" : "pointer",
+            }}
+          >
+            {isClosed ? "등록 마감" : "등록하기"}
           </button>
         </div>
       </div>
