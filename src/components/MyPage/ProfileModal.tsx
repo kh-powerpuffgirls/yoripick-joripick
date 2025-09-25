@@ -1,10 +1,10 @@
 import styles from "./Modal.module.css";
 import type { User } from "../../type/authtype";
 import { useState } from "react";
-import { api } from "../../api/authApi";
 import { useDispatch } from "react-redux";
 import { updateImageNo, updateProfileImage } from "../../features/authSlice";
 import errorMessages from "../ErrorMessages";
+import { api } from "../../api/authApi";
 
 interface ProfileModalProps {
   user: User;
@@ -35,7 +35,7 @@ const ProfileModal = ({ user, onClose, profileImg, setProfileImg }: ProfileModal
       form.append("file", profileImg);
       form.append("userNo", String(user.userNo));
 
-      const res = await api.post("/mypage/profile", form, {
+      const res = await api.post("/users/another-profile", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

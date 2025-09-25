@@ -8,7 +8,9 @@ import ReportModal from '../../../components/Report/ReportModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '../../../store/store';
 import type { RootState } from '../../../store/store';
-import { openChat } from '../../../features/chatSlice';
+import { openChat, sendMessage } from '../../../features/chatSlice';
+import type { Message } from '../../../type/chatmodal';
+import { saveMessage } from '../../../api/chatApi';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -170,12 +172,31 @@ const CkClassSearch = () => {
       });
 
       if (enrollResponse.status === 200) {
-          dispatch(openChat({ 
-              roomNo: cls.id, 
-              className: cls.name, 
-              type: "cclass", 
-              messages: []
-          }));      }
+        dispatch(openChat({
+          roomNo: cls.id,
+          className: cls.name,
+          type: "cclass",
+          messages: []
+        }));
+
+        // 입장 메시지 생성
+        const systemMessage: Message = {
+          userNo: 0,
+          username: "SYSTEM",
+          content: `${user.username} 님이 입장하셨습니다`,
+          createdAt: new Date().toISOString(),
+          roomNo: cls.id,
+        };
+
+        // DB 저장
+        let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
+        let formData = new FormData();
+        formData.append("message", messageBlob);
+        await saveMessage("cclass", cls.id, formData);
+
+        // 웹소켓 브로드캐스트
+        dispatch(sendMessage(systemMessage));
+      }
     } catch (error: any) {
       openModal({
         message: error.response?.data || '클래스 참여 중 오류가 발생했습니다.',

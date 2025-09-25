@@ -107,7 +107,7 @@ const Header = () => {
                 <>
                   <li className="nav-line"></li>
                   <li>
-                    <Link to="/mypage" className="nav-link">마이페이지</Link>
+                    <Link to={`/users/${user.userNo}`} className="nav-link">마이페이지</Link>
                   </li>
                 </>
               )}

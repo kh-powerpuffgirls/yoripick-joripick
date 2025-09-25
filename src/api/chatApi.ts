@@ -31,6 +31,15 @@ api.interceptors.response.use(
     }
 )
 
+export const lastRead = async function (userNo: number, roomNo: string|number, messageNo: number) {
+    await api.patch(`/reads`, null, { params: {userNo, roomNo, messageNo} });
+}
+
+export const getLastRead = async function (userNo: number, roomNo: string|number) {
+    const response = await api.get(`/reads/${userNo}/${roomNo}`);
+    return response.data;
+}
+
 export const getRooms = async function (userNo: number | undefined) {
     const response = await api.get(`/rooms/${userNo}`);
     return response.data;

@@ -19,6 +19,7 @@ export type ChatRoom = {
   type: ChatRoomCreate;
   messages: Message[];
   notification?: string;
+  lastReadMessageNo?: number;
 };
 
 export type ChatRoomCreate = "admin" | "cclass" | "cservice";

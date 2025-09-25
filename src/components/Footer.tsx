@@ -17,7 +17,7 @@ const Footer = () => {
                     <Link to="/cservice" className="footer-nav-link">고객센터</Link>
                 </li>
                 <li className="footer-nav-item">
-                    <Link to="/mypage" className="footer-nav-link">My Page</Link>
+                    <Link to="/users" className="footer-nav-link">My Page</Link>
                 </li>
             </ul>
             <div>Copyright 파워퍼프걸즈 All Rights Reserved</div>

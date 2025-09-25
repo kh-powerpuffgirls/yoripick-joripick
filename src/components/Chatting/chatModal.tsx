@@ -2,19 +2,18 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import { closeChat, openChat, sendMessage } from "../../features/chatSlice";
 import style from './chatModal.module.css'
-import useInput from "../../hooks/useInput";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import type { ChatRoomCreate, Message } from "../../type/chatmodal";
-import { saveMessage } from "../../api/chatApi";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getLastRead, lastRead, saveMessage } from "../../api/chatApi";
+import { useMutation } from "@tanstack/react-query";
 import useChat from "../../hooks/useChat";
-import { useNavigate } from "react-router-dom";
+import { ChatList } from "./ChatList";
 
 export const ChatModal = () => {
     const dispatch = useDispatch();
     let { isOpen, rooms, currentRoomId } = useSelector((state: RootState) => state.chat);
-    const [input, handleInputChange, resetInput, setInput] = useInput({ text: "" });
+    const inputRef = useRef<HTMLInputElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     let currentRoom = rooms.find((r) => r.roomNo === currentRoomId);
     const user = useSelector((state: RootState) => state.auth.user);
@@ -23,7 +22,8 @@ export const ChatModal = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const navigate = useNavigate();
+    const [localLastRead, setLocalLastRead] = useState<number | null>(null);
+    const cacheMessages = currentRoom?.messages; 
 
     // 모달 외부 클릭 감지
     useEffect(() => {
@@ -38,36 +38,63 @@ export const ChatModal = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen, dispatch]);
 
-    // 스크롤 맨 아래로 내리기
+    // 마지막 읽은 메시지 조회 + 로컬 상태 업데이트
+    useEffect(() => {
+        if (!isOpen || !currentRoom || !currentRoom.messages.length || !userNo) return;
+        const lastMsg = currentRoom.messages[currentRoom.messages.length - 1];
+        if (!lastMsg.messageNo) return;
+        const fetchLastRead = async () => {
+            try {
+                const lastReadMessageNo = await getLastRead(userNo, currentRoom.roomNo);
+                setLocalLastRead(lastReadMessageNo ?? null);
+            } catch (err) {
+                console.error(err);
+                setLocalLastRead(null);
+            }
+        };
+
+        // 메세지를 보낼때 마다, 마지막 읽은글 업뎃하기?
+        fetchLastRead()
+        .then(()=> lastRead(userNo, currentRoom.roomNo, lastMsg.messageNo!!))
+        .catch(console.error);
+    }, [isOpen, userNo]);
+
+    // 마지막 읽은 메시지 조회 + 로컬 상태 업데이트
+    useEffect(() => {
+        if (!isOpen || !currentRoom || !currentRoom.messages.length || !userNo) return;
+        const lastMsg = currentRoom.messages[currentRoom.messages.length - 1];
+        if (!lastMsg.messageNo) return;
+        lastRead(userNo, currentRoom.roomNo, lastMsg.messageNo!!)
+    }, [isOpen, userNo, currentRoom]);
+
+    // 스크롤 처리
     const bodyRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
-        if (!bodyRef.current) return;
-        const scrollToBottom = () => {
-            bodyRef.current!.scrollTop = bodyRef.current!.scrollHeight;
-        };
-        const imgs = bodyRef.current.querySelectorAll('img');
-        imgs.forEach(img => img.addEventListener('load', scrollToBottom));
-        scrollToBottom();
-        return () => {
-            imgs.forEach(img => img.removeEventListener('load', scrollToBottom));
-        };
-    }, [isOpen, currentRoom?.messages, previewUrl]);
+        if (!isOpen || !currentRoom || !bodyRef.current) return;
+        const el = bodyRef.current;
+        if (localLastRead) {
+            const idx = currentRoom.messages.findIndex(m => m.messageNo === localLastRead);
+            if (idx >= 0 && idx < currentRoom.messages.length - 1) {
+                const target = el.children[idx + 1];
+                if (target) (target as HTMLElement).scrollIntoView({ block: "start" });
+                return;
+            }
+        }
+        el.scrollTop = el.scrollHeight;
+    }, [isOpen, currentRoom, localLastRead]);
 
     // 채팅 메세지 보내기
-    const queryClient = useQueryClient();
     const mutation = useMutation<Message, Error, FormData>({
         mutationFn: (message: FormData) =>
             saveMessage(currentRoom?.type, currentRoomId, message),
         onSuccess: (res) => {
-            queryClient.invalidateQueries({ queryKey: ["rooms", userNo] });
             sendChatMessage(currentRoomId, res);
         }
     });
     const handleSend = async (type: ChatRoomCreate) => {
-        if (!input.text.trim() || !currentRoom) return;
-        resetInput();
+        if (!inputRef.current?.value.trim() || !currentRoom) return;
         let message: Message = {
-            content: input.text,
+            content: inputRef.current?.value,
             userNo: userNo as number,
             username: user?.username as string,
             button: undefined,
@@ -86,7 +113,7 @@ export const ChatModal = () => {
             dispatch(sendMessage(message));
             try {
                 const response = await axios.post(`http://localhost:8080/chat/${userNo}`,
-                    { question: input.text },
+                    { question: inputRef.current.value },
                     { withCredentials: true });
                 const botMessage: Message = {
                     ...message,
@@ -114,6 +141,7 @@ export const ChatModal = () => {
         } else if (type === "admin" || type === "cclass") {
             mutation.mutate(formData);
         }
+        inputRef.current.value= "";
     };
 
     useEffect(() => {
@@ -179,61 +207,11 @@ export const ChatModal = () => {
                     <button>사진첩</button>
                     <button>공지사항</button>
                 </div> */}
-                {currentRoom?.messages.map((msg, index) => {
-                    const currentMsgDate = new Date(msg.createdAt as string);
-                    const currentDateString = currentMsgDate.toLocaleDateString();
-                    const prevMsgDateString =
-                        index > 0
-                            ? new Date(currentRoom.messages[index - 1].createdAt).toLocaleDateString()
-                            : null;
-                    const isNewDate = prevMsgDateString !== currentDateString;
-
-                    return (
-                        <div key={msg.createdAt + index}>
-                            {isNewDate && (
-                                <div className={style.dateSeparator}>
-                                    {currentMsgDate.toLocaleDateString([], {
-                                        weekday: "long",
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric",
-                                    })}
-                                </div>
-                            )}
-                            <div className={`${style.msg} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.left : style.right}`}>
-                                <div className={`${style.username} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.alignLeft : style.alignRight}`}>
-                                    {msg.username}
-                                </div>
-                                <div className={style.msgWrapper}>
-                                    {!(msg.userNo !== userNo || msg.username === "요픽") && (
-                                        <div className={style.time}>
-                                            {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                                        </div>
-                                    )}
-                                    <div className={`${style.msgBubble} ${(msg.userNo !== userNo || msg.username === "요픽") ? style.other : style.me}`}>
-                                        {!msg.imageNo && msg.content}
-                                        {msg.imageNo && (
-                                            <img src={msg.content} alt="이미지" className={style.previewImage} />
-                                        )}
-                                        {msg.button?.linkUrl && (
-                                            <div className={style.linkBtn}>
-                                                <button onClick={() => {
-                                                    navigate(msg.button?.linkUrl as string);
-                                                    dispatch(closeChat());
-                                                }}>바로가기</button>
-                                            </div>
-                                        )}
-                                    </div>
-                                    {(msg.userNo !== userNo || msg.username === "요픽") && (
-                                        <div className={style.time}>
-                                            {new Date(msg.createdAt as string).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
+                <ChatList
+                    messages={cacheMessages}
+                    userNo={userNo}
+                    localLastRead={localLastRead}
+                />
                 {previewUrl && (
                     <div className={`${style.previewContainer} ${style.msgBubble} ${style.me}`}>
                         <p style={{ alignSelf: "center" }}>전송하시겠습니까?</p>
@@ -261,9 +239,7 @@ export const ChatModal = () => {
                             </>
                         )}
                         <input
-                            value={input.text}
-                            onChange={(e) => setInput({ text: e.target.value })}
-                            placeholder="메시지를 입력하세요..."
+                            ref={inputRef} placeholder="메시지를 입력하세요..."
                             onKeyDown={(e) => e.key === "Enter" && handleSend(currentRoom.type)}
                         />
                         <button onClick={() => handleSend(currentRoom.type)}>전송</button>
