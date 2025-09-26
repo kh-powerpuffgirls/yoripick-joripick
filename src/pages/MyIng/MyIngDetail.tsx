@@ -4,7 +4,7 @@ import "../../assets/css/button.css";
 import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import MyIngDetailStyle from "./MyIngDetail.module.css"
 import cx from "classnames";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { initialUpdateMyIng, type MyIngItem, type MyIngUpdate, type NewMyIng } from "../../type/Ing";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteMyIng, getMyIng, updateMyIng } from "../../api/ing/myIngApi";
@@ -12,6 +12,21 @@ import { expDateIcon, expDateMessage, formatDate } from "./common";
 import useInput from "../../hooks/useInput";
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
+import { api } from "../../api/authApi";
+import type { RecipeDetail, RecipeListItem } from "../../type/Recipe";
+
+interface ApiParams {
+    page?: number;
+    sort?: string;
+    ingredients?: string;
+    rcpMthNo?: string;
+    rcpStaNo?: string;
+}
+
+interface RecipeWithDetail {
+  recipe: RecipeListItem;
+  detail: RecipeDetail;
+}
 
 export default function MyIngDetail(){
 
@@ -21,6 +36,7 @@ export default function MyIngDetail(){
     const {ingNo} = useParams();
     const [newMyIng, handleInputChange, resetMyIng, setNewMyIng] = useInput<MyIngUpdate>(initialUpdateMyIng);
     const [onUpdate, setOnUpdate] = useState(false);
+    const [recipeDetail, setRecipeDetail] = useState<RecipeWithDetail[]>();
 
     const {data: MyIngItem, isLoading, isError, error} = useQuery<MyIngItem>({
         queryKey: ['myIngItem', ingNo], // 캐시 구분용 키
@@ -41,6 +57,43 @@ export default function MyIngDetail(){
                 quantity });
         }
     },[MyIngItem]);
+
+    useEffect(() => {
+        if(MyIngItem?.ingName != '' && MyIngItem?.ingName != undefined){
+            const fetchRecipes = async () => {
+                try {
+                    const params: ApiParams = {
+                        page: 0, 
+                        sort: 'bookmarks_desc',
+                        ingredients: MyIngItem?.ingName,
+                    };
+    
+                    const endpoint = `/api/recipe/${userNo}`;
+                    const response = await api.get(endpoint, { params });
+                    const list: RecipeListItem[] = response.data.recipes.slice(0, 2);
+
+                    // 상세 정보 병렬 요청
+                    const detailPromises = list.map(item =>
+                        api.get<RecipeDetail>(`/api/recipe/detail/${item.rcpNo}`)
+                    );
+
+                    const detailResponses = await Promise.all(detailPromises);
+                    const details: RecipeDetail[] = detailResponses.map(res => res.data);
+
+                    // ✅ 병합: { recipe, detail }[]
+                    const combined: RecipeWithDetail[] = list.map((recipe, index) => ({
+                        recipe,
+                        detail: details[index],
+                    }));
+
+                    setRecipeDetail(combined);
+                } catch (error) {
+                    console.error("레시피 데이터를 불러오는데 실패했습니다.", error);
+                }
+            };
+            fetchRecipes();
+        }
+    }, [MyIngItem?.ingName]);
         
     const editMyIng = (e: FormEvent) => {
         e.preventDefault(); // 제출 방지
@@ -143,32 +196,27 @@ export default function MyIngDetail(){
                     <div className={ingDefaultStyle[`title-area`]}>
                         <h3>관련 레시피</h3>
                         <hr className={MyIngDetailStyle["gray"]}/>
-                        <a href="#" className={ingDefaultStyle[`more-link`]}>더보기</a>
+                        <Link to={`/api/recipe?ingredients=${MyIngItem.ingName}`} className={ingDefaultStyle[`more-link`]}>더보기</Link>
                     </div>
 
 
                     <div className={cx(ingDefaultStyle["content-area"])}>
 
-                        <article className={MyIngDetailStyle["recipe-item"]}>
-                            <div className={MyIngDetailStyle["thumbnail"]}>
-                                <img src={lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
-                            </div>
-                            <div className={MyIngDetailStyle["recipe-inform"]}>
-                                <h3>레시피 제목이 들어가는 영역(줄바꿈 ...처리)ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</h3>
-                                <div>조리시간: 60분 이내</div>
-                                <div>재료: 재료1, 재료2, 재료3....</div>
-                            </div>
-                        </article><article className={MyIngDetailStyle["recipe-item"]}>
-                            <div className={MyIngDetailStyle["thumbnail"]}>
-                                <img src={lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
-                            </div>
-                            <div className={MyIngDetailStyle["recipe-inform"]}>
-                                <h3>레시피 제목이 들어가는 영역(줄바꿈 ...처리)ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</h3>
-                                <div>조리시간: 60분 이내</div>
-                                <div>재료: 재료1, 재료2, 재료3....</div>
-                            </div>
-                        </article>
-
+                        {recipeDetail?.map((item, index) => (
+                            <article key={"rcp"+item.detail.rcpNo}>
+                                <Link to={`/api/recipe/${item.detail.rcpNo}`} className={MyIngDetailStyle["recipe-item"]}>
+                                    <div className={MyIngDetailStyle["thumbnail"]}>
+                                        <img src={item.recipe.serverName} className={MyIngDetailStyle["thumbnail-img"]}/>
+                                    </div>
+                                    <div className={MyIngDetailStyle["recipe-inform"]}>
+                                        <h3>{item.detail.rcpName}</h3>
+                                        <div className={MyIngDetailStyle["ing-list"]}><strong>재료</strong>: {item.detail.rcpIngList}</div>
+                                        <div><strong>조리 방법</strong>: {item.detail.rcpMethod}</div>
+                                        <div><strong>열량</strong>: {item.detail.totalNutrient.calories}kcal</div>
+                                    </div>
+                                </Link>
+                            </article>
+                        ))}
                     </div>
                 </section>
                 

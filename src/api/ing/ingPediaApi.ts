@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type IngCreate, type IngPedia, type IngPediaUpdate, type PagedIngListResponse } from "../../type/Ing";
+import { type IngCreate, type IngPedia, type IngPediaMain, type IngPediaUpdate, type PagedIngListResponse } from "../../type/Ing";
 
 const api = axios.create({
     baseURL: `http://localhost:8081/ingpedia`,
@@ -21,6 +21,11 @@ export const createIngPedia = async function (newIng:IngCreate) {
 
 export const getIngPedia = async function (ingNo: number) {
     const response = await api.get<IngPedia>(`/detail/${ingNo}`);
+    return response.data;
+}
+
+export const getIngPediaMain = async function () {
+    const response = await api.get<IngPediaMain[]>(`/main`);
     return response.data;
 }
 

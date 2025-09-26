@@ -1,7 +1,7 @@
 import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './CkClassForm.module.css';
-import CommunityHeader from '../Header/CommunityHeader';
+import CommunityHeader from '../CommunityHeader';
 import axios from 'axios';
 import { store, type RootState } from '../../../store/store';
 import type { ChatRoom, Message } from '../../../type/chatmodal';

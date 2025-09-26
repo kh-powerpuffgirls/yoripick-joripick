@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
 import styles from './FreeForm.module.css';
-import CommunityHeader from '../Header/CommunityHeader';
+import CommunityHeader from '../CommunityHeader';
 
 // API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
