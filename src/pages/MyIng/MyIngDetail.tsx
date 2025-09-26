@@ -4,7 +4,7 @@ import "../../assets/css/button.css";
 import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
 import MyIngDetailStyle from "./MyIngDetail.module.css"
 import cx from "classnames";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { initialUpdateMyIng, type MyIngItem, type MyIngUpdate, type NewMyIng } from "../../type/Ing";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteMyIng, getMyIng, updateMyIng } from "../../api/ing/myIngApi";
@@ -12,6 +12,16 @@ import { expDateIcon, expDateMessage, formatDate } from "./common";
 import useInput from "../../hooks/useInput";
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
+import { api } from "../../api/authApi";
+import type { RecipeListItem } from "../../type/Recipe";
+
+interface ApiParams {
+    page?: number;
+    sort?: string;
+    ingredients?: string;
+    rcpMthNo?: string;
+    rcpStaNo?: string;
+}
 
 export default function MyIngDetail(){
 
@@ -21,6 +31,7 @@ export default function MyIngDetail(){
     const {ingNo} = useParams();
     const [newMyIng, handleInputChange, resetMyIng, setNewMyIng] = useInput<MyIngUpdate>(initialUpdateMyIng);
     const [onUpdate, setOnUpdate] = useState(false);
+    const [recipes, setRecipes] = useState<RecipeListItem[]>([]);
 
     const {data: MyIngItem, isLoading, isError, error} = useQuery<MyIngItem>({
         queryKey: ['myIngItem', ingNo], // 캐시 구분용 키
@@ -41,6 +52,28 @@ export default function MyIngDetail(){
                 quantity });
         }
     },[MyIngItem]);
+
+    useEffect(() => {
+        const fetchRecipes = async () => {
+            try {
+                const searchParams: ApiParams = {
+                    page: 0, 
+                    sort: 'bookmarks_desc',
+                    ingredients: MyIngItem?.ingName,
+                };
+    
+                const endpoint = `/api/recipe/${userNo}`;
+                const response = await api.get(endpoint, { params: searchParams });
+    
+                setRecipes(response.data);
+            } catch (error) {
+                console.error("레시피 데이터를 불러오는데 실패했습니다.", error);
+            }
+        };
+        fetchRecipes();
+    }, [userNo]);
+
+    
         
     const editMyIng = (e: FormEvent) => {
         e.preventDefault(); // 제출 방지
@@ -149,16 +182,22 @@ export default function MyIngDetail(){
 
                     <div className={cx(ingDefaultStyle["content-area"])}>
 
+                        {recipes.map((item) => (
+                            <article className={MyIngDetailStyle["recipe-item"]}>
+                                <div className={MyIngDetailStyle["thumbnail"]}>
+                                    <img src={item.serverName} className={MyIngDetailStyle["thumbnail-img"]}/>
+                                </div>
+                                <div className={MyIngDetailStyle["recipe-inform"]}>
+                                    <h3>레시피 제목이 들어가는 영역(줄바꿈 ...처리)ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</h3>
+                                    <div>조리시간: 60분 이내</div>
+                                    <div>재료: 재료1, 재료2, 재료3....</div>
+                                </div>
+                            </article>
+                            
+                        ))}
+
+
                         <article className={MyIngDetailStyle["recipe-item"]}>
-                            <div className={MyIngDetailStyle["thumbnail"]}>
-                                <img src={lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
-                            </div>
-                            <div className={MyIngDetailStyle["recipe-inform"]}>
-                                <h3>레시피 제목이 들어가는 영역(줄바꿈 ...처리)ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</h3>
-                                <div>조리시간: 60분 이내</div>
-                                <div>재료: 재료1, 재료2, 재료3....</div>
-                            </div>
-                        </article><article className={MyIngDetailStyle["recipe-item"]}>
                             <div className={MyIngDetailStyle["thumbnail"]}>
                                 <img src={lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
                             </div>

@@ -30,21 +30,11 @@ export default function Mainpage(){
 
     const navigate = useNavigate();
     
-    // 상태 관리
-    const [recipePage, setRecipePage] = useState<RecipePage>({
-      recipes: [], totalPages: 0, totalElements: 0,
-    });
-    const [rankingRecipes, setRankingRecipes] = useState<RecipeListItem[]>([]);
-    const [searchParams, setSearchParams] = useState<ApiParams>({
-      page: 0, 
-      sort: 'createdAt',
-    });
 
     // 레시피 분류
-    const [selectedIngredients, setSelectedIngredients] = useState<IngredientOption[]>([]);
-    const [ingredientInput, setIngredientInput] = useState('');
     const [methodOptions, setMethodOptions] = useState<RcpOption[]>([]);
     const [typeOptions, setTypeOptions] = useState<RcpOption[]>([]);
+    const [rankingRecipes, setRankingRecipes] = useState<RecipeListItem[]>([]); 
 
     useEffect(() => {
         const fetchOptions = async () => {
@@ -68,12 +58,11 @@ export default function Mainpage(){
         fetchOptions();
     }, []);
 
-    // 랭킹 레시피
     useEffect(() => {
         const fetchRanking = async () => {
             try {
-                const rankResponse = await api.get('/api/community/recipe/ranking');
-                setRankingRecipes(rankResponse.data);
+                const response = await api.get('/api/community/recipe/ranking');
+                setRankingRecipes(response.data);
             } catch (error) {
                 console.error("랭킹 레시피를 불러오는데 실패했습니다.", error);
             }
@@ -90,7 +79,7 @@ export default function Mainpage(){
     });
     
     useEffect(() => {
-        console.log(IngPediaMain);
+
     }, [IngPediaMain]);
 
     if(isLoading) return <div>Loading...</div>
@@ -100,7 +89,6 @@ export default function Mainpage(){
     const navigateRecipe = (name?: string, value?: number) => {
         if(name && value){
             const updatedParams = {[name]: String(value)};
-            setSearchParams(updatedParams);
             const query = new URLSearchParams(updatedParams).toString();
             navigate(`/api/recipe?${query}`);
         } else {
@@ -122,7 +110,7 @@ export default function Mainpage(){
                         .filter(item => item.name !== '기타')
                         .map(
                         (item, index) => (
-                            <li key={item.id}
+                            <li key={"mth"+item.id}
                             onClick={() => navigateRecipe("rcpMthNo", item.id)}>
                                 <span className={mainStyle.circle}>
                                     <img src={lodingRecipeIcon[index]} className={mainStyle.icon}/>
@@ -133,7 +121,7 @@ export default function Mainpage(){
                     )}
                     {typeOptions.map(
                         (item,index) => (
-                            <li key={item.id}
+                            <li key={"mth"+item.id}
                             onClick={() => navigateRecipe("rcpStaNo", item.id)}>
                                 <span className={mainStyle.circle}>
                                     <img src={lodingRecipeIcon[index+methodOptions.length-1]} className={mainStyle.icon}/>
@@ -145,34 +133,28 @@ export default function Mainpage(){
                 </ul>
                 </section>
 
-                {/* <!-- 오늘의 PICK --> */}
+                {/* <!-- 이달의 PICK --> */}
                 <section className={mainStyle[`today-pick`]}>
                     <div className={ingDefaultStyle[`title-area`]}>
-                        <h2>오늘의 PICK!</h2>
+                        <h2>이달의 PICK!</h2>
                         <Link to={'/community/recipe'} className={ingDefaultStyle[`more-link`]}>레시피 바로가기</Link>
                     </div>
                     <div className={cx(mainStyle["pick-list"], ingDefaultStyle["content-area"])}>
-                        <article className={mainStyle[`pick-item`]}>
-                            <div className="flex-row width-100">
-                                <img className={mainStyle[`rank-icon`]} src={lodingImg.crown1}/>
-                                <p className={mainStyle[`pick-title`]}>(1줄 이상 ...처리) 팽이버섯 무밥 말이 15분 완성!</p>
-                            </div>
-                            <div className={mainStyle[`thumbnail`]}></div>
-                        </article>
-                        <article className={mainStyle[`pick-item`]}>
-                            <div className="flex-row">
-                                <img className={mainStyle[`rank-icon`]} src={lodingImg.crown2}/>
-                                <p className={mainStyle[`pick-title`]}>새송이 버섯 버터 크림소스 볶음</p>
-                            </div>
-                            <div className={mainStyle[`thumbnail`]}></div>
-                        </article>
-                        <article className={mainStyle[`pick-item`]}>
-                            <div className="flex-row">
-                                <img className={mainStyle[`rank-icon`]}src={lodingImg.crown3}/>
-                                <p className={mainStyle[`pick-title`]}>앞다리살 감자 조림</p>
-                            </div>
-                            <div className={mainStyle[`thumbnail`]}></div>
-                        </article>
+                        {rankingRecipes.slice(0, 3).map(
+                            (item, index) => (
+                                <article key={"rcp"+item.rcpNo} className={mainStyle[`pick-item`]} onClick={() => {navigate(`/community/recipe/${item.rcpNo}`)}}>
+                                    <div className="flex-row width-100">
+                                        {index == 0 && <img className={mainStyle[`rank-icon`]} src={lodingImg.crown1}/>}
+                                        {index == 1 && <img className={mainStyle[`rank-icon`]} src={lodingImg.crown2}/>}
+                                        {index == 2 && <img className={mainStyle[`rank-icon`]} src={lodingImg.crown3}/>}
+                                        <p className={mainStyle[`pick-title`]}>{item.rcpName}</p>
+                                    </div>
+                                    <div className={mainStyle[`thumbnail`]}>
+                                        <img src={item.serverName}/>
+                                    </div>
+                                </article>
+                            )
+                        )}
                     </div>
                 </section>
 
@@ -198,7 +180,7 @@ export default function Mainpage(){
                         <div className={mainStyle[`carousel-thumbs`]}>
                             {IngPediaMain.slice(1).map(
                                 (item) => (
-                                    <span className={mainStyle[`thumb`]} onClick={() => navigate(`/ingpedia/detail/${item.ingNo}`)}>
+                                    <span key={item.ingNo} className={mainStyle[`thumb`]} onClick={() => navigate(`/ingpedia/detail/${item.ingNo}`)}>
                                         <img className={mainStyle[`thumb-image`]} src={item.imgUrl ?? lodingImg.noImage}/>
                                     </span>
                                 )

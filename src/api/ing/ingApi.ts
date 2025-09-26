@@ -35,32 +35,6 @@ export const getIngCodes = async function () {
     return response.data;
 }
 
-// export const getMyIngs = async function (userNo: number | undefined) {
-//     const response = await api.get(`/${userNo}`);
-//     return response.data;
-// }
-
-// export const insertMyIng = async function (newMyIng:MyIngCreate) {
-//     const response = await api.post(`/write`, newMyIng);
-//     return response.data;
-// }
-
-// export const getMyIng = async function (ingNo: number, userNo:number) {
-//     const response = await api.get(`/detail/${ingNo}/${userNo}`);
-//     console.log(ingNo);
-//     return response.data;
-// }
-
-// export const deleteMyIng = async function (ingNo: number, userNo:number) {
-//     const response = await api.delete(`/detail/${ingNo}/${userNo}`);
-//     return response.data;
-// }
-
-// export const updateMyIng = async function (ingNo:number, userNo:number, newMyIng:MyIngUpdate) {
-//     const response = await api.put(`/detail/${ingNo}/${userNo}`, newMyIng);
-//     return response.data;
-// }
-
 export const searchIngs = async function(searchKeyword:{ingCode?:number, keyword?: string, page?:number}){
     const response = await api.get<PagedIngItem>("", {
         params: {

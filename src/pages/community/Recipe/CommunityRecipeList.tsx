@@ -1,7 +1,7 @@
 
 // src/pages/CommunityRecipeList/CommunityRecipeList.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate,useMatch } from 'react-router-dom';
+import { Link, useNavigate,useMatch, useSearchParams } from 'react-router-dom';
 
 // import './CommunityList.css'; // 페이지 전용 CSS
 import list from './CommunityList.module.css'; 
@@ -35,6 +35,10 @@ interface ApiParams {
 const CommunityRecipeList: React.FC = () => {
     const navigate = useNavigate();
     const userNo = useSelector((state: RootState) => state.auth?.user?.userNo);
+    const [urlParam, setUrlParam] = useSearchParams();
+
+    const rcpMthNo = urlParam.get('rcpMthNo');
+    const rcpStaNo = urlParam.get('rcpStaNo');
     
     const isOfficialListPage = useMatch('/api/recipe');
 
@@ -52,6 +56,8 @@ const CommunityRecipeList: React.FC = () => {
     const [searchParams, setSearchParams] = useState<ApiParams>({
         page: 0, 
         sort: isOfficialListPage ? 'bookmarks_desc' : 'createdAt',
+        ...(rcpMthNo ? { rcpMthNo: rcpMthNo } : {}),
+        ...(rcpStaNo ? { rcpStaNo: rcpStaNo } : {}),
     });
 
     // API 호출 함수

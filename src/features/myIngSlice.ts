@@ -1,25 +1,28 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import{ notiInitialState, type Ing, type Message } from "../type/ingmodal";
+import{ notiInitialState, type Ing} from "../type/ingmodal";
 
 const myIngSlice = createSlice({
     name: "myIng",
     initialState: notiInitialState,
     reducers: {
-        setNotification: (state, action: PayloadAction<Message>) => {
-            const newNotification = {
-                ...action.payload,
-                isClosing: false,
-            };
-            state.message = newNotification;
+        setIngs: (state, action: PayloadAction<Ing[]>) => {
+            const ings = action.payload ;
+            state.isClosing = false;
+
+            const today = new Date();
+            const expDate = new Date();
+            expDate.setDate(today.getDate() + 3);
+    
+            const filtered = ings.filter((item: Ing & { expDate?: string | Date }) => {
+                if (!item.expDate) return false;
+    
+                const exp = new Date(item.expDate);
+                return exp <= expDate;
+            });
+            state.ings = filtered;
         },
-        removeNotification: (state, action: PayloadAction<string>) => {
-            state.message = state.message = undefined;
-        },
-        startClosingAnimation: (state, action: PayloadAction<string>) => {
-            const notification = state.mes.find((noti) => noti.id === action.payload);
-            if (notification) {
-                notification.isClosing = true;
-            }
+        startClosingAnimation: (state) => {
+            state.isClosing = true;
         },
         setSettingsLoading: (state, action: PayloadAction<boolean>) => {
             state.isSettingsLoading = action.payload;
@@ -27,20 +30,22 @@ const myIngSlice = createSlice({
         setSettingsError: (state, action: PayloadAction<string | null>) => {
             state.settingsError = action.payload;
         },
-        setUserSettings: (state, action: PayloadAction<UserNotiSettings>) => {
+        setUserSettings: (state, action: PayloadAction<string>) => {
             state.userSettings = action.payload;
         },
-        checkAlert: (state, action: PayloadAction<Ing>) => {
-            state.isChecked = true;
+        resetExpIngs: (state) => {
+            state.ings = [];
+            state.isClosing = true;
         }
     }
 })
 
 export const { 
-    removeNotification, 
+    setIngs,
     startClosingAnimation,
     setSettingsLoading,
     setSettingsError,
-    setUserSettings 
+    setUserSettings,
+    resetExpIngs
  } = myIngSlice.actions;
 export default myIngSlice.reducer;
