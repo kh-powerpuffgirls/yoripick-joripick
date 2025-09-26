@@ -102,18 +102,18 @@ const ChallengeDetail = () => {
   const closeModal = () => setModal(null);
   const handleConfirm = () => { modal?.onConfirm?.(); closeModal(); };
   
-  // const createImageUrl = (serverName?: string) => {
-  //   if (serverName && (serverName.startsWith('http://') || serverName.startsWith('https://'))) {
-  //       return serverName;
-  //   }
-  //   if (serverName && serverName.startsWith('/images/')) {
-  //       return `${API_BASE}${serverName}`;
-  //   }
-  //   if (serverName) {
-  //       return `${API_BASE}/images/${serverName}`;
-  //   }
-  //   return 'https://via.placeholder.com/40x40?text=No+Image'; 
-  // };
+  const createImageUrl = (serverName?: string) => {
+    if (serverName && (serverName.startsWith('http://') || serverName.startsWith('https://'))) {
+        return serverName;
+    }
+    if (serverName && serverName.startsWith('/images/')) {
+        return `${API_BASE}${serverName}`;
+    }
+    if (serverName) {
+        return `${API_BASE}/images/${serverName}`;
+    }
+    return 'https://via.placeholder.com/40x40?text=No+Image'; 
+  };
 
   useEffect(() => {
     if (!challengeNo) return;
@@ -327,7 +327,7 @@ const ChallengeDetail = () => {
             <div key={parent.replyNo} className={styles.commentWrapper}>
               <div className={styles.commentItem}>
                 <div className={styles.avatar}>
-                  <img src={finalParentImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${parent.userNo}`)} />
+                <img src={createImageUrl(finalParentImageUrl)} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${parent.userNo}`)} />
                 </div>
               <div className={styles.commentBody}>
                 <div className={styles.commentHeader}>
@@ -386,8 +386,8 @@ const ChallengeDetail = () => {
     return (
               <div key={child.replyNo} className={`${styles.commentItem} ${styles.isReply}`}>
                 <div className={styles.avatar}>
-                  <img src={finalChildImageUrl} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${child.userNo}`)} />
-                </div>
+                  <img src={createImageUrl(finalChildImageUrl)} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${child.userNo}`)} />
+               </div>
                 <div className={styles.commentBody}>
                   <div className={styles.commentHeader}>
                     <span className={styles.parentUsername}>@{parent.username}</span>
@@ -454,12 +454,12 @@ const ChallengeDetail = () => {
         <div className={styles.postHeader}>
           <h1 className={styles.title}>{post.title}</h1>
           <div className={styles.postMeta}>
-            {post.profileImageServerName ? (
-                <img 
-                    src={post.profileImageServerName}
-                    alt="프로필" 
-                    className={styles.profileImage} 
-                    onClick={() => navigate(`/mypage/${post.userNo}`)} 
+              {post.profileImageServerName ? (
+              <img 
+              src={createImageUrl(post.profileImageServerName)}
+                                alt="프로필" 
+              className={styles.postProfileImage} 
+              onClick={() => navigate(`/mypage/${post.userNo}`)} 
                 />
             ) : (
                 <div className={styles.defaultProfile} onClick={() => navigate(`/mypage/${post.userNo}`)}></div>

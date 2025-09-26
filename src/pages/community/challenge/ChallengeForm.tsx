@@ -58,6 +58,7 @@ const ChallengeForm = () => {
   const isEdit = Boolean(challengeNo);
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
+  const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
   // 상태 관리
   const [title, setTitle] = useState("");
@@ -71,10 +72,6 @@ const ChallengeForm = () => {
   const [originalServerName, setOriginalServerName] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) {
-      setError("로그인이 필요합니다.");
-      return;
-    }
 
     const fetchData = async () => {
       try {
@@ -111,6 +108,9 @@ const ChallengeForm = () => {
     };
     fetchData();
   }, [challengeNo, isEdit, user]);
+
+    useEffect(() => {
+  }, [userNo]);
 
   // 이미지 파일 선택
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {

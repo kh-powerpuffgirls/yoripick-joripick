@@ -61,6 +61,7 @@ const FreeForm = () => {
   const navigate = useNavigate();
 
   // 로그인 확인용
+  const user = useSelector((state: RootState) => state.auth.user);
   const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
   // 상태 관리
@@ -75,8 +76,12 @@ const FreeForm = () => {
 
   // 로그인 여부 체크
   useEffect(() => {
-    if (!userNo) setError('게시글 작성/수정을 위해 로그인 필요');
-  }, [userNo]);
+    if (!userNo) {
+      setError('게시글 작성/수정을 위해 로그인 필요');
+    } else {
+      setError('');
+    }
+  }, [user, userNo]);
 
   // 수정 모드일 때 기존 게시글 데이터 불러오기
   useEffect(() => {

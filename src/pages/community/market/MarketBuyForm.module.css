@@ -267,3 +267,49 @@
 .reportButton:hover {
     background-color: #d32f2f;
 }
+
+/* MarketBuyForm.module.css 에 추가할 내용 */
+
+/* 게시글 수정 버튼 스타일 */
+.editButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #4CAF50; /* 녹색 계열 (수정/긍정적인 행동) */
+}
+
+.editButton:hover {
+    background-color: #388E3C;
+}
+
+.deleteButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #F44336;
+}
+
+.deleteButton:hover {
+    background-color: #D32F2F;
+}
+
+.outOfStock {
+    flex: 1;
+    padding: 0.5rem;
+    color: #F44336;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #F44336;
+    border-radius: 5px;
+    background-color: #ffeeee;
+}

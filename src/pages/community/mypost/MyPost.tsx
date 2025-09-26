@@ -31,7 +31,7 @@ interface MyPostDto {
   description: string;
   createdDate: string;
   views: number;
-  category: string; // BOARD, RECIPE, CHALLENGE, MARKET
+  category: string;
 }
 
 const MyPost = () => {
@@ -42,15 +42,16 @@ const MyPost = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.auth.user);
+  const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
   useEffect(() => {
-    if (!user) {
-      setError('로그인이 필요합니다.');
+    if (user) {
+      fetchPosts();
+    } else {
       setLoading(false);
-      return;
     }
-    fetchPosts();
-  }, [user]);
+    console.log(user);
+  }, [user, userNo]);
 
   const fetchPosts = async () => {
     try {
@@ -142,22 +143,22 @@ const MyPost = () => {
             </table>
           </div>
         ) : (
-        <div className={mypostStyles['post-detail-card']}>
-                  <button onClick={handleBackToList} className={mypostStyles['back-button']}>
-                    &larr; 목록으로 돌아가기
-                  </button>
-                  <h1>{selectedPost.title || '제목 없음'}</h1>
-                  <div className={mypostStyles['post-meta']}>
-                    작성일: {new Date(selectedPost.createdDate).toLocaleDateString()} | 조회수: {selectedPost.views} | 종류: {selectedPost.category}
-                  </div>
-                  {selectedPost.category === 'CHALLENGE' ? (
-                    <p className={mypostStyles['post-description']}>챌린지 게시글은 별도의 내용이 없습니다.</p>
-                  ) : (
-                    <p className={mypostStyles['post-description']}>{selectedPost.description || '내용 없음'}</p>
-                  )}
-                </div>
-              )}
+          <div className={mypostStyles['post-detail-card']}>
+            <button onClick={handleBackToList} className={mypostStyles['back-button']}>
+              &larr; 목록으로 돌아가기
+            </button>
+            <h1>{selectedPost.title || '제목 없음'}</h1>
+            <div className={mypostStyles['post-meta']}>
+              작성일: {new Date(selectedPost.createdDate).toLocaleDateString()} | 조회수: {selectedPost.views} | 종류: {selectedPost.category}
             </div>
+            {selectedPost.category === 'CHALLENGE' ? (
+              <p className={mypostStyles['post-description']}>챌린지 게시글은 별도의 내용이 없습니다.</p>
+            ) : (
+              <p className={mypostStyles['post-description']}>{selectedPost.description || '내용 없음'}</p>
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
 };
