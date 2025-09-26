@@ -66,7 +66,7 @@
     gap: 15px;
 }
 
-#action_btn { /* ID 선택자는 CSS 모듈에서 권장되지 않지만, 기존 코드 유지를 위해 사용 */
+#action_btn { 
     border: none;
     background-color: white;
     cursor: pointer;
@@ -129,7 +129,7 @@
     transition: transform 0.2s;
 }
 
-.Likes img:hover {
+.bookMark img:hover {
     transform: scale(1.1);
 }
 

@@ -49,6 +49,11 @@ hr{
     border-radius: 10px;
     overflow: hidden; /* 중요! */
 }
+#wing{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
 
 #crown{
     height: 38px;
@@ -73,14 +78,9 @@ hr{
 .ranking td {
     padding: 20px 10px 30px 10px;
     vertical-align: top;
-    text-align: center;
+    /* text-align: center; */
 }
 
-.ranking td div {
-    margin-top: 10px;
-    /* margin-bottom: 10px; */
-    font-size: 14px;
-}
 
 
 .list{
@@ -112,7 +112,7 @@ hr{
   color: #333;
 }
 
-/* ⭐️ 2. '활성화' 상태의 스타일을 담당할 클래스 */
+/* '활성화' 상태 */
 .active_sort {
   color: #029D60 !important; /* 활성화 시 색상 */
   font-weight: 700;
@@ -121,13 +121,13 @@ hr{
 
 /* 레시피 리스트 전체 영역 */
 .content_container {
-    /* display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(4, 1fr); */
     display:flex;
     flex-wrap: wrap;
-    justify-content:space-around ;   
+    justify-content: flex-start;
+    align-content: flex-start; 
+    margin:auto;
     min-height: 800px;
+    max-width: 800px;
 }
 
 
