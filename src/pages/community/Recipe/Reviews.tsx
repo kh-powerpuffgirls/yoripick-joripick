@@ -64,7 +64,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
       }
     };
     if (rcpNo) fetchReviews();
-  }, [rcpNo, page, sort]);
+  }, [rcpNo, page, sort, photoReviews]);
 
   // 포토 리뷰 목록을 불러오는 함수
   useEffect(() => {
