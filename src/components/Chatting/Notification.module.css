@@ -10,7 +10,12 @@
   z-index: 900;
 }
 
+.exp-modal {
+  display: none;
+}
+
 .slideUp {
+  display: block;
   animation: slide-up 0.4s ease-out forwards;
 }
 
@@ -94,6 +99,11 @@
   color: #555;
   line-height: 1.4;
   margin-top: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .notiActions {
@@ -133,4 +143,12 @@
 
 .moveBtn:hover {
   background-color: #4a7132;
+}
+
+.hidden {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

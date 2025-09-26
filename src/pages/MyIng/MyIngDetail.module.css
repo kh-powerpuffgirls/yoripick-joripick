@@ -147,7 +147,7 @@
 
 .recipe-inform {
   flex-grow: 0;
-  margin: 20px 40px;
+  margin: 10px 40px;
   display: flex;
   flex-direction: column;
   gap: 4px;

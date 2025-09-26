@@ -7,7 +7,7 @@ import type { RootState } from '../../../store/store';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
 import { store } from '../../../store/store';
-import CommunityHeader from '../Header/CommunityHeader';
+import CommunityHeader from '../CommunityHeader';
 
 const getAccessToken = () => store.getState().auth.accessToken;
 const api = axios.create({

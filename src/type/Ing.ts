@@ -42,6 +42,7 @@ export interface IngPedia {
         ingName: string;
         ingCode: number;
         ingCodeName: string;
+        imgUrl?: string;
 
         nutrientNo: number;
         energy?: number;
@@ -56,6 +57,15 @@ export interface IngPedia {
         preparation?: string;
     };
     pairList?: IngPair[];
+}
+export interface IngPediaMain {
+    ingNo: number;
+    ingName: string;
+    imgUrl?: string;
+    buyingTip?: string;
+    usageTip?: string;
+    storageMethod?: string;
+    preparation?: string;
 }
 export type IngPediaUpdate = IngPedia;
 export const initialUpdateIngPedia = {

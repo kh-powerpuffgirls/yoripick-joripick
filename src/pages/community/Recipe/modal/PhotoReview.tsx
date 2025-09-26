@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styles from './DetailModal.module.css';
 import type { PhotoReviewModalProps } from '../../../../type/Recipe';
-import type { ReportTargetInfo } from '../RecipeDetail'; //신고 
 import { api } from '../../../../api/authApi';
 
 // 아이콘 import
@@ -15,10 +14,9 @@ interface ExtendedPhotoReviewModalProps extends PhotoReviewModalProps {
   rcpNo: number;
   loginUserNo?: number;
   onDeleteReview: (reviewNo: number) => void;
-  onReportClick: (targetInfo: ReportTargetInfo) => void; //신고 
 }
 
-const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReviews, initialIndex, onClose, rcpNo, loginUserNo, onDeleteReview, onReportClick }) => {
+const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReviews, initialIndex, onClose, rcpNo, loginUserNo, onDeleteReview }) => {
   // 현재 보여줄 리뷰의 인덱스(순번)를 관리하는 state
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   
@@ -66,18 +64,6 @@ const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReview
     }
   };
 
-  // 신고
-  const handleReport = () => {
-    if (!currentReview) return;
-    const targetInfo: ReportTargetInfo = {
-      author: currentReview.userInfo.username,
-      title: `리뷰 (${currentReview.content.slice(0, 10)}...)`,
-      category: 'REVIEW',
-      refNo: currentReview.reviewNo,
-    };
-    onReportClick(targetInfo);
-  };
-
   const isOwner = loginUserNo === currentReview.userInfo.userNo;
 
   return (
@@ -114,11 +100,11 @@ const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReview
                   <button className={styles.delete} onClick={handleDelete}>삭제</button>
                 )}
                 {!isOwner && (
-                <button className={styles.report} onClick={handleReport}>
-                  <img src={reportIcon} alt="신고"/>
-                  <span>신고</span>
-                </button>
-              )}
+                  <button className={styles.report}>
+                      <img src={reportIcon} alt="신고"/>
+                      <span>신고</span>
+                  </button>
+                )}
             </div>
             <div className={styles.content_photoreview}>
                 <span>{currentReview.content}</span>
