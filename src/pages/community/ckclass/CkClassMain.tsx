@@ -211,6 +211,22 @@ const CkClassMain = () => {
       className: myClasses.find((cls) => cls.id === id)?.name || joinedClasses.find((cls) => cls.id === id)?.name || '클래스',
     };
 
+    const userNo = user?.userNo;
+
+    try {
+      if (userNo) {
+        await api.put('/community/ckclass/read-count', {
+          roomNo: id,
+          userNo,
+        });
+
+        setMyClasses((prev) => prev.map((cls) => (cls.id === id ? { ...cls, unreadCount: 0 } : cls)));
+        setJoinedClasses((prev) => prev.map((cls) => (cls.id === id ? { ...cls, unreadCount: 0 } : cls)));
+      }
+    } catch (error) {
+      console.error('안 읽음 처리 API 호출 실패:', error);
+    }
+
     dispatch(openChat(room));
   };
 
@@ -258,11 +274,14 @@ const CkClassMain = () => {
   };
 
   const handleNotificationToggle = async (id: number) => {
+    // 현재 상태 가져오기
     const isMyClass = myClasses.find(cls => cls.id === id);
     const isJoinedClass = joinedClasses.find(cls => cls.id === id);
 
     const currentStatus = isMyClass?.isNotificationOn ?? isJoinedClass?.isNotificationOn ?? false;
-    const newStatus = !currentStatus;
+    const newStatus = !currentStatus; 
+
+    // 상태 먼저 업데이트
     setMyClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: newStatus } : cls));
     setJoinedClasses(prev => prev.map(cls => cls.id === id ? { ...cls, isNotificationOn: newStatus } : cls));
 
@@ -498,17 +517,17 @@ const CkClassMain = () => {
         />
       )}
 
-      {isSettingsModalOpen && selectedClassId !== null && (
-        <CkSettingsModal
-          isOpen={isSettingsModalOpen}
-          onClose={closeSettingsModal}
-          classId={selectedClassId}
-          onUpdate={() => {
-            setUpdate(prev => prev + 1);
-            closeSettingsModal();
-          }}
-        />
-      )}
+    {isSettingsModalOpen && selectedClassId !== null && (
+      <CkSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={closeSettingsModal}
+        classId={selectedClassId}
+        onUpdate={() => {
+          setUpdate(prev => prev + 1);
+          closeSettingsModal();
+        }}
+          />
+    )}
     </>
   );
 };

@@ -18,15 +18,25 @@
 
 
 .ing-category .circle {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 80px;
   height: 80px;
+  overflow: hidden;
   border-radius: 50%;
-  background-color: #ddd;
+  background-color: #eee;
 }
 .ing-category .selected .circle {
   border: #92ca02 solid 3px;
 }
+.ing-category .circle img {
+  width: 65%;
+  height: 65%;
+  object-fit: cover;
+  object-position: center center;
+}
+
 .ing-category p {
   text-align: center;
   font-size: 20px;
@@ -47,6 +57,7 @@
   width: 180px;
   height: 540px;
   overflow: hidden;
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,7 +83,7 @@
   top: 12px;
   left: 16px;
   z-index: 1;
-  color: #fe8051;
+  color: var(--ypjp-green);
 }
 
 

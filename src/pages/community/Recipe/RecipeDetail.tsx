@@ -73,24 +73,24 @@ const CommunityRecipeDetail: React.FC = () => {
         if (!rcpNo) return;
         
         try {
-            // ✨ 3. isCommunityRecipe 값에 따라 API 경로를 동적으로 결정합니다.
             let url = '';
+
             if (isCommunityRecipe) {
                 url = loginUserNo
                     ? `/api/community/recipe/${rcpNo}/${loginUserNo}`
                     : `/api/community/recipe/${rcpNo}`;
-            } else {
-                url = loginUserNo
-                    ? `/api/recipe/${rcpNo}/${loginUserNo}`
-                    : `/api/recipe/${rcpNo}`;
-            }
-
+                } else {
+                    url = loginUserNo
+                    ? `/api/recipe/detail/${rcpNo}/${loginUserNo}`
+                    : `/api/recipe/detail/${rcpNo}`;
+                }
+                
+                
             const response = await api.get(url);
-
             setRecipe(response.data);
 
             if (response.data.isBookmarked !== undefined) {
-                setIsBookmarked(response.data.isBookmarked);  // 여기 수정
+                setIsBookmarked(response.data.isBookmarked); 
             }
 
             if (response.data.myLikeStatus !== undefined) {
@@ -140,9 +140,6 @@ const CommunityRecipeDetail: React.FC = () => {
             // API 응답으로 받은 최신 북마크 상태로 UI를 업데이트
             setIsBookmarked(response.data.bookmarked);
             setBookmarkCount(response.data.bookmarkCount);
-
-            console.log("response.data.bookmarked 상태 :",response.data.bookmarked);
-            console.log("response.data 상태 :",response.data);
             
         } catch (error) {
             console.error("북마크 처리 실패:", error);
@@ -227,30 +224,34 @@ const CommunityRecipeDetail: React.FC = () => {
     }
 
     const isOwner = loginUserNo === recipe.writer?.userNo;
+
     // 4. 데이터 로딩 완료 후 화면 렌더링
     return (
         <>
-        {/* 신고 */}
-        {modal && <CommunityModal message={modal.message} onConfirm={handleModalConfirm} onClose={closeModal} showCancel={modal.showCancel} />}
-        {isReportModalOpen && reportTargetInfo && (
-            <ReportModal
-                isOpen={isReportModalOpen}
-                onClose={() => setIsReportModalOpen(false)}
-                onSubmit={handleReportSubmit}
-                reportOptions={reportOptions}
-                targetInfo={reportTargetInfo}
-            />
-        )}
-        <div className={styles.container}>
+            {/* 신고 */}
+            {modal && <CommunityModal message={modal.message} onConfirm={handleModalConfirm} onClose={closeModal} showCancel={modal.showCancel} />}
+            {isReportModalOpen && reportTargetInfo && (
+                <ReportModal
+                    isOpen={isReportModalOpen}
+                    onClose={() => setIsReportModalOpen(false)}
+                    onSubmit={handleReportSubmit}
+                    reportOptions={reportOptions}
+                    targetInfo={reportTargetInfo}
+                />
+            )}
+            <div className={styles.container}>
+
             {/* ==================== 상단 헤더 ==================== */}
             <div className={styles.head_title}>
                 <div className={styles.approval_star}>
-                <div>{recipe.isOfficial ? '공식' : '식구'}</div>
+                <div>{recipe.writer == null  ? '공식' : '식구'}</div>
                 <span>★{(recipe.avgStars || 0).toFixed(1)}</span>
                 </div>
                 <span style={{fontWeight: 'bold', fontSize: '50px'}}>{recipe.rcpName}</span>
                 <span style={{fontSize: '20px', color: '#636363'}}>
-                    {new Date(recipe.createdAt).toLocaleString()}
+                    { recipe.writer &&(
+                        new Date(recipe.createdAt).toLocaleString()
+                    ) }
                     {recipe.updatedAt && (
                         <span style={{ marginLeft: '10px' }}>
                         | (수정){new Date(recipe.updatedAt).toLocaleString()}
@@ -271,21 +272,23 @@ const CommunityRecipeDetail: React.FC = () => {
                     조회수 <span style={{color: '#009626'}}>{recipe.views}</span>
                 </div>
             </div>
+
             <div className={styles.content}>
+
                 {recipe.isOfficial && isBookmarked !== null && (
+                    // 1. 공식 레시피일 경우: 북마크 버튼을 표시합니다.
                     <div className={styles.bookMark}>
                         <img 
                             src={isBookmarked ? bookMark_ck : bookMark_unck} 
                             alt="북마크"
                             onClick={handleBookmarkClick}
-                            className={styles.bookmark_icon}
                         />
                         {bookmarkCount}
                     </div>
                 )}
-                    
+                
                 {/* 사용자 레시피의 수정/삭제 버튼 */}
-                {!recipe.isOfficial && isOwner && (
+                {(!recipe.isOfficial && isOwner) && (
                     <div className={styles.user_btn}>
                         <button id={styles.action_btn} onClick={handleDelete}>삭제하기</button>
                         <button id={styles.action_btn} onClick={handleEdit}>수정하기</button>
@@ -297,7 +300,7 @@ const CommunityRecipeDetail: React.FC = () => {
                 </div>
                 
                 {/* ✨ 1. 재료/영양 테이블 자식 컴포넌트 */}
-                <DetailTable recipe={recipe} onReportClick={handleReportClick} /> {/* ⭐ prop 전달 */}
+                <DetailTable recipe={recipe} onReportClick={handleReportClick} /> 
                 {/* ✨ 2. 조리 순서 자식 컴포넌트 */}
                 <CookingSteps steps={recipe.steps} />
                 {/* ==================== 좋아요/싫어요 버튼 ==================== */}

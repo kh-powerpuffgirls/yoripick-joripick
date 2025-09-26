@@ -8,8 +8,12 @@ import { NewChallenge } from "./Admin/newChallenge";
 import { closeModal, openNewAnnouncementModal, openNewChallengeModal } from "../features/adminModalSlice";
 import { useEffect, useState } from "react";
 import { getTodayAnn } from "../api/authApi";
+import defaultProfile from "../pages/MyPage/defaultprofile.png"
+import { updateProfileImage } from "../features/authSlice";
+import axios from "axios";
 
 const Header = () => {
+  const accessToken = useSelector((state:RootState) => state.auth.accessToken);
   const user = useSelector((state: RootState) => state.auth.user);
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
@@ -34,6 +38,28 @@ const Header = () => {
     };
     fetchAnnouncements();
   }, []);
+
+  useEffect(() => {
+      if (!user || !accessToken) return;
+
+      const api = axios.create({
+          baseURL: "http://localhost:8081/users",
+          headers: {
+              Authorization: `Bearer ${accessToken}`,
+          },
+      });
+
+      const fetchData = async () => {
+          try {
+              const profileRes = await api.post("/profiles", user);
+              dispatch(updateProfileImage(profileRes.data));
+
+          } catch (err) {
+              console.error("프로필 이미지 불러오기 오류:", err);
+          }
+      };
+      fetchData();
+  }, [user, accessToken]);
 
   const handleSuccess = () => {
     dispatch(closeModal());
@@ -85,7 +111,7 @@ const Header = () => {
           ) : (
             <>
               <li>
-                <Link to="/recipe/list" className="nav-link">레시피</Link>
+                <Link to="/api/recipe" className="nav-link">레시피</Link>
               </li>
               <li className="nav-line"></li>
               <li>
@@ -93,7 +119,7 @@ const Header = () => {
               </li>
               <li className="nav-line"></li>
               <li>
-                <Link to="/community/recipe" className="nav-link">커뮤니티</Link>
+                <Link to="/community" className="nav-link">커뮤니티</Link>
               </li>
               <li className="nav-line"></li>
               <li>
@@ -130,12 +156,12 @@ const Header = () => {
             {user ? (
               <button className="log-link" onClick={logout}>
                 <div>로그아웃</div>
-                <img className="profile-image" src={ user.profile ? `${user.profile}` : lodingImg.profile} alt="프로필" />
+                <img className="profile-image" src={user.imageNo === 0 ? defaultProfile : (user.profile || defaultProfile)} />
               </button>
             ) : (
               <button className="log-link" onClick={() => navigate('/login', { state: { from: loc } })}>
                   <div>로그인</div>
-                  <img className="profile-image" src={lodingImg.profile} alt="프로필" />
+                  <img className="profile-image" src={lodingImg.profile} />
               </button>
             )}
           </div>

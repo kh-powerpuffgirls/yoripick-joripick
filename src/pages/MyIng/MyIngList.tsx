@@ -41,7 +41,7 @@ export default function MyIngList() {
     }, [userNo]);
 
     const{data:MyIngItems, isLoading, isError, error} = useQuery({
-        queryKey: ['myIngItems', submittedKeyword],
+        queryKey: ['MyIngs', submittedKeyword],
         queryFn: () => searchMyIngs(submittedKeyword),
         staleTime: 60*1000,
         enabled: !!userNo && !!submittedKeyword.userNo,

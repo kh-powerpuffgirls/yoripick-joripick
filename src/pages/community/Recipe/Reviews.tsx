@@ -19,18 +19,9 @@ interface ReviewsProps {
   rcpNo: number;
   onReviewSubmit: () => void; 
   reviewCount: number;
-  onReportClick: (targetInfo: ReportTargetInfo) => void; // 신고
 }
 
-// 신고 모달 인터페이스
-interface ReportTargetInfo {
-  author: string;
-  title: string;
-  category: string;
-  refNo: number;
-}
-
-const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, onReportClick }) => {
+const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [photoReviews, setPhotoReviews] = useState<Review[]>([]);
   const [sort, setSort] = useState('latest');
@@ -89,11 +80,15 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
   // 리뷰 작성 완료 시 실행될 함수
   const handleReviewSubmitted = () => {
     setIsWriteModalOpen(false);
-    // 1. 부모 컴포넌트(RecipeDetail)의 리뷰 개수 등을 새로고침하도록 신호를 보냅니다.
     onReviewSubmit(); 
-    // 2. 현재 컴포넌트의 리뷰 목록도 1페이지부터 다시 불러옵니다.
-    handleSortChange('latest'); 
-    // 3. 포토 리뷰 목록도 새로고침합니다.
+
+    setSort(prev => {
+      if (prev === 'latest') {
+        reloadReviews;
+      }
+      return 'latest';
+    });
+
     const fetchPhotoReviews = async () => {
         const response = await api.get(`/api/community/recipe/${rcpNo}/reviews/photos`);
         setPhotoReviews(response.data);
@@ -147,6 +142,12 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
     setPhotoReviews(prev => prev.filter(review => review.reviewNo !== deletedReviewNo));
     // 부모에게도 리뷰 개수 변경을 알림
     onReviewSubmit(); 
+    reloadReviews;
+  };
+
+  const reloadReviews = () => {
+    setReviews([]);
+    setPage(0);
   };
 
   return (
@@ -168,7 +169,6 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
           rcpNo={rcpNo}
           loginUserNo={loginUserNo}
           onDeleteReview={handlePhotoReviewDeleted}
-          onReportClick={onReportClick}
         />
       )}
 
@@ -205,38 +205,30 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
           <div className={styles.review_container}>
             {reviews.map(review => {
               const isOwner = loginUserNo === review.userInfo.userNo;
-              const isReportable = !isOwner && loginUserNo;
               return (
               <div key={review.reviewNo} className={styles.review_item}>
                 <img src={review.userInfo.serverName || sampleProfileImg} alt={review.userInfo.username} className={styles.profile_img} />
                 <div className={styles.profile_content}>
+
                   <div className={styles.profile}>
-                    <div className={styles.profile_name}>
+                    <div className={styles.user_info}>
                       {review.userInfo.sikBti && <SikBti sikBti={review.userInfo.sikBti} style={{fontSize: '11px' }} />}
-                      <span className={styles.nickname}>{review.userInfo.username}</span>
+                      <div id={styles.text_info}>
+                        <span className={styles.nickname}>{review.userInfo.username}</span>
+                        <div className={styles.stars}>
+                          <img src={starIcon} alt="별점" />
+                          <span>{review.stars.toFixed(1)}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className={styles.stars}>
-                      <img src={starIcon} alt="별점" />
-                      <span>{review.stars.toFixed(1)}</span>
-                    </div>
+
                     <div className={styles.review_actions}>
                       {isOwner && (
                         <button className={styles.action_btn} onClick={()=>handleDeleteReview(review.reviewNo)}>삭제</button>
                       )}
-                      {/* --- 신고 --- */}
-                        {isReportable && (
-                          <button
-                            className={styles.action_btn}
-                            onClick={() => onReportClick({
-                              author: review.userInfo.username,
-                              title: `리뷰 (${review.content.slice(0, 10)}...)`,
-                              category: 'REVIEW',
-                              refNo: review.reviewNo,
-                            })}
-                          >
-                            신고
-                          </button>
-                        )}
+                      {!isOwner &&(
+                      <button className={styles.action_btn}>신고</button>
+                      )}
                     </div>
                   </div>
                   <p className={styles.rcp_content}>{review.content}</p>

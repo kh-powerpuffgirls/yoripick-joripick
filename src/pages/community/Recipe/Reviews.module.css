@@ -26,6 +26,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
+    margin-bottom: 10px;
 }
 .title_area button:hover {
     background-color: #f1f3f5;
@@ -112,14 +113,19 @@
 .profile {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
 }
-.profile_name {
+
+.user_info{
     display: flex;
     flex-direction: column;
-    align-items: start;
-    gap: 8px;
 }
+#text_info{
+    display: flex;
+    gap : 10px;
+}
+
 .nickname {
     font-size: 16px;
     font-weight: 600;
@@ -128,15 +134,14 @@
     color: #FED049;
     font-weight: 600;
     display: flex;
-    align-items: center;
+    align-items: end;
     gap: 4px;
 }
 .stars img {
-    width: 14px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
 }
 .review_actions {
-    margin-left: auto;
     display: flex;
     gap: 10px;
 }
@@ -146,6 +151,7 @@
     color: #adb5bd;
     cursor: pointer;
     font-size: 12px;
+    text-decoration: underline;
 }
 .action_btn:hover {
     color: #495057;

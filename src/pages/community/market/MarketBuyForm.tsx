@@ -330,8 +330,6 @@ const MarketBuyForm = () => {
         return <div className={styles.loading}>상품 정보를 불러오는 중입니다...</div>;
     }
 
-    const imageUrl = `${API_BASE}${item.imageUrl}`;
-    
     const stockOptions = Array.from({ length: item.quantity }, (_, i) => i + 1);
 
     return (
@@ -349,7 +347,7 @@ const MarketBuyForm = () => {
     />
     <div className={styles.authorInfo}>
         {item.authorProfileUrl ? (
-            <img src={`${API_BASE}${item.authorProfileUrl}`} alt={`${item.username}의 프로필`} className={styles.profileImage} />
+            <img src={`${API_BASE}${item.authorProfileUrl}`} alt={`${item.author}의 프로필`} className={styles.profileImage} />
         ) : (
             <span className={styles.profileIcon}></span>
         )}
@@ -360,7 +358,7 @@ const MarketBuyForm = () => {
 
                         <div className={styles.imageUploadSection}>
                             <div className={styles.imageBox}>
-                                <img src={imageUrl} alt={item.name} className={styles.imagePreview} />
+                                <img src={item.imageUrl} alt={item.name} className={styles.imagePreview} />
                             </div>
                         </div>
 
@@ -391,7 +389,7 @@ const MarketBuyForm = () => {
                             </div>
                             <div className={styles.itemInfo}>
                                 <div className={styles.itemImageContainer}>
-                                    <img src={imageUrl} alt={item.name} className={styles.itemImagePreview} />
+                                    <img src={item.imageUrl} alt={item.name} className={styles.itemImagePreview} />
                                 </div>
                                 <div className={styles.itemDetails}>
                                     <div className={styles.detailRow}>

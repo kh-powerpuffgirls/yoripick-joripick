@@ -93,6 +93,7 @@ const ChallengeDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  // Navigation state
   const [nextChallengeNo, setNextChallengeNo] = useState<number | null>(null);
   const [prevChallengeNo, setPrevChallengeNo] = useState<number | null>(null);
 
@@ -172,26 +173,26 @@ const ChallengeDetail = () => {
     setReplies(repliesRes.data);
   };
 
-  const handleLikeToggle = async () => {
-    if (!user?.userNo) {
-      openModal({ message: '로그인 후 좋아요 가능합니다.' });
-      return;
-    }
-    const prevIsLiked = isLiked;
-    const prevLikesCount = likesCount;
-    setIsLiked(!prevIsLiked);
-    setLikesCount(prevLikesCount + (prevIsLiked ? -1 : 1));
-    try {
-      await api.post(`/community/challenge/like/${challengeNo}`, null, {
-        params: { status: prevIsLiked ? 'COMMON' : 'LIKE' }
-      });
-    } catch (err: any) {
-      console.error(err);
-      setIsLiked(prevIsLiked);
-      setLikesCount(prevLikesCount);
-      openModal({ message: '좋아요 처리 실패' });
-    }
-  };
+const handleLikeToggle = async () => {
+  if (!user?.userNo) {
+    openModal({ message: '로그인 후 좋아요 가능합니다.' });
+    return;
+  }
+  const prevIsLiked = isLiked;
+  const prevLikesCount = likesCount;
+  setIsLiked(!prevIsLiked);
+  setLikesCount(prevLikesCount + (prevIsLiked ? -1 : 1));
+  try {
+    await api.post(`/community/challenge/like/${challengeNo}`, null, {
+      params: { status: prevIsLiked ? 'COMMON' : 'LIKE' }
+    });
+  } catch (err: any) {
+    console.error(err);
+    setIsLiked(prevIsLiked);
+    setLikesCount(prevLikesCount);
+    openModal({ message: '좋아요 처리 실패' });
+  }
+};
 
   const handleAddComment = async () => {
     if (!user?.userNo || !newComment.trim()) {
@@ -317,9 +318,9 @@ const ChallengeDetail = () => {
         .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     return parentReplies.map(parent => {
-        const childReplies = replies
-            .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
-            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      const childReplies = replies
+        .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
         const finalParentImageUrl = parent.profileImageServerName; 
 
@@ -488,9 +489,8 @@ const ChallengeDetail = () => {
 
         <div className={styles.actions}>
           <div>
-            <button className={styles.likeButton} onClick={handleLikeToggle}>
-              {isLiked ? '❤️' : '🤍'}
-            </button>
+            <button className={styles.likeButton} onClick={handleLikeToggle}></button>
+    {isLiked ? '❤️' : '🤍'}
           </div>
           <div className={styles.editDeleteButtons}>
             {user?.userNo === post.userNo ? (

@@ -12,9 +12,10 @@ interface SearchParams {
 
 interface SidebarProps {
   onSearch: (params: SearchParams) => void;
+  isOfficial: boolean;
 }
 
-const CommunitySidebar: React.FC<SidebarProps> = ({ onSearch }) => {
+const CommunitySidebar: React.FC<SidebarProps> = ({ onSearch, isOfficial }) => {
   const [selectedIngredients, setSelectedIngredients] = useState<IngredientOption[]>([]);
   const [rcpMthNo, setRcpMthNo] = useState('');
   const [rcpStaNo, setRcpStaNo] = useState('');
@@ -68,6 +69,16 @@ const CommunitySidebar: React.FC<SidebarProps> = ({ onSearch }) => {
   };
   
   const handleSearch = () => {
+    let ingredientsParam = '';
+
+    if (isOfficial) {
+      // 공식 레시피 페이지: 재료 이름(ingName)으로 파라미터 생성
+      ingredientsParam = selectedIngredients.map(i => i.ingName).join(',');
+    } else {
+      // 커뮤니티 레시피 페이지: 재료 번호(ingNo)로 파라미터 생성
+      ingredientsParam = selectedIngredients.map(i => i.ingNo).join(',');
+    }
+
     onSearch({
       ingredients: selectedIngredients.map(i => i.ingName).join(','),
       rcpMthNo: rcpMthNo,

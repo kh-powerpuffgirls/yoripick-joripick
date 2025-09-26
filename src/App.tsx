@@ -68,6 +68,9 @@ import { AnnManagement } from './pages/Admin/annManagement'
 import { ClngManagement } from './pages/Admin/clngManagement'
 import { IngManagement } from './pages/Admin/ingManagement'
 import MarketEditForm from './pages/community/market/MarketEditForm'
+import { MyIngNotification } from './components/IngModal/myIngNotification'
+import { getMyIngs } from './api/ing/myIngApi'
+import { resetExpIngs, setIngs } from './features/myIngSlice'
 
 function App() {
   const queryClient = useQueryClient();
@@ -114,13 +117,25 @@ function App() {
     enabled: isAuthenticated,
   });
 
+  // 소비기한 임박 목록 로딩
+  const { data: expIngs, refetch : refetchExpIngs } = useQuery({
+    queryKey: ["expIngs"],
+    queryFn: () => userNo && getMyIngs({ userNo, sortNo: 1, keyword: '' }),
+    enabled: isAuthenticated && (userNo != null),
+  });
+
   useEffect(() => {
     if (isAuthenticated) {
+      localStorage.removeItem("myIngNotificationClosed");
       refetch();
+      refetchExpIngs();
     } else {
       dispatch(closeChat());
       dispatch(resetRooms());
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      
+      dispatch(resetExpIngs());
+      queryClient.invalidateQueries({ queryKey: ["expIngs"] });
     }
   }, [isAuthenticated, refetch, dispatch]);
 
@@ -128,7 +143,10 @@ function App() {
     if (roomData) {
       dispatch(setRooms(roomData));
     }
-  }, [roomData, dispatch]);
+    if (expIngs) {
+      dispatch(setIngs(expIngs));
+    }
+  }, [expIngs, roomData, dispatch]);
 
   return (
     <>
@@ -137,6 +155,7 @@ function App() {
       <ChatAlertModal />
       <ChatModal />
       <Notification />
+      <MyIngNotification />
       {rooms && rooms.length > 0 && (
         <p className='chatBtn' onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
       )}
@@ -151,6 +170,19 @@ function App() {
             <AdminDashboard />
           </AdminRoute>
         } />
+
+        {/* ==================== 메인페이지 ==================== */}
+        <Route path="/home" element={<Mainpage />} />
+
+        {/* ==================== 시큐리티 <oauth2,SECURITY> ==================== */}
+        <Route path="/oauth2/success" element={<OAuth2Success />} />
+        <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
+
+        {/* ==================== 유저 <users> ==================== */}
+        <Route path="/users/:userNo" element={<MyPage />} />
+        <Route path="/myPage" element={<MyPage />} />
+  
+        {/* ==================== 관리자 <Admin> ==================== */}
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/admin/recipes" element={<RcpManagement />} />
         <Route path="/admin/communities" element={<CommManagement />} />
@@ -159,40 +191,45 @@ function App() {
         <Route path="/admin/announcements" element={<AnnManagement />} />
         <Route path="/admin/challenges" element={<ClngManagement />} />
         <Route path="/admin/ingredients" element={<IngManagement />} />
-
-        <Route path="/home" element={<Mainpage />} />
+  
+        {/* ==================== 고객문의 <cservice> ==================== */}
         <Route path="/cservice" element={<CServiceMain />} />
-        <Route path="/mypage/mealplan" element={<MealplanMain />} />
-        <Route path="/oauth2/success" element={<OAuth2Success />} />
-        <Route path="/oauth2/username" element={<OAuthUsernamePage />} />
-        <Route path="/users/:userNo" element={<MyPage />} />
-        <Route path="/eatBTI" element={<EatBTIPage />} />
-        <Route path="/eatBTI/question" element={<QuestionPage />} />
-        <Route path="/eatBTI/result" element={<ResultPage />} />
-        <Route path="/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
-        {/* <Route path="/recipe/list" element={<OfficialRecipeListPage />} /> */}
-        <Route path="/community/recipe" element={<CommunityRecipeList />} />
-        <Route path="/community/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
-        <Route path="/community/recipe/write" element={<RecipeWrite />} />
-        <Route path="/community/recipe/edit/:rcpNo" element={<RecipeEditPage />} />
-        <Route path="/myPage" element={<MyPage />} />
-        <Route path="/eatBTI" element={<EatBTIPage />} />
-        <Route path="/eatBTI/question" element={<QuestionPage />} />
-        <Route path="/eatBTI/result" element={<ResultPage />} />
 
+        {/* ==================== 마이페이지<mypage> ==================== */}
+        <Route path="/mypage/inglist" element={<MyIng />} >
+          <Route path='' element={<MyIngList />} />
+          <Route path='detail/:ingNo' element={<MyIngDetail />} />
+          <Route path='write' element={<MyIngWrite />} />
+        </Route>
+        {/* 식단관리 */}
+        <Route path="/mypage/mealplan" element={<MealplanMain />} />
+
+        {/* ==================== 재료 관리<ingpedia> ==================== */}
         <Route path="/ingpedia" element={<Ingpedia />} >
           <Route path='' element={<IngpediaList />} />
           <Route path='write' element={<IngpediaWrite />} />
           <Route path='detail/:ingNo' element={<IngpediaDetail />} />
           <Route path='edit/:ingNo' element={<IngpediaEdit />} />
         </Route>
-        <Route path="/mypage/inglist" element={<MyIng />} >
-          <Route path='' element={<MyIngList />} />
-          <Route path='detail/:ingNo' element={<MyIngDetail />} />
-          <Route path='write' element={<MyIngWrite />} />
-        </Route>
         <Route path="/ing-popup" element={<IngPopup />} />
 
+        {/* ==================== 레시피<Rcipe> ==================== */}
+        <Route path="/api/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
+        <Route path="/api/recipe" element={<CommunityRecipeList />} />
+        <Route path="/community/recipe" element={<CommunityRecipeList />} />
+        <Route path="/community/recipe/:rcpNo" element={<CommunityRecipeDetail />} />
+        <Route path="/community/recipe/write" element={<RecipeWrite />} />
+        <Route path="/community/recipe/edit/:rcpNo" element={<RecipeEditPage />} />
+
+        {/* ==================== 식비티아이<eatBTI> ==================== */}
+        <Route path="/eatBTI" element={<EatBTIPage />} />
+        <Route path="/eatBTI/question" element={<QuestionPage />} />
+        <Route path="/eatBTI/result" element={<ResultPage />} />
+        <Route path="/eatBTI" element={<EatBTIPage />} />
+        <Route path="/eatBTI/question" element={<QuestionPage />} />
+        <Route path="/eatBTI/result" element={<ResultPage />} />
+
+        {/* ==================== 커뮤니티 <Community> ==================== */}
         <Route path="/community" element={<CommunityMain />} />
         <Route path="/community/mypost" element={<MyPost />} />
         <Route path="/community/free/form" element={<FreeForm />} />
@@ -213,6 +250,7 @@ function App() {
         <Route path="/community/market/edit/:id" element={<MarketEditForm />} /> 
         <Route path="/community/market/my-list" element={<MarketMyList />} />
         <Route path="/community/market/my-buy-form/:formId" element={<MarketMyDetailPage />} />
+
       </Routes>
 
       <Footer />
