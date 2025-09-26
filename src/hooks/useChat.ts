@@ -25,7 +25,8 @@ const useChat = () => {
     const userSettings = useSelector((state: RootState) => state.noti.userSettings);
     useEffect(() => {
         if (!userNo || !accessToken) return;
-
+        if (stompManager.client) return; 
+            
         const socket = new SockJS("http://localhost:8081/ws");
         const client = new Client({
             webSocketFactory: () => socket,
@@ -43,6 +44,7 @@ const useChat = () => {
                 console.warn("WebSocket closed");
                 dispatch(setConnected(false));
             },
+            debug : (err) => console.log(err)
         });
         stompManager.client = client;
         client.activate();
@@ -96,6 +98,9 @@ const useChat = () => {
             });
             const subrmv = stompManager.client.subscribe(`/topic/remove/${roomNo}`, (msg: IMessage) => {
                 dispatch(leaveRooms(Number(roomNo)));
+                getRooms(userNo).then(res => {
+                    dispatch(setRooms(res));
+                });
             });
             stompManager.subscriptions.set(`${roomNo}-msg`, sub);
             stompManager.subscriptions.set(`${roomNo}-remove`, subrmv);

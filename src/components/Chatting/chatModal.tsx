@@ -24,10 +24,10 @@ export const ChatModal = () => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [localLastRead, setLocalLastRead] = useState<number | null>(null);
     const cacheMessages = currentRoom?.messages;
-
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const [loading, setLoading] = useState(false);
 
     // 모달 열릴 때 초기 위치: 현재 화면 왼쪽 하단
     useEffect(() => {
@@ -168,13 +168,15 @@ export const ChatModal = () => {
         );
         let formData = new FormData();
         formData.append("message", messageBlob);
-
         if (type === "cservice") {
+            const question = inputRef.current.value;
+            inputRef.current.value = "";
             mutation.mutate(formData);
             dispatch(sendMessage(message));
+            setLoading(true);
             try {
                 const response = await axios.post(`http://localhost:8080/chat/${userNo}`,
-                    { question: inputRef.current.value },
+                    { question },
                     { withCredentials: true });
                 const botMessage: Message = {
                     ...message,
@@ -198,11 +200,13 @@ export const ChatModal = () => {
                 formData.append("message", messageBlob);
                 mutation.mutate(formData);
                 dispatch(sendMessage(botMessage));
+            } finally {
+                setLoading(false);
             }
         } else if (type === "admin" || type === "cclass") {
             mutation.mutate(formData);
+            inputRef.current.value = "";
         }
-        inputRef.current.value = "";
     };
 
     useEffect(() => {
@@ -277,6 +281,20 @@ export const ChatModal = () => {
                     userNo={userNo}
                     localLastRead={localLastRead}
                 />
+                {loading && (
+                    <div className={`${style.msg} ${style.left}`}>
+                        <div className={`${style.username} ${style.alignLeft}`}>요픽</div>
+                        <div className={style.msgWrapper}>
+                            <div className={`${style.loading} ${style.other}`}>
+                                <div className={style.loadingDots}>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
             {previewUrl && (
                 <div className={style.previewOverlay}>
@@ -306,7 +324,7 @@ export const ChatModal = () => {
                             </>
                         )}
                         <input
-                            ref={inputRef} placeholder="메시지를 입력하세요..."
+                            ref={inputRef} placeholder="메시지를 입력하세요..." maxLength={100}
                             onKeyDown={(e) => e.key === "Enter" && handleSend(currentRoom.type)}
                         />
                         <button onClick={() => handleSend(currentRoom.type)}>전송</button>
