@@ -5,7 +5,7 @@ import { store } from '../../../store/store';
 import type { RootState } from '../../../store/store';
 import mypostStyles from './MyPost.module.css';
 import { useNavigate } from 'react-router-dom';
-import CommunityHeader from '../Header/CommunityHeader';
+import CommunityHeader from '../CommunityHeader';
 
 // API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
@@ -86,7 +86,7 @@ const MyPost = () => {
         navigate(`/community/challenge/${post.id}`);
         break;
       case 'MARKET':
-        navigate(`/community/market/buyForm/${post.id}`);
+        navigate(`/community/marketplace/${post.id}`);
         break;
       default:
         console.warn('Unknown category:', post.category);

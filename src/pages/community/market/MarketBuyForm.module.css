@@ -34,30 +34,20 @@
     outline: none;
 }
 
-/* 프로필 아이콘과 이미지 스타일 */
 .authorInfo {
-    display: flex;
-    align-items: center;
-}
-
-/* 이미지가 있을 때 사용하는 프로필 이미지 스타일 */
-.profileImage {
-    width: 40px; /* 원하는 크기로 조절하세요 */
-    height: 40px; /* 원하는 크기로 조절하세요 */
-    border-radius: 50%; /* 원형으로 만듭니다 */
-    object-fit: cover; /* 이미지 비율을 유지하며 채웁니다 */
-    margin-right: 8px;
-}
-
-.profileIcon {
-    width: 40px;
-    height: 40px;
-    background-color: #ccc; 
-    border-radius: 50%;
-    margin-right: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.profileIcon {
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 50%;
 }
 
 .date {

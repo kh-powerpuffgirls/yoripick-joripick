@@ -146,6 +146,7 @@
 .profile-image {
   width: 32px;
   aspect-ratio: 1/1;
+  border-radius: 100px;
   position: absolute;
   right: 4px;
 }
@@ -319,3 +320,4 @@
   --ypjp-salmon-dark: #e45b29;
   --ypjp-red: #ff4900;
 }
+

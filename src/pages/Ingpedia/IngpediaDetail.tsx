@@ -14,7 +14,6 @@ import type { RootState } from "../../store/store";
 export default function IngpediaDetail(){
 
     const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
-    const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { ingNo } = useParams();
@@ -70,7 +69,7 @@ export default function IngpediaDetail(){
                                 <tbody>
                                     <tr>
                                         <td colSpan={2} className={ingDetailStyle["ing-image"]}>
-                                            <img src={lodingImg.noImage}/>
+                                            <img src={IngPediaItem.ingDetail.imgUrl ?? lodingImg.noImage}/>
                                         </td>
                                     </tr>
                                     <tr>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from '../../../store/store';
 import styles from "./ChallengeMain.module.css";
-import CommunityHeader from "../Header/CommunityHeader";
+import CommunityHeader from "../CommunityHeader";
 import axios from "axios";
 import { store } from '../../../store/store';
 import ChallengeSuggestionForm from "./ChallengeSuggestionForm";

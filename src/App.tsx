@@ -67,6 +67,9 @@ import { CSmanagement } from './pages/Admin/csManagement'
 import { AnnManagement } from './pages/Admin/annManagement'
 import { ClngManagement } from './pages/Admin/clngManagement'
 import { IngManagement } from './pages/Admin/ingManagement'
+import { MyIngNotification } from './components/IngModal/myIngNotification'
+import { getMyIngs } from './api/ing/myIngApi'
+import { resetExpIngs, setIngs } from './features/myIngSlice'
 
 function App() {
   const queryClient = useQueryClient();
@@ -113,13 +116,25 @@ function App() {
     enabled: isAuthenticated,
   });
 
+  // 소비기한 임박 목록 로딩
+  const { data: expIngs, refetch : refetchExpIngs } = useQuery({
+    queryKey: ["expIngs"],
+    queryFn: () => userNo && getMyIngs({ userNo, sortNo: 1, keyword: '' }),
+    enabled: isAuthenticated && (userNo != null),
+  });
+
   useEffect(() => {
     if (isAuthenticated) {
+      localStorage.removeItem("myIngNotificationClosed");
       refetch();
+      refetchExpIngs();
     } else {
       dispatch(closeChat());
       dispatch(resetRooms());
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      
+      dispatch(resetExpIngs());
+      queryClient.invalidateQueries({ queryKey: ["expIngs"] });
     }
   }, [isAuthenticated, refetch, dispatch]);
 
@@ -127,7 +142,10 @@ function App() {
     if (roomData) {
       dispatch(setRooms(roomData));
     }
-  }, [roomData, dispatch]);
+    if (expIngs) {
+      dispatch(setIngs(expIngs));
+    }
+  }, [expIngs, roomData, dispatch]);
 
   return (
     <>
@@ -136,6 +154,7 @@ function App() {
       <ChatAlertModal />
       <ChatModal />
       <Notification />
+      <MyIngNotification />
       {rooms && rooms.length > 0 && (
         <p className='chatBtn' onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
       )}

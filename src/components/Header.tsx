@@ -9,8 +9,11 @@ import { closeModal, openNewAnnouncementModal, openNewChallengeModal } from "../
 import { useEffect, useState } from "react";
 import { getTodayAnn } from "../api/authApi";
 import defaultProfile from "../pages/MyPage/defaultprofile.png"
+import { updateProfileImage } from "../features/authSlice";
+import axios from "axios";
 
 const Header = () => {
+  const accessToken = useSelector((state:RootState) => state.auth.accessToken);
   const user = useSelector((state: RootState) => state.auth.user);
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
@@ -35,6 +38,28 @@ const Header = () => {
     };
     fetchAnnouncements();
   }, []);
+
+  useEffect(() => {
+      if (!user || !accessToken) return;
+
+      const api = axios.create({
+          baseURL: "http://localhost:8081/users",
+          headers: {
+              Authorization: `Bearer ${accessToken}`,
+          },
+      });
+
+      const fetchData = async () => {
+          try {
+              const profileRes = await api.post("/profiles", user);
+              dispatch(updateProfileImage(profileRes.data));
+
+          } catch (err) {
+              console.error("프로필 이미지 불러오기 오류:", err);
+          }
+      };
+      fetchData();
+  }, [user, accessToken]);
 
   const handleSuccess = () => {
     dispatch(closeModal());
