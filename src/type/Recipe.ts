@@ -5,6 +5,7 @@ export interface User {
   sikBti: string;
   imageNo?: number;
   serverName?: string; // 프로필 이미지 경로
+  profileImage?: string;
 }
 
 //레시피 정보
@@ -50,10 +51,6 @@ export interface Review {
   serverName?: string; // 리뷰 이미지 경로
   reviewDate: string;
   userInfo:User;
-
-  // username: string;
-  // userProfileImage?: string;
-  // sikBti?: string; 
 
   rcpSource : 'API' | 'COMM';
   refNo:number; //rcp_no
@@ -145,6 +142,7 @@ export interface RecipeListItem {
   rcpNo: number;
   rcpName: string;
   createdAt: string;
+  userNo : number;
   username: string;
   serverName?: string;
   userProfileImage?: string;
@@ -153,7 +151,7 @@ export interface RecipeListItem {
   reviewCount?: number;
   isOfficial: boolean;
   bookmarkCount?: number;
-  bookmarked?: boolean;
+  isBookmarked?: boolean;
 }
 
 // 백엔드로부터 받을 페이지 전체 데이터 타입
@@ -219,6 +217,33 @@ export interface PhotoReviewModalProps {
   onClose: () => void;
 }
 
+export type RecipeResponse = {
+  rcpNo: number;
+  userNo: number;
+  username: string;
+  sikBti: string;
+  userProfileImage: string;
+  rcpName: string;
+  serverName: string;
+  views: number;
+  createdAt: string; // Date 타입은 보통 string으로 넘어옵니다.
+  avgStars: number;
+  reviewCount: number;
+  isOfficial?: boolean; // 랭킹 목록에도 공식 레시피가 포함될 수 있으므로 추가
+};
+
+export type OfficialRecipeResponse = {
+  rcpNo: number;
+  rcpName: string;
+  serverName: string;
+  views: number;
+  username: string | null; // 작성자가 없는 공식 레시פי(API)일 수 있으므로 null
+  sikBti: string | null;
+  userProfileImage: string | null;
+  isOfficial: boolean;
+  bookmarkCount: number;
+  isBookmarked: boolean;
+};
 export interface MyPageRecipe {
   id: number;
   title: string;
