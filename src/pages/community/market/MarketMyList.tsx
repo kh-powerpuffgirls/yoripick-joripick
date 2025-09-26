@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { store } from '../../../store/store';
 import type { RootState } from '../../../store/store';
-import CommunityHeader from '../CommunityHeader';
+import CommunityHeader from '../Header/CommunityHeader';
 import styles from '../mypost/MyPost.module.css';
 import React from 'react';
 

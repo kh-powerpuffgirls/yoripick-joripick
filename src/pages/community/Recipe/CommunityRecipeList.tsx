@@ -12,7 +12,7 @@ import crown1 from '../../../assets/sample/1등 왕관.png';
 import crown2 from '../../../assets/sample/2등 왕관.png';
 import crown3 from '../../../assets/sample/3등 왕관.png';
 import crown4 from '../../../assets/sample/4등 왕관.png';
-import CommunityHeader from '../Header/CommunityHeader';
+
 import CommunitySidebar from '../Sidebar/CommunitySidebar';
 import RecipeCard from './RecipeCard';
 
@@ -22,6 +22,7 @@ import {api} from '../../../api/authApi';
 import OfficialRecipeCard from './OfficialRecipeCard';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import CommunityHeader from '../Header/CommunityHeader';
 
 // API 파라미터 타입을 정의합니다. (선택적 프로퍼티로)
 interface ApiParams {

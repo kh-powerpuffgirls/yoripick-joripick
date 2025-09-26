@@ -19,9 +19,18 @@ interface ReviewsProps {
   rcpNo: number;
   onReviewSubmit: () => void; 
   reviewCount: number;
+  onReportClick: (targetInfo: ReportTargetInfo) => void; // 신고
 }
 
-const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount }) => {
+// 신고 모달 인터페이스
+interface ReportTargetInfo {
+  author: string;
+  title: string;
+  category: string;
+  refNo: number;
+}
+
+const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, onReportClick }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [photoReviews, setPhotoReviews] = useState<Review[]>([]);
   const [sort, setSort] = useState('latest');
@@ -169,6 +178,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
           rcpNo={rcpNo}
           loginUserNo={loginUserNo}
           onDeleteReview={handlePhotoReviewDeleted}
+          onReportClick={onReportClick}
         />
       )}
 
@@ -205,6 +215,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
           <div className={styles.review_container}>
             {reviews.map(review => {
               const isOwner = loginUserNo === review.userInfo.userNo;
+              const isReportable = !isOwner && loginUserNo;
               return (
               <div key={review.reviewNo} className={styles.review_item}>
                 <img src={review.userInfo.serverName || sampleProfileImg} alt={review.userInfo.username} className={styles.profile_img} />
@@ -226,9 +237,20 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
                       {isOwner && (
                         <button className={styles.action_btn} onClick={()=>handleDeleteReview(review.reviewNo)}>삭제</button>
                       )}
-                      {!isOwner &&(
-                      <button className={styles.action_btn}>신고</button>
-                      )}
+                      {/* --- 신고 --- */}
+                        {isReportable && (
+                          <button
+                            className={styles.action_btn}
+                            onClick={() => onReportClick({
+                              author: review.userInfo.username,
+                              title: `리뷰 (${review.content.slice(0, 10)}...)`,
+                              category: 'REVIEW',
+                              refNo: review.reviewNo,
+                            })}
+                          >
+                            신고
+                          </button>
+                        )}
                     </div>
                   </div>
                   <p className={styles.rcp_content}>{review.content}</p>
