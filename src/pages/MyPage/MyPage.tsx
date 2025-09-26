@@ -212,8 +212,7 @@ const MyPage = () => {
                 <section className={styles.profileSection}>
                     <div className={styles.leftProfile}>
                         <img
-                            src={user.profile ? `${user.profile}` : defaultProfile}
-                            alt="프로필 이미지"
+                            src={user.imageNo === 0 ? defaultProfile : (user.profile || defaultProfile)}
                             className={styles.profileImg}
                         />
                     </div>

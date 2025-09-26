@@ -8,6 +8,7 @@ import { NewChallenge } from "./Admin/newChallenge";
 import { closeModal, openNewAnnouncementModal, openNewChallengeModal } from "../features/adminModalSlice";
 import { useEffect, useState } from "react";
 import { getTodayAnn } from "../api/authApi";
+import defaultProfile from "../pages/MyPage/defaultprofile.png"
 import { updateProfileImage } from "../features/authSlice";
 import axios from "axios";
 
@@ -155,12 +156,12 @@ const Header = () => {
             {user ? (
               <button className="log-link" onClick={logout}>
                 <div>로그아웃</div>
-                <img className="profile-image" src={ user.profile ? user.profile : lodingImg.profile} alt="프로필" />
+                <img className="profile-image" src={user.imageNo === 0 ? defaultProfile : (user.profile || defaultProfile)} />
               </button>
             ) : (
               <button className="log-link" onClick={() => navigate('/login', { state: { from: loc } })}>
                   <div>로그인</div>
-                  <img className="profile-image" src={lodingImg.profile} alt="프로필" />
+                  <img className="profile-image" src={lodingImg.profile} />
               </button>
             )}
           </div>
