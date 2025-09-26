@@ -181,6 +181,7 @@ export interface RecipeDetail {
   updatedAt :string;
   views: number;
   tag?: string;
+  approval : string;
   
   isOfficial: boolean;
   rcpMethod: string;

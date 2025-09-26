@@ -1,8 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import style from "./eatbti.module.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import { lodingImg } from "../../assets/images";
+import { saveEatBTI  } from "../../api/eatbtiApi";
+import { updateSikBti } from "../../features/authSlice";
+import { useState } from "react";
+
 
 const descriptions: Record<string, string> = {
     "육식 티라노": "고기 없으면 인생도 없다. 고기 없으면 밥상 뒤엎는 타입!" +
@@ -51,11 +55,33 @@ const ResultPage = () => {
     const user = useSelector((state: RootState) => state.auth.user);
     const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const dbValue: string | undefined = user?.sikbti || (location.state as any)?.dbValue;
+    const dbValue: string = (location.state as any)?.dbValue;
     const description = dbValue ? descriptions[dbValue] : "결과 계산 중...";
+    
+
+    const [isSaved, setIsSaved] = useState(false);
 
     if (!dbValue) return <div>결과 계산 중...</div>;
+
+    const handleSaveResult = async () => {
+        if (isSaved) return; 
+
+        if (user && dbValue) {
+            try {
+                await saveEatBTI(user.userNo, dbValue);
+                dispatch(updateSikBti(dbValue));
+                setIsSaved(true);
+                alert("결과가 저장되었습니다!");
+            } catch (err) {
+                console.error(err);
+                alert("저장 실패...");
+            }
+        } else {
+            alert("사용자 정보가 없습니다. 저장할 수 없습니다.");
+        }
+    };
 
     return (
         <div>
@@ -72,7 +98,7 @@ const ResultPage = () => {
                     style={{ backgroundColor: "#FFF185", height: "400px" }}
                 >
                     <span style={{ fontWeight: "bold", fontSize: "40px" }}>
-                        당신의 결과는?
+                        {user? user?.username : "작성자"}님의 결과는?
                     </span>
                     <br />
                     <span style={{ fontSize: "30px" }}>{dbValue}</span>
@@ -86,6 +112,15 @@ const ResultPage = () => {
                 >
                     <span> ▶ 다시 테스트하기</span>
                 </div>
+                {(user !== null) &&
+                   <div
+                        className={style.card}
+                        style={{ backgroundColor: "#FFD0BF", cursor: "pointer" }}
+                        onClick={handleSaveResult}
+                    >
+                        <span> ▶ 결과 저장하기</span>
+                    </div>
+                }
             </div>
         </div>
     );

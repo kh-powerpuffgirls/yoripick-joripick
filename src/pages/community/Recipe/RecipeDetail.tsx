@@ -21,6 +21,7 @@ import CookingSteps from './CookingSteps';
 import Reviews from './Reviews';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
+import CommunityHeader from '../Header/CommunityHeader';
 
 // 신고 모달 인터페이스
 interface ModalState {
@@ -239,6 +240,7 @@ const CommunityRecipeDetail: React.FC = () => {
                     targetInfo={reportTargetInfo}
                 />
             )}
+            <CommunityHeader/>
             <div className={styles.container}>
 
             {/* ==================== 상단 헤더 ==================== */}
@@ -291,7 +293,9 @@ const CommunityRecipeDetail: React.FC = () => {
                 {(!recipe.isOfficial && isOwner) && (
                     <div className={styles.user_btn}>
                         <button id={styles.action_btn} onClick={handleDelete}>삭제하기</button>
-                        <button id={styles.action_btn} onClick={handleEdit}>수정하기</button>
+                        { recipe.approval !== 'Y' &&(
+                            <button id={styles.action_btn} onClick={handleEdit}>수정하기</button>
+                        )}
                     </div>
                 )}
                 <div className={styles.basic_info}>

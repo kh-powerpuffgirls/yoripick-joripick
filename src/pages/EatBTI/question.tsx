@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import style from "./eatbti.module.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { updateSikBti } from "../../features/authSlice";
-import { saveEatBTI } from "../../api/eatbtiApi";
-import { lodingImg } from "../../assets/images";
+// import { useDispatch, useSelector } from "react-redux";
+// import { updateSikBti } from "../../features/authSlice";
+// import { saveEatBTI } from "../../api/eatbtiApi";
+import EatBTIHeader from "./eatbti_header";
 
 interface Question {
     id: number;
@@ -99,7 +99,7 @@ export const codeToDBString: Record<string, string> = {
     Kneg: "칼로리 저격수",
     Tpos: "도파민 중독자",
     Tneg: "슴슴슴슴",
-    N: "푸드 간디"
+    N: "잡식 햄스터"
 };
 
 const calcEatBTI = (scores: Record<string, number>):string => {
@@ -118,9 +118,9 @@ const QuestionPage = () => {
     const [current, setCurrent] = useState(0);
     const [scoreMap, setScoreMap] = useState<any[]>([]);
     const [scores, setScores] = useState<Record<string, number>>({});
-    const user = useSelector((state: any) => state.auth.user);
+    // const user = useSelector((state: any) => state.auth.user);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
     useEffect(() => {
         axios.get("http://localhost:8081/sbti")
@@ -148,34 +148,30 @@ const QuestionPage = () => {
             setCurrent(current + 1);
         } else {
             const dbValue = calcEatBTI(newScores);
-            if (user) {
-                try {
-                    saveEatBTI(user.userNo, dbValue);
-                    dispatch(updateSikBti(dbValue));
-                    navigate("/eatBTI/result");
-                } catch (err) {
-                    console.error(err);
-                    alert("저장 실패...");
-                }
-            } else {
+            // if (user) {
+
+                    // saveEatBTI(user.userNo, dbValue);
+                    // dispatch(updateSikBti(dbValue));
+                    // navigate("/eatBTI/result");
+
+            // } else {
                 navigate("/eatBTI/result", { state: { dbValue } });
-            }
+            // }
         }
     };
 
+    const indicatorWidth = ((current + 1) / 15) * 100;
+
     return (
         <div>
-            <div className={style.ebti_header}>
-                <img
-                    className={style.ebti_logo}
-                    src={lodingImg.EatBtiLogo}
-                    alt="EBTI Logo"
-                />
+            <EatBTIHeader />
+            <div className={style.indicatorWrapper}>
+            <div className={style.indicator}>
+                <div className={style.indicator_bar} style={{ width: `${indicatorWidth}%` }}></div>
             </div>
-            <div className={style.pagging}>
-                <div id="now">
-                    {current + 1} / {questions.length}
-                </div>
+            <div id={style.now}>
+                {current + 1} / {questions.length}
+            </div>
             </div>
             <div className={style.ebti_container}>
                 <div className="Q">
