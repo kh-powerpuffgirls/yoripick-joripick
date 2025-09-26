@@ -39,6 +39,7 @@ const CommunityRecipeList: React.FC = () => {
 
     const rcpMthNo = urlParam.get('rcpMthNo');
     const rcpStaNo = urlParam.get('rcpStaNo');
+    const ingredients = urlParam.get('ingredients');
     
     const isOfficialListPage = useMatch('/api/recipe');
 
@@ -58,6 +59,7 @@ const CommunityRecipeList: React.FC = () => {
         sort: isOfficialListPage ? 'bookmarks_desc' : 'createdAt',
         ...(rcpMthNo ? { rcpMthNo: rcpMthNo } : {}),
         ...(rcpStaNo ? { rcpStaNo: rcpStaNo } : {}),
+        ...(ingredients ? { ingredients: ingredients } : {}),
     });
 
     // API 호출 함수
