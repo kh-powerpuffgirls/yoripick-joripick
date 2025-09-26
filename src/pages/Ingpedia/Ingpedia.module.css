@@ -31,8 +31,8 @@
   border: #92ca02 solid 3px;
 }
 .ing-category .circle img {
-  width: 70%;
-  height: 70%;
+  width: 65%;
+  height: 65%;
   object-fit: cover;
   object-position: center center;
 }

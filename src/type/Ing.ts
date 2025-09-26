@@ -42,7 +42,7 @@ export interface IngPedia {
         ingName: string;
         ingCode: number;
         ingCodeName: string;
-        imageNo?: string;
+        imgUrl?: string;
 
         nutrientNo: number;
         energy?: number;

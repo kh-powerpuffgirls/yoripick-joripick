@@ -69,7 +69,7 @@ export default function IngpediaDetail(){
                                 <tbody>
                                     <tr>
                                         <td colSpan={2} className={ingDetailStyle["ing-image"]}>
-                                            <img src={lodingImg.noImage}/>
+                                            <img src={IngPediaItem.ingDetail.imgUrl ?? lodingImg.noImage}/>
                                         </td>
                                     </tr>
                                     <tr>

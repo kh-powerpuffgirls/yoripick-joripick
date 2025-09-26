@@ -1,4 +1,4 @@
-import { lodingImg } from "../../assets/images";
+import { lodingImg, lodingRecipeIcon } from "../../assets/images";
 import mainStyle from "./Mainpage.module.css"
 import "../../assets/css/button.css";
 import ingDefaultStyle from "../../assets/css/ingDefault.module.css";
@@ -118,19 +118,27 @@ export default function Mainpage(){
                     <Link to={'/api/recipe'} className={ingDefaultStyle[`more-link`]}>세부검색 바로가기</Link>
                 </div>
                 <ul className={cx(mainStyle["category-list"], mainStyle["content-area"])}>
-                    {methodOptions.map(
-                        (item) => (
-                            (item.name != '기타') && 
+                    {methodOptions
+                        .filter(item => item.name !== '기타')
+                        .map(
+                        (item, index) => (
                             <li key={item.id}
                             onClick={() => navigateRecipe("rcpMthNo", item.id)}>
-                                <span className={mainStyle.circle}></span><p>{item.name}</p></li>
+                                <span className={mainStyle.circle}>
+                                    <img src={lodingRecipeIcon[index]} className={mainStyle.icon}/>
+                                </span>
+                                <p>{item.name}</p>
+                            </li>
                         )
                     )}
                     {typeOptions.map(
-                        (item) => (
+                        (item,index) => (
                             <li key={item.id}
                             onClick={() => navigateRecipe("rcpStaNo", item.id)}>
-                                <span className={mainStyle.circle}></span><p>{item.name}</p>
+                                <span className={mainStyle.circle}>
+                                    <img src={lodingRecipeIcon[index+methodOptions.length-1]} className={mainStyle.icon}/>
+                                </span>
+                                <p>{item.name}</p>
                             </li>
                         )
                     )}

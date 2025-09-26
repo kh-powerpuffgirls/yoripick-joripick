@@ -29,8 +29,23 @@ import ingIcon7 from './images/ing/icon/milk.png'
 import ingIcon8 from './images/ing/icon/nuts.png'
 import ingIcon9 from './images/ing/icon/honey.png'
 import ingIcon10 from './images/ing/icon/seasoning.png'
-import ingIcon11 from './images/ing/icon/fruits.png'
-import ingIcon12 from './images/ing/icon/fruits.png'
+import ingIcon11 from './images/ing/icon/flour.png'
+import ingIcon12 from './images/ing/icon/food.png'
+
+import rcpIcon1 from './images/mainpage/recipe/free-icon-cooking-18185531.png'
+import rcpIcon2 from './images/mainpage/recipe/free-icon-cooking-18185542.png'
+import rcpIcon3 from './images/mainpage/recipe/free-icon-microwaves-11254432.png'
+import rcpIcon4 from './images/mainpage/recipe/free-icon-cooking-18185543.png'
+import rcpIcon5 from './images/mainpage/recipe/free-icon-cooking-pot-8004351.png'
+import rcpIcon6 from './images/mainpage/recipe/free-icon-french-fries-4711583.png'
+import rcpIcon7 from './images/mainpage/recipe/free-icon-soup-12404665.png'
+import rcpIcon8 from './images/mainpage/recipe/fried_egg_480.png'
+import rcpIcon9 from './images/mainpage/recipe/rice_bowl_480.png'
+import rcpIcon10 from './images/mainpage/recipe/crown_480.png'
+import rcpIcon11 from './images/mainpage/recipe/strawberry_cake_480.png'
+import rcpIcon12 from './images/ing/icon/food.png'
+
+
 
 export const lodingImg = {
     logo: logo,
@@ -74,4 +89,9 @@ export const lodingIngBn = [
     '/assets/images/ing/banner/andra-ion-qsPHXC4T2cY-unsplash.webp',
     '/assets/images/ing/banner/kristiana-pinne-FL8NSCfvty0-unsplash.webp',
     '/assets/images/ing/banner/victoria-shes-UC0HZdUitWY-unsplash.webp',
+]
+
+export const lodingRecipeIcon = [
+    rcpIcon1, rcpIcon2, rcpIcon3, rcpIcon4, rcpIcon5, rcpIcon6,
+    rcpIcon7, rcpIcon8, rcpIcon9, rcpIcon10, rcpIcon11, rcpIcon12
 ]

@@ -114,11 +114,10 @@ export default function IngpediaList(){
                         </form>
                     </div>
                     <hr/>
-                    {/* map 정리 필요 */}
                     <ul className={cx(ingStyle["category-list"], ingDefaultStyle["content-area"])}>
                         {ingCodeSet.map(
                         (item, index) => (
-                            <li key={item.ingCode} onClick={()=>setSubmittedKeyword({ingCode:item.ingCode, keyword:'', page:0})}
+                            <li key={item.ingCode} onClick={() => setSubmittedKeyword({ingCode:item.ingCode, keyword:'', page:0})}
                                 className={submittedKeyword.ingCode === item.ingCode ? ingStyle.selected : ''}>
                                 <span className={ingStyle.circle}>
                                     <img src={lodingIngIcon[index-1]} className={ingDefaultStyle["ing-icon"]}/>
