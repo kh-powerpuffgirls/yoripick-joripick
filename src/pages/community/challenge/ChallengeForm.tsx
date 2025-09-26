@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { store } from "../../../store/store";
 import type { RootState } from "../../../store/store";
 import styles from "./ChallengeForm.module.css";
-import CommunityHeader from "../Header/CommunityHeader";
+import CommunityHeader from "../CommunityHeader";
 
 // API 기본 URL
 const API_BASE = "http://localhost:8081";

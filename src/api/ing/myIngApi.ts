@@ -49,7 +49,6 @@ export const insertMyIng = async function (newMyIng:MyIngCreate) {
 
 export const getMyIng = async function (ingNo: number, userNo:number) {
     const response = await api.get(`/detail/${ingNo}/${userNo}`);
-    console.log(ingNo);
     return response.data;
 }
 

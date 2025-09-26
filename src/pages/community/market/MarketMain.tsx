@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import styles from './MarketMain.module.css';
-import CommunityHeader from '../Header/CommunityHeader';
+import CommunityHeader from '../CommunityHeader';
 import CommunityModal from '../CommunityModal';
 import axios from 'axios';
 
@@ -62,31 +62,22 @@ const MarketMain = () => {
         }
         navigate('/community/market/my-list');
     };
-const API_BASE = 'http://localhost:8081';
 
-const renderPostCard = (post: MarketMain) => (
-    <div key={post.productId} className={styles.postCard} onClick={() => navigate(`/community/market/buyForm/${post.productId}`)}>
-        <img 
-            src={`${API_BASE}${post.imageUrl}`} 
-            alt={post.title} 
-            className={styles.postImage} 
-        />
-        <div className={styles.postInfo}>
-            <h3 className={styles.postTitle}>{post.title}</h3>
-            <div className={styles.postAuthor}>
-                <img 
-                    src={`${API_BASE}${post.authorProfileUrl}`} 
-                    alt="profile" 
-                    className={styles.profileIcon} 
-                />
-                <span>{post.author}</span>
-            </div>
-            <div className={styles.postStats}>
-                <span>👁️ {post.views}</span>
+    const renderPostCard = (post: MarketMain) => (
+        <div key={post.productId} className={styles.postCard} onClick={() => navigate(`/community/market/buyForm/${post.productId}`)}>
+            <img src={post.imageUrl} alt={post.title} className={styles.postImage} />
+            <div className={styles.postInfo}>
+                <h3 className={styles.postTitle}>{post.title}</h3>
+                <div className={styles.postAuthor}>
+                    <img src={post.authorProfileUrl} alt="profile" className={styles.profileIcon} />
+                    <span>{post.author}</span>
+                </div>
+                <div className={styles.postStats}>
+                    <span>👁️ {post.views}</span>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
 
     if (isLoading) {
         return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
