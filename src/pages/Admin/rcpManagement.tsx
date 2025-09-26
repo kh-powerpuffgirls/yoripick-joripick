@@ -3,6 +3,7 @@ import { getRecipes, type PageInfo } from "../../api/adminApi";
 import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
+import type { Recipe } from "../../type/Recipe";
 
 interface RcpInfo {
     rcpNo: number;
@@ -29,8 +30,10 @@ export const RcpManagement = () => {
         fetchData(1);
     }, []);
 
-    const handleGoToDtl = (rcpNo: number) => {
-        navigate(`/recipe/${rcpNo}`);
+    const handleGoToDtl = (r: RcpInfo) => {
+        const category = r.approval === 'Y' ? "api" : "community";
+        const ref = window.location.origin + `/${category}/recipe/${r.rcpNo}`;
+        window.open(ref, '_blank', 'noopener,noreferrer');
     };
 
     return (
@@ -71,7 +74,7 @@ export const RcpManagement = () => {
                                     <td>{r.approval}</td>
                                     <td>{r.bookmarks}</td>
                                     <td className={style.actionButtons}>
-                                        <button className={style.mypageButton} onClick={() => handleGoToDtl(r.rcpNo)}>이동</button>
+                                        <button className={style.mypageButton} onClick={() => handleGoToDtl(r)}>이동</button>
                                     </td>
                                 </tr>
                             ))

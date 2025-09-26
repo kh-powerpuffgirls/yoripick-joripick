@@ -9,6 +9,7 @@ import {
     fetchRecipes,
     fetchUserReports,
     getChatRoom,
+    getParentRep,
     resolveChallenge,
     resolveReport,
     type ChallengeForm,
@@ -154,10 +155,15 @@ export const AdminDashboard = () => {
         setConfirmOpen(true);
     };
 
-    const handleOpenReport = (c: Reports) => {
+    const handleOpenReport = async (c: Reports) => {
+        console.log(c);
         let ref = window.location.origin + "/";
-        if (c.category === 'BOARD') ref += "";
-        if (c.category === 'MARKETPLACE') ref += "";
+        if (c.category === 'BOARD') ref += `community/free/${c.refNo}`;
+        if (c.category === 'MARKETPLACE') ref += `community/market/buyForm/${c.refNo}`;
+
+        const response = await getParentRep(c.reportNo);
+        console.log(response);
+        
         if (c.category === 'REPLY') ref += "";
         if (c.category === 'REVIEW') ref += "";
         window.open(ref, '_blank', 'noopener,noreferrer');

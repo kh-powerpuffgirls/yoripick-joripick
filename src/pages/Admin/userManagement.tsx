@@ -32,7 +32,8 @@ export const UserManagement = () => {
 
     // 마이페이지 버튼 클릭 핸들러
     const handleGoToMyPage = (userNo: number) => {
-        navigate(`/mypage/${userNo}`);
+        const ref = window.location.origin + `/users/${userNo}`;
+        window.open(ref, '_blank', 'noopener,noreferrer');
     };
 
     // 정지 버튼 클릭 핸들러

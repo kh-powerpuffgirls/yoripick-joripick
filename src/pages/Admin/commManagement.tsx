@@ -30,7 +30,9 @@ export const CommManagement = () => {
     }, []);
 
     const handleGoToDtl = (category: string, commNo: number) => {
-        navigate(`/community/${category}/${commNo}`);
+        category = category === "board" ? "free" : (category === "market" ? category + "/buyForm" : category);
+        const ref = window.location.origin + `/community/${category}/${commNo}`;
+        window.open(ref, '_blank', 'noopener,noreferrer');
     };
 
     return (

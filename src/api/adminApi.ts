@@ -172,6 +172,11 @@ export const getIngredients = async (page: number, size: number) => {
     return response.data;
 };
 
+export const getParentRep = async (reportNo: number) => {
+    const response = await api.get(`/reports/${reportNo}`);
+    return response.data;
+};
+
 export type PageInfo = {
     listCount: number;
     currentPage: number;

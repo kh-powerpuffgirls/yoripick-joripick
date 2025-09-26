@@ -38,13 +38,12 @@
   background-color: #3E5822;
 }
 
-/* #header a { */
-.commHeader {
-  text-decoration: none;
-  color: inherit;
+.admHeader .nav-link,
+.admHeader .nav-button {
+  color: white;
 }
 
-#header {
+.commHeader {
   background-color: #92ca02;
 }
 
