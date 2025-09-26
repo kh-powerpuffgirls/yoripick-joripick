@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../api/authApi';
 import type { Review } from '../../../type/Recipe'; // Recipe.ts에서 Review 타입 import
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../../store/store';
 import styles from './Reviews.module.css';
 
@@ -41,6 +42,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const loginUserNo = useSelector((state: RootState) => state.auth.user?.userNo);
+  const navigate = useNavigate();
 
   // 리뷰 목록을 불러오는 함수
   useEffect(() => {
@@ -158,7 +160,6 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
     setReviews([]);
     setPage(0);
   };
-
   return (
     <>
       {/* ==================== 모달 영역 (조건부 렌더링) ==================== */}
@@ -216,16 +217,23 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
             {reviews.map(review => {
               const isOwner = loginUserNo === review.userInfo.userNo;
               const isReportable = !isOwner && loginUserNo;
+
+              // 프로필링크 연결
+              const handleProfileClick = () => {
+                navigate(`/mypage/${review.userInfo.userNo}`);
+              };
+
+
               return (
               <div key={review.reviewNo} className={styles.review_item}>
-                <img src={review.userInfo.serverName || sampleProfileImg} alt={review.userInfo.username} className={styles.profile_img} />
+                <img src={review.userInfo.serverName || sampleProfileImg} onClick={handleProfileClick} alt={review.userInfo.username} className={styles.profile_img} />
                 <div className={styles.profile_content}>
 
                   <div className={styles.profile}>
                     <div className={styles.user_info}>
                       {review.userInfo.sikBti && <SikBti sikBti={review.userInfo.sikBti} style={{fontSize: '11px' }} />}
                       <div id={styles.text_info}>
-                        <span className={styles.nickname}>{review.userInfo.username}</span>
+                        <span className={styles.nickname} onClick={handleProfileClick}>{review.userInfo.username}</span>
                         <div className={styles.stars}>
                           <img src={starIcon} alt="별점" />
                           <span>{review.stars.toFixed(1)}</span>
