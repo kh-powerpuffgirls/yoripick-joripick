@@ -13,7 +13,7 @@ const chatSlice = createSlice({
             }
         },
         setRooms: (state, action: PayloadAction<ChatRoom[]>) => {
-            action.payload.forEach((room) => {
+            action.payload.forEach((room) => {                
                 // 새 챗봇이나 문의 추가될 때? --> 잘 기억안남
                 if (!state.rooms.some((r) => r.roomNo === room.roomNo && r.type === room.type)) {
                     state.rooms.push(room);
@@ -58,7 +58,7 @@ const chatSlice = createSlice({
         },
         // 클래스룸 탈퇴, 삭제
         leaveRooms: (state, action: PayloadAction<number>) => {
-            state.rooms = state.rooms.filter(room => room.roomNo !== action.payload);
+            state.rooms = state.rooms.filter(room => room.roomNo != action.payload);
         },
     }
 })

@@ -10,7 +10,7 @@ import { store } from '../../../store/store';
 import type { RootState } from '../../../store/store';
 import { openChat, setRooms } from '../../../features/chatSlice';
 import type { ChatRoom, Message } from '../../../type/chatmodal';
-import { getRooms, saveMessage } from '../../../api/chatApi';
+import { getRooms, lastRead, saveMessage } from '../../../api/chatApi';
 import useChat from '../../../hooks/useChat';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -154,15 +154,11 @@ const CkClassSearch = () => {
         roomNo: payload.roomNo,
         userNo: payload.userNo,
       }),
-    onSuccess: (res, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["rooms"] });
-      getRooms(user?.userNo)
+    onSuccess: async (res, variables) => {
+      await getRooms(user?.userNo)
         .then((rooms: ChatRoom[]) => {
-          dispatch(setRooms(rooms));
-
           const newRoom = rooms.find(r => r.roomNo === variables.roomNo);
           if (!newRoom) return;
-          dispatch(openChat(newRoom));
 
           // 입장 메시지 생성
           const systemMessage: Message = {
@@ -177,10 +173,16 @@ const CkClassSearch = () => {
           let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
           let formData = new FormData();
           formData.append("message", messageBlob);
-          saveMessage("cclass", newRoom.roomNo, formData);
+          saveMessage("cclass", newRoom.roomNo, formData)
+            .then((res) => {
+              lastRead(user?.userNo as number, res.roomNo, res.messageNo as number);
+              dispatch(setRooms(rooms));
+              queryClient.invalidateQueries({ queryKey: ["rooms"] });
+            });
 
           // 웹소켓 브로드캐스트
           sendChatMessage(newRoom.roomNo, systemMessage);
+          dispatch(openChat(newRoom));
         });
     },
     onError: (error) => {

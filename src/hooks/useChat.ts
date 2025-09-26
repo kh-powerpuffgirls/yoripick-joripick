@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Client, type Message } from "@stomp/stompjs";
+import { Client, type IMessage, type Message } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useDispatch, useSelector } from "react-redux";
 import { store, type RootState } from "../store/store";
@@ -9,9 +9,9 @@ import {
     removeSubscribedRoom,
     clearSubscribedRooms,
 } from "../features/stompSlice";
-import { sendMessage, setRooms } from "../features/chatSlice";
+import { leaveRooms, sendMessage, setRooms } from "../features/chatSlice";
 import { addNotification, startClosingAnimation } from "../features/notiSlice";
-import { stompManager } from "../type/chatmodal";
+import { stompManager, type ChatRoom } from "../type/chatmodal";
 import { getRooms } from "../api/chatApi";
 
 const useChat = () => {
@@ -23,7 +23,6 @@ const useChat = () => {
     const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
     const rooms = useSelector((state: RootState) => state.chat.rooms);
     const userSettings = useSelector((state: RootState) => state.noti.userSettings);
-
     useEffect(() => {
         if (!userNo || !accessToken) return;
 
@@ -61,47 +60,56 @@ const useChat = () => {
         if (!stompManager.client?.connected || !userSettings) return;
         rooms.forEach((room) => {
             const roomNo = String(room.roomNo);
-
-            // 이미 구독했으면 무시
             if (!stompManager.client) return;
-            if (stompManager.subscriptions.has(roomNo)) return;
+            if (stompManager.subscriptions.has(`${roomNo}-msg`)) return;
             if (room.type === "cservice") return;
 
-            const sub = stompManager.client.subscribe(`/topic/${roomNo}`, (msg: Message) => {
+            const sub = stompManager.client.subscribe(`/topic/${roomNo}`, async (msg: Message) => {
                 const data = JSON.parse(msg.body);
                 dispatch(sendMessage(data));
-                getRooms(userNo).then(res => dispatch(setRooms(res)));
-                if (
-                    data.userNo != userNo &&
-                    data.userNo != 0 &&
-                    userSettings.newMessage === "Y" &&
-                    room.notification === "Y"
-                ) {
-                    if (data.imageNo) {
-                        const imgData = { ...data, content: "사진을 보냈습니다." };
-                        dispatch(addNotification(imgData));
-                    } else {
-                        dispatch(addNotification(data));
-                    }
-                    // 알림 자동 종료
-                    const addedNotification = store.getState().noti.list.find(
-                        (noti) => noti.content === data.content && noti.roomNo === data.roomNo
-                    );
-                    if (addedNotification?.id) {
-                        setTimeout(() => {
-                            dispatch(startClosingAnimation(addedNotification.id));
-                        }, 2000);
-                    }
-                }
+                await getRooms(userNo)
+                    .then(res => {
+                        dispatch(setRooms(res));
+                        if (
+                            data.userNo != userNo &&
+                            data.userNo != 0 &&
+                            userSettings.newMessage === "Y" &&
+                            res.find((r: ChatRoom) => (r.roomNo == roomNo))?.notification === "Y"
+                        ) {
+                            if (data.imageNo) {
+                                const imgData = { ...data, content: "사진을 보냈습니다." };
+                                dispatch(addNotification(imgData));
+                            } else {
+                                dispatch(addNotification(data));
+                            }
+                            // 알림 자동 종료
+                            const addedNotification = store.getState().noti.list.find(
+                                (noti) => noti.content === data.content && noti.roomNo === data.roomNo
+                            );
+                            if (addedNotification?.id) {
+                                setTimeout(() => {
+                                    dispatch(startClosingAnimation(addedNotification.id));
+                                }, 2000);
+                            }
+                        }
+                    })
             });
-            stompManager.subscriptions.set(roomNo, sub);
+            const subrmv = stompManager.client.subscribe(`/topic/remove/${roomNo}`, (msg: IMessage) => {
+                dispatch(leaveRooms(Number(roomNo)));
+            });
+            stompManager.subscriptions.set(`${roomNo}-msg`, sub);
+            stompManager.subscriptions.set(`${roomNo}-remove`, subrmv);
             dispatch(addSubscribedRoom(roomNo));
         });
         // rooms에 없는 방은 구독 해제
         subscribedRooms.forEach((roomNo) => {
             if (!rooms.find((r) => String(r.roomNo) === roomNo)) {
-                stompManager.subscriptions.get(roomNo)?.unsubscribe();
-                stompManager.subscriptions.delete(roomNo);
+                const subMsg = stompManager.subscriptions.get(`${roomNo}-msg`);
+                const subRemove = stompManager.subscriptions.get(`${roomNo}-remove`);
+                subMsg?.unsubscribe();
+                subRemove?.unsubscribe();
+                stompManager.subscriptions.delete(`${roomNo}-msg`);
+                stompManager.subscriptions.delete(`${roomNo}-remove`);
                 dispatch(removeSubscribedRoom(roomNo));
                 console.log("구독 해제:", roomNo);
             }
@@ -118,6 +126,18 @@ const useChat = () => {
             console.warn("STOMP가 연결되어 있지 않습니다.");
         }
     };
-    return { sendChatMessage };
+
+    const rmvCKclass = (roomNo: string | number | undefined) => {
+        if (stompManager.client?.connected) {
+            stompManager.client.publish({
+                destination: `/app/remove/${roomNo}`,
+                body: JSON.stringify("쿠킹 클래스 삭제"),
+            });
+        } else {
+            console.warn("STOMP가 연결되어 있지 않습니다.");
+        }
+    };
+
+    return { sendChatMessage, rmvCKclass };
 };
 export default useChat;

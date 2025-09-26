@@ -53,7 +53,7 @@ interface ReportOption {
 
 const CkClassMain = () => {
   const queryClient = useQueryClient();
-  const { sendChatMessage } = useChat();
+  const { sendChatMessage, rmvCKclass } = useChat();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -206,8 +206,7 @@ const CkClassMain = () => {
           try {
             await api.delete(`/community/ckclass/${id}`);
             openModal({ message: '클래스가 성공적으로 삭제되었습니다.', onConfirm: closeModal });
-            dispatch(leaveRooms(id));
-            queryClient.invalidateQueries({ queryKey: ["rooms"] });
+            rmvCKclass(id);
           } catch (err: any) {
             console.error(err);
             openModal({ message: err.response?.data || '클래스 삭제에 실패했습니다.', onConfirm: closeModal });
@@ -225,7 +224,7 @@ const CkClassMain = () => {
       await api.post(`/community/ckclass/${id}/toggleNotification`);
       const updatedRooms = await getRooms(user?.userNo);
       dispatch(setRooms(updatedRooms));
-      // queryClient.invalidateQueries({ queryKey: ["rooms"] }); 필요할지 필요없을지 아직 잘 모르겠음..
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
     } catch (err: any) {
       console.error(err);
       openModal({ message: err.response?.data || '알림 설정 변경에 실패했습니다.', onConfirm: closeModal });
