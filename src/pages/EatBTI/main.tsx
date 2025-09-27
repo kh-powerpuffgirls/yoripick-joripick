@@ -1,18 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import style from "./eatbti.module.css";
-import { lodingImg } from "../../assets/images";
+import EatBTIHeader from "./eatbti_header";
 
 const EatBTIPage = () => {
   const navigate = useNavigate();
   return (
-    <div>
-      <div className={style.ebti_header}>
-        <img
-          className={style.ebti_logo}
-          src={lodingImg.EatBtiLogo}
-          alt="EBTI Logo"
-        />
-      </div>
+    <div className={style.main}>
+      < EatBTIHeader />
       <div className={style.ebti_container}>
         <div
           className={style.card}

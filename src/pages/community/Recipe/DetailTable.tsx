@@ -35,7 +35,7 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe, onReportClick }) => {
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    navigate(`/profile/${recipe.writer?.userNo}`);
+    navigate(`/mypage/${recipe.writer?.userNo}`);
   };
 
   // 신고
