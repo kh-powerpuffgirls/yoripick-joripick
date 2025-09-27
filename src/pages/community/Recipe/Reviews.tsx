@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../api/authApi';
 import type { Review } from '../../../type/Recipe'; // Recipe.ts에서 Review 타입 import
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../../store/store';
 import styles from './Reviews.module.css';
 
@@ -19,9 +20,18 @@ interface ReviewsProps {
   rcpNo: number;
   onReviewSubmit: () => void; 
   reviewCount: number;
+  onReportClick: (targetInfo: ReportTargetInfo) => void; // 신고
 }
 
-const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount }) => {
+// 신고 모달 인터페이스
+interface ReportTargetInfo {
+  author: string;
+  title: string;
+  category: string;
+  refNo: number;
+}
+
+const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, onReportClick }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [photoReviews, setPhotoReviews] = useState<Review[]>([]);
   const [sort, setSort] = useState('latest');
@@ -32,6 +42,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const loginUserNo = useSelector((state: RootState) => state.auth.user?.userNo);
+  const navigate = useNavigate();
 
   // 리뷰 목록을 불러오는 함수
   useEffect(() => {
@@ -55,7 +66,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
       }
     };
     if (rcpNo) fetchReviews();
-  }, [rcpNo, page, sort]);
+  }, [rcpNo, page, sort, photoReviews]);
 
   // 포토 리뷰 목록을 불러오는 함수
   useEffect(() => {
@@ -149,7 +160,6 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
     setReviews([]);
     setPage(0);
   };
-
   return (
     <>
       {/* ==================== 모달 영역 (조건부 렌더링) ==================== */}
@@ -169,6 +179,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
           rcpNo={rcpNo}
           loginUserNo={loginUserNo}
           onDeleteReview={handlePhotoReviewDeleted}
+          onReportClick={onReportClick}
         />
       )}
 
@@ -205,16 +216,24 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
           <div className={styles.review_container}>
             {reviews.map(review => {
               const isOwner = loginUserNo === review.userInfo.userNo;
+              const isReportable = !isOwner && loginUserNo;
+
+              // 프로필링크 연결
+              const handleProfileClick = () => {
+                navigate(`/mypage/${review.userInfo.userNo}`);
+              };
+
+
               return (
               <div key={review.reviewNo} className={styles.review_item}>
-                <img src={review.userInfo.serverName || sampleProfileImg} alt={review.userInfo.username} className={styles.profile_img} />
+                <img src={review.userInfo.serverName || sampleProfileImg} onClick={handleProfileClick} alt={review.userInfo.username} className={styles.profile_img} />
                 <div className={styles.profile_content}>
 
                   <div className={styles.profile}>
                     <div className={styles.user_info}>
                       {review.userInfo.sikBti && <SikBti sikBti={review.userInfo.sikBti} style={{fontSize: '11px' }} />}
                       <div id={styles.text_info}>
-                        <span className={styles.nickname}>{review.userInfo.username}</span>
+                        <span className={styles.nickname} onClick={handleProfileClick}>{review.userInfo.username}</span>
                         <div className={styles.stars}>
                           <img src={starIcon} alt="별점" />
                           <span>{review.stars.toFixed(1)}</span>
@@ -226,9 +245,20 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount })
                       {isOwner && (
                         <button className={styles.action_btn} onClick={()=>handleDeleteReview(review.reviewNo)}>삭제</button>
                       )}
-                      {!isOwner &&(
-                      <button className={styles.action_btn}>신고</button>
-                      )}
+                      {/* --- 신고 --- */}
+                        {isReportable && (
+                          <button
+                            className={styles.action_btn}
+                            onClick={() => onReportClick({
+                              author: review.userInfo.username,
+                              title: `리뷰 (${review.content.slice(0, 10)}...)`,
+                              category: 'REVIEW',
+                              refNo: review.reviewNo,
+                            })}
+                          >
+                            신고
+                          </button>
+                        )}
                     </div>
                   </div>
                   <p className={styles.rcp_content}>{review.content}</p>

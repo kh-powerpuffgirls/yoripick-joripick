@@ -1,13 +1,14 @@
-body {
+.main {
     display: flex;
     flex-direction: column;
     margin: 0;
+    width: 1000px;
 
 }
 
 .ebti_header {
     background-color: #FFF185;
-    height: 200px;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,7 +22,8 @@ body {
     align-items: center;
     justify-content: center;
     padding-top: 20px;
-    height: 1500px;
+    min-height: 1000px;
+    width: 1000px;
 }
 
 .Q {
@@ -34,28 +36,58 @@ body {
     height: 20px;
 }
 
-#now {
-    background-color: #92CA02;
-    height: 20px;
-    width: 20%;
-}
 
 .ebti_logo {
     border-radius: 10px;
     height: 90%;
+    
 }
 
 .card {
     border: 1px solid #464646;
     border-radius: 20px;
-    width: 1000px;
+    width: 600px;
     text-align: center;
     font-size: 24px;
     font-weight: 500;
-    padding: 40px;
+    padding: 20px;
     margin-bottom: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 
+}
+
+
+.indicatorWrapper {
+    position: relative;
+    grid-column: 1 / span 3;
+    height: 15px;
+}
+.indicator {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    overflow: hidden;
+    position: relative;    
+}
+
+.indicator_bar {
+    height: 100%;
+    background: #92CA02;
+    transition: width 0.3s ease;
+}
+
+#now {
+     position: absolute;
+    top: 50%;
+    right: 10px; /* 여백 조정 */
+    transform: translateY(-50%);
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    z-index: 2;
+    padding: 0 4px;
+    border-radius: 4px;
+    pointer-events: none; /* 클릭 방지 (선택사항) */
 }
