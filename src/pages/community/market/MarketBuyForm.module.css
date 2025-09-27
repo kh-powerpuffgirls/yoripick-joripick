@@ -36,18 +36,26 @@
 
 .authorInfo {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; 
     align-items: center;
-    gap: 0.5rem;
     color: #777;
     font-size: 0.9rem;
+    width: 100%; 
+    padding: 0 1rem;
 }
 
-.profileIcon {
-    width: 20px;
+.authorGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profileImage {
+    width: 20px; 
     height: 20px;
-    background-color: #ccc;
     border-radius: 50%;
+    object-fit: cover; 
+    flex-shrink: 0;
 }
 
 .date {
@@ -109,7 +117,7 @@
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 8px;
-    resize: vertical;
+    resize: none; 
     font-size: 1rem;
     color: #555;
     white-space: pre-wrap;

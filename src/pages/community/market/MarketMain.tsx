@@ -17,6 +17,7 @@ interface MarketMain {
   views: number;
   likes: number;
   createdAt: string;
+  sikBti: string;
 }
 
 const API_BASE = 'http://localhost:8081';
@@ -77,41 +78,59 @@ const MarketMain = () => {
   };
 
   const topPopularPosts = popularPosts.slice(0, 4);
-
   const sortedRecentPosts = [...recentPosts].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
-
   const paginatedRecentPosts = sortedRecentPosts.slice(
     (currentPage - 1) * postsPerPage,
     currentPage * postsPerPage
   );
-
   const totalPages = Math.ceil(sortedRecentPosts.length / postsPerPage);
 
-  const renderPostCard = (post: MarketMain) => (
-    <div
-      key={post.productId}
-      className={styles.postCard}
-      onClick={() => navigate(`/community/market/buyForm/${post.productId}`)}
-    >
-      <img src={`${API_BASE}${post.imageUrl}`} alt={post.title} className={styles.postImage} />
-      <div className={styles.postInfo}>
-        <h3 className={styles.postTitle}>{post.title}</h3>
-        <div className={styles.postAuthor}>
+  const formatDateToShort = (isoString: string) => {
+    const date = new Date(isoString);
+    const year = String(date.getFullYear()).slice(-2);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}.${month}.${day}`;
+  };
+
+  const renderPostCard = (post: MarketMain & { createdAt: string }) => (
+  <div
+    key={post.productId}
+    className={styles.postCard}
+    onClick={() => navigate(`/community/market/buyForm/${post.productId}`)}
+  >
+    <img
+      src={`${API_BASE}${post.imageUrl}`}
+      alt={post.title}
+      className={styles.postImage}
+    />
+
+    <div className={styles.postInfo}>
+      <h3 className={styles.postTitle}>{post.title}</h3>
+
+      <div className={styles.authorContainer}>
+        <div className={styles.profileRow}>
           <img
             src={`${API_BASE}${post.authorProfileUrl}`}
-            alt="profile"
+            alt={`${post.author}의 프로필`}
             className={styles.profileIcon}
           />
-          <span>{post.author}</span>
+          <div className={styles.profileText}>
+            <span className={styles.authorBti}>{post.sikBti}</span>
+            <span className={styles.authorNickname}>{post.author}</span>
+          </div>
         </div>
-        <div className={styles.postStats}>
-          <span>👁️ {post.views}</span>
+
+        <div className={styles.dateTimeViews}>
+          <span className={styles.postDate}>{formatDateToShort(post.createdAt)}</span>
+          <span className={styles.postViews}>👁️ {post.views}</span>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 
   if (isLoading) {
     return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
@@ -142,11 +161,9 @@ const MarketMain = () => {
             <h2 className={styles.sectionTitle}>인기 거래 &gt;</h2>
           </div>
           <div className={styles.postGrid}>
-            {topPopularPosts.length > 0 ? (
-              topPopularPosts.map(renderPostCard)
-            ) : (
-              <p className={styles.noPosts}>인기 거래 게시글이 없습니다.</p>
-            )}
+            {topPopularPosts.length > 0
+              ? topPopularPosts.map(renderPostCard)
+              : <p className={styles.noPosts}>인기 거래 게시글이 없습니다.</p>}
           </div>
         </div>
 
@@ -155,16 +172,17 @@ const MarketMain = () => {
             <h2 className={styles.sectionTitle}>최신 거래 &gt;</h2>
           </div>
           <div className={styles.postGrid}>
-            {paginatedRecentPosts.length > 0 ? (
-              paginatedRecentPosts.map(renderPostCard)
-            ) : (
-              <p className={styles.noPosts}>최신 거래 게시글이 없습니다.</p>
-            )}
+            {paginatedRecentPosts.length > 0
+              ? paginatedRecentPosts.map(renderPostCard)
+              : <p className={styles.noPosts}>최신 거래 게시글이 없습니다.</p>}
           </div>
 
           {totalPages > 1 && (
             <div className={styles.pagination}>
-              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
                 &lt;
               </button>
               {Array.from({ length: totalPages }, (_, i) => (

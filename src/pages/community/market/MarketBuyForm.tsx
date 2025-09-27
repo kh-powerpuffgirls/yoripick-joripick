@@ -339,26 +339,28 @@ const MarketBuyForm = () => {
                 <div className={styles.formContainer}>
                     <form onSubmit={handleSubmit}>
                         <div className={styles.formHeader}>
-    <input
-        type="text"
-        className={styles.titleInput}
-        value={item.title}
-        readOnly
-    />
-    <div className={styles.authorInfo}>
-        {item.authorProfileUrl ? (
-            <img src={`${API_BASE}${item.authorProfileUrl}`} alt={`${item.author}의 프로필`} className={styles.profileImage} />
-        ) : (
-            <span className={styles.profileIcon}></span>
-        )}
-        <span>{item.author}</span>
-        <span className={styles.date}>{new Date().toLocaleDateString()}</span>
+        <input
+            type="text"
+            className={styles.titleInput}
+            value={item.title}
+            readOnly
+        />
+        <div className={styles.authorInfo}>
+            <div className={styles.authorGroup}> 
+                {item.authorProfileUrl ? (
+                    <img src={`${API_BASE}${item.authorProfileUrl}`} alt={`${item.author}의 프로필`} className={styles.profileImage} />
+                ) : (
+                    <span className={styles.profileIcon}></span>
+                )}
+                <span>{item.author}</span>
+            </div>
+            <span className={styles.date}>{new Date().toLocaleDateString()}</span>
+        </div>
     </div>
-</div>
 
                         <div className={styles.imageUploadSection}>
                             <div className={styles.imageBox}>
-                                <img src={item.imageUrl} alt={item.name} className={styles.imagePreview} />
+                                <img src={`${API_BASE}${item.imageUrl}`} alt={item.name} className={styles.imagePreview} />
                             </div>
                         </div>
 
@@ -389,7 +391,7 @@ const MarketBuyForm = () => {
                             </div>
                             <div className={styles.itemInfo}>
                                 <div className={styles.itemImageContainer}>
-                                    <img src={item.imageUrl} alt={item.name} className={styles.itemImagePreview} />
+                                    <img src={`${API_BASE}${item.imageUrl}`} alt={item.name} className={styles.itemImagePreview} />
                                 </div>
                                 <div className={styles.itemDetails}>
                                     <div className={styles.detailRow}>

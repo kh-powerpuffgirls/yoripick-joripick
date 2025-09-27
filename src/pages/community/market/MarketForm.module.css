@@ -36,11 +36,12 @@
 
 .authorInfo {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
     color: #777;
     font-size: 0.9rem;
+    width: 100%; 
+    padding: 0 1rem;
 }
 
 .profileIcon {
@@ -164,7 +165,7 @@
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 8px;
-    resize: vertical;
+    resize: none;
     font-size: 1rem;
     color: #555;
 }
@@ -275,4 +276,14 @@
 
 .deleteButton:hover {
     background-color: #d32f2f;
+}
+
+.clearButton {
+    margin-top: 3px;
+    padding: 0.3rem 0.7rem;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
 }
