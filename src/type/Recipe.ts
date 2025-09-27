@@ -47,6 +47,7 @@ export interface CookingStep {
 export interface Review {
   reviewNo: number;
   stars: number;
+  rcpNo : number;
   content: string;
   serverName?: string; // 리뷰 이미지 경로
   reviewDate: string;
@@ -181,6 +182,7 @@ export interface RecipeDetail {
   updatedAt :string;
   views: number;
   tag?: string;
+  approval : string;
   
   isOfficial: boolean;
   rcpMethod: string;

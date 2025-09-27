@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './FreeMain.module.css';
-import CommunityHeader from '../CommunityHeader';
+import CommunityHeader from '../Header/CommunityHeader';
 import cx from "classnames";
 import ingDefaultStyle from "../../../assets/css/ingDefault.module.css";
 

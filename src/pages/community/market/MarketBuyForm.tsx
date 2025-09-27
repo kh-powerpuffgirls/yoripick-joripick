@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './MarketBuyForm.module.css';
-import CommunityHeader from '../CommunityHeader';
+import CommunityHeader from '../Header/CommunityHeader';
 import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import styles from './DetailModal.module.css';
 import type { PhotoReviewModalProps } from '../../../../type/Recipe';
+import type { ReportTargetInfo } from '../RecipeDetail'; //신고 
 import { api } from '../../../../api/authApi';
+import { useNavigate } from 'react-router-dom';
+
 
 // 아이콘 import
 import closeIcon from '../../../../assets/sample/X_btn.png';
@@ -14,13 +17,13 @@ interface ExtendedPhotoReviewModalProps extends PhotoReviewModalProps {
   rcpNo: number;
   loginUserNo?: number;
   onDeleteReview: (reviewNo: number) => void;
+  onReportClick: (targetInfo: ReportTargetInfo) => void; //신고 
 }
 
-const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReviews, initialIndex, onClose, rcpNo, loginUserNo, onDeleteReview }) => {
-  // 현재 보여줄 리뷰의 인덱스(순번)를 관리하는 state
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReviews, initialIndex, onClose, rcpNo, loginUserNo, onDeleteReview, onReportClick }) => {
   
-  // 현재 인덱스에 해당하는 리뷰 데이터
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const navigate = useNavigate();
   const currentReview = photoReviews && photoReviews[currentIndex];
 
   // 이전/다음 슬라이드로 변경하는 함수
@@ -64,7 +67,24 @@ const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReview
     }
   };
 
+  // 신고
+  const handleReport = () => {
+    if (!currentReview) return;
+    const targetInfo: ReportTargetInfo = {
+      author: currentReview.userInfo.username,
+      title: `리뷰 (${currentReview.content.slice(0, 10)}...)`,
+      category: 'REVIEW',
+      refNo: currentReview.reviewNo,
+    };
+    onReportClick(targetInfo);
+  };
+
   const isOwner = loginUserNo === currentReview.userInfo.userNo;
+
+  //프로필 연결
+  const handleProfileClick = () => {
+    navigate(`/mypage/${currentReview.userInfo.userNo}`);
+  };
 
   return (
     <div className={styles.modal_overlay} onClick={onClose}>
@@ -85,10 +105,10 @@ const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReview
             </div>
             <div className={styles.profile_container}>
                 <div className={styles.profile}>
-                    <img src={profileImageUrl} alt="프로필"/>
+                    <img src={profileImageUrl} onClick={handleProfileClick} alt="프로필"/>
                     <div className={styles.profile_name}>
                         {currentReview.userInfo.sikBti && <SikBti sikBti={currentReview.userInfo.sikBti} />}
-                        <span className={styles.nickname}>{currentReview.userInfo.username}</span>
+                        <span className={styles.nickname} onClick={handleProfileClick}>{currentReview.userInfo.username}</span>
                     </div>
                     <div className={styles.stars}>
                         <img src={starIcon} alt="별점"/>
@@ -100,11 +120,11 @@ const PhotoReviewModal: React.FC<ExtendedPhotoReviewModalProps> = ({ photoReview
                   <button className={styles.delete} onClick={handleDelete}>삭제</button>
                 )}
                 {!isOwner && (
-                  <button className={styles.report}>
-                      <img src={reportIcon} alt="신고"/>
-                      <span>신고</span>
-                  </button>
-                )}
+                <button className={styles.report} onClick={handleReport}>
+                  <img src={reportIcon} alt="신고"/>
+                  <span>신고</span>
+                </button>
+              )}
             </div>
             <div className={styles.content_photoreview}>
                 <span>{currentReview.content}</span>
