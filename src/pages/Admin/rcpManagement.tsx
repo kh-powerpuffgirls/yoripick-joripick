@@ -3,7 +3,6 @@ import { getRecipes, type PageInfo } from "../../api/adminApi";
 import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
-import type { Recipe } from "../../type/Recipe";
 
 interface RcpInfo {
     rcpNo: number;

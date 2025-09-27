@@ -163,6 +163,9 @@ export const AdminDashboard = () => {
 
         const response = await getParentRep(c.reportNo);
         console.log(response);
+
+        if (response.category === 'Y') ref += ``;
+        if (response.category === 'N')
         
         if (c.category === 'REPLY') ref += "";
         if (c.category === 'REVIEW') ref += "";
