@@ -342,7 +342,7 @@ const ChallengeDetail = () => {
                   src={createImageUrl(finalChildImageUrl)}
                   alt="프로필"
                   className={styles.profileImage}
-                  onClick={() => navigate(`/mypage/${child.userNo}`)}
+                  onClick={() => navigate(`/users/${child.userNo}`)}
                 />
               </div>
 
@@ -352,7 +352,7 @@ const ChallengeDetail = () => {
                 <div className={styles.commentHeader}>
                   <span
                     className={styles.commentAuthor}
-                    onClick={() => navigate(`/mypage/${child.userNo}`)}
+                    onClick={() => navigate(`/users/${child.userNo}`)}
                   >
                     {child.username}
                     {child.sik_bti && (
@@ -448,7 +448,7 @@ const ChallengeDetail = () => {
                 src={createImageUrl(finalParentImageUrl)}
                 alt="프로필"
                 className={styles.profileImage}
-                onClick={() => navigate(`/mypage/${parent.userNo}`)}
+                onClick={() => navigate(`/users/${parent.userNo}`)}
               />
             </div>
 
@@ -456,7 +456,7 @@ const ChallengeDetail = () => {
               <div className={styles.commentHeader}>
                 <span
                   className={styles.commentAuthor}
-                  onClick={() => navigate(`/mypage/${parent.userNo}`)}
+                  onClick={() => navigate(`/users/${parent.userNo}`)}
                 >
                   {parent.username}
                   {parent.sik_bti && (
@@ -565,7 +565,7 @@ const ChallengeDetail = () => {
           <div className={styles.postMeta}>
             <div className={styles.metaLeft}>
               {post.profileImageServerName ? (
-                <Link to={`/mypage/${post.userNo}`}>
+                <Link to={`/users/${post.userNo}`}>
                   <img 
                     src={createImageUrl(post.profileImageServerName)}
                     alt="프로필" 

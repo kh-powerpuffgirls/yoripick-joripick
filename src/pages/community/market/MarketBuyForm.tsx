@@ -16,6 +16,7 @@ const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({
     baseURL: API_BASE,
+    withCredentials: true,
 });
 
 api.interceptors.request.use(

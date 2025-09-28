@@ -304,6 +304,7 @@
     border-radius: 5px;
     margin-right: 10px;
     font-size: 14px;
+    resize: none;
 }
 
 .editingButton {
