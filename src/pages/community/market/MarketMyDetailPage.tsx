@@ -9,6 +9,8 @@ import ReportModal from '../../../components/Report/ReportModal';
 import { store } from '../../../store/store';
 import CommunityHeader from '../Header/CommunityHeader';
 
+const API_BASE = 'http://localhost:8081';
+
 const getAccessToken = () => {
   const storeToken = store.getState().auth.accessToken;
   if (storeToken) return storeToken;
@@ -17,11 +19,11 @@ const getAccessToken = () => {
 };
 
 const publicApi = axios.create({
-  baseURL: 'http://localhost:8081',
+  baseURL: API_BASE,
 });
  
 const api = axios.create({
-  baseURL: 'http://localhost:8081',
+  baseURL: API_BASE,
   withCredentials: true,
 });
 api.interceptors.request.use(
@@ -244,8 +246,11 @@ const MarketMyDetailPage = () => {
             </div>
             <div className={styles.itemInfo}>
               <div className={styles.itemImageContainer}>
-                <img src={sellData.imageUrl} alt={sellData.title} className={styles.itemImagePreview} />
-              </div>
+              <img
+                  src={`${API_BASE}${sellData.imageUrl}`}
+                  alt={sellData.title}
+                  className={styles.itemImagePreview}
+                />              </div>
               <div className={styles.itemDetails}>
                 <div className={styles.detailRow}>
                   <span className={styles.detailLabel}>상품명</span>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, type KeyboardEvent } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import axios from 'axios';
@@ -455,23 +455,31 @@ const handleLikeToggle = async () => {
         <div className={styles.postHeader}>
           <h1 className={styles.title}>{post.title}</h1>
           <div className={styles.postMeta}>
-              {post.profileImageServerName ? (
-              <img 
-              src={createImageUrl(post.profileImageServerName)}
-                                alt="프로필" 
-              className={styles.postProfileImage} 
-              onClick={() => navigate(`/mypage/${post.userNo}`)} 
-                />
-            ) : (
-                <div className={styles.defaultProfile} onClick={() => navigate(`/mypage/${post.userNo}`)}></div>
-            )}
-            <span onClick={() => navigate(`/mypage/${post.userNo}`)} style={{ cursor: 'pointer', fontWeight: 'bold' }}>
-              {post.username} {post.sik_bti && `(${post.sik_bti})`}
-            </span>
-            <span>{new Date(post.createdAt).toLocaleString()}</span> | <span>조회수 {post.views}</span>
-          </div>
-        </div>
-
+            <div className={styles.metaLeft}>
+                {post.profileImageServerName ? (
+                  <Link to={`/mypage/${post.userNo}`}>
+                    <img 
+                      src={createImageUrl(post.profileImageServerName)}
+                      alt="프로필" 
+                      className={styles.postProfileImage} 
+                    />
+                  </Link>
+                ) : (
+                  <div className={styles.defaultProfile}>
+                    {post.username[0]}
+                  </div>
+                )}
+                <span className={styles.username}>
+                  {post.username}{post.sik_bti && ` (${post.sik_bti})`}
+                </span>
+              </div>
+              <div className={styles.metaRight}>
+                <span>{new Date(post.createdAt).toLocaleString()}</span>
+                <span>조회수: {post.views}</span>
+                <span>좋아요: {likesCount}</span>
+              </div>
+            </div>
+          </div>  
         <div className={styles.postContent}>
           <div className={styles.mediaContainer}>
             <button className={styles.navButton} onClick={handlePrevPost} disabled={!prevChallengeNo}>{'<'}</button>
@@ -489,8 +497,9 @@ const handleLikeToggle = async () => {
 
         <div className={styles.actions}>
           <div>
-            <button className={styles.likeButton} onClick={handleLikeToggle}></button>
-    {isLiked ? '❤️' : '🤍'}
+          <button className={styles.likeButton} onClick={handleLikeToggle}>
+            {isLiked ? '❤️' : '🤍'}
+          </button>
           </div>
           <div className={styles.editDeleteButtons}>
             {user?.userNo === post.userNo ? (

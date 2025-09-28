@@ -181,50 +181,19 @@ const ChallengeForm = () => {
    <>
    <CommunityHeader />
     <div className={styles.container}>
-      <h1>{isEdit ? "챌린지 수정" : "챌린지 등록"}</h1>
 
       {message && <div className={styles.messageBox}>{message}</div>}
       {error && <div className={styles.errorBox}>{error}</div>}
 
       <form onSubmit={handleSubmit}>
         <div className={styles.inputGroup}>
-          <label className={styles.label}>챌린지 타이틀</label>
+          <label className={styles.label}>참여하는 챌린지 ({isEdit ? "수정" : "등록"})</label>
           <input
             type="text"
             value={title}
             readOnly
             className={styles.titleDisplay}
           />
-        </div>
-
-        <div className={styles.inputGroup}>
-          <label className={styles.label}>영상 URL (선택)</label>
-          <input
-            type="text"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            className={styles.urlInput}
-          />
-        </div>
-
-        <div className={styles.inputGroup}>
-          <label className={styles.label}>이미지 업로드</label>
-          <div className={styles.fileInputBox}>
-            <label className={styles.fileButton}>
-              선택
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className={styles.hiddenInput}
-              />
-            </label>
-            <span className={styles.fileName}>
-              {selectedImage?.name || originalServerName || "선택된 파일 없음"}
-            </span>
-          </div>
-        </div>
-
         <div className={styles.previewBox}>
           {previewImage ? (
             <>
@@ -242,13 +211,50 @@ const ChallengeForm = () => {
               </button>
             </>
           ) : (
-            "이미지를 선택하세요"
+            "미리보기"
           )}
+        </div>
+
+        </div>
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>이미지 업로드</label>
+          <div>
+          <div className={styles.fileInputBox}>
+            <p className={styles.notice}>
+              운영정책에 어긋나는 이미지 등록 시 이용이 제한될 수 있습니다.
+            </p> 
+            </div>
+            <label className={styles.fileButton}>
+              선택
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className={styles.hiddenInput}
+              />
+            </label>
+            <span className={styles.fileName}>
+              {selectedImage?.name || originalServerName || "선택된 파일 없음"}
+            </span>
+          </div>
+        </div>
+
+          <div className={styles.inputGroup}>
+          <label className={styles.label}>영상 URL (선택)</label>
+            <p className={styles.notice}>
+            운영정책에 어긋나는 URL 등록 시 이용이 제한될 수 있습니다.            </p> 
+          <input
+            type="text"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            className={styles.urlInput}
+            placeholder="올바른 URL을 입력해주세요"
+          />
         </div>
 
         <div className={styles.buttonGroup}>
           <button type="submit" className={styles.submitButton}>
-            {isEdit ? "수정 완료" : "등록 완료"}
+            {isEdit ? "수정" : "등록"}
           </button>
           <button
             type="button"

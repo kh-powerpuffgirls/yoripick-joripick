@@ -6,19 +6,17 @@ import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
 import styles from './MarketForm.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
-import SellerModal from './SellerModal'; // SellerModal 컴포넌트 import
+import SellerModal from './SellerModal';
+import CommunityModal from '../CommunityModal';
 
-// Redux 스토어에서 accessToken 가져오기
 const getAccessToken = () => store.getState().auth.accessToken;
 
-// API 기본 URL 및 axios 인스턴스 생성
 const API_BASE = 'http://localhost:8081';
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
 });
 
-// 요청 인터셉터: 토큰 자동 부착
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -30,7 +28,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// 응답 인터셉터: 401 에러 시 콘솔 출력 (리디렉션은 하지 않음)
 api.interceptors.response.use(
   (response) => response,
   async (err: AxiosError) => {
@@ -78,28 +75,23 @@ const MarketForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // 로그인 여부 체크 및 리디렉션 (새로고침 시 이동 방지)
   useEffect(() => {
-    if (!isLoggedIn) {
-      setError('게시글 등록을 위해 로그인해야 합니다.');
-      setTimeout(() => navigate('/login'), 2000);
-    }
-  }, [isLoggedIn, navigate]);
+    const checkAuthAndRedirect = setTimeout(() => {
+      if (!user) {
+        setError('게시글 등록을 위해 로그인해야 합니다.');
+        navigate('/login');
+      }
+    }, 100);
+    return () => clearTimeout(checkAuthAndRedirect);
+  }, [user, navigate]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const target = e.target as HTMLInputElement;
-
     if (type === 'checkbox') {
-      setFormData({
-        ...formData,
-        [name]: target.checked,
-      });
+      setFormData({ ...formData, [name]: target.checked });
     } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+      setFormData({ ...formData, [name]: value });
     }
   };
 
@@ -116,7 +108,6 @@ const MarketForm = () => {
     setImagePreview(null);
   };
 
-  // 1. 유효성 검사 및 모달 띄우기
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setMessage(null);
@@ -149,7 +140,6 @@ const MarketForm = () => {
     setShowModal(true);
   };
 
-  // 2. 모달 '확인' 클릭 시 최종 제출
   const handleConfirmSubmit = async () => {
     try {
       const data = new FormData();
@@ -169,13 +159,9 @@ const MarketForm = () => {
       };
 
       data.append('marketDto', new Blob([JSON.stringify(marketDto)], { type: 'application/json' }));
-      if (imageFile) {
-        data.append('image', imageFile);
-      }
+      if (imageFile) data.append('image', imageFile);
 
-      await api.post('/community/market', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await api.post('/community/market', data, { headers: { 'Content-Type': 'multipart/form-data' } });
 
       setMessage('판매 글이 성공적으로 등록되었습니다.');
       setShowModal(false);
@@ -197,7 +183,7 @@ const MarketForm = () => {
       <div className={styles.container}>
         <div className={styles.formContainer}>
           <form onSubmit={handleSubmit}>
-            {/* 폼 헤더 */}
+            {/* 제목 및 작성자 */}
             <div className={styles.formHeader}>
               <input
                 type="text"
@@ -209,17 +195,15 @@ const MarketForm = () => {
                 required
               />
               <div className={styles.authorInfo}>
-                <div className={styles.profileIcon}></div>
                 <span>{user?.username || '로그인된 사용자'}</span>
                 <span className={styles.date}>{new Date().toLocaleDateString()}</span>
               </div>
             </div>
 
-            {/* 메시지 출력 */}
             {message && <div className={styles.messageBox}>{message}</div>}
             {error && <div className={styles.errorBox}>{error}</div>}
 
-            {/* 이미지 업로드 영역 */}
+            {/* 이미지 업로드 */}
             <div className={styles.imageUploadSection}>
               <div className={styles.imageBox}>
                 {imagePreview ? (
@@ -231,9 +215,7 @@ const MarketForm = () => {
               <div className={styles.uploadText}>
                 운영정책에 어긋나는 이미지 등록 시 이용이 제한될 수 있습니다.
               </div>
-              <label htmlFor="image-upload" className={styles.imageUploadBtn}>
-                이미지 선택
-              </label>
+              <label htmlFor="image-upload" className={styles.imageUploadBtn}>이미지 선택 (필수)</label>
               <input
                 id="image-upload"
                 type="file"
@@ -243,11 +225,7 @@ const MarketForm = () => {
               />
               <span className={styles.noFileText}>{fileName}</span>
               {imagePreview && (
-                <button
-                  type="button"
-                  onClick={handleClearImage}
-                  className={styles.clearButton}
-                >
+                <button type="button" onClick={handleClearImage} className={styles.clearButton}>
                   이미지 삭제
                 </button>
               )}
@@ -298,7 +276,7 @@ const MarketForm = () => {
                 <span className={styles.sectionTitle}>상세 설명</span>
               </div>
               <textarea
-                placeholder="상세 설명을 입력해주세요."
+                placeholder="상세 설명을 입력해주세요. (최대 300자)"
                 className={styles.descriptionTextarea}
                 name="detail"
                 value={formData.detail}
@@ -315,11 +293,7 @@ const MarketForm = () => {
               <div className={styles.itemInfo}>
                 <div className={styles.itemImagePlaceholder}>
                   {imagePreview ? (
-                    <img
-                      src={imagePreview}
-                      alt="상품 이미지 미리보기"
-                      className={styles.itemImagePreview}
-                    />
+                    <img src={imagePreview} alt="상품 이미지 미리보기" className={styles.itemImagePreview} />
                   ) : (
                     <span>이미지</span>
                   )}
@@ -370,7 +344,7 @@ const MarketForm = () => {
               </div>
             </div>
 
-            {/* 문의 전화 */}
+            {/* 문의전화 */}
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>문의전화 (판매자)</span>
@@ -405,20 +379,28 @@ const MarketForm = () => {
             {/* 버튼 그룹 */}
             <div className={styles.buttonGroup}>
               <button type="submit" className={styles.submitButton}>등록</button>
-              <button type="button" className={styles.cancelButton} onClick={handleCancel}>
-                취소
-              </button>
+              <button type="button" className={styles.cancelButton} onClick={handleCancel}>취소</button>
             </div>
           </form>
         </div>
       </div>
 
-      {/* SellerModal */}
+      {/* 등록 전 확인 모달 */}
       <SellerModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={handleConfirmSubmit}
       />
+
+      {/* 등록 성공/실패 모달 */}
+      {(message || error) && (
+        <CommunityModal
+          message={message || error || ''}
+          onClose={() => { setMessage(null); setError(null); }}
+          onConfirm={() => { setMessage(null); setError(null); }}
+          showCancel={true}
+        />
+      )}
     </>
   );
 };

@@ -77,7 +77,7 @@ const MarketMain = () => {
     }
   };
 
-  const topPopularPosts = popularPosts.slice(0, 4);
+  const topPopularPosts = popularPosts.slice(0, 3);
   const sortedRecentPosts = [...recentPosts].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
@@ -160,7 +160,7 @@ const MarketMain = () => {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>인기 거래 &gt;</h2>
           </div>
-          <div className={styles.postGrid}>
+          <div className={`${styles.popularPostGrid}`}>
             {topPopularPosts.length > 0
               ? topPopularPosts.map(renderPostCard)
               : <p className={styles.noPosts}>인기 거래 게시글이 없습니다.</p>}
@@ -171,7 +171,7 @@ const MarketMain = () => {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>최신 거래 &gt;</h2>
           </div>
-          <div className={styles.postGrid}>
+          <div className={`${styles.recentPostGrid}`}>
             {paginatedRecentPosts.length > 0
               ? paginatedRecentPosts.map(renderPostCard)
               : <p className={styles.noPosts}>최신 거래 게시글이 없습니다.</p>}
@@ -205,11 +205,11 @@ const MarketMain = () => {
         </div>
 
         <div className={styles.actionButtons}>
-          <button className={styles.registerButton} onClick={handleRegisterClick}>
-            등록하기
-          </button>
           <button className={styles.myListButton} onClick={handleMyListClick}>
             내 판매 목록
+          </button>
+          <button className={styles.registerButton} onClick={handleRegisterClick}>
+            등록하기
           </button>
         </div>
       </div>

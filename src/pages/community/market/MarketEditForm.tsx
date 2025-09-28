@@ -369,7 +369,7 @@ const MarketEditForm = () => {
                 className={styles.imageUploadBtn}
                 style={!isAuthor ? { pointerEvents: 'none', opacity: 0.5 } : {}}
               >
-                이미지 선택 (이미지 첨부 필수)
+                이미지 선택 (필수)
               </label>
               <input
                 id="image-upload"
@@ -433,7 +433,7 @@ const MarketEditForm = () => {
                 <span className={styles.sectionTitle}>상세 설명</span>
               </div>
               <textarea
-                placeholder="상세 설명을 입력해주세요."
+                placeholder="상세 설명을 입력해주세요. (최대 300자)"
                 className={styles.descriptionTextarea}
                 name="detail"
                 value={formData.detail}

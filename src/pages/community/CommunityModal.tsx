@@ -1,14 +1,14 @@
-import { type FC } from 'react';
+// CommunityModal.tsx
 import styles from './CommunityModal.module.css';
 
 interface CommunityModalProps {
-  message: string;
+  message?: string;
   onConfirm?: () => void;
   onClose: () => void;
   showCancel?: boolean;
 }
 
-const CommunityModal: FC<CommunityModalProps> = ({ message, onConfirm, onClose, showCancel = false }) => {
+const CommunityModal = ({ message, onConfirm, onClose, showCancel = false }: CommunityModalProps) => {
   const handleConfirm = () => {
     if (onConfirm) {
       onConfirm();
@@ -20,10 +20,12 @@ const CommunityModal: FC<CommunityModalProps> = ({ message, onConfirm, onClose, 
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
-        <p className={styles.message}>{message}</p>
+        <p className={styles.message}>{message || ''}</p>
         <div className={styles.actions}>
           <button className={styles.confirmBtn} onClick={handleConfirm}>확인</button>
-          {showCancel && <button className={styles.cancelBtn} onClick={onClose}>취소</button>}
+          {showCancel && (
+            <button className={styles.cancelBtn} onClick={onClose}>취소</button>
+          )}
         </div>
       </div>
     </div>

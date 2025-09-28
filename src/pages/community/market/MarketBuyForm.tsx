@@ -521,7 +521,7 @@ const MarketBuyForm = () => {
                             </>
                             ) : (
                             <>
-                                <button type="button" className={styles.reportButton} onClick={handleReportClick}>신고하기</button>
+                                <button type="button" className={styles.reportButton} onClick={handleReportClick}>신고</button>
                                 <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>취소</button> 
                                 <button 
                                 type="submit" 
@@ -530,7 +530,7 @@ const MarketBuyForm = () => {
                                 >
                                     {item.quantity === 0 
                                         ? '재고 없음'
-                                        : '구매 신청'}
+                                        : '구매 하기'}
                                 </button>
                             </>
                             )}

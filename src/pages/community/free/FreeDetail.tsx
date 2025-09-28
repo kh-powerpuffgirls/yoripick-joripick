@@ -155,10 +155,6 @@ const FreeDetail = () => {
     fetchPostData();
   }, [boardNo, user]);
 
-  useEffect(() => {
-    commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [replies]);
-
   const handleLikeToggle = async () => {
     if (!user?.userNo) {
       openModal({ message: '로그인 후 좋아요 가능합니다.', showCancel: false });
@@ -199,6 +195,7 @@ const FreeDetail = () => {
       await api.post(`/community/free/replies`, { content: newComment, refNo: Number(boardNo), category: 'BOARD' });
       setNewComment('');
       await fetchReplies();
+      commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     } catch {
       openModal({ message: '댓글 작성 실패', showCancel: false });
     }
@@ -585,29 +582,33 @@ const renderReplies = () => {
           <div className={styles.postHeader}>
             {post.subheading && <p className={styles.subtitle}>[{post.subheading}]</p>}
             <h1 className={styles.title}>{post.title}</h1>
-            <div className={styles.postMeta}> 
-              {postProfileUrl ? (
-                <Link to={`/mypage/${post.userNo}`}>
-                  <img 
-                    src={postProfileUrl}
-                    alt="프로필" 
-                    className={styles.postProfileImage} 
-                  />
-                </Link>
-              ) : (
-                <div className={styles.defaultProfile}>
-                  {post.username[0]}
+              <div className={styles.postMeta}>
+                <div className={styles.metaLeft}>
+                  {postProfileUrl ? (
+                    <Link to={`/mypage/${post.userNo}`}>
+                      <img 
+                        src={postProfileUrl}
+                        alt="프로필" 
+                        className={styles.postProfileImage} 
+                      />
+                    </Link>
+                  ) : (
+                    <div className={styles.defaultProfile}>
+                      {post.username[0]}
+                    </div>
+                  )}
+                  <span className={styles.username}>
+                    {post.username}
+                    {post.sik_bti && ` (${post.sik_bti})`}
+                  </span>
                 </div>
-              )}
-              <span>
-                {post.username}
-                {post.sik_bti && ` (${post.sik_bti})`}
-              </span>
-              <span>{new Date(post.createdDate).toLocaleString()}</span>
-              <span>조회수: {post.views}</span>
-              <span>좋아요: {likesCount}</span>
-            </div>
-          </div>
+                <div className={styles.metaRight}>
+                  <span>{new Date(post.createdDate).toLocaleString()}</span>
+                  <span>조회수: {post.views}</span>
+                  <span>좋아요: {likesCount}</span>
+                </div>
+              </div>
+              </div>
           {validImageUrl && <img src={validImageUrl} alt="게시글 첨부 이미지" className={styles.postImage} />}
           <p className={styles.content}>{post.content}</p>
         </div>
@@ -652,8 +653,8 @@ const renderReplies = () => {
               <textarea 
                   value={newComment} 
                   onChange={e => setNewComment(e.target.value)} 
-                  placeholder="댓글 입력..." 
-                  onKeyDown={handleNewCommentKeyDown} 
+                  placeholder=" 댓글 입력..." 
+                  onKeyDown={handleNewCommentKeyDown}
                   className={styles.commentInput} 
               />
               <button onClick={handleAddComment} className={styles.submitBtn}>댓글 등록</button>

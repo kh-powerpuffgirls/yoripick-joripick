@@ -32,26 +32,27 @@
   justify-content: center;
   width: 700px;
   margin: 0 auto;
-  padding-bottom: 1.5rem;
+  padding-bottom: 10px;
+  border: none;
 }
 
 .register-button {
-  background-color: #FDBB1B;
-  width: 210px;
-  height: 47px;
-  color: black;
-  border: 2px solid black;
-  padding: 0.5rem 1.5rem;
-  font-weight: 500;
-  font-size: 17px;
-  border-radius: 17px;
-  text-align: center;
+  background-color: #fdbb1b;
+  color: white;
+  border: none;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
+  margin: 0px 30px 30px 30px;
+  float: right;
+  width: 200px;
   transition: background-color 0.2s ease-in-out;
 }
 
 .register-button:hover {
-  background-color: #92ca02;
+  background-color: #ff9800;
   color: white;
 }
 
@@ -121,8 +122,13 @@
   flex-wrap: wrap;
 }
 
+.post-author {
+  font-weight: 500;
+}
+
 .post-author, .post-likes, .post-views, .post-date {
   white-space: nowrap;
+  color: #686868;
 }
 
 .post-image-container {
@@ -178,7 +184,7 @@
 }
 
 .commentSubmitButton:hover {
-  background-color: #FDBB1B;
+  background-color: #ff9800;
 }
 
 .post-image-container {
@@ -209,43 +215,51 @@
 }
 
 .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  gap: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 5px;
+    margin-bottom: 25px;
 }
 
 .pagination button {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #333;
-  transition: all 0.3s ease;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.3s ease;
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #f0f0f0;
-  border-color: #aaa;
+    background-color: #f0f0f0;
+    border-color: #aaa;
 }
 
 .pagination button:disabled {
-  color: #ccc;
-  cursor: not-allowed;
-  background-color: #f7f7f7;
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: #f7f7f7;
 }
 
 .pagination .active {
-  background-color: #ff9800;
-  color: #fff;
-  border-color: #ff9800;
-  font-weight: bold;
+    background-color: #ff9800;
+    color: #fff;
+    border-color: #ff9800;
+    font-weight: bold;
 }
 
 .pagination .active:hover {
-  background-color: #e68a00;
-  border-color: #e68a00;
+    background-color: #e68a00;
+    border-color: #e68a00;
+}
+
+.loading, .error, .noPosts {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2rem;
+    color: #555;
 }

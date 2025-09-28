@@ -5,6 +5,7 @@ import { store } from '../../../store/store';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../../store/store';
+import CommunityModal from '../CommunityModal';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -23,27 +24,9 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-interface ClassData {
-  roomNo: number;
-  className: string;
-  classInfo: string;
-  passcode?: string;
-  serverName?: string;
-}
-
-interface Member {
-  userNo: number;
-  username: string;
-  serverName?: string;
-  notificationStatus: 'Y' | 'N';
-}
-
-interface CkSettingsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  classId: number;
-  onUpdate: () => void;
-}
+interface ClassData { roomNo: number; className: string; classInfo: string; passcode?: string; serverName?: string; }
+interface Member { userNo: number; username: string; serverName?: string; notificationStatus: 'Y' | 'N'; }
+interface CkSettingsModalProps { isOpen: boolean; onClose: () => void; classId: number; onUpdate: () => void; }
 
 const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModalProps) => {
   const navigate = useNavigate();
@@ -58,6 +41,11 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
   const [file, setFile] = useState<File | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [notificationEnabled, setNotificationEnabled] = useState(true);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalCallback, setModalCallback] = useState<(() => void) | undefined>(undefined);
+  const [modalShowCancel, setModalShowCancel] = useState(false);
 
   useEffect(() => {
     if (isOpen && classId && user?.userNo) {
@@ -108,36 +96,46 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
     formData.append("roomNo", String(classId));
     formData.append("className", name);
     formData.append("classInfo", description);
-
-    if (isCodeEnabled) {
-      formData.append("passcode", joinCode || "");
-    } else {
-      formData.append("passcode", ""); 
-    }
+    formData.append("passcode", isCodeEnabled ? joinCode || '' : '');
     if (file) formData.append("file", file);
+
     try {
       await api.put(`/community/ckclass`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("클래스 수정이 완료되었습니다.");
-      onUpdate();
+      setModalMessage("클래스 수정이 완료되었습니다.");
+      setModalCallback(() => {
+        onUpdate();
+        setModalOpen(false);
+      });
+      setModalShowCancel(false);
+      setModalOpen(true);
     } catch (error) {
       console.error("클래스 수정 실패:", error);
-      alert("클래스 수정에 실패했습니다.");
+      setModalMessage("클래스 수정에 실패했습니다.");
+      setModalShowCancel(false);
+      setModalOpen(true);
     }
   };
 
-  const handleKick = async (memberUserNo: number) => {
-    if (window.confirm('정말로 이 멤버를 강퇴하시겠습니까?')) {
+  const handleKick = (memberUserNo: number) => {
+    setModalMessage('정말로 이 멤버를 강퇴하시겠습니까?');
+    setModalShowCancel(true);
+    setModalCallback(() => async () => {
       try {
         await api.delete(`/community/ckclass/${classId}/kick/${memberUserNo}`);
         setMembers(members.filter(m => m.userNo !== memberUserNo));
-        alert('멤버가 강퇴되었습니다.');
+        setModalMessage('멤버가 강퇴되었습니다.');
+        setModalShowCancel(false);
+        setModalCallback(undefined);
       } catch (error) {
         console.error('멤버 강퇴 실패:', error);
-        alert('멤버 강퇴에 실패했습니다.');
+        setModalMessage('멤버 강퇴에 실패했습니다.');
+        setModalShowCancel(false);
+        setModalCallback(undefined);
       }
-    }
+    });
+    setModalOpen(true);
   };
 
   const handleMemberClick = (memberUserNo: number) => {
@@ -187,7 +185,7 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
                   id="classInfo"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  maxLength={30}
+                  maxLength={100}
                 />
               </div>
               <div className={styles.formGroup}>
@@ -217,7 +215,7 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
                     checked={isCodeEnabled}
                     onChange={(e) => setIsCodeEnabled(e.target.checked)}
                   />
-                  참여 코드
+                  <span>참여코드</span>
                 </label>
                 <input
                   type="text"
@@ -237,7 +235,7 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
                     <div
                       className={styles.profileImage}
                       style={{
-                        backgroundImage: `url(${member.serverName ? `${API_BASE}/images/${member.serverName}` : '/images/default_profile.png'})`,
+                      backgroundImage: `url(${member.serverName ? `${API_BASE}/images/profile/${member.userNo}/${member.serverName}` : '/images/default_profile.png'})`,
                       }}
                       onClick={() => handleMemberClick(member.userNo)}
                     />
@@ -271,6 +269,16 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
             </div>
           )}
         </div>
+
+        {/* CommunityModal */}
+        {modalOpen && (
+          <CommunityModal
+            message={modalMessage}
+            onClose={() => setModalOpen(false)}
+            onConfirm={modalCallback}
+            showCancel={modalShowCancel}
+          />
+        )}
       </div>
     </div>
   );

@@ -9,22 +9,19 @@ import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { store } from '../../../store/store';
+import { saveUserData } from '../../../features/authSlice';
 import styles from './FreeForm.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
+import CommunityModal from '../CommunityModal';
 
-// API 기본 URL 정의
 const API_BASE = 'http://localhost:8081';
-
-// Redux 스토어에서 accessToken 가꼬오기
 const getAccessToken = () => store.getState().auth.accessToken;
 
-// API 호출 axios
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
 });
 
-// 모든 요청에 토큰 추가
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -34,13 +31,11 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// 오류 처리
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => Promise.reject(error),
 );
 
-// 게시글 데이터 타입 정의
 interface FreePost {
   boardNo?: number;
   title: string;
@@ -51,39 +46,36 @@ interface FreePost {
   imageUrl?: string | null;
 }
 
-// 게시글 작성 및 수정 폼
 const FreeForm = () => {
-  // URL 파라미터에서 게시글 번호 가져오기
   const { boardNo } = useParams<{ boardNo: string }>();
-  // 수정 모드 여부 판단
   const isEdit = Boolean(boardNo);
-  // 페이지 이동 함수
   const navigate = useNavigate();
 
-  // 로그인 확인용
   const user = useSelector((state: RootState) => state.auth.user);
-  const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
+  const userNo = user?.userNo;
 
-  // 상태 관리
   const [title, setTitle] = useState('');
   const [subheading, setSubheading] = useState('');
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(isEdit);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [modalMessage, setModalMessage] = useState<string | null>(null);
 
-  // 로그인 여부 체크
   useEffect(() => {
-    if (!userNo) {
-      setError('게시글 작성/수정을 위해 로그인 필요');
-    } else {
-      setError('');
-    }
-  }, [user, userNo]);
+    const savedUser = localStorage.getItem('authUser');
+    const savedToken = localStorage.getItem('accessToken');
 
-  // 수정 모드일 때 기존 게시글 데이터 불러오기
+    if (savedUser && savedToken && !user) {
+      store.dispatch(
+        saveUserData({
+          user: JSON.parse(savedUser),
+          accessToken: savedToken,
+        }),
+      );
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!isEdit) return;
 
@@ -96,7 +88,7 @@ const FreeForm = () => {
         setContent(data.content);
         if (data.imageUrl) setPreviewImage(data.imageUrl);
       } catch {
-        setError('게시글 불러오기 실패 또는 권한 없음');
+        setModalMessage('게시글 불러오기 실패 또는 권한 없음');
       } finally {
         setLoading(false);
       }
@@ -104,22 +96,25 @@ const FreeForm = () => {
     fetchPost();
   }, [boardNo, isEdit]);
 
-  // 이미지 선택 시 미리보기
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setSelectedImage(file);
     setPreviewImage(file ? URL.createObjectURL(file) : null);
   };
 
-  // 폼 (게시글 작성/수정) 처리
+  const handleClearImage = () => {
+    setSelectedImage(null);
+    setPreviewImage(null);
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage(null);
-    setError(null);
 
-    if (!userNo) return setError('로그인이 필요합니다.');
+    if (!userNo) return setModalMessage('로그인이 필요합니다.');
     if (!title.trim() || !content.trim())
-      return setMessage('제목과 내용을 반드시 입력하세요.');
+      return setModalMessage('제목과 내용을 반드시 입력하세요.');
 
     try {
       const formData = new FormData();
@@ -132,32 +127,31 @@ const FreeForm = () => {
       const method = isEdit ? api.put : api.post;
 
       await method(url, formData);
-      setMessage(isEdit ? '게시글 수정 완료' : '게시글 작성 완료');
+      setModalMessage(isEdit ? '게시글 수정 완료' : '게시글 작성 완료');
       setTimeout(() => navigate('/community/free'), 1500);
     } catch (e: any) {
       if (e.response?.status === 401) {
-        setError('로그인이 필요합니다.');
+        setModalMessage('로그인이 필요합니다.');
         navigate('/login');
       } else {
-        setError(isEdit ? '게시글 수정 실패' : '게시글 작성 실패');
+        setModalMessage(isEdit ? '게시글 수정 실패' : '게시글 작성 실패');
       }
     }
   };
 
-  // 게시글 삭제 처리
   const handleDelete = async () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
     try {
       await api.delete(`/community/free/${boardNo}`);
-      setMessage('게시글 삭제 완료');
+      setModalMessage('게시글 삭제 완료');
       setTimeout(() => navigate('/community/free'), 1500);
     } catch (e: any) {
       if (e.response?.status === 401) {
-        setError('로그인 후 이용해 주세요.');
+        setModalMessage('로그인 후 이용해 주세요.');
         navigate('/login');
       } else {
-        setError('게시글 삭제 실패');
+        setModalMessage('게시글 삭제 실패');
       }
     }
   };
@@ -166,88 +160,110 @@ const FreeForm = () => {
 
   return (
     <>
-     <CommunityHeader />
-    <div className={styles.container}>
-      <h1>{isEdit ? '게시글 수정' : '게시글 작성'}</h1>
+      <CommunityHeader />
+      <div className={styles.container}>
+        <h1>{isEdit ? '자유 게시판 (수정)' : '자유 게시판 (작성)'}</h1>
 
-      {message && <div className={styles.messageBox}>{message}</div>}
-      {error && <div className={styles.errorBox}>{error}</div>}
-
-      <form onSubmit={handleSubmit} className={styles.formSpace}>
-        <input
-          type="text"
-          placeholder="부제목 (선택)"
-          value={subheading}
-          onChange={(e) => setSubheading(e.target.value)}
-          className={styles.inputField}
-        />
-
-        <input
-          type="text"
-          placeholder="제목"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          className={styles.inputField}
-        />
-
-        <div className={styles.imagePreviewContainer}>
-          {previewImage ? (
-            <img
-              src={previewImage}
-              alt="미리보기"
-              className={styles.imagePreview}
-            />
-          ) : (
-            <div className={styles.placeholderText}>
-              이미지를 업로드하세요
-            </div>
-          )}
-        </div>
-
-        <label className={styles.labelButton}>
-          이미지 선택
+        <form onSubmit={handleSubmit} className={styles.formSpace}>
           <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className={styles.hiddenInput}
+            type="text"
+            placeholder="부제목 (선택)"
+            value={subheading}
+            onChange={(e) => setSubheading(e.target.value)}
+            className={styles.inputField}
           />
-        </label>
 
-        <textarea
-          placeholder="내용"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-          className={styles.contentTextarea}
-        />
+          <input
+            type="text"
+            placeholder="제목"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            className={styles.inputField}
+          />
+       <div className={styles.previewBox}>
+          {previewImage ? (
+            <>
+              <img
+                src={previewImage}
+                alt="미리보기"
+                className={styles.previewImage}
+              />
+              <button
+                type="button"
+                onClick={handleClearImage}
+                className={styles.clearButton}
+              >
+                이미지 삭제
+              </button>
+            </>
+          ) : (
+            "미리보기"
+          )}
 
-        <div className={styles.buttonGroup}>
-          <button type="submit" className={styles.submitButton}>
-            {isEdit ? '수정 완료' : '작성 완료'}
-          </button>
+            </div>
+            <div className={styles.inputGroup}>
+          <label className={styles.label}>이미지 업로드</label>
+          <div>
+            <div className={styles.fileInputBox}>
+              <p className={styles.notice}>
+                운영정책에 어긋나는 이미지 등록 시 이용이 제한될 수 있습니다.
+              </p>
+              </div>
+              <label className={styles.fileButton}>
+                선택
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className={styles.hiddenInput}
+                />
+              </label>
+              <span className={styles.fileName}>
+                {selectedImage?.name || '선택된 파일 없음'}
+              </span>
+            </div>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => navigate('/community/free')}
-            className={styles.cancelButton}
-          >
-            취소
-          </button>
+          <textarea
+            placeholder="내용"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            required
+            className={styles.contentTextarea}
+          />
 
-          {isEdit && (
+          <div className={styles.buttonGroup}>
+            <button type="submit" className={styles.submitButton}>
+              {isEdit ? '수정' : '등록'}
+            </button>
+
             <button
               type="button"
-              onClick={handleDelete}
-              className={styles.deleteButton}
+              onClick={() => navigate('/community/free')}
+              className={styles.cancelButton}
             >
-              삭제
+              취소
             </button>
-          )}
-        </div>
-      </form>
-    </div>
+
+            {isEdit && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className={styles.deleteButton}
+              >
+                삭제
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+      {modalMessage && (
+        <CommunityModal
+          message={modalMessage}
+          onClose={() => setModalMessage(null)}
+        />
+      )}
     </>
   );
 };

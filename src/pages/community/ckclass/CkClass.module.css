@@ -9,7 +9,8 @@
 }
 
 .mainTitle {
-  font-size: 2.5rem;
+  display: none;
+  font-size: 2rem;
   font-weight: bold;
   color: #333;
   text-align: center;
@@ -114,6 +115,15 @@
   text-align: right;
   font-size: 14px;
   color: #555;
+}
+
+.rsearchButton{ 
+  padding: 0.5rem 1rem;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
 }
 
 .checkboxLabel {
@@ -232,7 +242,7 @@
   gap: 0.5rem;
 }
 
-.settingsButton, .joinButton, .reportButton {
+.settingsButton, .joinButton, .reportButton, .leaveButton {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 20px;
@@ -243,12 +253,21 @@
 }
 
 .settingsButton {
-  background-color: #f0f0f0;
+  background-color: #e0e0e0;
   color: #555;
 }
 
+.leaveButton {
+  background-color: #ff3939;
+  color: #ffffff;
+}
+
+.leaveButton:hover {
+  background-color: #da0202; 
+}
+
 .settingsButton:hover {
-  background-color: #e0e0e0;
+  background-color: #ccc;
 }
 
 .joinButton {
@@ -282,7 +301,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 10px;
   gap: 5px;
 }
 
@@ -322,41 +341,40 @@
 
 .actionButtons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-  gap: 1rem;
+  justify-content: center;
+  width: 700px;
+  margin: 0 auto;
+  padding-bottom: 10px;
 }
 
 .searchButton, .registerButton {
-  width: 50%;
-  padding: 1rem;
+  border: none;
+  padding: 20px;
   border-radius: 10px;
-  font-size: 1.1rem;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  border: none;
-  color: #fff;
-  transition: transform 0.2s, box-shadow 0.2s;
+  margin: 50px 30px 30px 30px;
+  float: right;
+  width: 200px;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .searchButton {
-  background-color: #9e9e9e;
+  background-color: #92ca02;
 }
 
 .searchButton:hover {
-  background-color: #757575;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #75b136;
 }
 
 .registerButton {
-  background-color: #ff9800;
+  background-color: #fdbb1b;
+  color: white;
 }
 
 .registerButton:hover {
-  background-color: #e68900;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #ff9800;
 }
 
 .classButtons {
@@ -364,8 +382,8 @@
   gap: 0.5rem;
 }
 
-.notificationButton,
-.deleteButton {
+.notificationButton {
+  text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -397,23 +415,23 @@
 }
 
 .deleteButton {
+  text-align: center;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: bold;
   cursor: pointer;
-  background-color: #f0f0f0;
-  color: #555;
+  background-color: #ff3939;
+  color: #ffffff;
   transition: background-color 0.2s;
-
-  display: flex;           /* 추가 */
-  align-items: center;     /* 세로 중앙 */
-  justify-content: center; /* 가로 중앙 */
+  display: flex;         
+  align-items: center;    
+  justify-content: center;
 }
 
 
 .deleteButton:hover {
-  background-color: #e0e0e0;   /* 호버 배경 */
+  background-color: #da0202; 
 }
 

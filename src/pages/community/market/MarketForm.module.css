@@ -44,13 +44,6 @@
     padding: 0 1rem;
 }
 
-.profileIcon {
-    width: 20px;
-    height: 20px;
-    background-color: #ccc;
-    border-radius: 50%;
-}
-
 .date {
     margin-left: 0.5rem;
 }

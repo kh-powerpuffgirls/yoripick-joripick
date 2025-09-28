@@ -1,188 +1,290 @@
-.container {
-width: 1000px;
-margin: 2rem auto;
-padding: 1rem;
-font-family: Arial, sans-serif;
-background-color: white;
-}
-
-.header {
-padding: 1rem;
-background-color: #f8f8f8;
-border-bottom: 1px solid #e7e7e7;
-text-align: center;
-}
-
-.heading {
-margin: 0;
-font-size: 2rem;
-}
-
 .loading {
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-font-size: 1.5rem;
-color: #555;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  font-size: 1.2em;
+  padding: 50px;
+  color: #4f46e5;
 }
 
-.mainCard {
-border: 1px solid #ddd;
-border-radius: 8px;
-padding: 2rem;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-background-color: #fff;
+.container {
+  width: 1000px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.headingContainer {
-text-align: center;
-margin-bottom: 2rem;
+.container h1 {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 7px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb
+}
+.inputGroup {
+  margin-bottom: 25px;
 }
 
-.pageHeading {
-font-size: 2.5rem;
-color: #333;
+.label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 7px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.messageBox,
+.errorBox {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  text-align: center;
 }
 
 .messageBox {
-padding: 1rem;
-border-radius: 4px;
-margin-bottom: 1rem;
-text-align: center;
+  background-color: #e6f7d5;
+  color: #389e0d;
+  border: 1px solid #a7f3d0;
+  font-weight: 500;
 }
 
 .errorBox {
-background-color: #ffebee;
-color: #d32f2f;
-border: 1px solid #d32f2f;
-}
-
-.successBox {
-background-color: #e8f5e9;
-color: #2e7d32;
-border: 1px solid #2e7d32;
+  background-color: #fff2f0;
+  color: #ff4d4f;
+  border: 1px solid #fca5a5;
+  font-weight: 500;
 }
 
 .formSpace {
-display: flex;
-flex-direction: column;
-gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.inputField {
-width: 100%;
-padding: 0.75rem;
-border: 1px solid #ccc;
-border-radius: 4px;
-font-size: 1rem;
+.inputField,
+.contentTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
 }
 
-.imagePreviewContainer {
-border: 1px dashed #ccc;
-border-radius: 4px;
-padding: 1rem;
-text-align: center;
-min-height: 200px;
-display: flex;
-justify-content: center;
-align-items: center;
+.inputField:focus,
+.contentTextarea:focus {
+  border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  outline: none;
 }
 
-.imagePreview {
-max-width: 100%;
-max-height: 200px;
-border-radius: 4px;
-}
-
-.placeholderText {
-color: #999;
-}
-
-.imageUploadArea {
-display: flex;
-flex-direction: column;
-gap: 0.5rem;
-}
-
-.uploadText {
-font-size: 1rem;
-color: #555;
-display: flex;
-flex-direction: column;
-}
-
-.uploadSubtext {
-font-size: 0.8rem;
-color: #888;
-}
-
-.labelButton {
-background-color: #007bff;
-color: #fff;
-padding: 0.75rem 1.5rem;
-border-radius: 4px;
-cursor: pointer;
-text-align: center;
-transition: background-color 0.3s;
-}
-
-.labelButton:hover {
-background-color: #0056b3;
-}
-
-.hiddenInput {
-display: none;
+.notice {
+  font-size: 0.8em; 
+  color: #bebebe;
+  margin-bottom: 13px;
 }
 
 .contentTextarea {
-width: 100%;
-padding: 0.75rem;
-border: 1px solid #ccc;
-border-radius: 4px;
-font-size: 1rem;
-min-height: 200px;
-resize: vertical;
+  min-height: 250px;
+  resize: none;
+  margin-bottom: 30px;
+}
+
+.previewBox {
+  margin: 20px auto 40px auto;
+  width: 600px;
+  height: 350px;
+  min-height: 250px;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  background-color: #f9f9f9;
+  color: #999;
+  font-size: 1.2em;
+  box-sizing: border-box;
+}
+
+.previewImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.placeholderText {
+  color: #6b7280;
+  font-size: 1rem;
+  padding: 20px;
+}
+
+.fileInputBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fileButton {
+  margin-right: 7px;
+  background-color: #fff;
+  color: #333;
+  padding: 8px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.9em;
+}
+
+.fileButton:hover {
+  background-color: #888888;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.fileName {
+  color: #777;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1;
+  font-size: 13px;
+}
+
+.clearButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+  z-index: 10;
 }
 
 .buttonGroup {
-display: flex;
-justify-content: flex-end;
-gap: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
-.submitButton, .cancelButton, .deleteButton {
-padding: 0.75rem 1.5rem;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-font-size: 1rem;
-transition: background-color 0.3s;
+.buttonGroup button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+@media (min-width: 640px) {
+  .buttonGroup {
+    flex-wrap: nowrap;
+  }
+  .buttonGroup button {
+    flex-grow: 0;
+  }
 }
 
 .submitButton {
-background-color: #28a745;
-color: #fff;
+    background-color: #ff9800;
 }
 
 .submitButton:hover {
-background-color: #218838;
+    background-color: #e68900;
 }
 
 .cancelButton {
-background-color: #6c757d;
-color: #fff;
+    background-color: #9e9e9e;
 }
 
 .cancelButton:hover {
-background-color: #5a6268;
+    background-color: #757575;
 }
 
 .deleteButton {
-background-color: #dc3545;
-color: #fff;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #F44336;
 }
 
 .deleteButton:hover {
-background-color: #c82333;
+    background-color: #D32F2F;
+}
+
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 400px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modalContent h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 15px;
+}
+
+.modalContent p {
+  color: #4b5563;
+  margin-bottom: 25px;
+}
+
+.modalButtonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
