@@ -101,7 +101,7 @@ export const ChatModal = () => {
         if (!lastMsg.messageNo) return;
         const fetchLastRead = async () => {
             try {
-                const lastReadMessageNo = await getLastRead(userNo, currentRoom.roomNo);
+                const lastReadMessageNo = await getLastRead(userNo, currentRoom.type, currentRoom.roomNo);
                 setLocalLastRead(lastReadMessageNo ?? null);
             } catch (err) {
                 console.error(err);
@@ -112,7 +112,7 @@ export const ChatModal = () => {
         // 메세지를 보낼때 마다, 마지막 읽은글 업뎃하기?
         fetchLastRead()
             .then(() => {
-                lastRead(userNo, currentRoom.roomNo, lastMsg.messageNo!!);
+                lastRead(userNo, currentRoom.type, currentRoom.roomNo, lastMsg.messageNo!!);
                 // dispatch(setLastRead(currentRoom.roomNo)); 필요할랑가 말랑가...
             })
             .catch(console.error);
@@ -123,7 +123,7 @@ export const ChatModal = () => {
         if (!isOpen || !currentRoom || !currentRoom.messages.length || !userNo) return;
         const lastMsg = currentRoom.messages[currentRoom.messages.length - 1];
         if (!lastMsg.messageNo) return;
-        lastRead(userNo, currentRoom.roomNo, lastMsg.messageNo!!);
+        lastRead(userNo, currentRoom.type, currentRoom.roomNo, lastMsg.messageNo!!);
         dispatch(setLastRead(currentRoom.roomNo));
     }, [isOpen, userNo, currentRoom]);
 
@@ -280,6 +280,7 @@ export const ChatModal = () => {
                     messages={cacheMessages}
                     userNo={userNo}
                     localLastRead={localLastRead}
+                    type={currentRoom?.type as ChatRoomCreate}
                 />
                 {loading && (
                     <div className={`${style.msg} ${style.left}`}>

@@ -18,7 +18,7 @@ const Header = () => {
   const isAdmin = useSelector((state: RootState) => state.auth.user?.roles?.includes("ROLE_ADMIN"));
   const loc = useLocation();
   const adminPaths = ["/admin", "/admin/users", "/admin/recipes", "/admin/communities", "/admin/classes", 
-    "/admin/cservices", "/admin/announcements", "/admin/challenges", "/admin/ingredients"];
+    "/admin/cservices", "/admin/announcements", "/admin/challenges", "/admin/ingredients", "/ingpedia/write"];
   const isAdminPath = adminPaths.includes(loc.pathname);
   const logout = useLogout();
   const { isOpen, modalType } = useSelector((state: RootState) => state.adminModal);
@@ -105,7 +105,7 @@ const Header = () => {
               </li>
               <li className="nav-line"></li>
               <li>
-                <button className="nav-button">재료등록</button>
+                <Link to="/ingpedia/write" className="nav-link">재료등록</Link>
               </li>
             </>
           ) : (
