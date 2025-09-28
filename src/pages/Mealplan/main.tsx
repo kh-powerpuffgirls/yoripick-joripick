@@ -276,7 +276,6 @@ export const MealplanMain = () => {
                                 <input
                                     type="checkbox"
                                     id={nutrient}
-                                    className={style.nutrientCheckbox}
                                     checked={selectedNutrients.includes(nutrient)}
                                     onChange={() => handleNutrientCheckbox(nutrient)}
                                 />

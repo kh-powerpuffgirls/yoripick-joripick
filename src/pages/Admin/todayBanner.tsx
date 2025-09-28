@@ -22,6 +22,7 @@ const TodayBanner = () => {
                 setIsOpen(true);
             }).catch(() => {
                 setIsOpen(false);
+                console.error("Failed to fetch challenge data");
             });
         }
     }, []);
@@ -44,7 +45,7 @@ const TodayBanner = () => {
     return (
         <div style={styles.banner}>
             <div style={styles.title}>
-                <h3>🎉 오늘의 챌린지</h3>
+                <h3 style={styles.todayTitle}>🎉 오늘의 챌린지</h3>
                 <p style={styles.challengeTitle}>{challenge?.title}</p>
             </div>
 
@@ -81,9 +82,9 @@ const TodayBanner = () => {
 const styles = {
     banner: {
         position: "fixed" as const,
-        top: "14%",
+        top: "15%",
         left: "2%",
-        width: "30%",
+        width: "20%",
         backgroundColor: "#fff",
         padding: "10px",
         zIndex: 1000,
@@ -103,11 +104,19 @@ const styles = {
         width: "100%",
         alignItems: "baseline",
     },
+    todayTitle: {
+        whiteSpace: "nowrap",
+    },
     challengeTitle: {
         fontSize: "16px",
         color: "#666",
         marginLeft: "10px",
-    },
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+    } as React.CSSProperties,
     imageWrapper: {
         flex: 1,
         display: "flex",

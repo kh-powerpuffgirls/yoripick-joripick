@@ -33,7 +33,7 @@ const Header = () => {
         const todayAnndata = await getTodayAnn();
         setTodayAnn(todayAnndata.content);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error("Failed to fetch announcement data");
       }
     };
     fetchAnnouncements();
