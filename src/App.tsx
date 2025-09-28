@@ -174,6 +174,7 @@ function App() {
         } />
 
         {/* ==================== 메인페이지 ==================== */}
+        <Route path="/" element={<Mainpage />} />
         <Route path="/home" element={<Mainpage />} />
 
         {/* ==================== 시큐리티 <oauth2,SECURITY> ==================== */}

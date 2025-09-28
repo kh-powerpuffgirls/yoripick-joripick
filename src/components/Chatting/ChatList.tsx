@@ -1,24 +1,28 @@
 import React, { useMemo, useState } from "react";
 import style from './chatModal.module.css'
-import { type Message } from "../../type/chatmodal";
-import { useDispatch } from "react-redux";
+import { type ChatRoomCreate, type Message } from "../../type/chatmodal";
+import { useDispatch, useSelector } from "react-redux";
 import { closeChat } from "../../features/chatSlice";
 import { useNavigate } from "react-router-dom";
+import type { RootState } from "../../store/store";
 
 interface ChatListProps {
     messages: Message[] | undefined;
     userNo: number | undefined;
     localLastRead: number | null;
+    type: ChatRoomCreate;
 }
 
 const ChatListComponent: React.FC<ChatListProps> = ({
     messages,
     userNo,
     localLastRead,
+    type
 }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [isDelayOpen2, setDelayOpen2] = useState(false);
+    const user = useSelector((state: RootState) => state.auth.user);
 
     setTimeout(() => {
         setDelayOpen2(true)
@@ -41,7 +45,8 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                 localLastRead !== null &&
                 msg.messageNo !== undefined &&
                 msg.messageNo > localLastRead &&
-                (prevMsgNo <= localLastRead);
+                (prevMsgNo <= localLastRead) &&
+                !(type === "admin" && user?.roles.includes('ROLE_ADMIN'));
                 
             return (
                 <div key={msg.createdAt + index}>

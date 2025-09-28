@@ -62,3 +62,8 @@ export const getTodayAnn = async function () {
     const response = await api.get(`/common/announcements`);
     return response.data;
 };
+
+export const getChallengeImg = async () => {
+    const response = await api.get(`/common/challenges`);
+    return response.data;
+};
