@@ -1,9 +1,11 @@
 import style from "./userManagement.module.css";
-import { getCSinfo, getCustomerServices, type PageInfo } from "../../api/adminApi";
+import { getCSroom, getCustomerServices, type PageInfo } from "../../api/adminApi";
 import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { ClassModal } from "../../components/Admin/classModal";
+import { openChat } from "../../features/chatSlice";
+import { useDispatch } from "react-redux";
 
 interface CSinfo {
     roomNo: number;
@@ -19,6 +21,7 @@ export const CSmanagement = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<any>(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const fetchData = async (page: number) => {
         const data = await getCustomerServices(page, 10);
@@ -32,9 +35,8 @@ export const CSmanagement = () => {
 
     const handleGoToDtl = async (roomNo: number) => {
         try {
-            setModalContent(await getCSinfo(roomNo));
-            console.log(await getCSinfo(roomNo));
-            setIsModalOpen(true);
+            const response = await getCSroom(roomNo);
+            dispatch(openChat(response));
         } catch (error) {
             console.error("Failed to fetch customer service data:", error);
             alert("고객문의 정보를 불러오는 데 실패했습니다.");

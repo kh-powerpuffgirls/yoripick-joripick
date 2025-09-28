@@ -10,6 +10,7 @@ import { api } from "../../api/authApi";
 import type { IngPediaMain } from "../../type/Ing";
 import { useQuery } from "@tanstack/react-query";
 import { getIngPediaMain } from "../../api/ing/ingPediaApi";
+import TodayBanner from "../Admin/todayBanner";
 
 interface SearchParams {
   ingredients?: string;
@@ -98,6 +99,7 @@ export default function Mainpage(){
 
     return (
         <>
+        <TodayBanner />
             <div className={cx(ingDefaultStyle["ing-default"], ingDefaultStyle["container"], mainStyle["mainpage"])}>
 
              <section className={mainStyle["recipe-category"]}>

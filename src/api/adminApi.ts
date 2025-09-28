@@ -134,11 +134,6 @@ export const getCustomerServices = async (page: number, size: number) => {
     return response.data;
 };
 
-export const getCSinfo = async (roomNo: number) => {
-    const response = await api.get(`/cservices/${roomNo}`);
-    return response.data;
-};
-
 export const getAnnouncements = async (page: number, size: number) => {
     const response = await api.get(`/announcements`, { params: { page, size } });
     return response.data;
@@ -174,6 +169,11 @@ export const getIngredients = async (page: number, size: number) => {
 
 export const getParentRep = async (reportNo: number) => {
     const response = await api.get(`/reports/${reportNo}`);
+    return response.data;
+};
+
+export const getCSroom = async (roomNo: number) => {
+    const response = await api.get(`/cs-rooms/${roomNo}`);
     return response.data;
 };
 

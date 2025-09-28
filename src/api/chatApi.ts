@@ -31,12 +31,12 @@ api.interceptors.response.use(
     }
 )
 
-export const lastRead = async function (userNo: number, roomNo: string|number, messageNo: number) {
-    await api.patch(`/reads`, null, { params: {userNo, roomNo, messageNo} });
+export const lastRead = async function (userNo: number, type: ChatRoomCreate, roomNo: string|number, messageNo: number) {
+    await api.patch(`/reads`, null, { params: {userNo, type, roomNo, messageNo} });
 }
 
-export const getLastRead = async function (userNo: number, roomNo: string|number) {
-    const response = await api.get(`/reads/${userNo}/${roomNo}`);
+export const getLastRead = async function (userNo: number, type: ChatRoomCreate, roomNo: string|number) {
+    const response = await api.get(`/reads/${userNo}/${type}/${roomNo}`);
     return response.data;
 }
 

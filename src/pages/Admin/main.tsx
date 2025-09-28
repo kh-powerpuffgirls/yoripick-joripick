@@ -26,7 +26,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { saveMessage } from '../../api/chatApi';
 import useChat from '../../hooks/useChat';
 import type { RootState } from '../../store/store';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { openNewChallengeModal } from '../../features/adminModalSlice';
 import { setTotalReports } from '../../features/adminStateSlice';
 
@@ -355,9 +355,7 @@ export const AdminDashboard = () => {
             <div className={style.container}>
                 {/* 회원관리 */}
                 <div className={style.section}>
-                    <h3>
-                        <Link to="/admin/users">회원관리 🔐</Link>
-                    </h3>
+                    <h3>회원관리 🔐</h3>
                     <hr />
                     <div className={style.sectionBody}>
                         {!loading && !error && userReports.length === 0 && (
@@ -413,9 +411,7 @@ export const AdminDashboard = () => {
 
                 {/* 레시피 관리 */}
                 <div className={style.section}>
-                    <h3>
-                        <Link to="/admin/recipes">레시피 관리 🍳</Link>
-                    </h3>
+                    <h3>레시피 관리 🍳</h3>
                     <hr />
                     <div className={style.sectionBody}>
                         {!loading && !error && recipes.length === 0 && (
@@ -469,9 +465,7 @@ export const AdminDashboard = () => {
 
                 {/* 커뮤니티 관리 */}
                 <div className={style.section}>
-                    <h3>
-                        <Link to="/admin/communities">커뮤니티 관리 🎮</Link>
-                    </h3>
+                    <h3>커뮤니티 관리 🎮</h3>
                     <hr />
                     <div className={style.sectionBody}>
                         {!loading && !error && commReports.length === 0 && (

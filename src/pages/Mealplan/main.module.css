@@ -132,27 +132,8 @@
     gap: 10px;
 }
 
-.nutrientCheckbox {
-    margin-right: 10px;
-    appearance: none;
-    border-radius: 4px;
-    cursor: pointer;
-    position: relative;
-    vertical-align: middle;
-}
-
-.nutrientCheckbox:checked {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-}
-
-.nutrientCheckbox:checked::before {
-    content: '✔';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
+.checkboxLabel {
+    margin-left: 10px;
 }
 
 .mealListSection {
