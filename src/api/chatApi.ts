@@ -62,3 +62,8 @@ export const getAdminSubs = async function (userNo: number | undefined) {
     const response = await api.get(`/admin/${userNo}`);
     return response.data;
 }
+
+export const getRoomNo = async function (type: ChatRoomCreate, user: User) {
+    const response = await api.get(`/rooms/${type}/${user.userNo}`);
+    return response.data;
+}

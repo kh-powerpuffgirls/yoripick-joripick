@@ -20,9 +20,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error)
@@ -30,50 +28,47 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  async (err: AxiosError) => Promise.reject(err)
+  (err: AxiosError) => Promise.reject(err)
 );
+
+interface BuyForm {
+  formNo: number;
+  buyerName: string;
+  createdAt: string;
+  buyerNickname: string; 
+}
 
 interface MarketSellDtoWithForms {
   productId: number;
   title: string;
   createdAt: string;
   views: number;
-  buyForms: {
-    formNo: number;
-    buyerName: string;
-    createdAt: string;
-  }[];
+  buyForms: BuyForm[];
 }
 
 const MarketMyList = () => {
   const [posts, setPosts] = useState<MarketSellDtoWithForms[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [shouldRefetch, setShouldRefetch] = useState(false);
 
+  const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const userNo = user?.userNo;
-
-  const [shouldRefetch, setShouldRefetch] = useState(false);
 
   useEffect(() => {
     if (!userNo) {
       setError('게시글 목록을 보려면 로그인이 필요합니다.');
       setLoading(false);
-      setTimeout(() => navigate('/login'), 1000);
       return;
     }
     fetchMyPosts();
-  }, [userNo, shouldRefetch, navigate]);
+  }, [userNo, shouldRefetch]);
 
   useEffect(() => {
-    const handleFocus = () => {
-      setShouldRefetch(true);
-    };
+    const handleFocus = () => setShouldRefetch(true);
     window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   const fetchMyPosts = async () => {
@@ -84,7 +79,6 @@ const MarketMyList = () => {
     try {
       const response = await api.get<MarketSellDtoWithForms[]>('/community/market/my-posts');
       setPosts(response.data);
-      setLoading(false);
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         setError('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
@@ -92,13 +86,12 @@ const MarketMyList = () => {
       } else {
         setError('게시글을 불러오는 데 실패했습니다.');
       }
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleFormClick = (formNo: number) => {
-    navigate(`/community/market/my-buy-form/${formNo}`);
-  };
+  const handleFormClick = (formNo: number) => navigate(`/community/market/my-buy-form/${formNo}`);
 
   if (loading) return <div className={styles['loading-message']}>로딩 중...</div>;
   if (error) return <div className={styles['error-message']}>{error}</div>;
@@ -136,7 +129,7 @@ const MarketMyList = () => {
                       </td>
                       <td>{post.views}</td>
                     </tr>
-                    {post.buyForms && post.buyForms.length > 0 && (
+                    {post.buyForms.length > 0 && (
                       <tr>
                         <td colSpan={4}>
                           <div className={styles['form-list']}>
@@ -148,7 +141,8 @@ const MarketMyList = () => {
                                   className={styles['form-item']}
                                   onClick={() => handleFormClick(form.formNo)}
                                 >
-                                  {form.buyerName} - 신청일: {new Date(form.createdAt).toLocaleDateString()}
+                                  {form.buyerNickname} [{form.buyerName}] - 신청일:{' '}
+                                  {new Date(form.createdAt).toLocaleDateString()}
                                 </li>
                               ))}
                             </ul>
@@ -161,7 +155,11 @@ const MarketMyList = () => {
               ) : (
                 <tr>
                   <td colSpan={4}>
-                    <p className={styles.noPosts}>등록된 판매글이 없습니다.</p>
+                    <p className={styles.noPosts}>
+                      {error === '게시글 목록을 보려면 로그인이 필요합니다.'
+                        ? '로그인 후 이용해 주세요.'
+                        : '등록된 판매글이 없습니다.'}
+                    </p>
                   </td>
                 </tr>
               )}

@@ -21,6 +21,11 @@ export const IngManagement = () => {
         setIngredients(data.list);
     };
 
+    const handleGoToDtl = (ingNo: number) => {
+        const ref = window.location.origin + `/ingpedia/detail/${ingNo}`;
+        window.open(ref, '_blank', 'noopener,noreferrer');
+    };
+
     useEffect(() => {
         fetchData(1);
     }, []);
@@ -55,7 +60,7 @@ export const IngManagement = () => {
                                     <td>{i.ingName}</td>
                                     <td>{i.ingCodeName}</td>
                                     <td className={style.actionButtons}>
-                                        <button className={style.mypageButton} >이동</button>
+                                        <button className={style.mypageButton} onClick={() => handleGoToDtl(i.ingNo)}>이동</button>
                                     </td>
                                 </tr>
                             ))

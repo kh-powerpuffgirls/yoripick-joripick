@@ -87,16 +87,26 @@ const MarketBuyForm = () => {
 
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-    
+
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
     const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
-    
+
     const [communityModal, setCommunityModal] = useState<{ message: string; onConfirm?: () => void; showCancel?: boolean } | null>(null);
     const openCommunityModal = (modalData: { message: string; onConfirm?: () => void; showCancel?: boolean }) => setCommunityModal(modalData);
     const closeCommunityModal = () => setCommunityModal(null);
     const handleCommunityModalConfirm = () => { communityModal?.onConfirm?.(); closeCommunityModal(); };
 
+    useEffect(() => {
+        const handler = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) return;
+            if (event.data.action === "scrollBottom") {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+            }
+        };
+        window.addEventListener("message", handler);
+        return () => window.removeEventListener("message", handler);
+    }, []);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -260,7 +270,7 @@ const MarketBuyForm = () => {
             }
         }
     };
-    
+
     const handleCompleteModalClose = () => {
         setIsCompleteModalOpen(false);
         navigate('/community/market');
@@ -276,7 +286,7 @@ const MarketBuyForm = () => {
             openCommunityModal({ message: '자신의 게시물은 신고할 수 없습니다.', onConfirm: closeCommunityModal, showCancel: false });
             return;
         }
-        
+
         const category = MARKETPLACE_CATEGORY;
         const targetInfo: ReportTargetInfo = {
             author: item.username,
@@ -288,13 +298,13 @@ const MarketBuyForm = () => {
         setReportTargetInfo(targetInfo);
 
         try {
-            const res = await api.get<ReportOption[]>(`/community/report/types`); 
+            const res = await api.get<ReportOption[]>(`/community/report/types`);
             const filteredOptions = res.data.filter(option => option.category === category);
             setReportOptions(filteredOptions);
             setIsReportModalOpen(true);
         } catch (err) {
             console.error('신고 옵션 fetch 실패:', err);
-            setReportOptions([]); 
+            setReportOptions([]);
             openCommunityModal({ message: '신고 옵션 로드 실패', onConfirm: closeCommunityModal, showCancel: false });
         }
     };
@@ -334,7 +344,7 @@ const MarketBuyForm = () => {
 
     return (
         <>
-            <CommunityHeader/>
+            <CommunityHeader />
             <div className={styles.container}>
                 <div className={styles.formContainer}>
                     <form onSubmit={handleSubmit}>
@@ -555,7 +565,7 @@ const MarketBuyForm = () => {
                 <BuyCompleteModal
                     isOpen={isCompleteModalOpen}
                     onClose={handleCompleteModalClose}
-                    onConfirm={() => {}}
+                    onConfirm={() => { }}
                     itemName={item.name}
                     totalPrice={totalPrice}
                     accountNo={item.accountNo}
@@ -578,7 +588,7 @@ const MarketBuyForm = () => {
                     message={communityModal.message}
                     onConfirm={handleCommunityModalConfirm}
                     showCancel={communityModal.showCancel}
-                    onClose={closeCommunityModal} 
+                    onClose={closeCommunityModal}
                 />
             )}
         </>

@@ -85,6 +85,7 @@
 .searchBarContainer {
     display: flex;
     gap: 10px;
+    justify-content: space-between;
 }
 
 .foodCodeSelect {
@@ -94,6 +95,7 @@
 }
 
 .searchInput {
+    width: 55%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -224,6 +226,7 @@
 }
 
 .inputLabel {
+    width: 100px;
     background-color: #f0f0f0;
     border-radius: 8px;
     padding: 8px;
@@ -235,6 +238,7 @@
 }
 
 .manualAddForm input {
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
     width: 100%;
@@ -352,15 +356,6 @@
     transform: scale(0.97);
 }
 
-.buttonGroup button:nth-of-type(1) {
-    background: #4cafef;
-    color: #fff;
-}
-
-.buttonGroup button:nth-of-type(1):hover {
-    background: #2196f3;
-}
-
 .buttonGroup button:nth-of-type(2) {
     background: #8ac926;
     color: #fff;
@@ -370,11 +365,11 @@
     background: #6a9c22;
 }
 
-.buttonGroup button:nth-of-type(3) {
+.buttonGroup button:nth-of-type(1) {
     background: #ff6b6b;
     color: #fff;
 }
 
-.buttonGroup button:nth-of-type(3):hover {
+.buttonGroup button:nth-of-type(1):hover {
     background: #e53935;
 }

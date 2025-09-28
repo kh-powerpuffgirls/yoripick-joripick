@@ -6,6 +6,7 @@ import styles from './MarketMain.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
 import CommunityModal from '../CommunityModal';
 import axios from 'axios';
+import SikBti from '../Recipe/SikBti';
 
 interface MarketMain {
   productId: number;
@@ -118,8 +119,13 @@ const MarketMain = () => {
             className={styles.profileIcon}
           />
           <div className={styles.profileText}>
-            <span className={styles.authorBti}>{post.sikBti}</span>
-            <span className={styles.authorNickname}>{post.author}</span>
+          {post.sikBti && (
+            <SikBti
+              sikBti={post.sikBti} 
+              style={{ marginRight: '6px', marginBottom: '1px', display: 'inline', fontSize: '0.7rem' }} 
+            />
+          )}            
+          <span className={styles.authorNickname}>{post.author}</span>
           </div>
         </div>
 

@@ -164,14 +164,10 @@ ul {
   justify-content: center;
 }
 
-.authorBti {
-  font-size: 0.75rem;
-  color: #a0a0a0;
-}
-
 .authorNickname {
   font-size: 0.75rem;
   color: #666;
+  font-weight: 525;
 }
 
 .dateTimeViews {
@@ -184,8 +180,7 @@ ul {
 }
 
 .postDate {
-  color: #555;
-  font-weight: 600;
+  color: #999;
 }
 
 .postViews {

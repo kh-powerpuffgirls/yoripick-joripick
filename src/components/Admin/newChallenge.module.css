@@ -45,6 +45,17 @@
 
 .body input[type="text"] {
     width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.body input[type="date"] {
+    width: 49%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
 }
 
 .body textarea {
@@ -59,9 +70,7 @@
     padding: 8px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    background-color: #fff;
     cursor: pointer;
-    display: inline-block;
 }
 
 .footer {

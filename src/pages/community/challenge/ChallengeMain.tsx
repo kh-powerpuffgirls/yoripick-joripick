@@ -7,6 +7,7 @@ import CommunityHeader from "../Header/CommunityHeader";
 import axios from "axios";
 import { store } from "../../../store/store";
 import ChallengeSuggestionForm from "./ChallengeSuggestionForm";
+import SikBti from "../Recipe/SikBti";
 
 const API_BASE = "http://localhost:8081";
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -34,6 +35,7 @@ interface ChallengeItem {
   serverName?: string;
   sik_bti?: string;
   profileImageServerName?: string;
+  createdAt: string; // 추가
 }
 
 interface ActiveChallenge {
@@ -42,6 +44,14 @@ interface ActiveChallenge {
   startDate: string;
   endDate: string;
 }
+
+const formatDateToShort = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const year = date.getFullYear().toString().slice(-2);
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}.${month}.${day}`;
+};
 
 const ChallengeMain = () => {
   const [popularChallenges, setPopularChallenges] = useState<ChallengeItem[]>([]);
@@ -129,12 +139,14 @@ const ChallengeMain = () => {
               <img src={`${API_BASE}${challenge.profileImageServerName}`} alt={challenge.username} className={styles.profileIcon}/>
             ) : <div className={styles.defaultProfile}></div>}
             <div className={styles.profileText}>
-              <span className={styles.authorBti}>{challenge.sik_bti}</span>
-              <span className={styles.authorNickname}>{challenge.username}</span>
-            </div>
+            {challenge.sik_bti && (
+              <SikBti sikBti={challenge.sik_bti} style={{ marginRight: '6px', display: 'inline', fontSize: '0.7rem' }} />
+            )}
+            <span className={styles.authorNickname}>{challenge.username}</span>
+          </div>
           </div>
           <div className={styles.dateTimeViews}>
-            <span className={styles.postDate}>{new Date().toLocaleDateString()}</span>
+          <span className={styles.postDate}>{formatDateToShort(challenge.createdAt)}</span>
             <span className={styles.postViews}>👁️ {challenge.views} ❤️ {challenge.likes}</span>
           </div>
         </div>

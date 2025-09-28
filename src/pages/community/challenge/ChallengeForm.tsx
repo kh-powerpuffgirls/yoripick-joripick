@@ -7,19 +7,15 @@ import type { RootState } from "../../../store/store";
 import styles from "./ChallengeForm.module.css";
 import CommunityHeader from "../Header/CommunityHeader";
 
-// API 기본 URL
 const API_BASE = "http://localhost:8081";
 
-// store에서 accessToken 가져오기
 const getAccessToken = () => store.getState().auth.accessToken;
 
-// axios 인스턴스 생성
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
 });
 
-// 토큰 토큰 토큰 토큰 토큰
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -29,11 +25,9 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// 이미지 URL 생성 함수
 const getImageUrl = (serverName: string) =>
   `${API_BASE}/images/${serverName}`;
 
-// 챌린지 정보 타입
 interface ChallengeInfo {
   chInfoNo: number;
   title: string;
@@ -42,7 +36,6 @@ interface ChallengeInfo {
   imageNo?: number;
 }
 
-// 챌린지 참여 게시글 타입
 interface Challenge {
   challengeNo: number;
   chInfoNo: number;
@@ -52,7 +45,6 @@ interface Challenge {
   title: string;
 }
 
-// 챌린지 폼 컴포넌트
 const ChallengeForm = () => {
   const { challengeNo } = useParams<{ challengeNo: string }>();
   const isEdit = Boolean(challengeNo);
@@ -60,7 +52,6 @@ const ChallengeForm = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const userNo = useSelector((state: RootState) => state.auth.user?.userNo);
 
-  // 상태 관리
   const [title, setTitle] = useState("");
   const [chInfoNo, setChInfoNo] = useState<number | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
@@ -112,7 +103,6 @@ const ChallengeForm = () => {
     useEffect(() => {
   }, [userNo]);
 
-  // 이미지 파일 선택
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setSelectedImage(file);
@@ -122,7 +112,6 @@ const ChallengeForm = () => {
     }
   };
 
-  // 이미지 삭제
   const handleClearImage = () => {
     setSelectedImage(null);
     setPreviewImage(null);
@@ -133,7 +122,6 @@ const ChallengeForm = () => {
     }
   };
 
-  // 폼 제출
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -242,7 +230,8 @@ const ChallengeForm = () => {
           <div className={styles.inputGroup}>
           <label className={styles.label}>영상 URL (선택)</label>
             <p className={styles.notice}>
-            운영정책에 어긋나는 URL 등록 시 이용이 제한될 수 있습니다.            </p> 
+            운영정책에 어긋나는 URL 등록 시 이용이 제한될 수 있습니다.
+            </p> 
           <input
             type="text"
             value={videoUrl}

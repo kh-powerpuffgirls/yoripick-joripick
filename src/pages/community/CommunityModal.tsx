@@ -1,4 +1,3 @@
-// CommunityModal.tsx
 import styles from './CommunityModal.module.css';
 
 interface CommunityModalProps {

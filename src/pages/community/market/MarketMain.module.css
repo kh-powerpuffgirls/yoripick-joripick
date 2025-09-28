@@ -51,7 +51,6 @@
     gap: 1.5rem;
 }
 
-
 .postCard {
     background-color: #fff;
     border-radius: 10px;
@@ -120,17 +119,11 @@
   justify-content: center;
 }
 
-.authorBti {
-    font-size: 0.75rem;
-    color: #a0a0a0;
-    font-weight: 500;
-    line-height: 1rem;
-}
-
 .authorNickname {
     font-size: 0.75rem;
     color: #666;
     line-height: 1rem;
+    font-weight: 525;
 }
 
 .dateTimeViews {
@@ -143,8 +136,7 @@
 }
 
 .postDate {
-    color: #555;
-    font-weight: 600;
+    color: #999;
 }
 
 .postViews {

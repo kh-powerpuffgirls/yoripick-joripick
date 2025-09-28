@@ -8,6 +8,7 @@ import styles from './FreeDetail.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
+import SikBti from '../Recipe/SikBti';
 
 const API_BASE = 'http://localhost:8081';
 
@@ -41,7 +42,7 @@ interface FreePost {
   imageUrl?: string | null;
   sik_bti?: string;
   subheading?: string;
-  profileImageServerName?: string; 
+  profileImageServerName?: string;
 }
 
 interface Reply {
@@ -54,6 +55,7 @@ interface Reply {
   username: string;
   sik_bti?: string;
   profileImageServerName?: string;
+  depth?: number;
 }
 
 interface ModalState {
@@ -201,27 +203,25 @@ const FreeDetail = () => {
     }
   };
 
-  const handleReplySubmit = async () => {
-    const trimmedReply = replyingContent.trim();
-    
+const handleReplySubmit = async () => {
     if (!user?.userNo) { 
-      openModal({ message: '로그인 후 답글 작성 가능합니다.', showCancel: false });
-      return;
+        openModal({ message: '로그인 후 답글 작성 가능합니다.', showCancel: false });
+        return;
     }
-    if (replyingToReplyNo === null || !trimmedReply) { 
-      openModal({ message: '답글을 작성하려면 내용을 입력해야 합니다.', showCancel: false });
-      return;
+    if (replyingToReplyNo === null || !replyingContent.trim()) { 
+        openModal({ message: '답글을 작성하려면 내용을 입력해야 합니다.', showCancel: false });
+        return;
     }
-    
+    const contentToSend = replyingContent;
     try {
-      await api.post(`/community/free/replies`, { content: replyingContent, refNo: replyingToReplyNo, category: 'REPLY' });
-      setReplyingContent('');
-      setReplyingToReplyNo(null);
-      await fetchReplies();
+        await api.post(`/community/free/replies`, { content: contentToSend, refNo: replyingToReplyNo, category: 'REPLY' });
+        setReplyingContent('');
+        setReplyingToReplyNo(null);
+        await fetchReplies();
     } catch {
-      openModal({ message: '답글 작성 실패', showCancel: false });
+        openModal({ message: '답글 작성 실패', showCancel: false });
     }
-  };
+};
 
   const createImageUrl = (serverName?: string) => {
     if (serverName && (serverName.startsWith('http://') || serverName.startsWith('https://'))) {
@@ -399,273 +399,239 @@ const FreeDetail = () => {
     });
   };
 
-const renderReplies = () => {
-    const parentReplies = replies
-        .filter(r => r.category === 'BOARD' && r.refNo === Number(boardNo))
-        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    return parentReplies.map(parent => {
-        const childReplies = replies
-            .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
-            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        const parentProfileImageUrl = createImageUrl(parent.profileImageServerName); 
+const findParentAuthor = (refNo: number, category: 'BOARD' | 'REPLY'): string | null => {
+    if (category === 'BOARD') {
+    return null;
+    }
+    const parentReply = replies.find(r => r.replyNo === refNo);
+    return parentReply ? parentReply.username : null;
+    };
 
-        return (
-            <div key={parent.replyNo} className={styles.commentWrapper}>
-                <div className={styles.commentItem}>
-                    <Link to={`/mypage/${parent.userNo}`} className={styles.avatar}>
-                        {parentProfileImageUrl && parent.profileImageServerName ? (
-                            <img src={parentProfileImageUrl} alt="프로필" className={styles.profileImage} />
-                        ) : (
-                            <div className={styles.defaultProfile} style={{ margin: 0 }}>
-                                {parent.username[0]}
-                            </div>
+const renderReplies = () => {
+    return replies.map(reply => {
+        const parentAuthorNickname = reply.depth! > 1 ? findParentAuthor(reply.refNo, 'REPLY') : null;
+        const replyProfileImageUrl = createImageUrl(reply.profileImageServerName);
+        const indentationUnit = 50;
+        const indentationStyle = {
+        marginLeft: `${(reply.depth! - 1) * indentationUnit}px`, 
+        };
+        const replyClasses = reply.depth! > 1 ? `${styles.commentItem} ${styles.isReply}` : styles.commentItem;
+        
+return (
+    <div key={reply.replyNo} 
+         className={styles.commentWrapper} 
+         style={indentationStyle}
+    >
+        <div className={replyClasses}>
+            <Link to={`/mypage/${reply.userNo}`} className={styles.avatar}>
+                {replyProfileImageUrl && reply.profileImageServerName ? (
+                    <img src={replyProfileImageUrl} alt="프로필" className={styles.profileImage} />
+                ) : (
+                    <div className={styles.defaultProfile} style={{ margin: 0 }}>
+                        {reply.username[0]}
+                    </div>
+                )}
+            </Link>
+            <div className={styles.commentBody}>
+                {parentAuthorNickname && (
+                    <div className={styles.parentMention}>
+                        @{parentAuthorNickname}
+                    </div>
+                )}
+
+                <div className={styles.commentHeader}>
+                    <Link to={`/mypage/${reply.userNo}`} className={styles.commentAuthor}>
+                        {reply.username}
+                        {reply.sik_bti && (
+                            <span style={{ marginLeft: '4px' }}>
+                                (<SikBti sikBti={reply.sik_bti} style={{ display: 'inline', fontWeight: 400 }} />)
+                            </span>
                         )}
                     </Link>
-                    <div className={styles.commentBody}>
-                        <div className={styles.commentHeader}>
-                            <Link to={`/mypage/${parent.userNo}`} className={styles.commentAuthor}>
-                                {parent.username} {parent.sik_bti && `(${parent.sik_bti})`}
-                            </Link>
-                            <span className={styles.commentTime}>{new Date(parent.createdAt).toLocaleString()}</span>
-                        </div>
-                        
-                        {editingReplyNo === parent.replyNo ? (
-                            <div className={styles.editingBox}>
-                                <textarea
-                                    value={editingContent}
-                                    onChange={e => setEditingContent(e.target.value)}
-                                    className={styles.editingInput}
-                                />
-                                <button onClick={() => handleSaveEditedReply(parent.replyNo, editingContent)} className={styles.editingButton}>저장</button>
-                                <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
-                            </div>
-                        ) : (
-                            <p className={styles.commentContent}>{parent.content}</p>
-                        )}
-                        
-                        <div className={styles.commentActions}>
-                            {user?.userNo === parent.userNo && (
-                                <>
-                                    <span onClick={() => handleEditReply(parent.replyNo)}>수정</span>
-                                    <span onClick={() => handleDeleteReply(parent.replyNo, parent.userNo)}>삭제</span> 
-                                </>
-                            )}
-                            {user?.userNo ? (
-                                <span onClick={() => handleReplyButtonClick(parent.replyNo)}>
-                                    {replyingToReplyNo === parent.replyNo ? '취소' : '답글'}
-                                </span>
-                            ) : null}
-                            {user?.userNo !== parent.userNo && (
-                                <span onClick={() => 
-                                    handleReportClick({
-                                        author: parent.username,
-                                        title: parent.content.substring(0, 30) + '...',
-                                        category: 'REPLY',
-                                        refNo: parent.replyNo,
-                                    })
-                                }>
-                                    신고
-                                </span>
-                            )}
-                        </div>
-                    </div>
+                    <span className={styles.commentTime}>{new Date(reply.createdAt).toLocaleString()}</span>
                 </div>
 
-                {user?.userNo && replyingToReplyNo === parent.replyNo && (
-                    <div className={styles.replyForm}>
+                {/* 댓글 내용 */}
+                {editingReplyNo === reply.replyNo ? (
+                    <div className={styles.editingBox}>
                         <textarea
-                            value={replyingContent}
-                            onChange={(e) => setReplyingContent(e.target.value)}
-                            placeholder="답글을 입력하세요..."
-                            className={styles.replyInput}
-                            onKeyDown={(e: KeyboardEvent) => { 
-                                if (e.key === 'Enter' && !e.shiftKey) { 
-                                    e.preventDefault();
-                                    handleReplySubmit(); 
-                                }
-                            }}
+                            value={editingContent}
+                            onChange={e => setEditingContent(e.target.value)}
+                            className={styles.editingInput}
                         />
+                        <button onClick={() => handleSaveEditedReply(reply.replyNo, editingContent)} className={styles.editingButton}>저장</button>
+                        <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
+                    </div>
+                ) : (
+                    <p className={styles.commentContent}>{reply.content}</p>
+                )}
+                
+                {/* 댓글 액션 버튼 */}
+                <div className={styles.commentActions}>
+                    {user?.userNo === reply.userNo && (
+                        <>
+                            <span onClick={() => handleEditReply(reply.replyNo)}>수정</span>
+                            <span onClick={() => handleDeleteReply(reply.replyNo, reply.userNo)}>삭제</span> 
+                        </>
+                    )}
+                    {user?.userNo && (
+                        <span onClick={() => handleReplyButtonClick(reply.replyNo)}>
+                            {replyingToReplyNo === reply.replyNo ? '취소' : '답글'}
+                        </span>
+                    )}
+                    {user?.userNo !== reply.userNo && (
+                        <span onClick={() => 
+                            handleReportClick({
+                                author: reply.username,
+                                title: reply.content.substring(0, 30) + '...',
+                                category: 'REPLY',
+                                refNo: reply.replyNo,
+                            })
+                        }>
+                            신고
+                        </span>
+                    )}
+                </div>
+            </div>
+        </div>
+
+                {user?.userNo && replyingToReplyNo === reply.replyNo && (
+                    <div className={styles.replyForm} style={{ marginLeft: `${(reply.depth! - 1) * 30 + 30}px` }}>
+                        <textarea
+                        value={replyingContent}
+                        onChange={(e) => setReplyingContent(e.target.value)}
+                        placeholder={reply ? `@${reply.username}님께 답글...` : '답글 입력...'}
+                        className={styles.replyInput}
+                        onKeyDown={(e: KeyboardEvent) => { 
+                            if (e.key === 'Enter' && !e.shiftKey) { 
+                                e.preventDefault();
+                                handleReplySubmit();
+                                          }
+                                      }}
+                                  />
                         <button onClick={handleReplySubmit} className={styles.replySubmitButton}>
                             답글 등록
                         </button>
                     </div>
                 )}
-
-                {childReplies.map(child => {
-                    const childProfileImageUrl = createImageUrl(child.profileImageServerName); 
-                    return (
-                        <div key={child.replyNo} className={`${styles.commentItem} ${styles.isReply}`}>
-                            <Link to={`/mypage/${child.userNo}`} className={styles.avatar}>
-                                {childProfileImageUrl && child.profileImageServerName ? (
-                                    <img src={childProfileImageUrl} alt="프로필" className={styles.profileImage} />
-                                ) : (
-                                    <div className={styles.defaultProfile} style={{ margin: 0 }}>
-                                        {child.username[0]}
-                                    </div>
-                                )}
-                            </Link>
-                            <div className={styles.commentBody}>
-                                <div className={styles.commentHeader}>
-                                    <span className={styles.parentUsername}>@{parent.username}</span> 
-                                    <Link to={`/mypage/${child.userNo}`} className={styles.commentAuthor}>
-                                        {child.username} {child.sik_bti && `(${child.sik_bti})`}
-                                    </Link>
-                                    <span className={styles.commentTime}>{new Date(child.createdAt).toLocaleString()}</span>
-                                </div>
-                                
-                                {editingReplyNo === child.replyNo ? (
-                                    <div className={styles.editingBox}>
-                                        <textarea
-                                            value={editingContent}
-                                            onChange={e => setEditingContent(e.target.value)}
-                                            className={styles.editingInput}
-                                        />
-                                        <button onClick={() => handleSaveEditedReply(child.replyNo, editingContent)} className={styles.editingButton}>저장</button>
-                                        <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
-                                    </div>
-                                ) : (
-                                    <p className={styles.commentContent}>{child.content}</p>
-                                )}
-
-                                <div className={styles.commentActions}>
-                                    {user?.userNo === child.userNo && (
-                                        <>
-                                            <span onClick={() => handleEditReply(child.replyNo)}>수정</span>
-                                            <span onClick={() => handleDeleteReply(child.replyNo, child.userNo)}>삭제</span>
-                                        </>
-                                    )}
-                                    {user?.userNo !== child.userNo && (
-                                        <span onClick={() => 
-                                            handleReportClick({
-                                                author: child.username,
-                                                title: child.content.substring(0, 30) + '...',
-                                                category: 'REPLY',
-                                                refNo: child.replyNo,
-                                            })
-                                        }>
-                                            신고
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
             </div>
         );
     });
 };
 
-  if (isLoading) return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
-  if (!post) return <div className={styles.noPost}>해당 게시글이 존재하지 않거나 삭제되었습니다.</div>;
+if (isLoading) return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
+if (error) return <div className={styles.error}>{error}</div>;
+if (!post) return <div className={styles.noPost}>해당 게시글이 존재하지 않거나 삭제되었습니다.</div>;
 
-  const validImageUrl = post.serverName ? `${API_BASE}/images/${post.serverName}` : post.imageUrl || null;
-  const postProfileUrl = createUserProfileImageUrl(post.profileImageServerName, post.userNo);
+const validImageUrl = post.serverName ? `${API_BASE}/images/${post.serverName}` : post.imageUrl || null;
+const postProfileUrl = createUserProfileImageUrl(post.profileImageServerName, post.userNo);
 
-  return (
+return (
     <>
-      {modal && <CommunityModal message={modal.message} onConfirm={handleModalConfirm} onClose={closeModal} showCancel={modal.showCancel} />}
-      {isReportModalOpen && reportTargetInfo && (
-        <ReportModal
-          isOpen={isReportModalOpen}
-          onClose={() => setIsReportModalOpen(false)}
-          onSubmit={handleReportSubmit}
-          reportOptions={reportOptions}
-          targetInfo={reportTargetInfo}
-        />
-      )}
+        {modal && <CommunityModal message={modal.message} onConfirm={handleModalConfirm} onClose={closeModal} showCancel={modal.showCancel} />}
+        {isReportModalOpen && reportTargetInfo && (
+            <ReportModal
+                isOpen={isReportModalOpen}
+                onClose={() => setIsReportModalOpen(false)}
+                onSubmit={handleReportSubmit}
+                reportOptions={reportOptions}
+                targetInfo={reportTargetInfo}
+            />
+        )}
 
-      <CommunityHeader />
-      <div className={styles.container}>
-        <div className={styles.mainCard}>
-          <div className={styles.postHeader}>
-            {post.subheading && <p className={styles.subtitle}>[{post.subheading}]</p>}
-            <h1 className={styles.title}>{post.title}</h1>
-              <div className={styles.postMeta}>
-                <div className={styles.metaLeft}>
-                  {postProfileUrl ? (
-                    <Link to={`/mypage/${post.userNo}`}>
-                      <img 
-                        src={postProfileUrl}
-                        alt="프로필" 
-                        className={styles.postProfileImage} 
-                      />
-                    </Link>
-                  ) : (
-                    <div className={styles.defaultProfile}>
-                      {post.username[0]}
+        <CommunityHeader />
+        <div className={styles.container}>
+            <div className={styles.mainCard}>
+                <div className={styles.postHeader}>
+                    {post.subheading && <p className={styles.subtitle}>[{post.subheading}]</p>}
+                    <h1 className={styles.title}>{post.title}</h1>
+                    <div className={styles.postMeta}>
+                        <div className={styles.metaLeft}>
+                            {postProfileUrl ? (
+                                <Link to={`/mypage/${post.userNo}`}>
+                                    <img 
+                                        src={postProfileUrl}
+                                        alt="프로필" 
+                                        className={styles.postProfileImage} 
+                                    />
+                                </Link>
+                            ) : (
+                                <div className={styles.defaultProfile}>
+                                    {post.username[0]}
+                                </div>
+                            )}
+                            <span className={styles.username}>
+                                {post.username}
+                                {post.sik_bti && (
+                                    <span style={{ marginLeft: '6px' }}>
+                                        (<SikBti sikBti={post.sik_bti} style={{ display: 'inline', fontWeight: 400 }} />)
+                                    </span>
+                                )}
+                            </span> 
+                        </div>
+                        <div className={styles.metaRight}>
+                            <span>{new Date(post.createdDate).toLocaleString()}</span>
+                            <span>조회수: {post.views}</span>
+                            <span>좋아요: {likesCount}</span>
+                        </div>
                     </div>
-                  )}
-                  <span className={styles.username}>
-                    {post.username}
-                    {post.sik_bti && ` (${post.sik_bti})`}
-                  </span>
                 </div>
-                <div className={styles.metaRight}>
-                  <span>{new Date(post.createdDate).toLocaleString()}</span>
-                  <span>조회수: {post.views}</span>
-                  <span>좋아요: {likesCount}</span>
-                </div>
-              </div>
-              </div>
-          {validImageUrl && <img src={validImageUrl} alt="게시글 첨부 이미지" className={styles.postImage} />}
-          <p className={styles.content}>{post.content}</p>
-        </div>
-
-        <div className={styles.postActions}>
-          <div>
-            <button className={styles.likeButton} onClick={handleLikeToggle}>
-              <span className={styles.heartIcon}>{isLiked ? '❤️' : '🤍'}</span>
-            </button>
-          </div>
-
-          <div className={styles.editDeleteButtons}>
-            {user?.userNo === post.userNo ? (
-              <>
-                <button className={styles.editButton} onClick={handleEditClick}>
-                  수정
-                </button>
-                <button className={styles.deleteButton} onClick={handleDeletePost}>
-                  삭제
-                </button>
-              </>
-            ) : (
-              <button
-                className={styles.reportButton}
-                onClick={() =>
-                  handleReportClick({
-                    author: post.username,
-                    title: post.title,
-                    category: 'BOARD',
-                    refNo: post.boardNo,
-                  })
-                }
-              >
-                신고
-              </button>
-            )}
-          </div>
-        </div>
-        <div className={styles.commentSection}> 
-          {user?.userNo ? (
-            <div className={styles.commentInputBox}>
-              <textarea 
-                  value={newComment} 
-                  onChange={e => setNewComment(e.target.value)} 
-                  placeholder=" 댓글 입력..." 
-                  onKeyDown={handleNewCommentKeyDown}
-                  className={styles.commentInput} 
-              />
-              <button onClick={handleAddComment} className={styles.submitBtn}>댓글 등록</button>
+                {validImageUrl && <img src={validImageUrl} alt="게시글 첨부 이미지" className={styles.postImage} />}
+                <p className={styles.content}>{post.content}</p>
             </div>
-          ) : <div className={styles.loginRequired}>로그인 후 댓글 작성 가능</div>}
-          <div className={styles.commentList}>{replies.length === 0 ? <div className={styles.noComments}>아직 댓글이 없습니다.</div> : renderReplies()}</div>
-          <div ref={commentsEndRef} />
+
+            <div className={styles.postActions}>
+                <div>
+                    <button className={styles.likeButton} onClick={handleLikeToggle}>
+                        <span className={styles.heartIcon}>{isLiked ? '❤️' : '🤍'}</span>
+                    </button>
+                </div>
+
+                <div className={styles.editDeleteButtons}>
+                    {user?.userNo === post.userNo ? (
+                        <>
+                            <button className={styles.editButton} onClick={handleEditClick}>
+                                수정
+                            </button>
+                            <button className={styles.deleteButton} onClick={handleDeletePost}>
+                                삭제
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            className={styles.reportButton}
+                            onClick={() =>
+                                handleReportClick({
+                                    author: post.username,
+                                    title: post.title,
+                                    category: 'BOARD',
+                                    refNo: post.boardNo,
+                                })
+                            }
+                        >
+                            신고
+                        </button>
+                    )}
+                </div>
+            </div>
+            <div className={styles.commentSection}> 
+                {user?.userNo ? (
+                    <div className={styles.commentInputBox}>
+                        <textarea 
+                            value={newComment} 
+                            onChange={e => setNewComment(e.target.value)} 
+                            placeholder=" 댓글 입력..." 
+                            onKeyDown={handleNewCommentKeyDown}
+                            className={styles.commentInput} 
+                        />
+                        <button onClick={handleAddComment} className={styles.submitBtn}>댓글 등록</button>
+                    </div>
+                ) : <div className={styles.loginRequired}>로그인 후 댓글 작성 가능</div>}
+                <div className={styles.commentList}>{replies.length === 0 ? <div className={styles.noComments}>아직 댓글이 없습니다.</div> : renderReplies()}</div>
+                <div ref={commentsEndRef} />
+            </div>
         </div>
-      </div>
     </>
-  );
-};
+);};
 
 export default FreeDetail;

@@ -219,7 +219,6 @@
 }
 
 .isReply {
-    margin-left: 60px;
     padding-left: 20px;
     border-left: 3px solid #ff9800;
 }
@@ -434,4 +433,10 @@
     margin-bottom: 10px;
     padding-left: 10px;
     border-left: 2px solid #ff9800;
+}
+
+.parentMention {
+    font-size: 14px;
+    color: #ff9800;
+    margin-right: 5px;
 }

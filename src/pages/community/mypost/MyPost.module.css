@@ -149,3 +149,38 @@
     line-height: 1.625;
     white-space: pre-wrap;
 }
+
+.form-list {
+    padding: 0 1rem; 
+    background-color: #f7f7f7;
+    border-radius: 4px;
+}
+
+.form-list h4 {
+    margin-bottom: 0.5rem;
+    font-size: 15px;
+    color: #4a5568;
+}
+
+.form-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.form-item {
+    cursor: pointer; 
+    padding: 0.5rem 1rem;
+    border-bottom: 1px dashed #ddd; 
+    font-size: 14px;
+    color: #253712;
+    transition: background-color 150ms ease-in-out;
+}
+
+.form-item:last-child {
+    border-bottom: none;
+}
+
+.form-item:hover {
+    color: #ff4900;
+}

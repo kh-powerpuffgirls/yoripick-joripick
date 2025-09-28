@@ -6,6 +6,10 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../../store/store';
 import CommunityModal from '../CommunityModal';
+import { useQueryClient } from '@tanstack/react-query';
+import useChat from '../../../hooks/useChat';
+import type { Message } from '../../../type/chatmodal';
+import { saveMessage } from '../../../api/chatApi';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -31,7 +35,8 @@ interface CkSettingsModalProps { isOpen: boolean; onClose: () => void; classId: 
 const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModalProps) => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
-
+  const queryClient = useQueryClient();
+  const { sendChatMessage, rmvCKclass } = useChat();
   const [activeTab, setActiveTab] = useState('settings');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -93,20 +98,21 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
   const handleUpdate = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("roomNo", String(classId));
-    formData.append("className", name);
-    formData.append("classInfo", description);
-    formData.append("passcode", isCodeEnabled ? joinCode || '' : '');
-    if (file) formData.append("file", file);
+    formData.append('roomNo', String(classId));
+    formData.append('className', name);
+    formData.append('classInfo', description);
+    if (isCodeEnabled && joinCode) formData.append('passcode', joinCode);
+    if (!isCodeEnabled) formData.append('passcode', "");
+    if (file) formData.append('file', file);
 
     try {
-      await api.put(`/community/ckclass`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.put(`/community/ckclass`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       setModalMessage("클래스 수정이 완료되었습니다.");
       setModalCallback(() => {
         onUpdate();
         setModalOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["rooms"] });
+        rmvCKclass(classId);
       });
       setModalShowCancel(false);
       setModalOpen(true);
@@ -118,16 +124,35 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
     }
   };
 
-  const handleKick = (memberUserNo: number) => {
+  const handleKick = (member: Member) => {
     setModalMessage('정말로 이 멤버를 강퇴하시겠습니까?');
     setModalShowCancel(true);
     setModalCallback(() => async () => {
       try {
-        await api.delete(`/community/ckclass/${classId}/kick/${memberUserNo}`);
-        setMembers(members.filter(m => m.userNo !== memberUserNo));
+        await api.delete(`/community/ckclass/${classId}/kick/${member.userNo}`);
+        setMembers(members.filter(m => m.userNo !== member.userNo));
+        rmvCKclass(classId);
         setModalMessage('멤버가 강퇴되었습니다.');
         setModalShowCancel(false);
         setModalCallback(undefined);
+        rmvCKclass(classId);
+        // 강퇴 메시지 생성
+        const systemMessage: Message = {
+          userNo: 0,
+          username: "SYSTEM",
+          content: `${member.username} 님이 강퇴되었습니다`,
+          createdAt: new Date().toISOString(),
+          roomNo: classId,
+        };
+
+        // DB 저장
+        let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
+        let formData = new FormData();
+        formData.append("message", messageBlob);
+        await saveMessage("cclass", classId, formData);
+
+        // 웹소켓 브로드캐스트
+        sendChatMessage(classId, systemMessage);
       } catch (error) {
         console.error('멤버 강퇴 실패:', error);
         setModalMessage('멤버 강퇴에 실패했습니다.');
@@ -138,13 +163,35 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
     setModalOpen(true);
   };
 
-  const handleMemberClick = (memberUserNo: number) => {
-    navigate(`/mypage/${memberUserNo}`);
-    onClose();
-  };
+const handleLeaveClass = async () => {
+  if (window.confirm('정말로 이 클래스를 나가시겠습니까?')) {
+    try {
+      await api.delete(`/community/ckclass/${classId}/leave`);
+      alert('클래스를 나갔습니다.');
+      onUpdate();
+      onClose();
+    } catch (error) {
+      console.error('클래스 나가기 실패:', error);
+      alert('클래스 나가기에 실패했습니다.');
+    }
+  }
+};
 
-  if (!isOpen) return null;
-
+const handleToggleNotification = async () => {
+  try {
+    await api.put(`/community/ckclass/${classId}/notification`);
+    setNotificationEnabled(prev => !prev);
+    alert(`알림이 ${notificationEnabled ? '꺼졌습니다' : '켜졌습니다'}.`);
+  } catch (error) {
+    console.error('알림 설정 실패:', error);
+    alert('알림 설정을 변경하는 데 실패했습니다.');
+  }
+};
+const handleMemberClick = (memberUserNo: number) => {
+  navigate(`/mypage/${memberUserNo}`);
+  onClose();
+};
+if (!isOpen) return null;
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
@@ -247,7 +294,7 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
                     </span>
                     {member.userNo !== user?.userNo && (
                       <button
-                        onClick={() => handleKick(member.userNo)}
+                        onClick={() => handleKick(member)}
                         className={styles.kickButton}
                       >
                         강퇴
@@ -281,7 +328,7 @@ const CkSettingsModal = ({ isOpen, onClose, classId, onUpdate }: CkSettingsModal
         )}
       </div>
     </div>
-  );
+);
 };
 
 export default CkSettingsModal;

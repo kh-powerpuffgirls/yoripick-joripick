@@ -80,6 +80,33 @@
   background-position: right 12px center;
 }
 
+.searchDropdown {
+  padding: 0.7rem 1rem;
+  border: none;
+  border-right: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  position: relative; 
+  padding-right: 30px; 
+}
+
+.searchDropdown::after {
+  content: ''; 
+  position: absolute; 
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%); 
+  
+  width: 0; 
+  height: 0; 
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  
+  border-top: 5px solid #666;
+}
+
 .searchDropdown:focus {
   outline: none;
 }
@@ -147,6 +174,7 @@
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  margin-bottom: 20px;
 }
 
 .classCard {
@@ -430,8 +458,17 @@
   justify-content: center;
 }
 
-
 .deleteButton:hover {
   background-color: #da0202; 
 }
 
+.passcodeInput {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 300px;
+  height: 35x; 
+  padding: 0 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
