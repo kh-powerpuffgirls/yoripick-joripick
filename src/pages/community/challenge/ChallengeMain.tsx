@@ -126,6 +126,7 @@ const ChallengeMain = () => {
 
   const renderCard = (challenge: ChallengeItem) => (
     <div key={challenge.challengeNo} className={styles.postCard} onClick={()=>handleCardClick(challenge.challengeNo)}>
+      
       <div className={styles.imagePlaceholder}>
         {challenge.serverName ? (
           <img src={`${API_BASE}/images/${challenge.serverName}`} alt={challenge.title} className={styles.postImage}/>

@@ -423,7 +423,7 @@ return (
          style={indentationStyle}
     >
         <div className={replyClasses}>
-            <Link to={`/mypage/${reply.userNo}`} className={styles.avatar}>
+            <Link to={`/users/${reply.userNo}`} className={styles.avatar}>
                 {replyProfileImageUrl && reply.profileImageServerName ? (
                     <img src={replyProfileImageUrl} alt="프로필" className={styles.profileImage} />
                 ) : (
@@ -440,7 +440,7 @@ return (
                 )}
 
                 <div className={styles.commentHeader}>
-                    <Link to={`/mypage/${reply.userNo}`} className={styles.commentAuthor}>
+                    <Link to={`/users/${reply.userNo}`} className={styles.commentAuthor}>
                         {reply.username}
                         {reply.sik_bti && (
                             <span style={{ marginLeft: '4px' }}>
@@ -494,7 +494,6 @@ return (
                 </div>
             </div>
         </div>
-
                 {user?.userNo && replyingToReplyNo === reply.replyNo && (
                     <div className={styles.replyForm} style={{ marginLeft: `${(reply.depth! - 1) * 30 + 30}px` }}>
                         <textarea
@@ -548,7 +547,7 @@ return (
                     <div className={styles.postMeta}>
                         <div className={styles.metaLeft}>
                             {postProfileUrl ? (
-                                <Link to={`/mypage/${post.userNo}`}>
+                                <Link to={`/users/${post.userNo}`}>
                                     <img 
                                         src={postProfileUrl}
                                         alt="프로필" 

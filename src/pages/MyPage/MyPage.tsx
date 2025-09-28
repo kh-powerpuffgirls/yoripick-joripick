@@ -8,6 +8,8 @@ import ProfileModal from "../../components/MyPage/ProfileModal";
 import AllergyModal from "../../components/MyPage/AllergyModal";
 import MemberInfoModal from "../../components/MyPage/MemberInfoModal";
 import AlarmModal from "../../components/MyPage/AlarmModal";
+// 신고
+import ReportModal from '../../components/Report/ReportModal'; 
 
 import type { RootState } from "../../store/store";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,6 +25,20 @@ import Pagination from "../../components/Pagination";
 import type { PageInfo } from "../../api/adminApi";
 
 
+// 신고
+interface ReportTargetInfo {
+    author: string;
+    title: string;
+    category: string;
+    refNo: number;
+}
+
+interface ReportOption {
+    reportType: string;
+    category: string;
+    detail: string;
+}
+
 const MyPage = () => {
     const { userNo } = useParams();
     const [isProfileModal, setProfileModal] = useState(false);
@@ -30,6 +46,13 @@ const MyPage = () => {
     const [isMemberInfoModal, setMemberInfoModal] = useState(false);
     const [isAlarmModal, setAlarmModal] = useState(false);
     const [isInactiveModal, setInactiveModal] = useState(false);
+    
+    // 신고
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
+    const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
+
+
     const dispatch = useDispatch();
     const [allergyInfo, setAllergyInfo] = useState<{ id: number; name: string; parent: string }[]>([]);
     const [myRecipes, setMyRecipes] = useState<MyPageRecipe[]>([]);
@@ -104,6 +127,79 @@ const MyPage = () => {
     const navigate = useNavigate();
     const handleInactive = () => {
     };
+    
+    // 신고
+    const handleReportClick = async () => {
+        const category = 'USERS';
+        if (!user || !myProfile?.userNo) {
+            alert('로그인 후 신고 가능합니다.');
+            return;
+        }
+
+        const targetInfo: ReportTargetInfo = {
+            author: user.username,
+            title: `${user.username} 님 프로필`, 
+            category, 
+            refNo: Number(userNo), 
+        };
+
+        setReportTargetInfo(targetInfo);
+
+        try {
+            const reportApi = axios.create({
+                baseURL: "http://localhost:8081", 
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            
+            const res = await reportApi.get<ReportOption[]>('/community/report/types');
+
+            const filteredOptions = res.data.filter((option) => option.category === category);
+            setReportOptions(filteredOptions);
+
+            if (filteredOptions.length === 0) {
+                alert('해당 카테고리의 신고 옵션이 없습니다.'); 
+                return;
+            }
+
+            setIsReportModalOpen(true);
+        } catch (err) {
+            console.error('신고 옵션 fetch 실패:', err);
+            setReportOptions([]);
+            alert('신고 옵션 로드 실패');
+        }
+    };
+
+    // 신고
+    const handleReportSubmit = async (reportType: string, content: string, refNo: number) => {
+        if (!myProfile?.userNo || !reportTargetInfo) {
+            alert('로그인 정보가 유효하지 않아 신고할 수 없습니다.');
+            return;
+        }
+
+        try {
+            const reportApi = axios.create({
+                baseURL: "http://localhost:8081", 
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+
+            await reportApi.post('/community/report', {
+                reportType,
+                content,
+                refNo,
+                refType: reportTargetInfo.category, 
+            });
+
+            alert('신고가 접수되었습니다. 감사합니다.');
+            setIsReportModalOpen(false);
+            setReportTargetInfo(null);
+        } catch (err: any) {
+            console.error(err);
+            alert(err.response?.data?.message || '신고 실패'); 
+            setIsReportModalOpen(false);
+            setReportTargetInfo(null);
+        }
+    };
+
 
     useEffect(() => {
         if (!user || !accessToken) return;
@@ -201,7 +297,8 @@ const MyPage = () => {
                 ) : (
                     <button
                         className={styles.reportBtn}
-                        onClick={() => alert("신고가 접수되었습니다.")}
+                        // 🚨 신고 버튼 클릭 시 handleReportClick 함수 호출로 변경
+                        onClick={handleReportClick}
                     >
                         🚨 신고하기
                     </button>
@@ -402,6 +499,17 @@ const MyPage = () => {
                     user={user!}
                     onClose={() => setInactiveModal(false)}
                     onConfirm={handleInactive}
+                />
+            )}
+            
+            {/* 신고 모달 */}
+            {isReportModalOpen && reportTargetInfo && (
+                <ReportModal
+                    isOpen={isReportModalOpen}
+                    onClose={() => setIsReportModalOpen(false)}
+                    onSubmit={handleReportSubmit}
+                    targetInfo={reportTargetInfo}
+                    reportOptions={reportOptions}
                 />
             )}
         </div>
