@@ -38,6 +38,14 @@
     border: 1px solid #ccc;
 }
 
+.body input[type="date"] {
+    width: 49%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
 .footer {
     display: flex;
     justify-content: center;

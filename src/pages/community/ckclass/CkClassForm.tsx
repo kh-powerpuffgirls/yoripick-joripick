@@ -3,7 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from './CkClassForm.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
 import axios from 'axios';
-import { store } from '../../../store/store';
+import { store, type RootState } from '../../../store/store';
+import type { ChatRoom, Message } from '../../../type/chatmodal';
+import { getRooms, saveMessage } from '../../../api/chatApi';
+import { openChat, setRooms } from '../../../features/chatSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import useChat from '../../../hooks/useChat';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -27,6 +33,10 @@ interface CookingClassFormProps {
 }
 
 const CkClassForm = ({ isEdit = false }: CookingClassFormProps) => {
+    const queryClient = useQueryClient();
+    const { sendChatMessage } = useChat();
+    const user = useSelector((state: RootState) => state.auth.user);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const { classId } = useParams<{ classId: string }>();
 
@@ -89,46 +99,81 @@ const CkClassForm = ({ isEdit = false }: CookingClassFormProps) => {
         }
     };
 
-const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (isCodeEnabled && passcodeError) {
-        alert(passcodeError);
-        return;
-    }
-
-    setIsSubmitting(true);
-
-    const formData = new FormData();
-    formData.append('className', name);
-    formData.append('classInfo', description);
-    formData.append('passcode', isCodeEnabled ? joinCode : '');
-
-    if (file) {
-        formData.append('file', file);
-    }
-
-    try {
-        if (isEdit) {
-            formData.append('roomNo', classId!);
-            await api.put(`/community/ckclass`, formData, {
+    // 클래스 생성 로직
+    const mutation = useMutation({
+        mutationFn: (formData: FormData) =>
+            api.post(`/community/ckclass`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
-            });
-            alert('클래스 수정이 완료되었습니다.');
-        } else {
-            await api.post(`/community/ckclass`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            }),
+        onSuccess: (res) => {
             alert('클래스 등록이 완료되었습니다.');
+            queryClient.invalidateQueries({ queryKey: ["rooms"] });
+            getRooms(user?.userNo)
+                .then((rooms: ChatRoom[]) => {
+                    dispatch(setRooms(rooms));
+
+                    const newRoom = rooms.find(r => r.roomNo === res.data);
+                    if (!newRoom) return;
+                    dispatch(openChat(newRoom));
+
+                    // 등록 메시지 생성
+                    const systemMessage: Message = {
+                        userNo: 0,
+                        username: "SYSTEM",
+                        content: `${newRoom.className} 에 오신 것을 환영합니다`,
+                        createdAt: new Date().toISOString(),
+                        roomNo: newRoom.roomNo,
+                    };
+
+                    // DB 저장
+                    let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
+                    let formData = new FormData();
+                    formData.append("message", messageBlob);
+                    saveMessage("cclass", newRoom.roomNo, formData);
+
+                    // 웹소켓 브로드캐스트
+                    sendChatMessage(newRoom.roomNo, systemMessage);
+                });
         }
-        navigate('/community/ckclass/');
-    } catch (error: any) {
-        console.error("클래스 저장 실패:", error);
-        const errorMessage = error.response?.data || "클래스 저장에 실패했습니다.";
-        alert(errorMessage);
-    } finally {
-        setIsSubmitting(false);
-    }
-};
+    });
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        if (isCodeEnabled && passcodeError) {
+            alert(passcodeError);
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const formData = new FormData();
+        formData.append('className', name);
+        formData.append('classInfo', description);
+        formData.append('passcode', isCodeEnabled ? joinCode : '');
+
+        if (file) {
+            formData.append('file', file);
+        }
+
+        try {
+            if (isEdit) {
+                formData.append('roomNo', classId!);
+                await api.put(`/community/ckclass`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                alert('클래스 수정이 완료되었습니다.');
+            } else {
+                mutation.mutate(formData);
+            }
+            navigate('/community/ckclass/');
+        } catch (error: any) {
+            console.error("클래스 저장 실패:", error);
+            const errorMessage = error.response?.data || "클래스 저장에 실패했습니다.";
+            alert(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleDelete = async () => {
         if (window.confirm('정말로 이 클래스를 삭제하시겠습니까?')) {
@@ -150,7 +195,7 @@ const handleSubmit = async (e: FormEvent) => {
 
     return (
         <>
-            <CommunityHeader/>
+            <CommunityHeader />
             <div className={styles.container}>
                 <div className={styles.formContainer}>
                     <h1 className={styles.formTitle}>{isEdit ? '나의 클래스 (수정)' : '나의 클래스 (등록)'}</h1>

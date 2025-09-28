@@ -8,9 +8,11 @@ import ReportModal from '../../../components/Report/ReportModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '../../../store/store';
 import type { RootState } from '../../../store/store';
-import { openChat, sendMessage } from '../../../features/chatSlice';
-import type { Message } from '../../../type/chatmodal';
-import { saveMessage } from '../../../api/chatApi';
+import { openChat, setRooms } from '../../../features/chatSlice';
+import type { ChatRoom, Message } from '../../../type/chatmodal';
+import { getRooms, lastRead, saveMessage } from '../../../api/chatApi';
+import useChat from '../../../hooks/useChat';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -74,6 +76,8 @@ interface ReportOption {
 type SearchType = 'all' | 'className' | 'userName';
 
 const CkClassSearch = () => {
+  const queryClient = useQueryClient();
+  const { sendChatMessage } = useChat();
   const dispatch = useDispatch();
   // const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -143,6 +147,53 @@ const CkClassSearch = () => {
     fetchClasses();
   };
 
+  // 클래스 참여 로직
+  const mutation = useMutation({
+    mutationFn: (payload: { roomNo: number, userNo: number }) =>
+      api.post(`/community/ckclass/enroll`, {
+        roomNo: payload.roomNo,
+        userNo: payload.userNo,
+      }),
+    onSuccess: async (res, variables) => {
+      await getRooms(user?.userNo)
+        .then((rooms: ChatRoom[]) => {
+          const newRoom = rooms.find(r => r.roomNo === variables.roomNo);
+          if (!newRoom) return;
+
+          // 입장 메시지 생성
+          const systemMessage: Message = {
+            userNo: 0,
+            username: "SYSTEM",
+            content: `${user?.username} 님이 입장하셨습니다`,
+            createdAt: new Date().toISOString(),
+            roomNo: newRoom.roomNo,
+          };
+
+          // DB 저장
+          let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
+          let formData = new FormData();
+          formData.append("message", messageBlob);
+          saveMessage("cclass", newRoom.roomNo, formData)
+            .then((res) => {
+              lastRead(user?.userNo as number, res.roomNo, res.messageNo as number);
+              dispatch(setRooms(rooms));
+              queryClient.invalidateQueries({ queryKey: ["rooms"] });
+            });
+
+          // 웹소켓 브로드캐스트
+          sendChatMessage(newRoom.roomNo, systemMessage);
+          dispatch(openChat(newRoom));
+        });
+    },
+    onError: (error) => {
+      openModal({
+        message: '이미 참여중인 클래스 입니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      })
+    },
+  });
+
   const handleJoin = async (cls: CookingClassDisplay) => {
     if (!user?.userNo) {
       openModal({
@@ -164,46 +215,7 @@ const CkClassSearch = () => {
         return;
       }
     }
-
-    try {
-      const enrollResponse = await api.post(`/community/ckclass/enroll`, {
-        roomNo: cls.id,
-        userNo: user.userNo,
-      });
-
-      if (enrollResponse.status === 200) {
-        dispatch(openChat({
-          roomNo: cls.id,
-          className: cls.name,
-          type: "cclass",
-          messages: []
-        }));
-
-        // 입장 메시지 생성
-        const systemMessage: Message = {
-          userNo: 0,
-          username: "SYSTEM",
-          content: `${user.username} 님이 입장하셨습니다`,
-          createdAt: new Date().toISOString(),
-          roomNo: cls.id,
-        };
-
-        // DB 저장
-        let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
-        let formData = new FormData();
-        formData.append("message", messageBlob);
-        await saveMessage("cclass", cls.id, formData);
-
-        // 웹소켓 브로드캐스트
-        dispatch(sendMessage(systemMessage));
-      }
-    } catch (error: any) {
-      openModal({
-        message: error.response?.data || '클래스 참여 중 오류가 발생했습니다.',
-        onConfirm: closeModal,
-        showCancel: false,
-      });
-    }
+    mutation.mutate({ roomNo: cls.id, userNo: user.userNo });
   };
 
   const fetchReportOptions = async () => {

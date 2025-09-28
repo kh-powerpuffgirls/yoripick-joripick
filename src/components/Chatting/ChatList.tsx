@@ -95,7 +95,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                                         <img
                                             src={msg.content}
                                             alt="이미지"
-                                            className={style.previewImage}
+                                            className={style.image}
                                         />
                                     )}
                                     {msg.button?.linkUrl && (

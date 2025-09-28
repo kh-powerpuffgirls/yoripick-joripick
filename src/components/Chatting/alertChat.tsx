@@ -7,15 +7,19 @@ import type { Dispatch, UnknownAction } from "redux";
 import style from "./alertModal.module.css"
 import type { RootState } from "../../store/store";
 import type { User } from "../../type/authtype";
-import { deleteRooms } from "../../api/chatApi";
+import { deleteRooms, getRoomNo } from "../../api/chatApi";
 import { useNavigate } from "react-router-dom";
+import useChat from "../../hooks/useChat";
 
-const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: Dispatch<UnknownAction>) => {
+const handleNewChat = async (user: User | null, type: ChatRoomCreate,
+    dispatch: Dispatch<UnknownAction>, rmvCKclass: (roomNo: string | number | undefined) => void) => {
     dispatch(hideAlert());
     dispatch(resetRoom(type));
-    let newRoom:ChatRoom;
+    let newRoom: ChatRoom;
     if (user) {
+        const roomNo = await getRoomNo(type, user);
         newRoom = await deleteRooms(type as ChatRoomCreate, user);
+        rmvCKclass(roomNo);
     } else {
         newRoom = {
             roomNo: 0,
@@ -34,6 +38,7 @@ const handleNewChat = async (user: User | null, type: ChatRoomCreate, dispatch: 
     }
 };
 export const NewChatModal = ({ type }: ChatModalProps) => {
+    const { rmvCKclass } = useChat();
     const user = useSelector((state: RootState) => state.auth.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -58,7 +63,7 @@ export const NewChatModal = ({ type }: ChatModalProps) => {
         <>
             <h3>{"새 대화를 시작하시겠습니까?"}</h3>
             <p>이전 대화기록은 삭제됩니다.</p>
-            <button className={style.confirm} onClick={() => handleNewChat(user, type, dispatch)}>확인</button>
+            <button className={style.confirm} onClick={() => handleNewChat(user, type, dispatch, rmvCKclass)}>확인</button>
             <button className={style.cancel} onClick={() => dispatch(hideAlert())}>취소</button>
         </>
     );
