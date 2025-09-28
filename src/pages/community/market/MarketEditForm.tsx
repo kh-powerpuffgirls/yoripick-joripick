@@ -1,5 +1,10 @@
-import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  useState,
+  useEffect,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
@@ -9,9 +14,10 @@ import CommunityHeader from '../Header/CommunityHeader';
 import SellerModal from './SellerModal';
 import CommunityModal from '../CommunityModal';
 
+const API_BASE = 'http://localhost:8081';
+
 const getAccessToken = () => store.getState().auth.accessToken;
 
-const API_BASE = 'http://localhost:8081';
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
@@ -20,9 +26,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error),
@@ -30,12 +34,7 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  async (err: AxiosError) => {
-    if (err.response?.status === 401) {
-      console.error('401 Unauthorized - 로그인 필요');
-    }
-    return Promise.reject(err);
-  }
+  async (err: AxiosError) => Promise.reject(err),
 );
 
 interface MarketFormState {
@@ -50,11 +49,17 @@ interface MarketFormState {
   alwaysOnSale: boolean;
 }
 
-const MarketForm = () => {
+const MarketEditForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const productId = id ? Number(id) : null;
+
   const user = useSelector((state: RootState) => state.auth.user);
+  const isLoggedIn = Boolean(user?.userNo);
   const userNo = user?.userNo;
-  const isLoggedIn = Boolean(userNo);
+  
+  const [isAuthor, setIsAuthor] = useState(false);
+  const [hasPurchaseRequests, setHasPurchaseRequests] = useState(false);
 
   const [formData, setFormData] = useState<MarketFormState>({
     title: '',
@@ -73,25 +78,83 @@ const MarketForm = () => {
   const [fileName, setFileName] = useState<string>('선택된 이미지 없음');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); 
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchPostData = async () => {
+    if (!productId) {
+      setError('수정할 게시글 ID가 유효하지 않습니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await api.get(`/community/market/${productId}`);
+      const item = response.data;
+      
+      const isCurrentUserAuthor = item.userNo === userNo;
+      setIsAuthor(isCurrentUserAuthor);
+      
+      setHasPurchaseRequests(item.isPurchased); 
+
+      const isAlwaysOnSale = item.deadline && item.deadline.startsWith('2999-12-31');
+
+      setFormData({
+        title: item.title || '',
+        name: item.name || '',
+        price: String(item.price || ''),
+        quantity: String(item.quantity || ''),
+        phone: item.phone || '',
+        accountNo: item.accountNo || '',
+        detail: item.detail || '',
+        deadline: isAlwaysOnSale ? '' : item.deadline.split('T')[0] || '',
+        alwaysOnSale: isAlwaysOnSale,
+      });
+
+      if (item.serverName) {
+        const fullImageUrl = `${API_BASE}/images/market/${item.userNo}/${item.serverName.split('/').pop()}`;
+        setImagePreview(fullImageUrl);
+        setFileName(item.originName || '기존 이미지');
+      }
+    } catch (err) {
+      console.error('게시글 불러오기 실패:', err);
+      if (axios.isAxiosError(err) && err.response?.status === 404) {
+         setError('게시글을 찾을 수 없습니다.');
+      } else {
+        setError('게시글 정보를 불러오는 데 실패했습니다.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const checkAuthAndRedirect = setTimeout(() => {
-      if (!user) {
-        setError('게시글 등록을 위해 로그인해야 합니다.');
-        navigate('/login');
-      }
-    }, 100);
-    return () => clearTimeout(checkAuthAndRedirect);
-  }, [user, navigate]);
+    if (productId) {
+      fetchPostData();
+    } else {
+      setError('수정할 게시글 ID가 없습니다.');
+      setIsLoading(false);
+    }
+  }, [productId, userNo]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value, type } = e.target;
     const target = e.target as HTMLInputElement;
+
     if (type === 'checkbox') {
-      setFormData({ ...formData, [name]: target.checked });
+      setFormData({
+        ...formData,
+        [name]: target.checked,
+      });
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
   };
 
@@ -112,14 +175,20 @@ const MarketForm = () => {
     e.preventDefault();
     setMessage(null);
     setError(null);
+    setSuccessMessage(null);
 
-    if (!imageFile) {
-      setError('상품 이미지를 반드시 첨부해야 합니다.');
+    if (!isLoggedIn || !userNo) {
+      setError('로그인이 필요합니다. 로그인 후 다시 시도해 주세요.');
       return;
     }
 
-    if (!isLoggedIn || !userNo) {
-      setError('로그인 후 이용 가능합니다.');
+    if (!isAuthor) {
+      setError('게시글 수정 권한이 없습니다. 작성자만 수정할 수 있습니다.');
+      return;
+    }
+    
+    if (!imagePreview && !imageFile) {
+      setError('상품 이미지를 반드시 첨부해야 합니다.');
       return;
     }
 
@@ -140,10 +209,24 @@ const MarketForm = () => {
     setShowModal(true);
   };
 
+  const handleSuccessModalClose = () => {
+    setSuccessMessage(null);
+    navigate(`/community/market/buyForm/${productId}`);
+  }
+
   const handleConfirmSubmit = async () => {
     try {
+      setShowModal(false);
+      
+      if (!productId || !userNo || !isAuthor) { 
+        setError('수정 권한이 없거나 게시글 정보가 유효하지 않아 요청을 보낼 수 없습니다.');
+        return;
+      }
+
       const data = new FormData();
-      const deadlineValue = formData.alwaysOnSale ? '2999-12-31' : formData.deadline;
+      const deadlineValue = formData.alwaysOnSale
+        ? '2999-12-31'
+        : formData.deadline;
 
       const marketDto = {
         title: formData.title,
@@ -158,24 +241,87 @@ const MarketForm = () => {
         userNo: userNo,
       };
 
-      data.append('marketDto', new Blob([JSON.stringify(marketDto)], { type: 'application/json' }));
-      if (imageFile) data.append('image', imageFile);
+      data.append(
+        'marketDto',
+        new Blob([JSON.stringify(marketDto)], { type: 'application/json' }),
+      );
 
-      await api.post('/community/market', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+      if (imageFile) {
+        data.append('image', imageFile);
+      }
 
-      setMessage('판매 글이 성공적으로 등록되었습니다.');
-      setShowModal(false);
-      setTimeout(() => navigate('/community/market'), 1500);
+      await api.put(`/community/market/${productId}`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      setSuccessMessage('판매 글이 성공적으로 수정되었습니다.');
+
     } catch (err) {
-      console.error('판매 글 등록 실패:', err);
-      setError('판매 글 등록에 실패했습니다.');
-      setShowModal(false);
+      console.error('Failed to update post:', err);
+      if (axios.isAxiosError(err) && err.response?.status === 403) {
+        setError('게시글 수정 권한이 없거나 처리할 수 없는 요청입니다.');
+      } else if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setError('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+        navigate('/login');
+      } else {
+        setError('판매 글 수정에 실패했습니다.');
+      }
     }
   };
 
   const handleCancel = () => {
-    navigate('/community/market');
+    navigate(`/community/market/buyForm/${productId}`);
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <CommunityHeader />
+        <div className={styles.container}>
+          <div className={styles.formContainer}>
+            <div className={styles.messageBox}>
+                {error || '게시글 정보를 불러오는 중입니다...'}
+            </div>
+            {error && ( 
+              <div className={styles.buttonGroup}>
+                <button type="button" className={styles.cancelButton} onClick={handleCancel}>
+                  뒤로가기
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  const isFatalError = error && (error.includes('게시글 ID') || error.includes('게시글을 찾을 수'));
+  if (isFatalError) {
+      return (
+          <>
+             <CommunityHeader />
+             <div className={styles.container}>
+                 <div className={styles.formContainer}>
+                     <div className={styles.messageBox}>{error}</div>
+                     <div className={styles.buttonGroup}>
+                         <button type="button" className={styles.cancelButton} onClick={handleCancel}>
+                             뒤로가기
+                         </button>
+                     </div>
+                 </div>
+             </div>
+             {error && (
+                 <CommunityModal
+                     message={error}
+                     onClose={() => setError(null)}
+                     onConfirm={() => setError(null)}
+                     showCancel={false}
+                 />
+             )}
+         </>
+      );
+  }
+
 
   return (
     <>
@@ -183,7 +329,6 @@ const MarketForm = () => {
       <div className={styles.container}>
         <div className={styles.formContainer}>
           <form onSubmit={handleSubmit}>
-            {/* 제목 및 작성자 */}
             <div className={styles.formHeader}>
               <input
                 type="text"
@@ -193,21 +338,25 @@ const MarketForm = () => {
                 value={formData.title}
                 onChange={handleInputChange}
                 required
+                disabled={!isAuthor} 
               />
               <div className={styles.authorInfo}>
-                <span>{user?.username || '로그인된 사용자'}</span>
+                <span>{user?.username || '비로그인 사용자'}</span>
                 <span className={styles.date}>{new Date().toLocaleDateString()}</span>
               </div>
             </div>
-
             {message && <div className={styles.messageBox}>{message}</div>}
-            {error && <div className={styles.errorBox}>{error}</div>}
-
-            {/* 이미지 업로드 */}
+            
+            {error && <div className={styles.messageBox}>{error}</div>}
+            
             <div className={styles.imageUploadSection}>
               <div className={styles.imageBox}>
                 {imagePreview ? (
-                  <img src={imagePreview} alt="상품 이미지" className={styles.imagePreview} />
+                  <img
+                    src={imagePreview}
+                    alt="상품 이미지"
+                    className={styles.imagePreview}
+                  />
                 ) : (
                   <span>상품 이미지</span>
                 )}
@@ -215,23 +364,32 @@ const MarketForm = () => {
               <div className={styles.uploadText}>
                 운영정책에 어긋나는 이미지 등록 시 이용이 제한될 수 있습니다.
               </div>
-              <label htmlFor="image-upload" className={styles.imageUploadBtn}>이미지 선택 (필수)</label>
+              <label 
+                htmlFor="image-upload" 
+                className={styles.imageUploadBtn}
+                style={!isAuthor ? { pointerEvents: 'none', opacity: 0.5 } : {}}
+              >
+                이미지 선택 (필수)
+              </label>
               <input
                 id="image-upload"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 className={styles.hiddenInput}
+                disabled={!isAuthor} 
               />
               <span className={styles.noFileText}>{fileName}</span>
-              {imagePreview && (
-                <button type="button" onClick={handleClearImage} className={styles.clearButton}>
+              {imagePreview && isAuthor && ( 
+                <button
+                  type="button"
+                  onClick={handleClearImage}
+                  className={styles.clearButton}
+                >
                   이미지 삭제
                 </button>
               )}
             </div>
-
-            {/* 판매 기간 */}
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>판매 기간</span>
@@ -254,7 +412,7 @@ const MarketForm = () => {
                     name="deadline"
                     value={formData.deadline}
                     onChange={handleInputChange}
-                    disabled={formData.alwaysOnSale}
+                    disabled={formData.alwaysOnSale || !isAuthor}
                     required={!formData.alwaysOnSale}
                   />
                 </div>
@@ -264,13 +422,12 @@ const MarketForm = () => {
                     name="alwaysOnSale"
                     checked={formData.alwaysOnSale}
                     onChange={handleInputChange}
+                    disabled={!isAuthor}
                   />
                   <span>상시 판매</span>
                 </label>
               </div>
             </div>
-
-            {/* 상세 설명 */}
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>상세 설명</span>
@@ -282,10 +439,9 @@ const MarketForm = () => {
                 value={formData.detail}
                 onChange={handleInputChange}
                 required
+                disabled={!isAuthor}
               ></textarea>
             </div>
-
-            {/* 상품 정보 */}
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>상품 정보 입력</span>
@@ -293,7 +449,11 @@ const MarketForm = () => {
               <div className={styles.itemInfo}>
                 <div className={styles.itemImagePlaceholder}>
                   {imagePreview ? (
-                    <img src={imagePreview} alt="상품 이미지 미리보기" className={styles.itemImagePreview} />
+                    <img
+                      src={imagePreview}
+                      alt="상품 이미지 미리보기"
+                      className={styles.itemImagePreview}
+                    />
                   ) : (
                     <span>이미지</span>
                   )}
@@ -310,6 +470,7 @@ const MarketForm = () => {
                       onChange={handleInputChange}
                       maxLength={20}
                       required
+                      disabled={!isAuthor}
                     />
                     <span className={styles.charCount}>({formData.name.length}/20)</span>
                   </div>
@@ -325,6 +486,7 @@ const MarketForm = () => {
                       required
                       min="0"
                       step="100"
+                      disabled={!isAuthor}
                     />
                   </div>
                   <div className={styles.detailRow}>
@@ -338,13 +500,12 @@ const MarketForm = () => {
                       onChange={handleInputChange}
                       required
                       min="1"
+                      disabled={!isAuthor}
                     />
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* 문의전화 */}
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>문의전화 (판매자)</span>
@@ -357,10 +518,9 @@ const MarketForm = () => {
                 value={formData.phone}
                 onChange={handleInputChange}
                 required
+                disabled={!isAuthor}
               />
             </div>
-
-            {/* 계좌번호 */}
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <span className={styles.sectionTitle}>계좌번호 (판매자)</span>
@@ -373,36 +533,54 @@ const MarketForm = () => {
                 value={formData.accountNo}
                 onChange={handleInputChange}
                 required
+                disabled={!isAuthor}
               />
             </div>
-
-            {/* 버튼 그룹 */}
             <div className={styles.buttonGroup}>
-              <button type="submit" className={styles.submitButton}>등록</button>
-              <button type="button" className={styles.cancelButton} onClick={handleCancel}>취소</button>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={!isAuthor}
+              >
+                수정 완료
+              </button>
+              <button
+                type="button"
+                className={styles.cancelButton}
+                onClick={handleCancel}
+              >
+                취소
+              </button>
             </div>
           </form>
         </div>
       </div>
+      
+      {error && (
+        <CommunityModal
+          message={error}
+          onClose={() => setError(null)}
+          onConfirm={() => setError(null)}
+          showCancel={false}
+        />
+      )}
+      
+      {successMessage && (
+        <CommunityModal
+          message={successMessage}
+          onClose={handleSuccessModalClose} 
+          onConfirm={handleSuccessModalClose} 
+          showCancel={false}
+        />
+      )}
 
-      {/* 등록 전 확인 모달 */}
       <SellerModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={handleConfirmSubmit}
       />
-
-      {/* 등록 성공/실패 모달 */}
-      {(message || error) && (
-        <CommunityModal
-          message={message || error || ''}
-          onClose={() => { setMessage(null); setError(null); }}
-          onConfirm={() => { setMessage(null); setError(null); }}
-          showCancel={true}
-        />
-      )}
     </>
   );
 };
 
-export default MarketForm;
+export default MarketEditForm;

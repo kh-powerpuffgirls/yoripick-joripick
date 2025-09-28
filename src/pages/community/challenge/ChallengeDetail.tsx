@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, type KeyboardEvent } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import axios from 'axios';
@@ -8,6 +8,7 @@ import styles from './ChallengeDetail.module.css';
 import { store } from '../../../store/store';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
+import SikBti from '../Recipe/SikBti';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -36,6 +37,7 @@ export interface Reply {
   refNo?: number;
   profileImageServerName?: string;
   sik_bti?: string;
+  depth?: number;
 }
 
 interface ChallengePost {
@@ -50,6 +52,7 @@ interface ChallengePost {
   createdAt: string;
   imageUrl?: string;
   sik_bti?: string;
+  profileImageServerName?: string;
 }
 
 interface ReportTargetInfo {
@@ -92,30 +95,30 @@ const ChallengeDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Navigation state
   const [nextChallengeNo, setNextChallengeNo] = useState<number | null>(null);
   const [prevChallengeNo, setPrevChallengeNo] = useState<number | null>(null);
-
 
   const commentsEndRef = useRef<HTMLDivElement>(null);
 
   const openModal = (modalData: ModalState) => setModal(modalData);
   const closeModal = () => setModal(null);
   const handleConfirm = () => { modal?.onConfirm?.(); closeModal(); };
+  
+  const createImageUrl = (serverName?: string) => {
+    if (serverName && (serverName.startsWith('http://') || serverName.startsWith('https://'))) {
+        return serverName;
+    }
+    if (serverName && serverName.startsWith('/images/')) {
+        return `${API_BASE}${serverName}`;
+    }
+    if (serverName) {
+        return `${API_BASE}/images/${serverName}`;
+    }
+    return 'https://via.placeholder.com/40x40?text=No+Image'; 
+  };
 
   useEffect(() => {
-    const handler = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data.action === "scrollBottom") {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      }
-    };
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
-  }, []);
-
-  useEffect(() => {
-    if (!challengeNo || !user) return;
+    if (!challengeNo) return;
 
     const fetchData = async () => {
       try {
@@ -124,30 +127,43 @@ const ChallengeDetail = () => {
         const [postRes, repliesRes, likeCountRes] = await Promise.all([
           api.get<ChallengePost>(`/community/challenge/${challengeNo}`),
           api.get<Reply[]>(`/community/challenge/replies/${challengeNo}`),
-          api.get<number>(`/community/challenge/like/count/${challengeNo}`)
+          api.get<number>(`/community/challenge/like/count/${challengeNo}`),
         ]);
-
-        let isLikedStatus = false;
-        if (user?.userNo) {
-          isLikedStatus = await api.get<boolean>(`/community/challenge/like/status/${challengeNo}`).then(res => res.data);
-        }
 
         setPost(postRes.data);
         setReplies(repliesRes.data);
         setLikesCount(likeCountRes.data);
-        setIsLiked(isLikedStatus); // 서버 상태로 정확히 초기화
+
+        let isLikedStatus = false;
+        if (user?.userNo) {
+          try {
+            isLikedStatus = await api.get<boolean>(`/community/challenge/like/status/${challengeNo}`).then(res => res.data);
+          } catch (likeStatusErr) {
+               console.warn('좋아요 상태 로드 실패 (비로그인 사용자 또는 토큰 만료 가능성):', likeStatusErr);
+          }
+        }
+        setIsLiked(isLikedStatus);
+
+        try {
+          const navRes = await api.get(`/community/challenge/navigation/${challengeNo}`);
+          setPrevChallengeNo(navRes.data.prev);
+          setNextChallengeNo(navRes.data.next);
+        } catch (navErr) {
+          console.warn('이전/다음 게시글 정보 로드 실패:', navErr);
+          setPrevChallengeNo(null);
+          setNextChallengeNo(null);
+        }
 
         setError(null);
       } catch (err: any) {
         console.error(err);
-        setError(err.response?.status === 401 ? '로그인이 필요합니다.' : '게시글 정보를 불러오는 데 실패했습니다.');
+        setError('게시글 정보를 불러오는 데 실패했습니다.'); 
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchData();
-  }, [challengeNo, user]);
+  }, [challengeNo]);
 
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -249,7 +265,7 @@ const ChallengeDetail = () => {
     }
 
     let targetInfo: ReportTargetInfo;
-    const category = 'replyNo' in target ? target.category : 'CHALLENGE';
+    const category = 'replyNo' in target ? 'REPLY' : 'CHALLENGE';
 
     if ('replyNo' in target) {
       targetInfo = {
@@ -299,31 +315,159 @@ const ChallengeDetail = () => {
 
   const renderReplies = () => {
     const parentReplies = replies
-      .filter(r => r.category === 'CHALLENGE')
+      .filter(r => r.category === 'CHALLENGE' && r.refNo === Number(challengeNo))
       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-    return parentReplies.map(parent => {
-      const childReplies = replies
-        .filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo)
+    const indentationUnit = 50; 
+
+    const renderChildReplies = (currentParent: Reply, level: number) => {
+      const directChildReplies = replies
+        .filter(r => r.category === 'REPLY' && r.refNo === currentParent.replyNo)
         .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-      const parentImage = parent.profileImageServerName
-        ? `${API_BASE}/images/${parent.profileImageServerName}`
-        : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
+      const currentLevelMargin = (level - 1) * indentationUnit;
+      const nextLevelMargin = level * indentationUnit; 
+
+      return directChildReplies.map(child => {
+        const finalChildImageUrl = child.profileImageServerName;
+
+        return (
+          <div key={child.replyNo}>
+            <div
+              className={`${styles.commentItem} ${styles.isReply}`} 
+              style={{ marginLeft: `${currentLevelMargin}px` }}
+            >
+              <div className={styles.avatar}>
+                <img
+                  src={createImageUrl(finalChildImageUrl)}
+                  alt="프로필"
+                  className={styles.profileImage}
+                  onClick={() => navigate(`/mypage/${child.userNo}`)}
+                />
+              </div>
+
+              <div className={styles.commentBody}>
+                {level > 1 && <span className={styles.parentUsername}>@{currentParent.username}</span>}
+
+                <div className={styles.commentHeader}>
+                  <span
+                    className={styles.commentAuthor}
+                    onClick={() => navigate(`/mypage/${child.userNo}`)}
+                  >
+                    {child.username}
+                    {child.sik_bti && (
+                      <span style={{ marginLeft: '6px' }}>
+                        (<SikBti sikBti={child.sik_bti} style={{ display: 'inline', fontWeight: 400 }} />)
+                      </span>
+                    )}
+                  </span>
+                  <span className={styles.commentTime}>{new Date(child.createdAt).toLocaleString()}</span>
+                </div>
+
+                {editingReplyNo === child.replyNo ? (
+                  <div className={styles.editingBox}>
+                    <input
+                      type="text"
+                      value={editingContent}
+                      onChange={e => setEditingContent(e.target.value)}
+                      className={styles.editingInput}
+                      onKeyPress={(e: KeyboardEvent) => {
+                        if (e.key === 'Enter') handleUpdateReply(child.replyNo, editingContent);
+                      }}
+                    />
+                    <button onClick={() => handleUpdateReply(child.replyNo, editingContent)} className={styles.editingButton}>
+                      수정
+                    </button>
+                    <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>
+                      취소
+                    </button>
+                  </div>
+                ) : (
+                  <p className={styles.commentContent}>{child.content}</p>
+                )}
+
+                <div className={styles.commentActions}>
+                  {user?.userNo === child.userNo && (
+                    <>
+                      <span onClick={() => { setEditingReplyNo(child.replyNo); setEditingContent(child.content); }}>
+                        수정
+                      </span>
+                      <span onClick={() => handleDeleteComment(child.replyNo, child.userNo)}>삭제</span>
+                    </>
+                  )}
+                  <span
+                    onClick={() => setReplyingToReplyNo(replyingToReplyNo === child.replyNo ? null : child.replyNo)}
+                  >
+                    {replyingToReplyNo === child.replyNo ? '취소' : '답글'}
+                  </span>
+                  {user?.userNo !== child.userNo && <span onClick={() => handleReportClick(child)}>신고</span>}
+                </div>
+              </div>
+            </div>
+
+            {replyingToReplyNo === child.replyNo && (
+              <div
+                className={styles.replyForm}
+                style={{ marginLeft: `${nextLevelMargin}px` }}
+              >
+                <textarea
+                  value={replyingContent}
+                  onChange={e => setReplyingContent(e.target.value)}
+                  placeholder={`@${child.username}님께 답글...`}
+                  className={styles.replyInput}
+                  onKeyDown={(e: KeyboardEvent) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleReplySubmit();
+                    }
+                  }}
+                />
+                <button onClick={handleReplySubmit} className={styles.replySubmitButton}>
+                  답글 등록
+                </button>
+              </div>
+            )}
+
+            {renderChildReplies(child, level + 1)} 
+          </div>
+        );
+      });
+    };
+
+    const firstReplyFormMargin = indentationUnit; 
+
+    return parentReplies.map(parent => {
+      const finalParentImageUrl = parent.profileImageServerName;
+      const childLevel = 2;
 
       return (
         <div key={parent.replyNo} className={styles.commentWrapper}>
           <div className={styles.commentItem}>
             <div className={styles.avatar}>
-              <img src={parentImage} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${parent.userNo}`)} />
+              <img
+                src={createImageUrl(finalParentImageUrl)}
+                alt="프로필"
+                className={styles.profileImage}
+                onClick={() => navigate(`/mypage/${parent.userNo}`)}
+              />
             </div>
+
             <div className={styles.commentBody}>
               <div className={styles.commentHeader}>
-                <span className={styles.commentAuthor} onClick={() => navigate(`/mypage/${parent.userNo}`)}>
-                  {parent.username} {parent.sik_bti && `(${parent.sik_bti})`}
+                <span
+                  className={styles.commentAuthor}
+                  onClick={() => navigate(`/mypage/${parent.userNo}`)}
+                >
+                  {parent.username}
+                  {parent.sik_bti && (
+                    <span style={{ marginLeft: '6px' }}>
+                      (<SikBti sikBti={parent.sik_bti} style={{ display: 'inline', fontWeight: 400 }} />)
+                    </span>
+                  )}
                 </span>
                 <span className={styles.commentTime}>{new Date(parent.createdAt).toLocaleString()}</span>
               </div>
+
               {editingReplyNo === parent.replyNo ? (
                 <div className={styles.editingBox}>
                   <input
@@ -331,22 +475,33 @@ const ChallengeDetail = () => {
                     value={editingContent}
                     onChange={e => setEditingContent(e.target.value)}
                     className={styles.editingInput}
-                    onKeyPress={(e: KeyboardEvent) => { if (e.key === 'Enter') handleUpdateReply(parent.replyNo, editingContent); }}
+                    onKeyPress={(e: KeyboardEvent) => {
+                      if (e.key === 'Enter') handleUpdateReply(parent.replyNo, editingContent);
+                    }}
                   />
-                  <button onClick={() => handleUpdateReply(parent.replyNo, editingContent)} className={styles.editingButton}>수정</button>
-                  <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
+                  <button onClick={() => handleUpdateReply(parent.replyNo, editingContent)} className={styles.editingButton}>
+                    수정
+                  </button>
+                  <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>
+                    취소
+                  </button>
                 </div>
               ) : (
                 <p className={styles.commentContent}>{parent.content}</p>
               )}
+
               <div className={styles.commentActions}>
                 {user?.userNo === parent.userNo && (
                   <>
-                    <span onClick={() => { setEditingReplyNo(parent.replyNo); setEditingContent(parent.content); }}>수정</span>
+                    <span onClick={() => { setEditingReplyNo(parent.replyNo); setEditingContent(parent.content); }}>
+                      수정
+                    </span>
                     <span onClick={() => handleDeleteComment(parent.replyNo, parent.userNo)}>삭제</span>
                   </>
                 )}
-                <span onClick={() => setReplyingToReplyNo(replyingToReplyNo === parent.replyNo ? null : parent.replyNo)}>
+                <span
+                  onClick={() => setReplyingToReplyNo(replyingToReplyNo === parent.replyNo ? null : parent.replyNo)}
+                >
                   {replyingToReplyNo === parent.replyNo ? '취소' : '답글'}
                 </span>
                 {user?.userNo !== parent.userNo && <span onClick={() => handleReportClick(parent)}>신고</span>}
@@ -355,12 +510,21 @@ const ChallengeDetail = () => {
           </div>
 
           {replyingToReplyNo === parent.replyNo && (
-            <div className={styles.replyForm}>
+            <div
+              className={styles.replyForm}
+              style={{ marginLeft: `${firstReplyFormMargin}px` }}
+            >
               <textarea
                 value={replyingContent}
-                onChange={(e) => setReplyingContent(e.target.value)}
-                placeholder="답글을 입력하세요..."
+                onChange={e => setReplyingContent(e.target.value)}
+                placeholder={`@${parent.username}님께 답글...`}
                 className={styles.replyInput}
+                onKeyDown={(e: KeyboardEvent) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleReplySubmit();
+                  }
+                }}
               />
               <button onClick={handleReplySubmit} className={styles.replySubmitButton}>
                 답글 등록
@@ -368,51 +532,7 @@ const ChallengeDetail = () => {
             </div>
           )}
 
-          {childReplies.map(child => {
-            const childImage = child.profileImageServerName
-              ? `${API_BASE}/images/${child.profileImageServerName}`
-              : 'https://placehold.co/40x40/CCCCCC/ffffff?text=No+Image';
-            return (
-              <div key={child.replyNo} className={`${styles.commentItem} ${styles.isReply}`}>
-                <div className={styles.avatar}>
-                  <img src={childImage} alt="프로필" className={styles.profileImage} onClick={() => navigate(`/mypage/${child.userNo}`)} />
-                </div>
-                <div className={styles.commentBody}>
-                  <div className={styles.commentHeader}>
-                    <span className={styles.parentUsername}>@{parent.username}</span>
-                    <span className={styles.commentAuthor} onClick={() => navigate(`/mypage/${child.userNo}`)}>
-                      {child.username} {child.sik_bti && `(${child.sik_bti})`}
-                    </span>
-                    <span className={styles.commentTime}>{new Date(child.createdAt).toLocaleString()}</span>
-                  </div>
-                  {editingReplyNo === child.replyNo ? (
-                    <div className={styles.editingBox}>
-                      <input
-                        type="text"
-                        value={editingContent}
-                        onChange={e => setEditingContent(e.target.value)}
-                        className={styles.editingInput}
-                        onKeyPress={(e: KeyboardEvent) => { if (e.key === 'Enter') handleUpdateReply(child.replyNo, editingContent); }}
-                      />
-                      <button onClick={() => handleUpdateReply(child.replyNo, editingContent)} className={styles.editingButton}>수정</button>
-                      <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
-                    </div>
-                  ) : (
-                    <p className={styles.commentContent}>{child.content}</p>
-                  )}
-                  <div className={styles.commentActions}>
-                    {user?.userNo === child.userNo && (
-                      <>
-                        <span onClick={() => { setEditingReplyNo(child.replyNo); setEditingContent(child.content); }}>수정</span>
-                        <span onClick={() => handleDeleteComment(child.replyNo, child.userNo)}>삭제</span>
-                      </>
-                    )}
-                    {user?.userNo !== child.userNo && <span onClick={() => handleReportClick(child)}>신고</span>}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {renderChildReplies(parent, childLevel)}
         </div>
       );
     });
@@ -443,13 +563,36 @@ const ChallengeDetail = () => {
         <div className={styles.postHeader}>
           <h1 className={styles.title}>{post.title}</h1>
           <div className={styles.postMeta}>
-            <span onClick={() => navigate(`/mypage/${post.userNo}`)} style={{ cursor: 'pointer', fontWeight: 'bold' }}>
-              {post.username} {post.sik_bti && `(${post.sik_bti})`}
-            </span>
-            <span>{new Date(post.createdAt).toLocaleString()}</span> | <span>조회수 {post.views}</span>
-          </div>
-        </div>
-
+            <div className={styles.metaLeft}>
+              {post.profileImageServerName ? (
+                <Link to={`/mypage/${post.userNo}`}>
+                  <img 
+                    src={createImageUrl(post.profileImageServerName)}
+                    alt="프로필" 
+                    className={styles.postProfileImage} 
+                  />
+                </Link>
+              ) : (
+                <div className={styles.defaultProfile}>
+                  {post.username[0]}
+                </div>
+              )}
+              <span className={styles.username}>
+                {post.username}
+                {post.sik_bti && (
+                  <span style={{ marginLeft: '6px' }}>
+                    (<SikBti sikBti={post.sik_bti} style={{ display: 'inline', fontWeight: 400 }} />)
+                  </span>
+                )}
+              </span>
+              </div>
+              <div className={styles.metaRight}>
+                <span>{new Date(post.createdAt).toLocaleString()}</span>
+                <span>조회수: {post.views}</span>
+                <span>좋아요: {likesCount}</span>
+              </div>
+            </div>
+          </div> 
         <div className={styles.postContent}>
           <div className={styles.mediaContainer}>
             <button className={styles.navButton} onClick={handlePrevPost} disabled={!prevChallengeNo}>{'<'}</button>
@@ -467,8 +610,9 @@ const ChallengeDetail = () => {
 
         <div className={styles.actions}>
           <div>
-            <button className={styles.likeButton} onClick={handleLikeToggle}></button>
+          <button className={styles.likeButton} onClick={handleLikeToggle}>
             {isLiked ? '❤️' : '🤍'}
+          </button>
           </div>
           <div className={styles.editDeleteButtons}>
             {user?.userNo === post.userNo ? (
@@ -494,7 +638,13 @@ const ChallengeDetail = () => {
         <div className={styles.commentSection}>
           {user?.userNo ? (
             <div className={styles.commentInputBox}>
-              <input value={newComment} onChange={e => setNewComment(e.target.value)} placeholder="댓글 입력..." onKeyPress={e => { if (e.key === 'Enter') handleAddComment(); }} className={styles.commentInput} />
+              <input 
+                value={newComment} 
+                onChange={e => setNewComment(e.target.value)} 
+                placeholder="댓글 입력..." 
+                onKeyPress={e => { if (e.key === 'Enter') handleAddComment(); }} 
+                className={styles.commentInput} 
+              />
               <button onClick={handleAddComment} className={styles.submitBtn}>댓글 등록</button>
             </div>
           ) : <div className={styles.loginRequired}>로그인 후 댓글 작성 가능</div>}

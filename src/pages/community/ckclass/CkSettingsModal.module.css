@@ -35,7 +35,7 @@
 .modalHeader h1 {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #4CAF50;
+    color: #253712;
     margin: 0;
 }
 
@@ -97,10 +97,17 @@
     font-weight: bold;
     min-width: 80px;
     color: #555;
+    align-items: center;
+}
+
+label span {
+  margin-left: 7px;
 }
 
 .formGroup input[type="text"],
 .formGroup textarea {
+    resize: none;
+    overflow-y: auto;
     flex-grow: 1;
     padding: 10px 15px;
     border: 1px solid #ddd;
@@ -139,6 +146,7 @@
 }
 
 .imageLabel {
+    margin-top: 7px;
     display: inline-block;
     padding: 10px 20px;
     background-color: #4CAF50;
@@ -152,6 +160,7 @@
 
 .imageLabel:hover {
     background-color: #45a049;
+    color: white;
 }
 
 .hiddenInput {
@@ -206,7 +215,7 @@
 }
 
 .kickButton {
-    background-color: #E67D7D;
+    background-color: #ff3939;
     color: white;
     border: none;
     border-radius: 5px;
@@ -217,7 +226,7 @@
 }
 
 .kickButton:hover {
-    background-color: #d16b6b;
+    background-color: #da0202;
 }
 
 .modalFooter {

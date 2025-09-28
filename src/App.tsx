@@ -67,6 +67,7 @@ import { CSmanagement } from './pages/Admin/csManagement'
 import { AnnManagement } from './pages/Admin/annManagement'
 import { ClngManagement } from './pages/Admin/clngManagement'
 import { IngManagement } from './pages/Admin/ingManagement'
+import MarketEditForm from './pages/community/market/MarketEditForm'
 import { MyIngNotification } from './components/IngModal/myIngNotification'
 import { getMyIngs } from './api/ing/myIngApi'
 import { resetExpIngs, setIngs } from './features/myIngSlice'
@@ -248,6 +249,7 @@ function App() {
         <Route path="/community/market" element={<MarketMain />} />
         <Route path="/community/market/form" element={<MarketForm />} />
         <Route path="/community/market/buyForm/:id" element={<MarketBuyForm />} />
+        <Route path="/community/market/edit/:id" element={<MarketEditForm />} /> 
         <Route path="/community/market/my-list" element={<MarketMyList />} />
         <Route path="/community/market/my-buy-form/:formId" element={<MarketMyDetailPage />} />
 

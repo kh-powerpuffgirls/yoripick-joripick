@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-// import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './CkClass.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
@@ -13,6 +12,7 @@ import type { ChatRoom, Message } from '../../../type/chatmodal';
 import { getRooms, lastRead, saveMessage } from '../../../api/chatApi';
 import useChat from '../../../hooks/useChat';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import PasscodeModal from './passcodeModal';
 
 const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -79,7 +79,6 @@ const CkClassSearch = () => {
   const queryClient = useQueryClient();
   const { sendChatMessage } = useChat();
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,6 +95,11 @@ const CkClassSearch = () => {
   const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
   const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
 
+  // 참여코드 모달 상태
+  const [isPasscodeModalOpen, setIsPasscodeModalOpen] = useState(false);
+  const [passcodeInput, setPasscodeInput] = useState('');
+  const [selectedClass, setSelectedClass] = useState<CookingClassDisplay | null>(null);
+
   const openModal = (modalData: ModalState) => setModal(modalData);
   const closeModal = () => setModal(null);
   const handleConfirm = () => {
@@ -107,11 +111,7 @@ const CkClassSearch = () => {
     try {
       setLoading(true);
       const response = await api.get<CkclassDto[]>(`/community/ckclass/search`, {
-        params: {
-          keyword: searchTerm,
-          searchType,
-          excludeCode,
-        },
+        params: { keyword: searchTerm, searchType, excludeCode },
       });
       const data = Array.isArray(response.data) ? response.data : [];
       const mappedData: CookingClassDisplay[] = data.map((cls) => ({
@@ -150,17 +150,13 @@ const CkClassSearch = () => {
   // 클래스 참여 로직
   const mutation = useMutation({
     mutationFn: (payload: { roomNo: number, userNo: number }) =>
-      api.post(`/community/ckclass/enroll`, {
-        roomNo: payload.roomNo,
-        userNo: payload.userNo,
-      }),
+      api.post(`/community/ckclass/enroll`, payload),
     onSuccess: async (res, variables) => {
       await getRooms(user?.userNo)
         .then((rooms: ChatRoom[]) => {
           const newRoom = rooms.find(r => r.roomNo === variables.roomNo);
           if (!newRoom) return;
 
-          // 입장 메시지 생성
           const systemMessage: Message = {
             userNo: 0,
             username: "SYSTEM",
@@ -169,7 +165,6 @@ const CkClassSearch = () => {
             roomNo: newRoom.roomNo,
           };
 
-          // DB 저장
           let messageBlob = new Blob([JSON.stringify(systemMessage)], { type: "application/json" });
           let formData = new FormData();
           formData.append("message", messageBlob);
@@ -180,21 +175,20 @@ const CkClassSearch = () => {
               queryClient.invalidateQueries({ queryKey: ["rooms"] });
             });
 
-          // 웹소켓 브로드캐스트
           sendChatMessage(newRoom.roomNo, systemMessage);
           dispatch(openChat(newRoom));
         });
     },
-    onError: (error) => {
+    onError: () => {
       openModal({
         message: '이미 참여중인 클래스 입니다.',
         onConfirm: closeModal,
         showCancel: false,
-      })
+      });
     },
   });
 
-  const handleJoin = async (cls: CookingClassDisplay) => {
+  const handleJoin = (cls: CookingClassDisplay) => {
     if (!user?.userNo) {
       openModal({
         message: '로그인 후 참여 가능합니다.',
@@ -205,18 +199,31 @@ const CkClassSearch = () => {
     }
 
     if (cls.passcode) {
-      const inputCode = prompt('참여 코드를 입력해주세요:');
-      if (inputCode !== cls.passcode) {
-        openModal({
-          message: '참여 코드가 일치하지 않습니다.',
-          onConfirm: closeModal,
-          showCancel: false,
-        });
-        return;
-      }
+      setSelectedClass(cls);
+      setPasscodeInput('');
+      setIsPasscodeModalOpen(true);
+      return;
     }
+
     mutation.mutate({ roomNo: cls.id, userNo: user.userNo });
   };
+
+  const handlePasscodeConfirm = () => {
+    if (!selectedClass) return;
+
+    if (passcodeInput !== selectedClass.passcode) {
+      openModal({
+        message: '참여 코드가 일치하지 않습니다.',
+        onConfirm: closeModal,
+        showCancel: false,
+      });
+      return;
+    }
+
+    mutation.mutate({ roomNo: selectedClass.id, userNo: user?.userNo! });
+    setIsPasscodeModalOpen(false);
+    setSelectedClass(null);
+  };  
 
   const fetchReportOptions = async () => {
     try {
@@ -237,14 +244,12 @@ const CkClassSearch = () => {
       return;
     }
 
-    const targetInfo: ReportTargetInfo = {
+    setReportTargetInfo({
       author: cls.author,
       title: cls.name,
       category: 'COOKING_CLASS',
       refNo: cls.id,
-    };
-
-    setReportTargetInfo(targetInfo);
+    });
     await fetchReportOptions();
     setIsReportModalOpen(true);
   };
@@ -301,7 +306,7 @@ const CkClassSearch = () => {
       <div
         className={styles.classImage}
         style={{ backgroundImage: cls.imageUrl ? `url(${cls.imageUrl})` : 'none' }}
-      ></div>
+      />
       <div className={styles.cardContent}>
         <div className={styles.cardHeader}>
           <div className={styles.classTitle}>
@@ -354,7 +359,7 @@ const CkClassSearch = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button className={styles.searchButton} onClick={handleSearch}>
+            <button className={styles.rsearchButton} onClick={handleSearch}>
               검색
             </button>
           </div>
@@ -369,6 +374,7 @@ const CkClassSearch = () => {
             </label>
           </div>
         </div>
+
         <div className={styles.classCardWrapper}>
           {loading ? (
             <p>로딩 중...</p>
@@ -378,6 +384,7 @@ const CkClassSearch = () => {
             <p className={styles.noClasses}>검색 결과가 없습니다.</p>
           )}
         </div>
+
         {totalPages >= 1 && (
           <div className={styles.pagination}>
             <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
@@ -401,6 +408,8 @@ const CkClassSearch = () => {
           </div>
         )}
       </div>
+
+      {/* 일반 모달 */}
       {modal && (
         <CommunityModal
           message={modal.message}
@@ -409,6 +418,32 @@ const CkClassSearch = () => {
           onClose={closeModal}
         />
       )}
+
+      {/* 참여코드 모달 */}
+      {isPasscodeModalOpen && selectedClass && (
+        <PasscodeModal
+          className={selectedClass.name}
+          correctPasscode={selectedClass.passcode}
+          onConfirm={(input) => {
+            if (input !== selectedClass.passcode) {
+              openModal({
+                message: '참여 코드가 일치하지 않습니다.',
+                onConfirm: closeModal,
+                showCancel: false,
+              });
+              return;
+            }
+            mutation.mutate({ roomNo: selectedClass.id, userNo: user?.userNo! });
+            setIsPasscodeModalOpen(false);
+            setSelectedClass(null);
+          }}
+          onClose={() => {
+            setIsPasscodeModalOpen(false);
+            setSelectedClass(null);
+          }}
+        />
+      )}
+      {/* 신고 모달 */}
       {reportTargetInfo && (
         <ReportModal
           isOpen={isReportModalOpen}

@@ -3,6 +3,8 @@ import axios from 'axios';
 import styles from './CommunityMain.module.css';
 import CommunityHeader from './Header/CommunityHeader';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
 
 interface BoardInfo {
     title: string;
@@ -11,6 +13,7 @@ interface BoardInfo {
 
 const CommunityMain = () => {
     const [boards, setBoards] = useState<BoardInfo[]>([]);
+    const user = useSelector((state: RootState) => state.auth.user); // 로그인 유저 확인
 
     useEffect(() => {
         axios.get('http://localhost:8081/community')
@@ -47,11 +50,15 @@ const CommunityMain = () => {
                     <div className={styles.communityTitleContainer}>
                         <h1 className={styles.communityTitle}>요픽조픽 커뮤니티</h1>
                     </div>
-                    <div className={styles.myPostsLinkContainer}>
-                        <Link to="/community/mypost" className={styles.myPostsLink}>
-                            내 게시글 보기 &gt;
-                        </Link>
-                    </div>
+
+                    {/* 로그인한 유저만 내 게시글 보기 버튼 */}
+                    {user && (
+                        <div className={styles.myPostsLinkContainer}>
+                            <Link to="/community/mypost" className={styles.myPostsLink}>
+                                내 게시글 보기 &gt;
+                            </Link>
+                        </div>
+                    )}
 
                     <section className={styles.boardListContainer}>
                         {boards.map((board, index) => (

@@ -8,6 +8,7 @@ import styles from './FreeDetail.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
+import SikBti from '../Recipe/SikBti';
 
 const API_BASE = 'http://localhost:8081';
 
@@ -41,6 +42,7 @@ interface FreePost {
   imageUrl?: string | null;
   sik_bti?: string;
   subheading?: string;
+  profileImageServerName?: string;
 }
 
 interface Reply {
@@ -53,6 +55,7 @@ interface Reply {
   username: string;
   sik_bti?: string;
   profileImageServerName?: string;
+  depth?: number;
 }
 
 interface ModalState {
@@ -76,21 +79,19 @@ interface ReportTargetInfo {
 
 const useModal = () => {
   const [modal, setModal] = useState<ModalState | null>(null);
-
   const openModal = (modalData: ModalState) => setModal(modalData);
   const closeModal = () => setModal(null);
   const handleModalConfirm = () => {
     modal?.onConfirm?.();
     closeModal();
   };
-
   return { modal, openModal, closeModal, handleModalConfirm };
 };
 
 const FreeDetail = () => {
   const { boardNo } = useParams<{ boardNo: string }>();
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user); 
   const { modal, openModal, closeModal, handleModalConfirm } = useModal();
 
   const [post, setPost] = useState<FreePost | null>(null);
@@ -98,35 +99,34 @@ const FreeDetail = () => {
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+    
   const [editingReplyNo, setEditingReplyNo] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState('');
   const [replyingToReplyNo, setReplyingToReplyNo] = useState<number | null>(null);
   const [replyingContent, setReplyingContent] = useState('');
+  const [newComment, setNewComment] = useState('');
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
   const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
-  const [newComment, setNewComment] = useState('');
+  
 
   const commentsEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handler = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data.action === "scrollBottom") {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      }
-    };
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
-  }, []);
+  const fetchReplies = async () => {
+    try {
+      const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
+      setReplies(repliesRes.data);
+    } catch (err) {
+      console.error('댓글 목록 재로드 실패', err);
+    }
+  };
 
   useEffect(() => {
     const postNo = Number(boardNo);
     if (isNaN(postNo)) {
-      setError('   ID.');
+      setError('유효하지 않은 게시글 ID입니다.');
       setIsLoading(false);
       return;
     }
@@ -134,8 +134,6 @@ const FreeDetail = () => {
     const fetchPostData = async () => {
       try {
         setIsLoading(true);
-
-        //     ,    
         const [postRes, repliesRes, likesCountRes, isLikedRes] = await Promise.all([
           api.get<FreePost>(`/community/free/${postNo}`),
           api.get<Reply[]>(`/community/free/${postNo}/replies`),
@@ -148,10 +146,9 @@ const FreeDetail = () => {
         setLikesCount(likesCountRes.data);
         setIsLiked(isLikedRes.data);
         setError(null);
-
-      } catch (err) {
-        console.error('    :', err);
-        setError('    .');
+      } catch (err: any) {
+        console.error('게시글 정보 로드 오류:', err);
+        setError('게시글 정보를 불러오는 데 실패했습니다.');
       } finally {
         setIsLoading(false);
       }
@@ -160,40 +157,167 @@ const FreeDetail = () => {
     fetchPostData();
   }, [boardNo, user]);
 
-  useEffect(() => {
-    commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [replies]);
-
   const handleLikeToggle = async () => {
     if (!user?.userNo) {
       openModal({ message: '로그인 후 좋아요 가능합니다.', showCancel: false });
       return;
     }
-
     const prevIsLiked = isLiked;
     const prevLikesCount = likesCount;
 
-    // UI 즉시 반영
     setIsLiked(!prevIsLiked);
     setLikesCount(prevLikesCount + (prevIsLiked ? -1 : 1));
 
     try {
-      // boardNo를 숫자로 변환
       const postNo = Number(boardNo);
-
-      // POST 요청: body 없음, status는 쿼리 파라미터
       await api.post(`/community/free/${postNo}/likes`, null, {
-        params: { status: prevIsLiked ? 'COMMON' : 'LIKE' }
+        params: { status: prevIsLiked ? 'COMMON' : 'LIKE' },
       });
-
     } catch (err: any) {
       console.error('좋아요 처리 오류:', err);
-
-      // 오류 발생 시 UI 롤백
       setIsLiked(prevIsLiked);
       setLikesCount(prevLikesCount);
-
       openModal({ message: '좋아요 처리에 실패했습니다.', showCancel: false });
+    }
+  };
+
+  const handleAddComment = async () => {
+    const trimmedComment = newComment.trim();
+
+    if (!user?.userNo) {
+      openModal({ message: '로그인 후 댓글 작성 가능', showCancel: false });
+      return;
+    }
+    if (!trimmedComment) {
+      openModal({ message: '댓글 입력 필요', showCancel: false });
+      return;
+    }
+    
+    try {
+      await api.post(`/community/free/replies`, { content: newComment, refNo: Number(boardNo), category: 'BOARD' });
+      setNewComment('');
+      await fetchReplies();
+      commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } catch {
+      openModal({ message: '댓글 작성 실패', showCancel: false });
+    }
+  };
+
+const handleReplySubmit = async () => {
+    if (!user?.userNo) { 
+        openModal({ message: '로그인 후 답글 작성 가능합니다.', showCancel: false });
+        return;
+    }
+    if (replyingToReplyNo === null || !replyingContent.trim()) { 
+        openModal({ message: '답글을 작성하려면 내용을 입력해야 합니다.', showCancel: false });
+        return;
+    }
+    const contentToSend = replyingContent;
+    try {
+        await api.post(`/community/free/replies`, { content: contentToSend, refNo: replyingToReplyNo, category: 'REPLY' });
+        setReplyingContent('');
+        setReplyingToReplyNo(null);
+        await fetchReplies();
+    } catch {
+        openModal({ message: '답글 작성 실패', showCancel: false });
+    }
+};
+
+  const createImageUrl = (serverName?: string) => {
+    if (serverName && (serverName.startsWith('http://') || serverName.startsWith('https://'))) {
+      return serverName;
+    }
+    if (serverName && serverName.startsWith('/images/')) {
+      return `${API_BASE}${serverName}`;
+    }
+    if (serverName) {
+      return `${API_BASE}/images/${serverName}`;
+    }
+    return 'https://via.placeholder.com/40x40?text=No+Image'; 
+  };
+
+  const createUserProfileImageUrl = (serverName?: string, userNo?: number) => {
+    if (!serverName || !userNo) {
+      return null;
+    }
+    return `${API_BASE}/images/profile/${userNo}/${serverName}`;
+  };
+    
+  const handleSaveEditedReply = async (replyNo: number, content: string) => {
+    const trimmedContent = content.trim();
+
+    if (!user?.userNo) { 
+      openModal({ message: '댓글 수정 불가: 로그인해야 합니다.', showCancel: false }); 
+      return; 
+    }
+    if (!trimmedContent) {
+      openModal({ message: '댓글 수정 불가: 내용을 입력해야 합니다.', showCancel: false }); 
+      return;
+    }
+    
+    try {
+      await api.put(`/community/free/replies/${replyNo}`, { content: content });
+      setEditingReplyNo(null);
+      setEditingContent('');
+      await fetchReplies();
+    } catch {
+      openModal({ message: '댓글 수정 실패', showCancel: false });
+    }
+  };
+    
+  const handleEditReply = (replyNo: number) => {
+    if (!user?.userNo) {
+      openModal({ message: '로그인 후 수정 가능합니다.', showCancel: false });
+      return;
+    }
+    
+    const replyToEdit = replies.find(r => r.replyNo === replyNo);
+    if (replyToEdit && user.userNo === replyToEdit.userNo) {
+      setEditingReplyNo(replyNo);
+      setEditingContent(replyToEdit.content);
+      setReplyingToReplyNo(null);
+    } else {
+      openModal({ message: '댓글 수정 권한이 없습니다.', showCancel: false });
+    }
+  };
+
+  const handleReplyButtonClick = (replyNo: number) => {
+    if (!user?.userNo) {
+      openModal({ message: '로그인 후 답글 작성 가능합니다.', showCancel: false });
+      return;
+    }
+    setEditingReplyNo(null);
+    setReplyingToReplyNo(prevNo => (prevNo === replyNo ? null : replyNo));
+    setReplyingContent('');
+  };
+
+  const handleDeleteReply = (replyNo: number, commentUserNo: number) => {
+    if (!user?.userNo) { 
+      openModal({ message: '로그인 후 삭제 가능합니다.', showCancel: false });
+      return;
+    }
+    if (commentUserNo !== user.userNo) { 
+      openModal({ message: '본인 댓글만 삭제 가능합니다.', showCancel: false }); 
+      return; 
+    }
+    openModal({
+      message: '댓글을 삭제하시겠습니까?',
+      showCancel: true,
+      onConfirm: async () => {
+        try {
+          await api.delete(`/community/free/replies/${replyNo}`);
+          await fetchReplies();
+        } catch {
+          openModal({ message: '댓글 삭제 실패', showCancel: false });
+        }
+      }
+    });
+  };
+    
+  const handleNewCommentKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleAddComment();
     }
   };
 
@@ -203,19 +327,23 @@ const FreeDetail = () => {
       const filteredOptions = res.data.filter(option => option.category === category);
       setReportOptions(filteredOptions);
     } catch (err) {
-      console.error('   :', err);
-      openModal({ message: '   ', showCancel: false });
+      console.error('신고 유형 로드 오류:', err);
+      openModal({ message: '신고 유형을 불러오는 데 실패했습니다.', showCancel: false });
       setReportOptions([]);
     }
   };
 
   const handleReportClick = async (targetInfo: ReportTargetInfo) => {
     if (!user) {
-      openModal({ message: '    .', showCancel: false });
+      openModal({ message: '신고 기능은 로그인 후 이용 가능합니다.', showCancel: false });
       return;
     }
-    if (user.userNo === (targetInfo.category === 'BOARD' ? post?.userNo : replies.find(r => r.replyNo === targetInfo.refNo)?.userNo)) {
-      openModal({ message: '      .', showCancel: false });
+    const targetUserNo = targetInfo.category === 'BOARD' 
+      ? post?.userNo 
+      : replies.find(r => r.replyNo === targetInfo.refNo)?.userNo;
+
+    if (user.userNo === targetUserNo) {
+      openModal({ message: '자신의 게시글/댓글은 신고할 수 없습니다.', showCancel: false });
       return;
     }
 
@@ -227,12 +355,12 @@ const FreeDetail = () => {
   const handleReportSubmit = async (reportType: string, content: string, refNo: number, refType: string) => {
     try {
       await api.post(`/community/report`, { reportType, content, refNo, refType });
-      openModal({ message: ' .', showCancel: false });
+      openModal({ message: '신고가 성공적으로 접수되었습니다.', showCancel: false });
       setIsReportModalOpen(false);
       setReportTargetInfo(null);
     } catch (err: any) {
-      console.error(' :', err.response?.data?.message || err.message);
-      openModal({ message: err.response?.data?.message || '    .', showCancel: false });
+      console.error('신고 제출 오류:', err.response?.data?.message || err.message);
+      openModal({ message: err.response?.data?.message || '신고 처리에 실패했습니다.', showCancel: false });
       setIsReportModalOpen(false);
       setReportTargetInfo(null);
     }
@@ -240,340 +368,270 @@ const FreeDetail = () => {
 
   const handleEditClick = () => {
     if (!user) {
-      openModal({ message: '   ', showCancel: false });
+      openModal({ message: '로그인 후 수정 가능합니다.', showCancel: false });
       return;
     }
     if (post && user.userNo === post.userNo) {
       navigate(`/community/free/form/${boardNo}`);
     } else {
-      openModal({ message: '   ', showCancel: false });
+      openModal({ message: '수정 권한이 없습니다.', showCancel: false });
     }
   };
 
   const handleDeletePost = () => {
     if (!user || !post) return;
     if (user.userNo !== post.userNo) {
-      openModal({ message: '   .', showCancel: false });
+      openModal({ message: '삭제 권한이 없습니다.', showCancel: false });
       return;
     }
-
     openModal({
-      message: ' ?',
+      message: '정말로 이 게시글을 삭제하시겠습니까?',
       showCancel: true,
       onConfirm: async () => {
         try {
           await api.delete(`/community/free/${boardNo}`);
-          openModal({ message: '  ', showCancel: false, onConfirm: () => navigate('/community/free') });
+          openModal({ message: '게시글이 삭제되었습니다.', showCancel: false, onConfirm: () => navigate('/community/free') });
         } catch (err) {
           console.error(err);
-          openModal({ message: '  ', showCancel: false });
+          openModal({ message: '게시글 삭제에 실패했습니다.', showCancel: false });
         }
       },
     });
   };
 
-  const handleAddComment = async () => {
-    if (!user) {
-      openModal({ message: '    ', showCancel: false });
-      return;
+const findParentAuthor = (refNo: number, category: 'BOARD' | 'REPLY'): string | null => {
+    if (category === 'BOARD') {
+    return null;
     }
-    if (!newComment.trim()) {
-      openModal({ message: '  ', showCancel: false });
-      return;
-    }
+    const parentReply = replies.find(r => r.replyNo === refNo);
+    return parentReply ? parentReply.username : null;
+    };
 
-    try {
-      await api.post(`/community/free/replies`, { refNo: Number(boardNo), category: 'BOARD', content: newComment.trim() });
-      setNewComment('');
-      const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
-      setReplies(repliesRes.data);
-    } catch (err) {
-      console.error('  :', err);
-      openModal({ message: '  ', showCancel: false });
-    }
-  };
-
-  const handleNewCommentKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleAddComment();
-    }
-  };
-
-  const handleEditReply = (replyNo: number) => {
-    const replyToEdit = replies.find(r => r.replyNo === replyNo);
-    if (replyToEdit && user?.userNo === replyToEdit.userNo) {
-      setEditingReplyNo(replyNo);
-      setEditingContent(replyToEdit.content);
-    } else {
-      openModal({ message: '   .', showCancel: false });
-    }
-  };
-
-  const handleSaveEditedReply = async (replyNo: number, content: string) => {
-    if (!content.trim()) {
-      openModal({ message: '  ', showCancel: false });
-      return;
-    }
-
-    openModal({
-      message: ' ?',
-      showCancel: true,
-      onConfirm: async () => {
-        try {
-          await api.put(`/community/free/replies/${replyNo}`, { content: content.trim() });
-          const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
-          setReplies(repliesRes.data);
-          setEditingReplyNo(null);
-          setEditingContent('');
-        } catch (err) {
-          console.error(err);
-          openModal({ message: '  ', showCancel: false });
-        }
-      },
-    });
-  };
-
-  const handleDeleteReply = async (replyNo: number) => {
-    const replyToDelete = replies.find(r => r.replyNo === replyNo);
-    if (!replyToDelete || user?.userNo !== replyToDelete.userNo) {
-      openModal({ message: '   .', showCancel: false });
-      return;
-    }
-
-    openModal({
-      message: ' ?',
-      showCancel: true,
-      onConfirm: async () => {
-        try {
-          await api.delete(`/community/free/replies/${replyNo}`);
-          const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
-          setReplies(repliesRes.data);
-          openModal({ message: '  ', showCancel: false });
-        } catch (err) {
-          console.error(err);
-          openModal({ message: '  ', showCancel: false });
-        }
-      },
-    });
-  };
-
-  const renderReplies = () => {
-    const parentReplies = replies.filter(r => r.category === 'BOARD' && r.refNo === Number(boardNo));
-
-    return parentReplies.map(parent => {
-      const childReplies = replies.filter(r => r.category === 'REPLY' && r.refNo === parent.replyNo);
-      const parentProfileImageUrl = parent.profileImageServerName
-        ? `${API_BASE}/images/${parent.profileImageServerName}`
-        : 'https://placehold.co/400x400/CCCCCC/ffffff?text=No+Image';
-
-      return (
-        <div key={parent.replyNo} className={styles.commentWrapper}>
-          <div className={styles.comment}>
-            <div className={styles.commentHeader}>
-              <Link to={`/mypage/${parent.userNo}`}>
-                <img src={parentProfileImageUrl} alt="" className={styles.commentProfileImage} />
-              </Link>
-              <div className={styles.commentInfo}>
-                <Link to={`/mypage/${parent.userNo}`} className={styles.commentAuthor}>
-                  {parent.username}{parent.sik_bti && ` (${parent.sik_bti})`}
-                </Link>
-                <span className={styles.commentDate}>{new Date(parent.createdAt).toLocaleString()}</span>
-              </div>
-            </div>
-
-            {editingReplyNo === parent.replyNo ? (
-              <div className={styles.editForm}>
-                <textarea
-                  className={styles.commentEditInput}
-                  value={editingContent}
-                  onChange={e => setEditingContent(e.target.value)}
-                />
-                <div className={styles.editActions}>
-                  <button className={styles.commentActionButton} onClick={() => handleSaveEditedReply(parent.replyNo, editingContent)}></button>
-                  <button className={styles.commentActionButton} onClick={() => setEditingReplyNo(null)}></button>
-                </div>
-              </div>
-            ) : (
-              <p className={styles.commentContent}>{parent.content}</p>
-            )}
-
-            <div className={styles.commentActions}>
-              {user && parent.userNo === user.userNo && editingReplyNo !== parent.replyNo && (
-                <>
-                  <button className={styles.commentActionButton} onClick={() => handleEditReply(parent.replyNo)}></button>
-                  <button className={styles.commentActionButton} onClick={() => handleDeleteReply(parent.replyNo)}></button>
-                </>
-              )}
-              {user && replyingToReplyNo !== parent.replyNo && (
-                <button className={styles.commentActionButton} onClick={() => setReplyingToReplyNo(parent.replyNo)}></button>
-              )}
-              <button className={styles.commentActionButton} onClick={() => handleReportClick({ author: parent.username, title: parent.content.substring(0, 20) + '...', category: 'REPLY', refNo: parent.replyNo })}></button>
-            </div>
-
-            {replyingToReplyNo === parent.replyNo && (
-              <form
-                className={styles.replyForm}
-                onSubmit={async e => {
-                  e.preventDefault();
-                  if (!replyingContent.trim()) {
-                    openModal({ message: '  ', showCancel: false });
-                    return;
-                  }
-                  try {
-                    await api.post(`/community/free/replies`, { refNo: parent.replyNo, category: 'REPLY', content: replyingContent.trim() });
-                    const repliesRes = await api.get<Reply[]>(`/community/free/${boardNo}/replies`);
-                    setReplies(repliesRes.data);
-                    setReplyingContent('');
-                    setReplyingToReplyNo(null);
-                  } catch (err) {
-                    console.error(err);
-                    openModal({ message: '  ', showCancel: false });
-                  }
-                }}
-              >
-                <textarea className={styles.replyInput} value={replyingContent} onChange={e => setReplyingContent(e.target.value)} placeholder=" ..." />
-                <button type="submit" className={styles.replySubmitButton}></button>
-              </form>
-            )}
-
-            {childReplies.length > 0 && (
-              <div className={styles.childComments}>
-                {childReplies.map(child => {
-                  const childProfileImageUrl = child.profileImageServerName
-                    ? `${API_BASE}/images/${child.profileImageServerName}`
-                    : 'https://placehold.co/400x400/CCCCCC/ffffff?text=No+Image';
-                  return (
-                    <div key={child.replyNo} className={styles.commentChild}>
-                      <div className={styles.commentHeader}>
-                        <Link to={`/mypage/${child.userNo}`}>
-                          <img src={childProfileImageUrl} alt="" className={styles.commentProfileImage} />
-                        </Link>
-                        <div className={styles.commentInfo}>
-                          <Link to={`/mypage/${child.userNo}`} className={styles.commentAuthor}>
-                            {child.username}{child.sik_bti && ` (${child.sik_bti})`}
-                          </Link>
-                          <span className={styles.commentDate}>{new Date(child.createdAt).toLocaleString()}</span>
-                        </div>
-                      </div>
-
-                      {editingReplyNo === child.replyNo ? (
-                        <div className={styles.editForm}>
-                          <textarea className={styles.commentEditInput} value={editingContent} onChange={e => setEditingContent(e.target.value)} />
-                          <div className={styles.editActions}>
-                            <button className={styles.commentActionButton} onClick={() => handleSaveEditedReply(child.replyNo, editingContent)}></button>
-                            <button className={styles.commentActionButton} onClick={() => setEditingReplyNo(null)}></button>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className={styles.commentContent}>{child.content}</p>
-                      )}
-
-                      {user && child.userNo === user.userNo && editingReplyNo !== child.replyNo && (
-                        <div className={styles.commentActions}>
-                          <button className={styles.commentActionButton} onClick={() => handleEditReply(child.replyNo)}></button>
-                          <button className={styles.commentActionButton} onClick={() => handleDeleteReply(child.replyNo)}></button>
-                        </div>
-                      )}
+const renderReplies = () => {
+    return replies.map(reply => {
+        const parentAuthorNickname = reply.depth! > 1 ? findParentAuthor(reply.refNo, 'REPLY') : null;
+        const replyProfileImageUrl = createImageUrl(reply.profileImageServerName);
+        const indentationUnit = 50;
+        const indentationStyle = {
+        marginLeft: `${(reply.depth! - 1) * indentationUnit}px`, 
+        };
+        const replyClasses = reply.depth! > 1 ? `${styles.commentItem} ${styles.isReply}` : styles.commentItem;
+        
+return (
+    <div key={reply.replyNo} 
+         className={styles.commentWrapper} 
+         style={indentationStyle}
+    >
+        <div className={replyClasses}>
+            <Link to={`/mypage/${reply.userNo}`} className={styles.avatar}>
+                {replyProfileImageUrl && reply.profileImageServerName ? (
+                    <img src={replyProfileImageUrl} alt="프로필" className={styles.profileImage} />
+                ) : (
+                    <div className={styles.defaultProfile} style={{ margin: 0 }}>
+                        {reply.username[0]}
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    });
-  };
+                )}
+            </Link>
+            <div className={styles.commentBody}>
+                {parentAuthorNickname && (
+                    <div className={styles.parentMention}>
+                        @{parentAuthorNickname}
+                    </div>
+                )}
 
-  if (isLoading) return <div className={styles.loading}> ...</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
-  if (!post) return <div className={styles.noPost}>  .</div>;
+                <div className={styles.commentHeader}>
+                    <Link to={`/mypage/${reply.userNo}`} className={styles.commentAuthor}>
+                        {reply.username}
+                        {reply.sik_bti && (
+                            <span style={{ marginLeft: '4px' }}>
+                                (<SikBti sikBti={reply.sik_bti} style={{ display: 'inline', fontWeight: 400 }} />)
+                            </span>
+                        )}
+                    </Link>
+                    <span className={styles.commentTime}>{new Date(reply.createdAt).toLocaleString()}</span>
+                </div>
 
-  const validImageUrl = post.serverName ? `${API_BASE}/images/${post.serverName}` : post.imageUrl || null;
-
-  return (
-    <>
-      {modal && <CommunityModal message={modal.message} onConfirm={handleModalConfirm} onClose={closeModal} showCancel={modal.showCancel} />}
-      {isReportModalOpen && reportTargetInfo && <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} onSubmit={handleReportSubmit} reportOptions={reportOptions} targetInfo={reportTargetInfo} />}
-
-      <CommunityHeader />
-
-      <div className={styles.container}>
-        <div className={styles.mainCard}>
-          <div className={styles.postHeader}>
-            {post.subheading && <p className={styles.subtitle}>[{post.subheading}]</p>}
-            <h1 className={styles.title}>{post.title}</h1>
-            <div className={styles.meta}>
-              <span>{post.username}
-                {post.sik_bti && ` (${post.sik_bti})`}</span>
-              <span>{new Date(post.createdDate).toLocaleString()}</span>
-              <span> {post.views}</span>
-              <span> {likesCount}</span>
+                {/* 댓글 내용 */}
+                {editingReplyNo === reply.replyNo ? (
+                    <div className={styles.editingBox}>
+                        <textarea
+                            value={editingContent}
+                            onChange={e => setEditingContent(e.target.value)}
+                            className={styles.editingInput}
+                        />
+                        <button onClick={() => handleSaveEditedReply(reply.replyNo, editingContent)} className={styles.editingButton}>저장</button>
+                        <button onClick={() => setEditingReplyNo(null)} className={styles.editingButton}>취소</button>
+                    </div>
+                ) : (
+                    <p className={styles.commentContent}>{reply.content}</p>
+                )}
+                
+                {/* 댓글 액션 버튼 */}
+                <div className={styles.commentActions}>
+                    {user?.userNo === reply.userNo && (
+                        <>
+                            <span onClick={() => handleEditReply(reply.replyNo)}>수정</span>
+                            <span onClick={() => handleDeleteReply(reply.replyNo, reply.userNo)}>삭제</span> 
+                        </>
+                    )}
+                    {user?.userNo && (
+                        <span onClick={() => handleReplyButtonClick(reply.replyNo)}>
+                            {replyingToReplyNo === reply.replyNo ? '취소' : '답글'}
+                        </span>
+                    )}
+                    {user?.userNo !== reply.userNo && (
+                        <span onClick={() => 
+                            handleReportClick({
+                                author: reply.username,
+                                title: reply.content.substring(0, 30) + '...',
+                                category: 'REPLY',
+                                refNo: reply.replyNo,
+                            })
+                        }>
+                            신고
+                        </span>
+                    )}
+                </div>
             </div>
-          </div>
-          {validImageUrl && <img src={validImageUrl} alt=" " className={styles.postImage} />}
-          <p className={styles.content}>{post.content}</p>
         </div>
 
-        <div className={styles.postActions}>
-          <div>
-            <button
-              className={styles.likeButton}
-              onClick={handleLikeToggle}
-            >
-              <span className={styles.heartIcon}>{isLiked ? '❤️' : '🤍'}</span>
-            </button>
-          </div>
-
-          <div className={styles.editDeleteButtons}>
-            {user?.userNo === post.userNo ? (
-              <>
-                <button className={styles.editButton} onClick={handleEditClick}></button>
-                <button className={styles.deleteButton} onClick={handleDeletePost}></button>
-              </>
-            ) : (
-              <button
-                className={styles.reportButton}
-                onClick={() =>
-                  handleReportClick({
-                    author: post.username,
-                    title: post.title,
-                    category: 'BOARD',
-                    refNo: post.boardNo,
-                  })
-                }
-              >
-
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.commentsSection}>
-          <div className={styles.addComment}>
-            {/*   . */}
-            <textarea
-              className={styles.commentInput}
-              placeholder=" ."
-              value={newComment}
-              onChange={e => setNewComment(e.target.value)}
-              onKeyDown={handleNewCommentKeyDown}
-            />
-            <button
-              className={styles.submitBtn}
-              onClick={handleAddComment}>
-
-            </button>
-          </div>
-          <div className={styles.commentsList}>
-            {renderReplies()}
-            <div ref={commentsEndRef} />
-          </div>
-        </div>
-      </div>
-    </>
-  );
+                {user?.userNo && replyingToReplyNo === reply.replyNo && (
+                    <div className={styles.replyForm} style={{ marginLeft: `${(reply.depth! - 1) * 30 + 30}px` }}>
+                        <textarea
+                        value={replyingContent}
+                        onChange={(e) => setReplyingContent(e.target.value)}
+                        placeholder={reply ? `@${reply.username}님께 답글...` : '답글 입력...'}
+                        className={styles.replyInput}
+                        onKeyDown={(e: KeyboardEvent) => { 
+                            if (e.key === 'Enter' && !e.shiftKey) { 
+                                e.preventDefault();
+                                handleReplySubmit();
+                                          }
+                                      }}
+                                  />
+                        <button onClick={handleReplySubmit} className={styles.replySubmitButton}>
+                            답글 등록
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    });
 };
+
+if (isLoading) return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
+if (error) return <div className={styles.error}>{error}</div>;
+if (!post) return <div className={styles.noPost}>해당 게시글이 존재하지 않거나 삭제되었습니다.</div>;
+
+const validImageUrl = post.serverName ? `${API_BASE}/images/${post.serverName}` : post.imageUrl || null;
+const postProfileUrl = createUserProfileImageUrl(post.profileImageServerName, post.userNo);
+
+return (
+    <>
+        {modal && <CommunityModal message={modal.message} onConfirm={handleModalConfirm} onClose={closeModal} showCancel={modal.showCancel} />}
+        {isReportModalOpen && reportTargetInfo && (
+            <ReportModal
+                isOpen={isReportModalOpen}
+                onClose={() => setIsReportModalOpen(false)}
+                onSubmit={handleReportSubmit}
+                reportOptions={reportOptions}
+                targetInfo={reportTargetInfo}
+            />
+        )}
+
+        <CommunityHeader />
+        <div className={styles.container}>
+            <div className={styles.mainCard}>
+                <div className={styles.postHeader}>
+                    {post.subheading && <p className={styles.subtitle}>[{post.subheading}]</p>}
+                    <h1 className={styles.title}>{post.title}</h1>
+                    <div className={styles.postMeta}>
+                        <div className={styles.metaLeft}>
+                            {postProfileUrl ? (
+                                <Link to={`/mypage/${post.userNo}`}>
+                                    <img 
+                                        src={postProfileUrl}
+                                        alt="프로필" 
+                                        className={styles.postProfileImage} 
+                                    />
+                                </Link>
+                            ) : (
+                                <div className={styles.defaultProfile}>
+                                    {post.username[0]}
+                                </div>
+                            )}
+                            <span className={styles.username}>
+                                {post.username}
+                                {post.sik_bti && (
+                                    <span style={{ marginLeft: '6px' }}>
+                                        (<SikBti sikBti={post.sik_bti} style={{ display: 'inline', fontWeight: 400 }} />)
+                                    </span>
+                                )}
+                            </span> 
+                        </div>
+                        <div className={styles.metaRight}>
+                            <span>{new Date(post.createdDate).toLocaleString()}</span>
+                            <span>조회수: {post.views}</span>
+                            <span>좋아요: {likesCount}</span>
+                        </div>
+                    </div>
+                </div>
+                {validImageUrl && <img src={validImageUrl} alt="게시글 첨부 이미지" className={styles.postImage} />}
+                <p className={styles.content}>{post.content}</p>
+            </div>
+
+            <div className={styles.postActions}>
+                <div>
+                    <button className={styles.likeButton} onClick={handleLikeToggle}>
+                        <span className={styles.heartIcon}>{isLiked ? '❤️' : '🤍'}</span>
+                    </button>
+                </div>
+
+                <div className={styles.editDeleteButtons}>
+                    {user?.userNo === post.userNo ? (
+                        <>
+                            <button className={styles.editButton} onClick={handleEditClick}>
+                                수정
+                            </button>
+                            <button className={styles.deleteButton} onClick={handleDeletePost}>
+                                삭제
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            className={styles.reportButton}
+                            onClick={() =>
+                                handleReportClick({
+                                    author: post.username,
+                                    title: post.title,
+                                    category: 'BOARD',
+                                    refNo: post.boardNo,
+                                })
+                            }
+                        >
+                            신고
+                        </button>
+                    )}
+                </div>
+            </div>
+            <div className={styles.commentSection}> 
+                {user?.userNo ? (
+                    <div className={styles.commentInputBox}>
+                        <textarea 
+                            value={newComment} 
+                            onChange={e => setNewComment(e.target.value)} 
+                            placeholder=" 댓글 입력..." 
+                            onKeyDown={handleNewCommentKeyDown}
+                            className={styles.commentInput} 
+                        />
+                        <button onClick={handleAddComment} className={styles.submitBtn}>댓글 등록</button>
+                    </div>
+                ) : <div className={styles.loginRequired}>로그인 후 댓글 작성 가능</div>}
+                <div className={styles.commentList}>{replies.length === 0 ? <div className={styles.noComments}>아직 댓글이 없습니다.</div> : renderReplies()}</div>
+                <div ref={commentsEndRef} />
+            </div>
+        </div>
+    </>
+);};
 
 export default FreeDetail;

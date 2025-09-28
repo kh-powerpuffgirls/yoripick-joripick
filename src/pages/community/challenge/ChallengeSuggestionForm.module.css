@@ -98,7 +98,7 @@
 
 .textareaField {
   min-height: 100px;
-  resize: vertical;
+  resize: none;
 }
 
 .buttonContainer {
