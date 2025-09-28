@@ -5,9 +5,14 @@ import type { RootState } from '../../store/store';
 import { openChat } from '../../features/chatSlice';
 
 export const CServiceMain = () => {
+    const user = useSelector((state: RootState) => state.auth.user);
     let { rooms } = useSelector((state: RootState) => state.chat);
     const dispatch = useDispatch();
-    const handleFetchChat = (type : string) => {
+    const handleFetchChat = (type: string) => {
+        if (type === "admin" && user?.roles?.includes("ROLE_ADMIN")) {
+            dispatch(showAlert(type));
+            return;
+        }
         const target = rooms.find(room => room.type === type);
         if (target) {
             dispatch(openChat(target));

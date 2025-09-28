@@ -5,8 +5,6 @@ import { formatToYYYYMMDD } from '../../pages/Mealplan/main';
 import type { RootState } from '../../store/store';
 import { useSelector } from 'react-redux';
 
-import mockImg from '../../assets/jopik.png'
-
 interface MealInputModalProps {
     closeModal: () => void;
     mealId: string;
@@ -28,6 +26,8 @@ const mealOptions = [
 interface RecipeType {
     rcpNo: number;
     rcpName: string;
+    approval: string;
+    userNo: number;
     energy: number;
     imgUrl: string;
 }
@@ -170,6 +170,12 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
         }
     };
 
+    const handleViewRcp = async (recipe: RecipeType) => {
+        const category = recipe.approval === 'Y' ? "api" : "community";
+        const ref = window.location.origin + `/${category}/recipe/${recipe.rcpNo}`;
+        window.open(ref, '_blank', 'noopener,noreferrer');
+    }
+
     const handleAddRcp = async (rcpNo: number) => {
         try {
             await addRcpItem(userNo, selectedMealId, modalDate, rcpNo);
@@ -208,7 +214,7 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
                         <div className={style.tabs}>
                             <button onClick={() => setTab('search')} className={tab === 'search' ? style.activeTab : ''}>음식 검색</button>
                             <button onClick={() => setTab('recent')} className={tab === 'recent' ? style.activeTab : ''}>최근</button>
-                            <button onClick={() => setTab('myRecipe')} className={tab === 'myRecipe' ? style.activeTab : ''}>내 레시피</button>
+                            <button onClick={() => setTab('myRecipe')} className={tab === 'myRecipe' ? style.activeTab : ''}>북마크 레시피</button>
                         </div>
                     </div>
                 </div>
@@ -345,14 +351,12 @@ const MealInputModal = ({ closeModal, mealId, selectedDate, refreshMeals, refres
                             <>
                                 {myRecipes.map((recipe, index) => (
                                     <div key={index} className={style.recipeCard}>
-                                        {/* <img src={recipe.imgUrl} alt={recipe.rcpName}/> */}
-                                        <img src={mockImg} alt={recipe.rcpName} />
+                                        <img src={recipe.imgUrl} alt={recipe.rcpName}/>
                                         <h3>{recipe.rcpName}</h3>
                                         <p>{recipe.energy} kcal</p>
                                         <div className={style.buttonGroup}>
-                                            <button>레시피 보기</button>
+                                            <button onClick={() => handleViewRcp(recipe)}>레시피 보기</button>
                                             <button onClick={() => handleAddRcp(recipe.rcpNo)}>추가</button>
-                                            <button>북마크 해제</button>
                                         </div>
                                     </div>
                                 ))}

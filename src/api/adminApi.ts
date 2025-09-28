@@ -207,6 +207,7 @@ export type Recipe = {
     detail: string;
     content: string;
     reportedAt: string;
+    approval: string;
 }
 
 export type ChallengeForm = {

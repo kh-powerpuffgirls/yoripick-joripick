@@ -187,7 +187,7 @@ const CkClassSearch = () => {
     },
     onError: (error) => {
       openModal({
-        message: error.message || '클래스 참여 중 오류가 발생했습니다.',
+        message: '이미 참여중인 클래스 입니다.',
         onConfirm: closeModal,
         showCancel: false,
       })

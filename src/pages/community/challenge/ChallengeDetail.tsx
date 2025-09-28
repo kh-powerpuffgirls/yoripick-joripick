@@ -91,7 +91,7 @@ const ChallengeDetail = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Navigation state
   const [nextChallengeNo, setNextChallengeNo] = useState<number | null>(null);
   const [prevChallengeNo, setPrevChallengeNo] = useState<number | null>(null);
@@ -102,41 +102,52 @@ const ChallengeDetail = () => {
   const openModal = (modalData: ModalState) => setModal(modalData);
   const closeModal = () => setModal(null);
   const handleConfirm = () => { modal?.onConfirm?.(); closeModal(); };
-  
-useEffect(() => {
-  if (!challengeNo || !user) return;
 
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-
-      const [postRes, repliesRes, likeCountRes] = await Promise.all([
-        api.get<ChallengePost>(`/community/challenge/${challengeNo}`),
-        api.get<Reply[]>(`/community/challenge/replies/${challengeNo}`),
-        api.get<number>(`/community/challenge/like/count/${challengeNo}`)
-      ]);
-
-      let isLikedStatus = false;
-      if (user?.userNo) {
-        isLikedStatus = await api.get<boolean>(`/community/challenge/like/status/${challengeNo}`).then(res => res.data);
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data.action === "scrollBottom") {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       }
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
 
-      setPost(postRes.data);
-      setReplies(repliesRes.data);
-      setLikesCount(likeCountRes.data);
-      setIsLiked(isLikedStatus); // 서버 상태로 정확히 초기화
+  useEffect(() => {
+    if (!challengeNo || !user) return;
 
-      setError(null);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.status === 401 ? '로그인이 필요합니다.' : '게시글 정보를 불러오는 데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
 
-  fetchData();
-}, [challengeNo, user]);
+        const [postRes, repliesRes, likeCountRes] = await Promise.all([
+          api.get<ChallengePost>(`/community/challenge/${challengeNo}`),
+          api.get<Reply[]>(`/community/challenge/replies/${challengeNo}`),
+          api.get<number>(`/community/challenge/like/count/${challengeNo}`)
+        ]);
+
+        let isLikedStatus = false;
+        if (user?.userNo) {
+          isLikedStatus = await api.get<boolean>(`/community/challenge/like/status/${challengeNo}`).then(res => res.data);
+        }
+
+        setPost(postRes.data);
+        setReplies(repliesRes.data);
+        setLikesCount(likeCountRes.data);
+        setIsLiked(isLikedStatus); // 서버 상태로 정확히 초기화
+
+        setError(null);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.response?.status === 401 ? '로그인이 필요합니다.' : '게시글 정보를 불러오는 데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [challengeNo, user]);
 
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -147,26 +158,26 @@ useEffect(() => {
     setReplies(repliesRes.data);
   };
 
-const handleLikeToggle = async () => {
-  if (!user?.userNo) {
-    openModal({ message: '로그인 후 좋아요 가능합니다.' });
-    return;
-  }
-  const prevIsLiked = isLiked;
-  const prevLikesCount = likesCount;
-  setIsLiked(!prevIsLiked);
-  setLikesCount(prevLikesCount + (prevIsLiked ? -1 : 1));
-  try {
-    await api.post(`/community/challenge/like/${challengeNo}`, null, {
-      params: { status: prevIsLiked ? 'COMMON' : 'LIKE' }
-    });
-  } catch (err: any) {
-    console.error(err);
-    setIsLiked(prevIsLiked);
-    setLikesCount(prevLikesCount);
-    openModal({ message: '좋아요 처리 실패' });
-  }
-};
+  const handleLikeToggle = async () => {
+    if (!user?.userNo) {
+      openModal({ message: '로그인 후 좋아요 가능합니다.' });
+      return;
+    }
+    const prevIsLiked = isLiked;
+    const prevLikesCount = likesCount;
+    setIsLiked(!prevIsLiked);
+    setLikesCount(prevLikesCount + (prevIsLiked ? -1 : 1));
+    try {
+      await api.post(`/community/challenge/like/${challengeNo}`, null, {
+        params: { status: prevIsLiked ? 'COMMON' : 'LIKE' }
+      });
+    } catch (err: any) {
+      console.error(err);
+      setIsLiked(prevIsLiked);
+      setLikesCount(prevLikesCount);
+      openModal({ message: '좋아요 처리 실패' });
+    }
+  };
 
   const handleAddComment = async () => {
     if (!user?.userNo || !newComment.trim()) {
@@ -230,13 +241,13 @@ const handleLikeToggle = async () => {
       openModal({ message: '로그인 후 신고 가능합니다.' });
       return;
     }
-    
+
     const targetUserNo = 'replyNo' in target ? target.userNo : target.userNo;
     if (user.userNo === targetUserNo) {
       openModal({ message: '본인 게시물 또는 댓글은 신고할 수 없습니다.' });
       return;
     }
-    
+
     let targetInfo: ReportTargetInfo;
     const category = 'replyNo' in target ? target.category : 'CHALLENGE';
 
@@ -270,11 +281,11 @@ const handleLikeToggle = async () => {
 
   const handleReportSubmit = async (reportType: string, content: string, refNo: number, refType: string) => {
     try {
-      await api.post(`/community/report`, { 
-        reportType, 
-        content, 
-        refNo, 
-        refType 
+      await api.post(`/community/report`, {
+        reportType,
+        content,
+        refNo,
+        refType
       });
       setIsReportModalOpen(false);
       setReportTargetInfo(null);
@@ -369,9 +380,9 @@ const handleLikeToggle = async () => {
                 <div className={styles.commentBody}>
                   <div className={styles.commentHeader}>
                     <span className={styles.parentUsername}>@{parent.username}</span>
-                      <span className={styles.commentAuthor} onClick={() => navigate(`/mypage/${child.userNo}`)}>
-                        {child.username} {child.sik_bti && `(${child.sik_bti})`}
-                      </span>
+                    <span className={styles.commentAuthor} onClick={() => navigate(`/mypage/${child.userNo}`)}>
+                      {child.username} {child.sik_bti && `(${child.sik_bti})`}
+                    </span>
                     <span className={styles.commentTime}>{new Date(child.createdAt).toLocaleString()}</span>
                   </div>
                   {editingReplyNo === child.replyNo ? (
@@ -457,19 +468,19 @@ const handleLikeToggle = async () => {
         <div className={styles.actions}>
           <div>
             <button className={styles.likeButton} onClick={handleLikeToggle}></button>
-    {isLiked ? '❤️' : '🤍'}
+            {isLiked ? '❤️' : '🤍'}
           </div>
           <div className={styles.editDeleteButtons}>
             {user?.userNo === post.userNo ? (
               <>
                 <button className={styles.actionBtn} onClick={() => navigate(`/community/challenge/form/${challengeNo}?mode=edit`)}>수정</button>
-                <button className={styles.actionBtn} onClick={() => openModal({ 
-                  message: '삭제하시겠습니까?', 
+                <button className={styles.actionBtn} onClick={() => openModal({
+                  message: '삭제하시겠습니까?',
                   showCancel: true,
-                  onConfirm: async () => { 
-                    await api.delete(`/community/challenge/${challengeNo}`); 
-                    navigate('/community/challenge'); 
-                  } 
+                  onConfirm: async () => {
+                    await api.delete(`/community/challenge/${challengeNo}`);
+                    navigate('/community/challenge');
+                  }
                 })}>삭제</button>
               </>
             ) : (
@@ -483,7 +494,7 @@ const handleLikeToggle = async () => {
         <div className={styles.commentSection}>
           {user?.userNo ? (
             <div className={styles.commentInputBox}>
-              <input value={newComment} onChange={e => setNewComment(e.target.value)} placeholder="댓글 입력..." onKeyPress={e => { if (e.key==='Enter') handleAddComment(); }} className={styles.commentInput} />
+              <input value={newComment} onChange={e => setNewComment(e.target.value)} placeholder="댓글 입력..." onKeyPress={e => { if (e.key === 'Enter') handleAddComment(); }} className={styles.commentInput} />
               <button onClick={handleAddComment} className={styles.submitBtn}>댓글 등록</button>
             </div>
           ) : <div className={styles.loginRequired}>로그인 후 댓글 작성 가능</div>}
@@ -491,9 +502,9 @@ const handleLikeToggle = async () => {
           <div className={styles.commentList}>{replies.length === 0 ? <div className={styles.noComments}>아직 댓글이 없습니다.</div> : renderReplies()}</div>
           <div ref={commentsEndRef} />
         </div>
-        
+
         <div className={styles.backButtonContainer}>
-            <button className={styles.backButton} onClick={() => navigate(-1)}>뒤로가기</button>
+          <button className={styles.backButton} onClick={() => navigate(-1)}>뒤로가기</button>
         </div>
       </div>
 
