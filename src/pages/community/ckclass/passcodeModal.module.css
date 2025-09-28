@@ -1,0 +1,77 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 400px;
+  padding: 30px 20px;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.message {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.passcodeInput {
+  height: 40px;
+  padding: 0 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.passcodeInput:focus {
+  border-color: #ff9800;
+  box-shadow: 0 0 5px rgba(255,152,0,0.5);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.confirmBtn, .cancelBtn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirmBtn {
+  background-color: #8bc34a;
+  color: #fff;
+}
+
+.confirmBtn:hover {
+  background-color: #7cb342;
+}
+
+.cancelBtn {
+  background-color: #ffab91;
+  color: #333;
+}
+
+.cancelBtn:hover {
+  background-color: #ff9e80;
+}

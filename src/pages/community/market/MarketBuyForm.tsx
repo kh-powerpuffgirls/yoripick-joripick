@@ -5,11 +5,33 @@ import CommunityHeader from '../Header/CommunityHeader';
 import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { store } from '../../../store/store';
 import BuyCompleteModal from './BuyCompleteModal';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
 
-// API 응답 데이터 타입 정의
+const API_BASE = 'http://localhost:8081';
+
+const getAccessToken = () => store.getState().auth.accessToken;
+
+const api = axios.create({
+    baseURL: API_BASE,
+});
+
+api.interceptors.request.use(
+    (config) => {
+        const token = getAccessToken();
+        if (token) config.headers.Authorization = `Bearer ${token}`;
+        return config;
+    },
+    (error) => Promise.reject(error),
+);
+
+api.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => Promise.reject(error),
+);
+
 interface MarketItem {
     productId: number;
     title: string;
@@ -22,11 +44,13 @@ interface MarketItem {
     accountNo: string;
     deadline: string;
     alwaysOnSale: boolean;
-    userNo: number;
-    username: string;
+    userNo: number; 
+    username: string; 
+    author: string;
+    authorProfileUrl?: string;
+    isPurchased: string;
 }
 
-// Report 관련 인터페이스 정의
 interface ReportTargetInfo {
     author: string;
     title: string;
@@ -40,19 +64,14 @@ interface ReportOption {
     detail: string;
 }
 
-const API_BASE = 'http://localhost:8081';
-const api = axios.create({
-    baseURL: API_BASE,
-    withCredentials: true,
-});
-
 const MARKETPLACE_CATEGORY = 'MARKETPLACE';
 
 const MarketBuyForm = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { accessToken, user } = useSelector((state: RootState) => state.auth);
-    const isLoggedIn = !!accessToken;
+    const { user } = useSelector((state: RootState) => state.auth); 
+    const isLoggedIn = user; 
+    const userNo = user?.userNo;
 
     const [item, setItem] = useState<MarketItem | null>(null);
     const [formData, setFormData] = useState({
@@ -90,26 +109,16 @@ const MarketBuyForm = () => {
     }, []);
 
     useEffect(() => {
-        if (!isLoggedIn) {
-            alert('로그인이 필요합니다.');
-            navigate('/login');
-        }
-    }, [isLoggedIn, navigate]);
-
-    useEffect(() => {
         const fetchItem = async () => {
             if (!id) {
                 setError('게시글 ID가 유효하지 않습니다.');
                 return;
             }
             try {
-                const response = await api.get(`/community/market/${id}`);
-                setItem(response.data);
-                if (response.data.quantity === 0) {
-                    setFormData(prev => ({ ...prev, quantity: 0 }));
-                } else {
-                    setFormData(prev => ({ ...prev, quantity: 1 }));
-                }
+                const response = await api.get<MarketItem>(`/community/market/${id}`); 
+                const fetchedItem = response.data;
+                setItem(fetchedItem);
+            
             } catch (err) {
                 console.error("Failed to fetch item details:", err);
                 setError('상품 정보를 불러오는데 실패했습니다.');
@@ -117,7 +126,7 @@ const MarketBuyForm = () => {
             }
         };
         fetchItem();
-    }, [id]);
+    }, [id, user, userNo]);
 
     useEffect(() => {
         if (item) {
@@ -167,15 +176,56 @@ const MarketBuyForm = () => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
+        
+        if (item && userNo === item.userNo) { 
+            openCommunityModal({ 
+                message: '본인이 등록한 상품은 구매 신청할 수 없습니다.', 
+                onConfirm: closeCommunityModal, 
+                showCancel: false 
+            });
+            return;
+        }
+        
         setIsConfirmModalOpen(true);
+    };
+
+    const handleSoftDelete = async () => {
+        if (!id || !userNo || !item || userNo !== item.userNo) {
+            openCommunityModal({ message: '삭제 권한이 없거나 정보가 유효하지 않습니다.', onConfirm: closeCommunityModal, showCancel: false });
+            return;
+        }
+
+        openCommunityModal({ 
+            message: '정말로 이 게시글을 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.', 
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/community/market/${id}`); 
+                    
+                    openCommunityModal({ message: '게시글이 삭제되었습니다.', onConfirm: () => navigate('/community/market'), showCancel: false });
+                } catch (err) {
+                    const axiosError = err as AxiosError;
+                    console.error('Failed to delete post:', axiosError.response || axiosError);
+                    const errorMessage = (axiosError.response?.data as any)?.message || '게시글 삭제에 실패했습니다.';
+                    openCommunityModal({ message: errorMessage, onConfirm: closeCommunityModal, showCancel: false });
+                }
+            },
+            showCancel: true
+        });
     };
 
     const handleConfirm = async () => {
         setIsConfirmModalOpen(false);
         setError(null);
+        
+        console.log(user);
 
-        if (!isLoggedIn || !accessToken || !user) {
+        if (!isLoggedIn || !userNo) {
             setError('로그인 상태가 유효하지 않습니다. 다시 로그인해주세요.');
+            openCommunityModal({ 
+                message: '로그인이 만료되었습니다. 다시 로그인해주세요.', 
+                onConfirm: () => navigate('/login'), 
+                showCancel: false 
+            });
             return;
         }
 
@@ -186,7 +236,7 @@ const MarketBuyForm = () => {
 
         const buyData = {
             productId: Number(id),
-            userNo: user.userNo,
+            userNo: userNo,
             count: formData.quantity,
             dlvrName: formData.receiverName,
             buyerPhone: formData.receiverPhone,
@@ -195,11 +245,11 @@ const MarketBuyForm = () => {
             buyerName: formData.depositorName
         };
 
+        console.log(buyData);
         try {
             await api.post('/community/market/buy', buyData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
                 },
             });
             setIsCompleteModalOpen(true);
@@ -208,6 +258,11 @@ const MarketBuyForm = () => {
             console.error("Failed to submit buy form:", axiosError.response || axiosError);
             if (axiosError.response?.status === 401) {
                 setError('로그인이 만료되었습니다. 다시 로그인해주세요.');
+                 openCommunityModal({ 
+                    message: '로그인이 만료되었습니다. 다시 로그인해주세요.', 
+                    onConfirm: () => navigate('/login'), 
+                    showCancel: false 
+                });
             } else if (axiosError.response?.data) {
                 setError((axiosError.response.data as any).message || '구매 신청에 실패했습니다.');
             } else {
@@ -221,14 +276,13 @@ const MarketBuyForm = () => {
         navigate('/community/market');
     };
 
-    // 신고 기능
     const handleReportClick = async () => {
-        if (!item || !user) {
-            openCommunityModal({ message: '신고에 필요한 정보가 부족합니다.', onConfirm: closeCommunityModal, showCancel: false });
+        if (!item || !userNo) { 
+            openCommunityModal({ message: '신고에 필요한 정보가 부족하거나, 로그인 후 이용 가능합니다.', onConfirm: closeCommunityModal, showCancel: false });
             return;
         }
 
-        if (item.userNo === user.userNo) {
+        if (item.userNo === userNo) {
             openCommunityModal({ message: '자신의 게시물은 신고할 수 없습니다.', onConfirm: closeCommunityModal, showCancel: false });
             return;
         }
@@ -255,8 +309,8 @@ const MarketBuyForm = () => {
         }
     };
 
-    const handleReportSubmit = async (reportType: string, content: string, refNo: number) => {
-        if (!user?.userNo || !reportTargetInfo) {
+    const handleReportSubmit = async (reportType: string, content: string, refNo: number) => { 
+        if (!userNo || !reportTargetInfo) { 
             openCommunityModal({ message: '로그인 후 신고 가능합니다.', onConfirm: closeCommunityModal, showCancel: false });
             return;
         }
@@ -295,22 +349,28 @@ const MarketBuyForm = () => {
                 <div className={styles.formContainer}>
                     <form onSubmit={handleSubmit}>
                         <div className={styles.formHeader}>
-                            <input
-                                type="text"
-                                className={styles.titleInput}
-                                value={item.title}
-                                readOnly
-                            />
-                            <div className={styles.authorInfo}>
-                                <span className={styles.profileIcon}></span>
-                                <span>{user?.username || '사용자'}</span>
-                                <span className={styles.date}>{new Date().toLocaleDateString()}</span>
-                            </div>
-                        </div>
+        <input
+            type="text"
+            className={styles.titleInput}
+            value={item.title}
+            readOnly
+        />
+        <div className={styles.authorInfo}>
+            <div className={styles.authorGroup}> 
+                {item.authorProfileUrl ? (
+                    <img src={`${API_BASE}${item.authorProfileUrl}`} alt={`${item.author}의 프로필`} className={styles.profileImage} />
+                ) : (
+                    <span className={styles.profileIcon}></span>
+                )}
+                <span>{item.author}</span>
+            </div>
+            <span className={styles.date}>{new Date().toLocaleDateString()}</span>
+        </div>
+    </div>
 
                         <div className={styles.imageUploadSection}>
                             <div className={styles.imageBox}>
-                                <img src={item.imageUrl} alt={item.name} className={styles.imagePreview} />
+                                <img src={`${API_BASE}${item.imageUrl}`} alt={item.name} className={styles.imagePreview} />
                             </div>
                         </div>
 
@@ -341,7 +401,7 @@ const MarketBuyForm = () => {
                             </div>
                             <div className={styles.itemInfo}>
                                 <div className={styles.itemImageContainer}>
-                                    <img src={item.imageUrl} alt={item.name} className={styles.itemImagePreview} />
+                                    <img src={`${API_BASE}${item.imageUrl}`} alt={item.name} className={styles.itemImagePreview} />
                                 </div>
                                 <div className={styles.itemDetails}>
                                     <div className={styles.detailRow}>
@@ -455,11 +515,35 @@ const MarketBuyForm = () => {
                         </div>
 
                         {error && <div className={styles.errorBox}>{error}</div>}
-
-                        <div className={styles.buttonGroup}>
-                            <button type="button" className={styles.reportButton} onClick={handleReportClick}>신고하기</button>
-                            <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>취소</button>
-                            <button type="submit" className={styles.submitButton} disabled={item.quantity === 0}>구매 신청</button>
+                            <div className={styles.buttonGroup}>
+                            {isLoggedIn && userNo === item.userNo ? (
+                            <>
+                                {item.isPurchased === 'N' && (
+                                    <button 
+                                        type="button" 
+                                        className={styles.editButton} 
+                                        onClick={() => navigate(`/community/market/edit/${id}`)}>
+                                        게시글 수정
+                                    </button>
+                                )}
+                                <button type="button" className={styles.deleteButton} onClick={handleSoftDelete}>게시글 삭제</button>
+                                <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>취소</button>
+                            </>
+                            ) : (
+                            <>
+                                <button type="button" className={styles.reportButton} onClick={handleReportClick}>신고</button>
+                                <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>취소</button> 
+                                <button 
+                                type="submit" 
+                                className={styles.submitButton} 
+                                disabled={item.quantity === 0} 
+                                >
+                                    {item.quantity === 0 
+                                        ? '재고 없음'
+                                        : '구매 하기'}
+                                </button>
+                            </>
+                            )}
                         </div>
                     </form>
                 </div>

@@ -1,11 +1,22 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+ul {
+  list-style: none;
+}
+
 .container {
   width: 1000px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
   background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .headerButtons {
@@ -15,178 +26,257 @@
 }
 
 .challengeTitle {
-  margin-top: 30px;
   background-color: #ff9800;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 18px;
+  color: #ffffff;
   font-weight: bold;
+  text-align: center;
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  padding: 10px;
+  border: none;
+  border-radius: 15px;
+  width: 40%;
+  box-sizing: border-box;
+  font-size: 1.1em;
+  margin: 10px auto 0px auto;
 }
 
 .section {
-  margin-bottom: 40px;
+  margin-bottom: 2rem;
+  max-width: 96.5%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .section h2 {
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
+  color: #555;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ddd;
 }
 
-.popularCardGrid {
+.popularPostGrid, .recentPostGrid {
+  margin-top: 25px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(250px, 1fr));
-  gap: 20px;
+  gap: 1.5rem;
 }
 
-.recentCardGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(200px, 1fr));
-  gap: 15px;
+.popularPostGrid {
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.challengeCard {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.2s;
+.recentPostGrid {
+  grid-template-columns: repeat(4, 1fr);
 }
 
-.challengeCard:hover {
-  transform: translateY(-3px);
-}
-
-.rankBadge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: gold;
-  color: white;
-  font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 5px;
-  z-index: 10;
-}
-
-.imagePlaceholder {
-  height: 250px;
-  width: 100%;
-  overflow: hidden;
-  background-color: #f0f0f0;
+.postCard {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #888;
+  flex-direction: column;
+  border-radius: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.challengeImage {
+.postCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.imagePlaceholder, .post-image-container {
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.postImage {
   width: 100%;
-  height: 100%;
+  height: 200px;
   object-fit: cover;
 }
 
-.cardInfo {
+.defaultImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  font-size: 1rem;
+}
+
+.postInfo {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.postTitle {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.authorContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  margin-top: 7px;
 }
 
-.authorInfo {
+.profileRow {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .profileIcon {
-  width: 24px;
-  height: 24px;
-  background-color: #ddd;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  margin-right: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
-.authorName {
-  font-size: 13px;
-  color: #555;
+.defaultProfile {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ccc;
 }
 
-.stats {
-  font-size: 13px;
-  color: #888;
+.profileText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.authorNickname {
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 525;
+}
+
+.dateTimeViews {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.postDate {
+  color: #999;
+}
+
+.postViews {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #999;
 }
 
 .actionButtons {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 40px;
+  width: 700px;
+  margin: 0 auto;
+  padding-bottom: 10px;
+  border: none;
 }
 
-.requestButton, .registerButton {
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 20px;
+.registerButton, .requestButton {
+  padding: 20px;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  margin: 0px 30px 30px 30px;
+  float: right;
+  width: 200px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.registerButton {
+  background-color: #fdbb1b;
+  color: white;
+  border: none;
+}
+
+.registerButton:hover {
+  background-color: #ff9800;
+  color: white;
 }
 
 .requestButton {
-  background-color: white;
-  color: #ff9800;
-  border: 1px solid #ff9800;
+  background-color: #92ca02;
+  color: white;
+  border: none;
+}
+
+.requestButton:hover {
+  background-color: #75b136;
 }
 
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 50px;
+  margin-bottom: 40px;
+  gap: 5px;
 }
 
-.pageBtn {
-  background-color: transparent;
-  border: 1px solid #ccc;
-  padding: 5px 10px;
-  margin: 0 5px;
+.pagination button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 5px;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.3s ease;
 }
 
-.pageBtn.active {
-  background-color: #ff9800;
-  color: white;
-  border-color: #ff9800;
+.pagination button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  border-color: #aaa;
 }
 
-.pageBtn:disabled {
+.pagination button:disabled {
+  color: #ccc;
   cursor: not-allowed;
-  opacity: 0.5;
+  background-color: #f7f7f7;
 }
 
-.alertOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+.pagination .active {
+  background-color: #ff9800;
+  color: #fff;
+  border-color: #ff9800;
+  font-weight: bold;
 }
 
-.alertBox {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 400px;
-  width: 100%;
+.pagination .active:hover {
+  background-color: #e68a00;
+  border-color: #e68a00;
+}
+
+.errorBox {
+  color: red;
+  text-align: center;
+  margin-bottom: 1rem;
 }

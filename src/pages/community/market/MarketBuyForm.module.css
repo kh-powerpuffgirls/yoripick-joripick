@@ -14,7 +14,7 @@
     padding: 2rem;
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(150, 150, 150, 0.1);
 }
 
 .formHeader {
@@ -29,25 +29,33 @@
     font-weight: bold;
     text-align: center;
     margin-bottom: 0.5rem;
-    padding: 0.5rem;
+    padding-bottom: 10px;
     border-bottom: 2px solid #ddd;
     outline: none;
 }
 
 .authorInfo {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; 
     align-items: center;
-    gap: 0.5rem;
     color: #777;
     font-size: 0.9rem;
+    width: 100%; 
+    padding: 0 1rem;
 }
 
-.profileIcon {
-    width: 20px;
+.authorGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profileImage {
+    width: 20px; 
     height: 20px;
-    background-color: #ccc;
     border-radius: 50%;
+    object-fit: cover; 
+    flex-shrink: 0;
 }
 
 .date {
@@ -109,7 +117,7 @@
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 8px;
-    resize: vertical;
+    resize: none; 
     font-size: 1rem;
     color: #555;
     white-space: pre-wrap;
@@ -256,4 +264,50 @@
 
 .reportButton:hover {
     background-color: #d32f2f;
+}
+
+/* MarketBuyForm.module.css 에 추가할 내용 */
+
+/* 게시글 수정 버튼 스타일 */
+.editButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #4CAF50; /* 녹색 계열 (수정/긍정적인 행동) */
+}
+
+.editButton:hover {
+    background-color: #388E3C;
+}
+
+.deleteButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #F44336;
+}
+
+.deleteButton:hover {
+    background-color: #D32F2F;
+}
+
+.outOfStock {
+    flex: 1;
+    padding: 0.5rem;
+    color: #F44336;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #F44336;
+    border-radius: 5px;
+    background-color: #ffeeee;
 }

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CkClass.module.css';
 import CommunityHeader from '../Header/CommunityHeader';
@@ -59,8 +59,11 @@ const CkClassMain = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const rooms = useSelector((state: RootState) => state.chat.rooms);
 
+  console.log(rooms);
+
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+
 
   const myClasses = useMemo(
     () => rooms.filter(room => room.type === 'cclass' && room.username === user?.username),
@@ -70,7 +73,6 @@ const CkClassMain = () => {
     () => rooms.filter(room => room.type === 'cclass' && room.username !== user?.username),
     [rooms, user?.username]
   );
-
   const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -87,6 +89,20 @@ const CkClassMain = () => {
     modal?.onConfirm?.();
     closeModal();
   };
+
+  useEffect(() => {
+    const totalPages = Math.ceil(myClasses.length / myClassesPerPage);
+    if (myCurrentPage > totalPages) {
+      setMyCurrentPage(totalPages === 0 ? 1 : totalPages);
+    }
+  }, [myClasses, myCurrentPage, myClassesPerPage]);
+
+  useEffect(() => {
+    const totalPages = Math.ceil(joinedClasses.length / joinedClassesPerPage);
+    if (joinedCurrentPage > totalPages) {
+      setJoinedCurrentPage(totalPages === 0 ? 1 : totalPages);
+    }
+  }, [joinedClasses, joinedCurrentPage, joinedClassesPerPage]);
 
   const handleReportClick = async (room: ChatRoom) => {
     const category = 'COOKING_CLASS';
@@ -155,7 +171,6 @@ const CkClassMain = () => {
     dispatch(openChat(room));
   };
 
-  // handleDeleteClick 바깥에 선언
   const handleLeaveClassClick = (id: number, className: string) => {
     openModal({
       message: `정말로 "${className}" 클래스에서 탈퇴하시겠습니까?`,
@@ -163,6 +178,7 @@ const CkClassMain = () => {
         try {
           await api.delete(`/community/ckclass/${id}/leave`);
           openModal({ message: '클래스에서 성공적으로 탈퇴했습니다.', onConfirm: closeModal });
+          // setUpdate((prev) => prev + 1);
           dispatch(leaveRooms(id));
           queryClient.invalidateQueries({ queryKey: ["rooms"] });
 
@@ -269,7 +285,6 @@ const CkClassMain = () => {
         <div className={styles.cardHeader}>
           <div className={styles.classTitle}>
             {room.className}
-            {/* 안 읽은 메시지 */}
             {(room.unreadCount ?? 0) > 0 && (
               <span className={styles.unreadCountBadge}>{room.unreadCount}</span>
             )}
@@ -281,13 +296,11 @@ const CkClassMain = () => {
             >
               {room.notification === 'Y' ? '🔔' : '🔕'}
             </button>
-            {/* 💡 나의 클래스일 경우 '삭제' 버튼 표시 */}
             {room.username === user?.username && (
               <button className={styles.deleteButton} onClick={() => handleDeleteClick(Number(room.roomNo))}>
                 삭제
               </button>
             )}
-            {/* 💡 참여 클래스일 경우 '탈퇴' 버튼 표시 (삭제 버튼과 동일 위치) */}
             {room.username !== user?.username && (
               <button
                 className={styles.leaveButton}
@@ -319,7 +332,6 @@ const CkClassMain = () => {
               <button className={styles.joinButton} onClick={() => handleJoinClick(Number(room.roomNo))}>
                 채팅
               </button>
-              {/* 💡 cardFooter에서 탈퇴 버튼 제거됨 - 위 classButtons로 이동 */}
               <button className={styles.reportButton} onClick={() => handleReportClick(room)}>
                 신고
               </button>
@@ -352,7 +364,7 @@ const CkClassMain = () => {
           )}
         </div>
 
-        {myTotalPages > 1 && (
+        {myTotalPages >= 1 && (
           <div className={styles.pagination}>
             <button onClick={() => handleMyPageChange(myCurrentPage - 1)} disabled={myCurrentPage === 1}>
               &lt;
@@ -387,7 +399,7 @@ const CkClassMain = () => {
           )}
         </div>
 
-        {joinedTotalPages > 1 && (
+        {joinedTotalPages >= 1 && (
           <div className={styles.pagination}>
             <button
               onClick={() => handleJoinedPageChange(joinedCurrentPage - 1)}
