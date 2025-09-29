@@ -30,9 +30,11 @@ function ReportModal({ isOpen, onClose, onSubmit, reportOptions, targetInfo }: P
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportStatus, setReportStatus] = useState<'pending' | 'success' | 'failed'>('pending');
 
-  const defaultProfileUrl = '/resources/images/default-profile.png';
-  
-  const profileImageUrl = targetInfo.reportedUserProfileImageUrl || defaultProfileUrl;
+  const defaultProfileUrl = {
+    imageUrl: 'https://picsum.photos/id/989/150/150',
+  };
+
+  const profileImageUrl = targetInfo.reportedUserProfileImageUrl || defaultProfileUrl.imageUrl;
 
   const filteredOptions = useMemo(
     () => reportOptions.filter(option => option.category === targetInfo.category),

@@ -60,6 +60,7 @@
     transition: transform 0.2s ease-in-out;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .postCard:hover {
@@ -234,4 +235,26 @@
     padding: 20px;
     font-size: 1.2rem;
     color: #555;
+}
+
+.crownIcon {
+    position: absolute; 
+    top: 10px;      
+    right: 10px;      
+    z-index: 10;  
+    width: 50px;      
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crownIcon span {
+    font-size: 2.5rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5); 
+}
+
+.rank1 span {
+    font-size: 3rem; 
+    text-shadow: 0 0 8px gold, 0 0 10px rgba(255, 215, 0, 0.5);
 }

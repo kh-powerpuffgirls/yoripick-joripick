@@ -41,6 +41,7 @@ export interface ReportTargetInfo {
   title: string;
   category: string;
   refNo: number;
+  reportedUserProfileImageUrl?: string;
 }
 
 const CommunityRecipeDetail: React.FC = () => {
@@ -178,9 +179,12 @@ const CommunityRecipeDetail: React.FC = () => {
         return;
       }
   
-      setReportTargetInfo(targetInfo);
-      await fetchReportOptions(targetInfo.category);
-      setIsReportModalOpen(true);
+        setReportTargetInfo({
+            ...targetInfo,
+            reportedUserProfileImageUrl: targetInfo.reportedUserProfileImageUrl || undefined,
+        });
+        await fetchReportOptions(targetInfo.category);
+        setIsReportModalOpen(true);
     };
     
     // 신고

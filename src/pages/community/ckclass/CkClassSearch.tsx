@@ -170,7 +170,7 @@ const CkClassSearch = () => {
           formData.append("message", messageBlob);
           saveMessage("cclass", newRoom.roomNo, formData)
             .then((res) => {
-              lastRead(user?.userNo as number, res.roomNo, res.messageNo as number);
+              lastRead(user?.userNo as number, "cclass", res.roomNo, res.messageNo as number);
               dispatch(setRooms(rooms));
               queryClient.invalidateQueries({ queryKey: ["rooms"] });
             });
