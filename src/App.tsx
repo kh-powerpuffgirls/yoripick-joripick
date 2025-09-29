@@ -1,7 +1,7 @@
 import './App.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AlertModal } from './components/Security/AlertModal'
 import { ChatModal } from './components/Chatting/chatModal'
 import Mainpage from './pages/mainpage/Mainpage'
@@ -79,6 +79,21 @@ function App() {
   const userNo = user?.userNo;
   const rooms = useSelector((state: RootState) => state.chat.rooms);
   const totalUnread = rooms?.reduce((sum, room) => sum + (room.unreadCount || 0), 0);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userNo) {
+      api.post(`auth/tokens/refresh/${userNo}`)
+        .then(res => {
+          if (res.status === 204) {
+            dispatch(logout());
+            alert("밴 된 계정.");
+            navigate("/");
+          }
+        })
+    }
+  }, [location.pathname, userNo]);
 
   // 로그인 정보 유지
   useEffect(() => {
@@ -119,10 +134,10 @@ function App() {
   });
 
   // 소비기한 임박 목록 로딩
-  const { data: expIngs, refetch : refetchExpIngs } = useQuery({
+  const { data: expIngs, refetch: refetchExpIngs } = useQuery({
     queryKey: ["expIngs"],
     queryFn: () => userNo && getMyIngs({ userNo, sortNo: 1, keyword: '' }),
-    enabled: isAuthenticated && (userNo != null),
+    enabled: isAuthenticated && (userNo != null) && user?.expNoti === "Y",
   });
 
   useEffect(() => {
@@ -134,7 +149,7 @@ function App() {
       dispatch(closeChat());
       dispatch(resetRooms());
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
-      
+
       dispatch(resetExpIngs());
       queryClient.invalidateQueries({ queryKey: ["expIngs"] });
     }
@@ -158,8 +173,8 @@ function App() {
       <Notification />
       <MyIngNotification />
       {rooms && rooms.length > 0 && (
-        <p className={`chatBtn ${totalUnread > 0 ? "blink" : ""}`} 
-        onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
+        <p className={`chatBtn ${totalUnread > 0 ? "blink" : ""}`}
+          onClick={() => dispatch(openChat(rooms[0]))}>💬</p>
       )}
       <Routes>
         <Route path="/login" element={
@@ -184,7 +199,7 @@ function App() {
         {/* ==================== 유저 <users> ==================== */}
         <Route path="/users/:userNo" element={<MyPage />} />
         <Route path="/myPage" element={<MyPage />} />
-  
+
         {/* ==================== 관리자 <Admin> ==================== */}
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/admin/recipes" element={<RcpManagement />} />
@@ -194,7 +209,7 @@ function App() {
         <Route path="/admin/announcements" element={<AnnManagement />} />
         <Route path="/admin/challenges" element={<ClngManagement />} />
         <Route path="/admin/ingredients" element={<IngManagement />} />
-  
+
         {/* ==================== 고객문의 <cservice> ==================== */}
         <Route path="/cservice" element={<CServiceMain />} />
 
@@ -250,7 +265,7 @@ function App() {
         <Route path="/community/market" element={<MarketMain />} />
         <Route path="/community/market/form" element={<MarketForm />} />
         <Route path="/community/market/buyForm/:id" element={<MarketBuyForm />} />
-        <Route path="/community/market/edit/:id" element={<MarketEditForm />} /> 
+        <Route path="/community/market/edit/:id" element={<MarketEditForm />} />
         <Route path="/community/market/my-list" element={<MarketMyList />} />
         <Route path="/community/market/my-buy-form/:formId" element={<MarketMyDetailPage />} />
 

@@ -29,6 +29,7 @@ interface ReportTargetInfo {
   title: string;
   category: string;
   refNo: number;
+  reportedUserProfileImageUrl?: string;
 }
 
 const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, onReportClick }) => {
@@ -254,6 +255,7 @@ const Reviews: React.FC<ReviewsProps> = ({ rcpNo, onReviewSubmit, reviewCount, o
                               title: `리뷰 (${review.content.slice(0, 10)}...)`,
                               category: 'REVIEW',
                               refNo: review.reviewNo,
+                              reportedUserProfileImageUrl: review.userInfo.serverName || undefined,
                             })}
                           >
                             신고

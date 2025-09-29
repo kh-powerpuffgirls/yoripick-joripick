@@ -67,10 +67,24 @@ export default function Login() {
     } catch (err) {
       const error = err as AxiosError<{ errorCode: string; message?: string }>;
       if (error.response) {
+        console.log(error.response)
         const { errorCode, message } = error.response.data;
 
         if (errorCode === "INACTIVE_USER") {
           setShowRestoreModal(true);
+          return;
+        }
+        if (errorCode === "BANNED_USER" && message) {
+          const cleaned = message.replace("KST", "").trim();
+          const endDate = new Date(cleaned).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit"
+          })
+          alert(endDate + "까지 정지된 계정입니다.");
           return;
         }
         setError(errorMessages[errorCode] || "로그인 처리 중 오류가 발생했습니다.");

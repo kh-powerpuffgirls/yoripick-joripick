@@ -7,6 +7,7 @@ import CommunityHeader from '../Header/CommunityHeader';
 import CommunityModal from '../CommunityModal';
 import axios from 'axios';
 import SikBti from '../Recipe/SikBti';
+import { lodingImg } from '../../../assets/images';
 
 interface MarketMain {
   productId: number;
@@ -31,7 +32,6 @@ const MarketMain = () => {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
   const postsPerPage = 8;
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -96,60 +96,59 @@ const MarketMain = () => {
     return `${year}.${month}.${day}`;
   };
 
-  const renderPostCard = (post: MarketMain & { createdAt: string }) => (
-  <div
-    key={post.productId}
-    className={styles.postCard}
-    onClick={() => navigate(`/community/market/buyForm/${post.productId}`)}
-  >
-    <img
-      src={`${API_BASE}${post.imageUrl}`}
-      alt={post.title}
-      className={styles.postImage}
-    />
-
-    <div className={styles.postInfo}>
-      <h3 className={styles.postTitle}>{post.title}</h3>
-
-      <div className={styles.authorContainer}>
-        <div className={styles.profileRow}>
-          <img
-            src={`${API_BASE}${post.authorProfileUrl}`}
-            alt={`${post.author}의 프로필`}
-            className={styles.profileIcon}
-          />
-          <div className={styles.profileText}>
-          {post.sikBti && (
-            <SikBti
-              sikBti={post.sikBti} 
-              style={{ marginRight: '6px', marginBottom: '1px', display: 'inline', fontSize: '0.7rem' }} 
-            />
-          )}            
-          <span className={styles.authorNickname}>{post.author}</span>
-          </div>
+  const renderPostCard = (post: MarketMain, rank?: number) => (
+    <div
+      key={post.productId}
+      className={styles.postCard}
+      onClick={() => navigate(`/community/market/buyForm/${post.productId}`)}
+    >
+      {rank !== undefined && rank < 3 && (
+        <div className={`${styles.crownIcon} ${styles[`rank${rank + 1}`]}`}>
+          {/* <span>👑</span> */}
+          {rank == 0 && <img src={lodingImg.crown1} />}
+          {rank == 1 && <img src={lodingImg.crown2} />}
+          {rank == 2 && <img src={lodingImg.crown3} />}
         </div>
-
-        <div className={styles.dateTimeViews}>
-          <span className={styles.postDate}>{formatDateToShort(post.createdAt)}</span>
-          <span className={styles.postViews}>👁️ {post.views}</span>
+      )}
+      <img
+        src={`${API_BASE}${post.imageUrl}`}
+        alt={post.title}
+        className={styles.postImage}
+      />
+      <div className={styles.postInfo}>
+        <h3 className={styles.postTitle}>{post.title}</h3>
+        <div className={styles.authorContainer}>
+          <div className={styles.profileRow}>
+            <img
+              src={`${API_BASE}${post.authorProfileUrl}`}
+              alt={`${post.author}의 프로필`}
+              className={styles.profileIcon}
+            />
+            <div className={styles.profileText}>
+              {post.sikBti && (
+                <SikBti
+                  sikBti={post.sikBti}
+                  style={{ marginRight: '6px', marginBottom: '1px', display: 'inline', fontSize: '0.7rem' }}
+                />
+              )}
+              <span className={styles.authorNickname}>{post.author}</span>
+            </div>
+          </div>
+          <div className={styles.dateTimeViews}>
+            <span className={styles.postDate}>{formatDateToShort(post.createdAt)}</span>
+            <span className={styles.postViews}>👁️ {post.views}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 
-  if (isLoading) {
-    return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
-  }
-
-  if (error) {
-    return <div className={styles.error}>{error}</div>;
-  }
+  if (isLoading) return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <>
       <CommunityHeader />
-
       {showModal && (
         <CommunityModal
           message="로그인 후 이용 가능합니다."
@@ -166,9 +165,9 @@ const MarketMain = () => {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>인기 거래 &gt;</h2>
           </div>
-          <div className={`${styles.popularPostGrid}`}>
+          <div className={styles.popularPostGrid}>
             {topPopularPosts.length > 0
-              ? topPopularPosts.map(renderPostCard)
+              ? topPopularPosts.map((post, i) => renderPostCard(post, i))
               : <p className={styles.noPosts}>인기 거래 게시글이 없습니다.</p>}
           </div>
         </div>
@@ -177,20 +176,15 @@ const MarketMain = () => {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>최신 거래 &gt;</h2>
           </div>
-          <div className={`${styles.recentPostGrid}`}>
+          <div className={styles.recentPostGrid}>
             {paginatedRecentPosts.length > 0
-              ? paginatedRecentPosts.map(renderPostCard)
+              ? paginatedRecentPosts.map((post) => renderPostCard(post))
               : <p className={styles.noPosts}>최신 거래 게시글이 없습니다.</p>}
           </div>
 
           {totalPages > 1 && (
             <div className={styles.pagination}>
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                &lt;
-              </button>
+              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>&lt;</button>
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i + 1}
@@ -200,23 +194,14 @@ const MarketMain = () => {
                   {i + 1}
                 </button>
               ))}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                &gt;
-              </button>
+              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>&gt;</button>
             </div>
           )}
         </div>
 
         <div className={styles.actionButtons}>
-          <button className={styles.myListButton} onClick={handleMyListClick}>
-            내 판매 목록
-          </button>
-          <button className={styles.registerButton} onClick={handleRegisterClick}>
-            등록하기
-          </button>
+          <button className={styles.myListButton} onClick={handleMyListClick}>내 판매 목록</button>
+          <button className={styles.registerButton} onClick={handleRegisterClick}>등록하기</button>
         </div>
       </div>
     </>

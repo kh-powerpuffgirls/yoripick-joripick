@@ -21,6 +21,7 @@ interface ReportTargetInfo {
   title: string;
   category: string;
   refNo: number;
+  reportedUserProfileImageUrl?: string;
 }
 
 interface DetailTableProps {
@@ -47,6 +48,7 @@ const DetailTable: React.FC<DetailTableProps> = ({ recipe, onReportClick }) => {
       title: recipe.rcpName,
       category: 'RECIPE',
       refNo: recipe.writer.userNo,
+      reportedUserProfileImageUrl: recipe.writer.profileImage || undefined,
     };
     
     onReportClick(targetInfo);

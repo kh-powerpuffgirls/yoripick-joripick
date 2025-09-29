@@ -12,6 +12,8 @@ export const MyIngNotification = () => {
     const ings = useSelector((state: RootState) => state.mying.ings);
     const isClosing = useSelector((state: RootState) => state.mying.isClosing);
     const [isShown, setIsShown] = useState(false);
+    const isClosed = localStorage.getItem("myIngNotificationClosed") === "true";
+    const user = useSelector((state: RootState) => state.auth.user);
 
     const handleStartClose = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
@@ -31,7 +33,6 @@ export const MyIngNotification = () => {
     };
 
     useEffect(() => {
-        const isClosed = localStorage.getItem("myIngNotificationClosed") === "true";
         if (!isClosed) {
             const timer = setTimeout(() => {
                 setIsShown(true);
@@ -40,12 +41,13 @@ export const MyIngNotification = () => {
         }
     }, []);
 
-    if (!ings || ings.length == 0 || isClosing == undefined) return null;
+    if (!ings || ings.length == 0 || isClosing == undefined || isClosed == true || user?.expNoti !== "Y") return null;
 
     return (
         <div>
             <div
                 className={`${style.notiItem} ${isShown ? style.slideUp : ""} ${isClosing ? style.fadeOut : ""} ${style["exp-modal"]}`}
+                id={"notiItem"}
                 onAnimationEnd={(e) => {
                     if (e.animationName === style.fadeOut) {
                         dispatch(startClosingAnimation());

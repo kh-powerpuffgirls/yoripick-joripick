@@ -57,6 +57,7 @@ interface ReportTargetInfo {
     title: string;
     category: string;
     refNo: number;
+    // reportedUserProfileImageUrl?: string;
 }
 
 interface ReportOption {
