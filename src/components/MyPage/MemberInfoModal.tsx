@@ -223,6 +223,7 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
               <div className={styles.inputRow}>
                 <input
                   type="email"
+                  className={styles.emailInput}
                   value={email}
                   onChange={e => { setEmail(e.target.value); setEmailStatus(null); setEmailVerified(null); }}
                   ref={emailRef}
