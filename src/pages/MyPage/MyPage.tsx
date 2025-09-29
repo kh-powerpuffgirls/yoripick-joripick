@@ -94,22 +94,22 @@ const MyPage = () => {
     };
     const [profileImg, setProfileImg] = useState<File | null>(null);
     const myProfile = useSelector((state: RootState) => state.auth.user);
-    //const user = useSelector((state: RootState) => state.auth.user);
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
     const [user, setUser] = useState<User>();
 
-    const isMyPage = Number(userNo) === myProfile?.userNo;
+    const isMyPage = (Number(userNo) === myProfile?.userNo) || myProfile?.roles.includes("ROLE_ADMIN");
 
     useEffect(() => {
         if (myProfile) {
             if ((Number(userNo) !== myProfile.userNo)) {
                 api.get(`users/profile/${userNo}`)
                     .then(res => {
-                        const data = res.data;
-                        if (data.success) {
-                            setUser(data);
-                        }
+                        console.log(res.data)
+                        return res.data
                     })
+                    .then((user:User) => {
+                        fetchData(user)
+                    })                    
                     .catch(err => {
                         if (err.response?.status === 410) {
                             alert("탈퇴한 회원입니다.");
@@ -122,6 +122,82 @@ const MyPage = () => {
                 setUser(myProfile);
             }
         }
+
+        const fetchData = async (user:User) => {
+            const api = axios.create({
+                baseURL: "http://localhost:8081/users",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            try {
+                const profileRes = await api.post("/profiles", user);
+                setUser((prev) => ({...prev , ...user , profile : profileRes.data}));
+
+                const allergyRes = await api.get("/allergy", {
+                    params: { userNo: user.userNo },
+                });
+
+                const allergyListRes = await api.get("/allergy-list");
+                const allergyTree = allergyListRes.data;
+
+                const flattenAllergies = (
+                    tree: AllergyDto[]
+                ): { id: number; name: string; parent: string }[] => {
+                    const result: { id: number; name: string; parent: string }[] = [];
+
+                    const traverse = (nodes: AllergyDto[], parentName?: string) => {
+                        for (const node of nodes) {
+                            if (node.children && node.children.length > 0) {
+                                traverse(node.children, node.name);
+                            } else {
+                                result.push({
+                                    id: node.allergyNo,
+                                    name: node.name,
+                                    parent: parentName ?? "기타",
+                                });
+                            }
+                        }
+                    };
+
+                    traverse(tree);
+                    return result;
+                };
+
+
+                const flatAllergies = flattenAllergies(allergyTree);
+                const userAllergies = flatAllergies.filter((a) =>
+                    allergyRes.data.includes(a.id)
+                );
+
+                setAllergyInfo(userAllergies);
+
+                const myRecipesRes = await api.get(`/${user.userNo}/recipes`);
+                const likedRes = await api.get(`/${user.userNo}/likes`);
+
+                const formattedMyRecipes: MyPageRecipe[] = myRecipesRes.data.map((r: any) => ({
+                    id: r.RCP_NO,
+                    title: r.RCP_NAME,
+                    likes: r.RCP_LIKE,
+                    img: r.SERVER_NAME
+                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
+                        : defaultProfile,
+                }));
+                setMyRecipes(formattedMyRecipes);
+
+                const formattedLikedRecipes: MyPageRecipe[] = likedRes.data.map((r: any) => ({
+                    id: r.RCP_NO,
+                    title: r.RCP_NAME,
+                    likes: r.RCP_LIKE,
+                    img: r.SERVER_NAME
+                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
+                        : defaultProfile,
+                }));
+                setLikedRecipes(formattedLikedRecipes);
+            } catch (err) {
+                console.error("마이페이지 데이터 불러오기 오류:", err);
+            }
+        };
     }, [myProfile, userNo]);
 
     const navigate = useNavigate();
@@ -200,90 +276,6 @@ const MyPage = () => {
         }
     };
 
-
-    useEffect(() => {
-        if (!user || !accessToken) return;
-
-        const api = axios.create({
-            baseURL: "http://localhost:8081/users",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
-        const fetchData = async () => {
-            try {
-                const profileRes = await api.post("/profiles", user);
-                dispatch(updateProfileImage(profileRes.data));
-
-                const allergyRes = await api.get("/allergy", {
-                    params: { userNo: user.userNo },
-                });
-
-                const allergyListRes = await api.get("/allergy-list");
-                const allergyTree = allergyListRes.data;
-
-                const flattenAllergies = (
-                    tree: AllergyDto[]
-                ): { id: number; name: string; parent: string }[] => {
-                    const result: { id: number; name: string; parent: string }[] = [];
-
-                    const traverse = (nodes: AllergyDto[], parentName?: string) => {
-                        for (const node of nodes) {
-                            if (node.children && node.children.length > 0) {
-                                traverse(node.children, node.name);
-                            } else {
-                                result.push({
-                                    id: node.allergyNo,
-                                    name: node.name,
-                                    parent: parentName ?? "기타",
-                                });
-                            }
-                        }
-                    };
-
-                    traverse(tree);
-                    return result;
-                };
-
-
-                const flatAllergies = flattenAllergies(allergyTree);
-                const userAllergies = flatAllergies.filter((a) =>
-                    allergyRes.data.includes(a.id)
-                );
-
-                setAllergyInfo(userAllergies);
-
-                const myRecipesRes = await api.get(`/${user.userNo}/recipes`);
-                const likedRes = await api.get(`/${user.userNo}/likes`);
-
-                const formattedMyRecipes: MyPageRecipe[] = myRecipesRes.data.map((r: any) => ({
-                    id: r.RCP_NO,
-                    title: r.RCP_NAME,
-                    likes: r.RCP_LIKE,
-                    img: r.SERVER_NAME
-                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
-                        : defaultProfile,
-                }));
-                setMyRecipes(formattedMyRecipes);
-
-                const formattedLikedRecipes: MyPageRecipe[] = likedRes.data.map((r: any) => ({
-                    id: r.RCP_NO,
-                    title: r.RCP_NAME,
-                    likes: r.RCP_LIKE,
-                    img: r.SERVER_NAME
-                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
-                        : defaultProfile,
-                }));
-                setLikedRecipes(formattedLikedRecipes);
-            } catch (err) {
-                console.error("마이페이지 데이터 불러오기 오류:", err);
-            }
-        };
-
-        fetchData();
-    }, [user, accessToken]);
-
     return (
         <div className={styles.container}>
             <div className={styles.headerRow}>
@@ -309,7 +301,7 @@ const MyPage = () => {
                 <section className={styles.profileSection}>
                     <div className={styles.leftProfile}>
                         <img
-                            src={user.imageNo === 0 ? defaultProfile : (user.profile || defaultProfile)}
+                            src={!user.profile ? defaultProfile : (user.imageNo !== 0 ? user.profile : defaultProfile)}
                             className={styles.profileImg}
                         />
                     </div>
@@ -409,7 +401,7 @@ const MyPage = () => {
                     className={`${styles.tabButton} ${activeTab === "liked" ? styles.active : ""}`}
                     onClick={() => setActiveTab("liked")}
                 >
-                    {isMyPage ? "내가 찜한 레시피" : `${user?.username} 님이 찜한 레시피`}
+                    {isMyPage ? "내가 추천한 레시피" : `${user?.username} 님이 추천한 레시피`}
                     <div className={styles.badge2}>{likedRecipes.length}</div>
                 </button>
             </div>
