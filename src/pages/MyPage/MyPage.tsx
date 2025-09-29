@@ -29,6 +29,7 @@ interface ReportTargetInfo {
     title: string;
     category: string;
     refNo: number;
+    reportedUserProfileImageUrl?: string;
 }
 
 interface ReportOption {
@@ -208,11 +209,16 @@ const MyPage = () => {
             return;
         }
 
+        const reportedUserProfileImageUrl = !user.profile || user.imageNo === 0 
+        ? defaultProfile 
+        : user.profile; 
+
         const targetInfo: ReportTargetInfo = {
             author: user.username,
             title: `${user.username} 님 프로필`, 
             category, 
-            refNo: Number(userNo), 
+            refNo: Number(userNo),
+            reportedUserProfileImageUrl,
         };
 
         setReportTargetInfo(targetInfo);
@@ -241,7 +247,7 @@ const MyPage = () => {
         }
     };
 
-    const handleReportSubmit = async (reportType: string, content: string, refNo: number) => {
+    const handleReportSubmit = async (reportType: string, content: string, refNo: number, reportedUserProfileImageUrl?: string) => {
         if (!myProfile?.userNo || !reportTargetInfo) {
             alert('로그인 정보가 유효하지 않아 신고할 수 없습니다.');
             return;
@@ -285,7 +291,7 @@ const MyPage = () => {
                     <button
                         className={styles.reportBtn}
                         onClick={handleReportClick}
-                    >
+                    > 신고하기
                     </button>
                 )}
             </div>
