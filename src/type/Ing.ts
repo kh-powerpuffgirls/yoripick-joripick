@@ -86,6 +86,7 @@ export interface IngCreate {
         ingName: string;
         ingCode: number;
         ingCodeName?: string;
+        imgUrl?: string;
 
         energy?: number;
         carb?: number;

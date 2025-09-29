@@ -25,7 +25,7 @@ export default function IngpediaWrite(){
         console.log(newIng);
         const handleMessage = async (event: MessageEvent) => {
             if (event.data?.type === 'ING_RESULT') {
-                const { ingNo, ingName, ingCode, ingCodeName } = event.data.payload;
+                const { ingNo, ingName, ingCode, ingCodeName, imgUrl } = event.data.payload;
                 const target = event.data.target;
                 console.log(target);
                 switch(target){
@@ -54,6 +54,7 @@ export default function IngpediaWrite(){
                                     ingName,
                                     ingCode,
                                     ingCodeName,
+                                    imgUrl,
                                     energy: ingTemp.ingDetail.energy ?? 0,
                                     carb: ingTemp.ingDetail.carb ?? 0,
                                     protein: ingTemp.ingDetail.protein ?? 0,
@@ -166,7 +167,7 @@ export default function IngpediaWrite(){
                             <tbody>
                                 <tr>
                                     <td colSpan={2} className={ingWriteStyle["ing-image"]}>
-                                        <img src={lodingImg.plus}/>
+                                        <img src={newIng.ingDetail.imgUrl ?? lodingImg.noImage}/>
                                     </td>
                                 </tr>
                                 <tr>
