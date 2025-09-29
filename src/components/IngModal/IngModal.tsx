@@ -36,7 +36,6 @@ export const IngPopup = () => {
     const headerEl = document.querySelector('#header');
     const footerEl = document.querySelector('#footer');
     const notiEl = document.querySelector('.chatBtn');
-    const ingNotiEl = document.querySelector('#notiItem');
     if (headerEl) {
         (headerEl as HTMLElement).style.display = 'none';
     }
@@ -46,9 +45,7 @@ export const IngPopup = () => {
     if (notiEl) {
         (notiEl as HTMLElement).style.display = 'none';
     }
-    if (ingNotiEl) {
-        (ingNotiEl as HTMLElement).style.display = 'none';
-    }
+    localStorage.setItem("myIngNotificationClosed", "true");
   }, []);
 
   const ingCodeName = ['전체','과일', '채소', '버섯류', '곡류', '육류', '수산물', '유제품', '견과류', '당류', '양념류', '분말류', '기타'];
