@@ -24,9 +24,13 @@ export const AnnManagement = () => {
     const [announcementToEdit, setAnnouncementToEdit] = useState<Announcement | null>(null);
 
     const fetchData = async (page: number) => {
-        const data = await getAnnouncements(page, 10);
-        setPageInfo(data.pageInfo);
-        setAnnouncements(data.list);
+        try {
+            const data = await getAnnouncements(page, 10);
+            setPageInfo(data.pageInfo);
+            setAnnouncements(data.list);
+        } catch {
+            setAnnouncements(null);
+        }
     };
 
     useEffect(() => {

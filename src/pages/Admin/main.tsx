@@ -9,6 +9,7 @@ import {
     fetchRecipes,
     fetchUserReports,
     getChatRoom,
+    getClassInfo,
     getParentRep,
     resolveChallenge,
     resolveReport,
@@ -29,6 +30,7 @@ import type { RootState } from '../../store/store';
 import { useNavigate } from 'react-router-dom';
 import { openNewChallengeModal } from '../../features/adminModalSlice';
 import { setTotalReports } from '../../features/adminStateSlice';
+import { ClassModal } from '../../components/Admin/classModal';
 
 export const AdminDashboard = () => {
     const [userReports, setUserReports] = useState<Reports[]>([]);
@@ -48,6 +50,9 @@ export const AdminDashboard = () => {
     const [confirmTarget, setConfirmTarget] = useState<any>(null);
     const [confirmMessage, setConfirmMessage] = useState<string>("이 신고내역을 처리 완료 하시겠습니까?");
     const [confirmAction, setConfirmAction] = useState<(value?: string) => void>(() => () => { });
+
+    const [modalContent, setModalContent] = useState<any>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { sendChatMessage } = useChat();
     const user = useSelector((state: RootState) => state.auth.user);
@@ -157,6 +162,11 @@ export const AdminDashboard = () => {
         setConfirmOpen(true);
     };
 
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setModalContent(null);
+    };
+
     const handleOpenReport = async (c: Reports) => {
         let ref = window.location.origin + "/";
         switch (c.category) {
@@ -169,6 +179,15 @@ export const AdminDashboard = () => {
             case "MARKETPLACE":
                 ref += `community/market/buyForm/${c.refNo}`;
                 break;
+            case "COOKING_CLASS":
+                try {
+                    setModalContent(await getClassInfo(c.refNo));
+                    setIsModalOpen(true);
+                } catch (error) {
+                    console.error("Failed to fetch class data:", error);
+                    alert("쿠킹 클래스 정보를 불러오는 데 실패했습니다.");
+                }
+                return;
         }
         const response = await getParentRep(c.reportNo);
         switch (response.category) {
@@ -551,6 +570,14 @@ export const AdminDashboard = () => {
                     }}
                     onCancel={() => setConfirmOpen(false)}
                 />
+
+                {isModalOpen && modalContent && (
+                    <ClassModal
+                        isOpen={isModalOpen}
+                        onClose={handleCloseModal}
+                        chatData={modalContent}
+                    />
+                )}
             </div>
         </div>
     );

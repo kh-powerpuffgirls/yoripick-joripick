@@ -7,7 +7,7 @@ interface SikBtiProps {
 }
 
 // ✨ 컴포넌트 이름은 대문자로 시작하는 것이 React의 규칙입니다. (sikBti -> SikBti)
-const SikBti: React.FC<SikBtiProps> = ({ sikBti,style }) => {
+const SikBti: React.FC<SikBtiProps> = ({ sikBti, style }) => {
   // 값에 따라 색상 지정
   const getColor = (bti: string) => {
     switch (bti) {
@@ -22,7 +22,7 @@ const SikBti: React.FC<SikBtiProps> = ({ sikBti,style }) => {
       default: return 'gray'; // 기본값
     }
   };
-  
+
   return (
     <div
       style={{
