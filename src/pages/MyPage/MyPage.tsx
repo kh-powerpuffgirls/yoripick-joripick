@@ -286,6 +286,7 @@ const MyPage = () => {
                         className={styles.reportBtn}
                         onClick={handleReportClick}
                     >
+                        신고하기
                     </button>
                 )}
             </div>
