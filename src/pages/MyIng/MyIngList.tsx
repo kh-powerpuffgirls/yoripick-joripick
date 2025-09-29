@@ -146,6 +146,10 @@ export default function MyIngList() {
                 <hr className={ingDefaultStyle["margin-10"]} />
 
                 {/* 카테고리별 출력 */}
+                {MyIngItems?.length == 0 && 
+                <div className={myingStyle[`center`]}>
+                    등록한 식재료가 없습니다.
+                </div>}
                 {Object.entries(sortedGroupedData ?? {}).map(([category, items]) => (
                     <section key={category} className={cx(myingStyle["mying-group"], myingStyle["content-area"])}>
                         {/* 카테고리 타이틀 (클릭 시 접기/펼치기) */}

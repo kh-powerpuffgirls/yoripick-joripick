@@ -77,7 +77,7 @@ export const MyIngNotification = () => {
                         className={`${style.notiBtn} ${style.cancelBtn}`}
                         onClick={handleStartClose}
                     >
-                        취소
+                        확인
                     </button>
                     <button
                         className={`${style.notiBtn} ${style.moveBtn}`}
