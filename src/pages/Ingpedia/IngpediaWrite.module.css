@@ -19,7 +19,7 @@
 .ing-table th input {
   height: 42px;
 }
-.ing-name, .ing-table tr > td:first-child {
+.ing-table tr > td:first-child {
   color: white;
   font-weight: bold;
   text-align: center;
@@ -56,7 +56,7 @@
   color: black;
   background-color: white;
 }
-.ing-image, .ing-image > img {
+/* .ing-image, .ing-image > img {
   padding: 0px;
   width: 100%;
   height: auto;
@@ -78,7 +78,7 @@
 }
 .ing-image:active > img {
   background-color: #ccc;
-}
+} */
 .ing-table .drop-menu {
   height: 28px;
   width: 120px;

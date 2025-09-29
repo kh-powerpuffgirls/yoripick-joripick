@@ -20,16 +20,61 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding-top: 20px;
+    justify-content: end;
+    padding-bottom: 300px;
     min-height: 1000px;
     width: 1000px;
+    background-size: contain;
+    /* background-size: 1000px auto; */
+    padding-top: 50px;
+}
+.ebti_container_Q {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    padding-bottom: 100px;
+    width: 1000px;
+    padding-top: 50px;
+}
+.result{
+    background-color: #DBEEBD;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1000px;
+
+}
+
+.ebti_container_R {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+
+  /* ⬇️ 레이아웃 간격(필요 시 값 조절) */
+  padding-top: 50px;
+  padding-bottom: 100px;
+
+  /* ⬇️ 가로 1000px 고정, 세로는 비율로 자동 결정 */
+  width: 1000px;
+  aspect-ratio: 3 / 5;         
+  overflow: hidden;    
+
+  /* ⬇️ 배경 이미지는 전체가 보이도록 */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: top center;
 }
 
 .Q {
     display: flex;
     flex-direction: column;
 }
+
 
 .pagging {
     background-color: #464646;
@@ -52,6 +97,21 @@
     font-weight: 500;
     padding: 20px;
     margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+.card_opt{
+    border: 1px solid #464646;
+    border-radius: 20px;
+    width: 600px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 20px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;

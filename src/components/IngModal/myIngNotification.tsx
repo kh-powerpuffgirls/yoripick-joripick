@@ -13,6 +13,7 @@ export const MyIngNotification = () => {
     const isClosing = useSelector((state: RootState) => state.mying.isClosing);
     const [isShown, setIsShown] = useState(false);
     const isClosed = localStorage.getItem("myIngNotificationClosed") === "true";
+    const user = useSelector((state: RootState) => state.auth.user);
 
     const handleStartClose = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation();
@@ -40,7 +41,7 @@ export const MyIngNotification = () => {
         }
     }, []);
 
-    if (!ings || ings.length == 0 || isClosing == undefined || isClosed == true) return null;
+    if (!ings || ings.length == 0 || isClosing == undefined || isClosed == true || user?.expNoti !== "Y") return null;
 
     return (
         <div>

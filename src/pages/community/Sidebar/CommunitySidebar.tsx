@@ -99,7 +99,7 @@ const CommunitySidebar: React.FC<SidebarProps> = ({ onSearch, isOfficial }) => {
             value={ingredientInput}
             onChange={(e) => setIngredientInput(e.target.value)}
           />
-          {ingredientInput.length >= 2 && (
+          {ingredientInput.length >= 1 && (
             <ul className={sidebar.dropdown}>
               {searchResults.length > 0 ? (
                 searchResults.map(ing => (

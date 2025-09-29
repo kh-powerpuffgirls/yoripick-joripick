@@ -95,10 +95,10 @@ export const codeToDBString: Record<string, string> = {
     M: "육식 티라노",
     V: "초식 트리케라톱스",
     S: "바다의 연인",
-    Kpos: "열량 폭주기관차",
-    Kneg: "칼로리 저격수",
+    Kpos: "작지않은 빅맘",
+    Kneg: "원X스 브룩",
     Tpos: "도파민 중독자",
-    Tneg: "슴슴슴슴",
+    Tneg: "한강라면",
     N: "잡식 햄스터"
 };
 
@@ -173,24 +173,24 @@ const QuestionPage = () => {
                 {current + 1} / {questions.length}
             </div>
             </div>
-            <div className={style.ebti_container}>
+            <div className={style.ebti_container_Q}>
                 <div className="Q">
-                    <span style={{ fontSize: "50px", fontWeight: "bold" }}>
+                    <span style={{ fontSize: "40px", fontWeight: "bold" }}>
                         Q{questions[current].id}
                     </span>
                     <div
                         className={style.card}
-                        style={{ backgroundColor: "#FFD0BF", height: "400px" }}
+                        style={{ backgroundColor: "#FFD0BF", height: "250px" }}
                     >
-                        <span style={{ fontWeight: "bold", fontSize: "40px" }}>
-                            {questions[current].id}. {questions[current].text}
+                        <span style={{ fontWeight: "bold", fontSize: "30px" }}>
+                            {questions[current].text}
                         </span>
                     </div>
                 </div>
                 {questions[current].options.map((opt, idx) => (
                     <div
                         key={idx}
-                        className={style.card}
+                        className={style.card_opt}
                         onClick={() => handleAnswer(idx)}
                         style={{ cursor: "pointer" }}
                     >

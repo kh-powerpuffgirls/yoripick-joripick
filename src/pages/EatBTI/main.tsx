@@ -1,26 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import style from "./eatbti.module.css";
 import EatBTIHeader from "./eatbti_header";
+import main from "../../../public/assets/images/eatBTI/eatBTI_main.png";
 
 const EatBTIPage = () => {
   const navigate = useNavigate();
   return (
     <div className={style.main}>
       < EatBTIHeader />
-      <div className={style.ebti_container}>
-        <div
-          className={style.card}
-          style={{ backgroundColor: "#FFF185", height: "400px" }}
-        >
-          <span style={{ fontWeight: "bold", fontSize: "40px" }}>
-            식BTI 유형테스트
-          </span>
-          <br />
-          <span>당신의 식습관유형을 알아보세요!</span>
-        </div>
+      <div className={style.ebti_container}
+           style={{ backgroundImage: `url(${main})` }}>
         <div className={style.card}
           onClick={() => navigate("/eatBTI/question")}
-          style={{ backgroundColor: "#FFD0BF", cursor: "pointer" }}>
+          id={style.testStart}
+          style={{ backgroundColor: "#86BA6C", cursor: "pointer", border:"1px solid #174421"}}>
           <span> ▶ 테스트 시작하기</span>
         </div>
       </div>
