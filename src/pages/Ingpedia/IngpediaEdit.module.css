@@ -51,7 +51,7 @@
   margin-right: 10px;
   text-align: center;
 }
-.ing-image, .ing-table tr > td:nth-child(2) {
+/* .ing-image, .ing-table tr > td:nth-child(2) {
   color: black;
   background-color: white;
 }
@@ -77,7 +77,7 @@
 }
 .ing-image:active > img {
   background-color: #ccc;
-}
+} */
 .ing-table .drop-menu {
   height: 28px;
   width: 120px;

@@ -46,6 +46,7 @@ export const MyIngNotification = () => {
         <div>
             <div
                 className={`${style.notiItem} ${isShown ? style.slideUp : ""} ${isClosing ? style.fadeOut : ""} ${style["exp-modal"]}`}
+                id={"notiItem"}
                 onAnimationEnd={(e) => {
                     if (e.animationName === style.fadeOut) {
                         dispatch(startClosingAnimation());
