@@ -47,6 +47,7 @@ import rcpIcon12 from './images/ing/icon/food.png'
 
 
 
+
 export const lodingImg = {
     logo: logo,
     menuIcon: menuIcon,
@@ -89,6 +90,7 @@ export const lodingIngBn = [
     '/assets/images/ing/banner/andra-ion-qsPHXC4T2cY-unsplash.webp',
     '/assets/images/ing/banner/kristiana-pinne-FL8NSCfvty0-unsplash.webp',
     '/assets/images/ing/banner/victoria-shes-UC0HZdUitWY-unsplash.webp',
+    
 ]
 
 export const lodingRecipeIcon = [

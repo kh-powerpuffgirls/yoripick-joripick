@@ -424,6 +424,7 @@ const RecipeEditPage: React.FC = () => {
                         </table>
                     </div>
                     ))}
+                    <button className={write.add_how2cook} onClick={handleAddCookingStep}>요리순서 추가</button>
                 </div>
                     
                 {/* --- 5. 최종 버튼 --- */}
