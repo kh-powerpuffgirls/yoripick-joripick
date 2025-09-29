@@ -55,6 +55,7 @@ export default function MyIngList() {
             });
             setCollapsed(initialCollapsedState);
         }
+        console.log(MyIngItems);
     }, [MyIngItems, submittedKeyword]);
 
     const handleSearchMyIngs = () => {
@@ -69,7 +70,7 @@ export default function MyIngList() {
     const deleteMenuMutation = useMutation({
         mutationFn: (ingNo:number) => deleteMyIng(ingNo, userNo as number),
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['myIngItems', submittedKeyword]});
+            queryClient.invalidateQueries({queryKey: ['MyIngs', submittedKeyword]});
             queryClient.invalidateQueries({predicate: (query) => query.queryKey[0] === 'myIngItem',});
         }
     })
@@ -173,7 +174,8 @@ export default function MyIngList() {
                                     <article key={item.ingNo} className={myingStyle[`mying-item`]}
                                     onClick={() => navigate(`/mypage/inglist/detail/${item.ingNo}`)}>
                                         <div className={myingStyle[`thumbnail`]}>
-                                            <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/>
+                                            {/* <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/> */}
+                                            <img className={myingStyle[`thumbnail-img`]} src={item.imgUrl ?? lodingImg.noImage}/>
                                             {expDateIcon(item)} {/* D-day / 경고 아이콘 */}
                                         </div>
                                         <div className={myingStyle[`mying-title`]}>

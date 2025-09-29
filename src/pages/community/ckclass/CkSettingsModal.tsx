@@ -188,7 +188,7 @@ const handleToggleNotification = async () => {
   }
 };
 const handleMemberClick = (memberUserNo: number) => {
-  navigate(`/mypage/${memberUserNo}`);
+  navigate(`/users/${memberUserNo}`);
   onClose();
 };
 if (!isOpen) return null;

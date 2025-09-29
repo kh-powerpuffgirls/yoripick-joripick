@@ -27,6 +27,7 @@ export const IngPopup = () => {
         ingName: ingItem.ingName,
         ingCode: ingItem.ingCode,
         ingCodeName: ingItem.ingCodeName,
+        imgUrl: ingItem.imgUrl,
     }}, '*');
     window.close();
   };
@@ -34,11 +35,19 @@ export const IngPopup = () => {
   useEffect(() => {
     const headerEl = document.querySelector('#header');
     const footerEl = document.querySelector('#footer');
+    const notiEl = document.querySelector('.chatBtn');
+    const ingNotiEl = document.querySelector('#notiItem');
     if (headerEl) {
         (headerEl as HTMLElement).style.display = 'none';
     }
     if (footerEl) {
         (footerEl as HTMLElement).style.display = 'none';
+    }
+    if (notiEl) {
+        (notiEl as HTMLElement).style.display = 'none';
+    }
+    if (ingNotiEl) {
+        (ingNotiEl as HTMLElement).style.display = 'none';
     }
   }, []);
 

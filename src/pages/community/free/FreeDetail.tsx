@@ -75,6 +75,7 @@ interface ReportTargetInfo {
   title: string;
   category: string;
   refNo: number;
+  reportedUserProfileImageUrl?: string;
 }
 
 const useModal = () => {
@@ -486,6 +487,7 @@ return (
                                 title: reply.content.substring(0, 30) + '...',
                                 category: 'REPLY',
                                 refNo: reply.replyNo,
+                                reportedUserProfileImageUrl: createUserProfileImageUrl(reply.profileImageServerName, reply.userNo) || undefined,
                             })
                         }>
                             신고
@@ -605,7 +607,8 @@ return (
                                     title: post.title,
                                     category: 'BOARD',
                                     refNo: post.boardNo,
-                                })
+                                    reportedUserProfileImageUrl: createUserProfileImageUrl(post.profileImageServerName, post.userNo) || undefined,
+                               })
                             }
                         >
                             신고

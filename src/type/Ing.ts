@@ -6,6 +6,7 @@ export interface IngItem {
     ingCode: number;
     ingCodeName: string;
     nutrientNo: number;
+    imgUrl?: string;
 }
 export interface PagedIngItem {
     list: IngItem[],
@@ -119,6 +120,7 @@ export interface MyIngItem {
     ingName: string;
     ingCode: number;
     ingCodeName: string;
+    imgUrl?: string;
 }
 export interface NewMyIng {
     userNo: number;
@@ -131,6 +133,7 @@ export const initialState = {
     userNo: 0,
     ingNo: 0,
     createdAt: new Date,
+    expDate: undefined,
     quantity: '',
     ingName: '',
     ingCode: 0,

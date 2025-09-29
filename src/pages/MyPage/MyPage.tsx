@@ -24,8 +24,6 @@ import type { MyPageRecipe } from "../../type/Recipe";
 import Pagination from "../../components/Pagination";
 import type { PageInfo } from "../../api/adminApi";
 
-
-// 신고
 interface ReportTargetInfo {
     author: string;
     title: string;
@@ -47,7 +45,6 @@ const MyPage = () => {
     const [isAlarmModal, setAlarmModal] = useState(false);
     const [isInactiveModal, setInactiveModal] = useState(false);
     
-    // 신고
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
     const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
@@ -204,7 +201,6 @@ const MyPage = () => {
     const handleInactive = () => {
     };
     
-    // 신고
     const handleReportClick = async () => {
         const category = 'USERS';
         if (!user || !myProfile?.userNo) {
@@ -245,7 +241,6 @@ const MyPage = () => {
         }
     };
 
-    // 신고
     const handleReportSubmit = async (reportType: string, content: string, refNo: number) => {
         if (!myProfile?.userNo || !reportTargetInfo) {
             alert('로그인 정보가 유효하지 않아 신고할 수 없습니다.');
@@ -289,10 +284,8 @@ const MyPage = () => {
                 ) : (
                     <button
                         className={styles.reportBtn}
-                        // 🚨 신고 버튼 클릭 시 handleReportClick 함수 호출로 변경
                         onClick={handleReportClick}
                     >
-                        🚨 신고하기
                     </button>
                 )}
             </div>
@@ -494,7 +487,6 @@ const MyPage = () => {
                 />
             )}
             
-            {/* 신고 모달 */}
             {isReportModalOpen && reportTargetInfo && (
                 <ReportModal
                     isOpen={isReportModalOpen}

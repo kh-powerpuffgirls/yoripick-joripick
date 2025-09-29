@@ -138,7 +138,7 @@ export default function IngpediaEdit(){
                             <tbody>
                                 <tr>
                                     <td colSpan={2} className={ingEditStyle["ing-image"]}>
-                                        <img src={lodingImg.plus}/>
+                                        <img src={newIngPedia.ingDetail.imgUrl ?? lodingImg.noImage}/>
                                     </td>
                                 </tr>
                                 <tr>
