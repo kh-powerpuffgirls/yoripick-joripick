@@ -8,6 +8,7 @@ import axios from "axios";
 import { store } from "../../../store/store";
 import ChallengeSuggestionForm from "./ChallengeSuggestionForm";
 import SikBti from "../Recipe/SikBti";
+import { lodingImg } from "../../../assets/images";
 
 const API_BASE = "http://localhost:8081";
 const getAccessToken = () => store.getState().auth.accessToken;
@@ -135,9 +136,9 @@ const ChallengeMain = () => {
     >
       {rank !== undefined && rank < 3 && (
         <div className={`${styles.crownIcon} ${styles[`rank${rank + 1}`]}`}>
-          {rank === 0 && <span role="img" aria-label="1st place crown">👑</span>}
-          {rank === 1 && <span role="img" aria-label="2nd place crown">👑</span>}
-          {rank === 2 && <span role="img" aria-label="3rd place crown">👑</span>}
+{         rank == 0 && <img src={lodingImg.crown1} />}
+          {rank == 1 && <img src={lodingImg.crown2} />}
+          {rank == 2 && <img src={lodingImg.crown3} />}
         </div>
       )}
       <div className={styles.imagePlaceholder}>

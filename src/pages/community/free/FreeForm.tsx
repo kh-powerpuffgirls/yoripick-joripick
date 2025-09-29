@@ -61,6 +61,7 @@ const FreeForm = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(isEdit);
   const [modalMessage, setModalMessage] = useState<string | null>(null);
+  const [isImageDeleted, setIsImageDeleted] = useState(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('authUser');
@@ -105,6 +106,7 @@ const FreeForm = () => {
   const handleClearImage = () => {
     setSelectedImage(null);
     setPreviewImage(null);
+    setIsImageDeleted(true); 
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
   };
@@ -123,12 +125,14 @@ const FreeForm = () => {
       if (subheading.trim()) formData.append('subheading', subheading);
       if (selectedImage) formData.append('file', selectedImage);
 
+      formData.append('isImageDeleted', String(isImageDeleted));
+
       const url = `/community/free${isEdit ? `/${boardNo}` : ''}`;
       const method = isEdit ? api.put : api.post;
 
       await method(url, formData);
       setModalMessage(isEdit ? '게시글 수정 완료' : '게시글 작성 완료');
-      setTimeout(() => navigate('/community/free'), 1500);
+      setTimeout(() => navigate('/community/free'), 1000);
     } catch (e: any) {
       if (e.response?.status === 401) {
         setModalMessage('로그인이 필요합니다.');
@@ -145,7 +149,7 @@ const FreeForm = () => {
     try {
       await api.delete(`/community/free/${boardNo}`);
       setModalMessage('게시글 삭제 완료');
-      setTimeout(() => navigate('/community/free'), 1500);
+      setTimeout(() => navigate('/community/free'), 1000);
     } catch (e: any) {
       if (e.response?.status === 401) {
         setModalMessage('로그인 후 이용해 주세요.');

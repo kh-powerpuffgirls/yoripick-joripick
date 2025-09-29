@@ -7,6 +7,7 @@ import CommunityHeader from '../Header/CommunityHeader';
 import CommunityModal from '../CommunityModal';
 import axios from 'axios';
 import SikBti from '../Recipe/SikBti';
+import { lodingImg } from '../../../assets/images';
 
 interface MarketMain {
   productId: number;
@@ -103,7 +104,10 @@ const MarketMain = () => {
     >
       {rank !== undefined && rank < 3 && (
         <div className={`${styles.crownIcon} ${styles[`rank${rank + 1}`]}`}>
-          <span>👑</span>
+          {/* <span>👑</span> */}
+          {rank == 0 && <img src={lodingImg.crown1} />}
+          {rank == 1 && <img src={lodingImg.crown2} />}
+          {rank == 2 && <img src={lodingImg.crown3} />}
         </div>
       )}
       <img
