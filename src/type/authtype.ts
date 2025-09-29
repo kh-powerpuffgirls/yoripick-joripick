@@ -14,6 +14,7 @@ export interface User {
   imageNo: number;
   allergies: number[]
   sikbti:string;
+  banStatus: string;
 }
 
 export interface LoginResponse {

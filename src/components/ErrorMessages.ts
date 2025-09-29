@@ -12,7 +12,7 @@ const errorMessages: Record<string, string> = {
   INVALID_CURRENT_PASSWORD:"현재 비밀번호가 맞지않습니다.",
   LARGE_FILE:"파일이 너무 큽니다. 다른 파일을 올려주세요.",
   UPLOAD_FAILED:"업로드 실패. 파일형식 또는 네트워크를 확인해주세요.",
-  INACTIVE_USER:"회원탈퇴신청한 회원입니다."
+  INACTIVE_USER:"회원탈퇴신청한 회원입니다.",
 };
 
 export default errorMessages;

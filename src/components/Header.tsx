@@ -59,7 +59,7 @@ const Header = () => {
           }
       };
       fetchData();
-  }, [user, accessToken]);
+  }, [accessToken]);
 
   const handleSuccess = () => {
     dispatch(closeModal());
