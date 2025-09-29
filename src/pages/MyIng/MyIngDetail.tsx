@@ -158,7 +158,7 @@ export default function MyIngDetail(){
                         
                         <div className={MyIngDetailStyle["thumb-area"]}>
                             <div className={MyIngDetailStyle["thumbnail"]}>
-                                <img src={lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
+                                <img src={MyIngItem.imgUrl ?? lodingImg.noImage} className={MyIngDetailStyle["thumbnail-img"]}/>
                                 {expDateIcon(MyIngItem)}
                             </div>
                             {expDateMessage(MyIngItem)}

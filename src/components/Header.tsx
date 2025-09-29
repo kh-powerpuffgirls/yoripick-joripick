@@ -159,7 +159,9 @@ const Header = () => {
                 <img className="profile-image" src={user.imageNo === 0 ? defaultProfile : (user.profile || defaultProfile)} />
               </button>
             ) : (
-              <button className="log-link" onClick={() => navigate('/login', { state: { from: loc } })}>
+              <button className="log-link"
+              onClick={() => {navigate('/login', { state: { from: loc } }); 
+              localStorage.removeItem("myIngNotificationClosed");}}>
                   <div>로그인</div>
                   <img className="profile-image" src={lodingImg.profile} />
               </button>

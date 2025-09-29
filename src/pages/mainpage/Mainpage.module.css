@@ -96,6 +96,7 @@
   object-fit: cover;
   border-radius: 8px;
   background-color: #eee;
+  border: #92ca02 solid 1px;
 }
 .tip-content {
   display: flex;
@@ -123,7 +124,8 @@
 }
 .carousel-thumbs {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
+  gap: 20px;
   align-items: center;
   padding-top: 10px;
   width: 100%;
@@ -139,6 +141,7 @@
   width: 100%;
   aspect-ratio: 1/1;
   object-fit: cover;
+  border: #92ca02 solid 1px;
 }
 .arrow-icon{
   width: 30px;
@@ -185,6 +188,7 @@
   background-color: #92ca02;
   transform: scale(1.1);
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 /* 식BTI 검사하기 hover */
