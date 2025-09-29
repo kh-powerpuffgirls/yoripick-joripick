@@ -9,7 +9,7 @@ import AllergyModal from "../../components/MyPage/AllergyModal";
 import MemberInfoModal from "../../components/MyPage/MemberInfoModal";
 import AlarmModal from "../../components/MyPage/AlarmModal";
 // 신고
-import ReportModal from '../../components/Report/ReportModal'; 
+import ReportModal from '../../components/Report/ReportModal';
 
 import type { RootState } from "../../store/store";
 import { useNavigate, useParams } from "react-router-dom";
@@ -45,7 +45,7 @@ const MyPage = () => {
     const [isMemberInfoModal, setMemberInfoModal] = useState(false);
     const [isAlarmModal, setAlarmModal] = useState(false);
     const [isInactiveModal, setInactiveModal] = useState(false);
-    
+
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportTargetInfo, setReportTargetInfo] = useState<ReportTargetInfo | null>(null);
     const [reportOptions, setReportOptions] = useState<ReportOption[]>([]);
@@ -97,6 +97,89 @@ const MyPage = () => {
 
     const isMyPage = (Number(userNo) === myProfile?.userNo) || myProfile?.roles.includes("ROLE_ADMIN");
 
+    const fetchData = async (user: User) => {
+        console.log(user)
+        const api = axios.create({
+            baseURL: "http://localhost:8081/users",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        try {
+            const profileRes = await api.post("/profiles", user);
+            setUser((prev) => ({ ...prev, ...user, profile: profileRes.data }));
+
+            const allergyRes = await api.get("/allergy", {
+                params: { userNo: user.userNo },
+            });
+
+            const allergyListRes = await api.get(`/allergy-list`);
+            const allergyTree = allergyListRes.data;
+
+            const flattenAllergies = (
+                tree: AllergyDto[]
+            ): { id: number; name: string; parent: string }[] => {
+                const result: { id: number; name: string; parent: string }[] = [];
+
+                const traverse = (nodes: AllergyDto[], parentName?: string) => {
+                    for (const node of nodes) {
+                        if (node.children && node.children.length > 0) {
+                            traverse(node.children, node.name);
+                        } else {
+                            result.push({
+                                id: node.allergyNo,
+                                name: node.name,
+                                parent: parentName ?? "기타",
+                            });
+                        }
+                    }
+                };
+
+                traverse(tree);
+                return result;
+            };
+
+
+            const flatAllergies = flattenAllergies(allergyTree);
+            const userAllergies = flatAllergies.filter((a) =>
+                allergyRes.data.includes(a.id)
+            );
+
+            setAllergyInfo(userAllergies);
+
+            const myRecipesRes = await api.get(`/${user.userNo}/recipes`);
+            const likedRes = await api.get(`/${user.userNo}/likes`);
+
+            const formattedMyRecipes: MyPageRecipe[] = myRecipesRes.data.map((r: any) => ({
+                id: r.RCP_NO,
+                title: r.RCP_NAME,
+                likes: r.RCP_LIKE,
+                img: r.SERVER_NAME
+                    ? `http://localhost:8081/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
+                    : defaultProfile,
+            }));
+            setMyRecipes(formattedMyRecipes);
+
+            const formattedLikedRecipes: MyPageRecipe[] = likedRes.data.map((r: any) => ({
+                id: r.RCP_NO,
+                title: r.RCP_NAME,
+                likes: r.RCP_LIKE,
+                img: r.SERVER_NAME
+                    ? `http://localhost:8081/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
+                    : defaultProfile,
+            }));
+            setLikedRecipes(formattedLikedRecipes);
+        } catch (err) {
+            console.error("마이페이지 데이터 불러오기 오류:", err);
+        }
+    };
+
+    useEffect(() => {
+        if (myProfile) {
+            fetchData(myProfile);
+        }
+    }, [accessToken,myProfile]);
+
     useEffect(() => {
         if (myProfile) {
             if ((Number(userNo) !== myProfile.userNo)) {
@@ -105,9 +188,9 @@ const MyPage = () => {
                         console.log(res.data)
                         return res.data
                     })
-                    .then((user:User) => {
+                    .then((user: User) => {
                         fetchData(user)
-                    })                    
+                    })
                     .catch(err => {
                         if (err.response?.status === 410) {
                             alert("탈퇴한 회원입니다.");
@@ -120,88 +203,12 @@ const MyPage = () => {
                 setUser(myProfile);
             }
         }
-
-        const fetchData = async (user:User) => {
-            const api = axios.create({
-                baseURL: "http://localhost:8081/users",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            try {
-                const profileRes = await api.post("/profiles", user);
-                setUser((prev) => ({...prev , ...user , profile : profileRes.data}));
-
-                const allergyRes = await api.get("/allergy", {
-                    params: { userNo: user.userNo },
-                });
-
-                const allergyListRes = await api.get("/allergy-list");
-                const allergyTree = allergyListRes.data;
-
-                const flattenAllergies = (
-                    tree: AllergyDto[]
-                ): { id: number; name: string; parent: string }[] => {
-                    const result: { id: number; name: string; parent: string }[] = [];
-
-                    const traverse = (nodes: AllergyDto[], parentName?: string) => {
-                        for (const node of nodes) {
-                            if (node.children && node.children.length > 0) {
-                                traverse(node.children, node.name);
-                            } else {
-                                result.push({
-                                    id: node.allergyNo,
-                                    name: node.name,
-                                    parent: parentName ?? "기타",
-                                });
-                            }
-                        }
-                    };
-
-                    traverse(tree);
-                    return result;
-                };
-
-
-                const flatAllergies = flattenAllergies(allergyTree);
-                const userAllergies = flatAllergies.filter((a) =>
-                    allergyRes.data.includes(a.id)
-                );
-
-                setAllergyInfo(userAllergies);
-
-                const myRecipesRes = await api.get(`/${user.userNo}/recipes`);
-                const likedRes = await api.get(`/${user.userNo}/likes`);
-
-                const formattedMyRecipes: MyPageRecipe[] = myRecipesRes.data.map((r: any) => ({
-                    id: r.RCP_NO,
-                    title: r.RCP_NAME,
-                    likes: r.RCP_LIKE,
-                    img: r.SERVER_NAME
-                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
-                        : defaultProfile,
-                }));
-                setMyRecipes(formattedMyRecipes);
-
-                const formattedLikedRecipes: MyPageRecipe[] = likedRes.data.map((r: any) => ({
-                    id: r.RCP_NO,
-                    title: r.RCP_NAME,
-                    likes: r.RCP_LIKE,
-                    img: r.SERVER_NAME
-                        ? `http://localhost:8081/images/${r.SERVER_NAME}`
-                        : defaultProfile,
-                }));
-                setLikedRecipes(formattedLikedRecipes);
-            } catch (err) {
-                console.error("마이페이지 데이터 불러오기 오류:", err);
-            }
-        };
     }, [myProfile, userNo]);
 
     const navigate = useNavigate();
     const handleInactive = () => {
     };
-    
+
     const handleReportClick = async () => {
         const category = 'USERS';
         if (!user || !myProfile?.userNo) {
@@ -209,14 +216,14 @@ const MyPage = () => {
             return;
         }
 
-        const reportedUserProfileImageUrl = !user.profile || user.imageNo === 0 
-        ? defaultProfile 
-        : user.profile; 
+        const reportedUserProfileImageUrl = !user.profile || user.imageNo === 0
+            ? defaultProfile
+            : user.profile;
 
         const targetInfo: ReportTargetInfo = {
             author: user.username,
-            title: `${user.username} 님 프로필`, 
-            category, 
+            title: `${user.username} 님 프로필`,
+            category,
             refNo: Number(userNo),
             reportedUserProfileImageUrl,
         };
@@ -225,17 +232,17 @@ const MyPage = () => {
 
         try {
             const reportApi = axios.create({
-                baseURL: "http://localhost:8081", 
+                baseURL: "http://localhost:8081",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            
+
             const res = await reportApi.get<ReportOption[]>('/community/report/types');
 
             const filteredOptions = res.data.filter((option) => option.category === category);
             setReportOptions(filteredOptions);
 
             if (filteredOptions.length === 0) {
-                alert('해당 카테고리의 신고 옵션이 없습니다.'); 
+                alert('해당 카테고리의 신고 옵션이 없습니다.');
                 return;
             }
 
@@ -255,7 +262,7 @@ const MyPage = () => {
 
         try {
             const reportApi = axios.create({
-                baseURL: "http://localhost:8081", 
+                baseURL: "http://localhost:8081",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 
@@ -263,7 +270,7 @@ const MyPage = () => {
                 reportType,
                 content,
                 refNo,
-                refType: reportTargetInfo.category, 
+                refType: reportTargetInfo.category,
             });
 
             alert('신고가 접수되었습니다. 감사합니다.');
@@ -271,7 +278,7 @@ const MyPage = () => {
             setReportTargetInfo(null);
         } catch (err: any) {
             console.error(err);
-            alert(err.response?.data?.message || '신고 실패'); 
+            alert(err.response?.data?.message || '신고 실패');
             setIsReportModalOpen(false);
             setReportTargetInfo(null);
         }
@@ -394,7 +401,7 @@ const MyPage = () => {
                 >
                     {isMyPage ? `내가 작성한 레시피` : `${user?.username} 님이 작성한 레시피 `}
                     <div className={styles.badge1}>{myRecipes.length}</div>
-                </button>
+            </button>
 
                 <button
                     className={`${styles.tabButton} ${activeTab === "liked" ? styles.active : ""}`}
@@ -492,7 +499,7 @@ const MyPage = () => {
                     onConfirm={handleInactive}
                 />
             )}
-            
+
             {isReportModalOpen && reportTargetInfo && (
                 <ReportModal
                     isOpen={isReportModalOpen}
