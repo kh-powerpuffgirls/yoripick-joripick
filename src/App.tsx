@@ -122,7 +122,7 @@ function App() {
   const { data: expIngs, refetch : refetchExpIngs } = useQuery({
     queryKey: ["expIngs"],
     queryFn: () => userNo && getMyIngs({ userNo, sortNo: 1, keyword: '' }),
-    enabled: isAuthenticated && (userNo != null),
+    enabled: isAuthenticated && (userNo != null) && user?.expNoti === "Y",
   });
 
   useEffect(() => {
