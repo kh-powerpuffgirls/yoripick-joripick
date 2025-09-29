@@ -147,6 +147,10 @@
   transition: background 0.2s;
 }
 
+.modalContent input.emailInput{
+  width: 230px;
+}
+
 .saveBtn:hover {
   background: #43a047;
 }
