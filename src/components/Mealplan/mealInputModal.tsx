@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { addRcpItem, fetchFoodCodes, fetchRecent, fetchRecipes, saveFoodItem, saveMealItem, searchFoods, type FoodCodeData, type MealItemData } from '../../api/mealplanApi';
-import style from './MealInputModal.module.css';
+import style from './mealInputModal.module.css';
 import { formatToYYYYMMDD } from '../../pages/Mealplan/main';
 import type { RootState } from '../../store/store';
 import { useSelector } from 'react-redux';
