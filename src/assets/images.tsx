@@ -45,8 +45,8 @@ import rcpIcon10 from './images/mainpage/recipe/crown_480.png'
 import rcpIcon11 from './images/mainpage/recipe/strawberry_cake_480.png'
 import rcpIcon12 from './images/ing/icon/food.png'
 
-
-
+import yopik from './yopik.png'
+import jopik from './jopik.png'
 
 export const lodingImg = {
     logo: logo,
@@ -69,6 +69,8 @@ export const lodingImg = {
     toggleGall: toggleGall,
     calendar: calendar,
     EatBtiLogo: EatBtiLogo,
+    yopik: yopik,
+    jopik: jopik,
 }
 
 export const lodingIngIcon = [
