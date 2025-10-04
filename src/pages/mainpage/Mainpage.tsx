@@ -167,7 +167,7 @@ export default function Mainpage(){
                      </div>
                 <div className={cx("flex-row", "gap-20", ingDefaultStyle["content-area"])}>
                         <img src={IngPediaMain?.[0]?.imgUrl ?? lodingImg.noImage} className={mainStyle[`tip-image`]}
-                        onClick={() => navigate(`/ingpedia/detail/${IngPediaMain[0].ingNo}`)}/>
+                        onClick={() => navigate(`/ingpedia/detail/${IngPediaMain?.[0]?.ingNo}`)}/>
                     <div className={mainStyle[`tip-content`]}>
                         <div className={mainStyle[`tip-text`]}>
                             <h3>오늘의 식재료 : {IngPediaMain?.[0]?.ingName}</h3>
