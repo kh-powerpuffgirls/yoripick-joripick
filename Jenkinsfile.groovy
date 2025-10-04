@@ -17,8 +17,13 @@ pipeline {
         // 2. 소스코드 빌드
         stage('Build') {
             steps {
-                sh 'chmod +x mvnw'
-                sh './mvnw clean package'
+                sh '''
+                    echo "🔧 Installing dependencies..."
+                    npm install
+        
+                    echo "🏗️ Building project..."
+                    npm run build
+                '''
             }
         }
         // 3. 도커 이미지 빌드
