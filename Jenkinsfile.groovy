@@ -2,6 +2,9 @@ import java.text.SimpleDateFormat
 def TODAY = (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date())
 pipeline {
     agent any
+    tools {
+        nodejs 'NodeJS_24'
+    }
     environment {
         strDockerTag = "${TODAY}_${BUILD_ID}"
         strDockerImage ="530hyelim/cicd_ypjp:${strDockerTag}"
