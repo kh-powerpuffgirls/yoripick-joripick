@@ -167,7 +167,7 @@ export default function IngpediaWrite(){
                             <tbody>
                                 <tr>
                                     <td colSpan={2} className={ingWriteStyle["ing-image"]}>
-                                        <img src={newIng.ingDetail.imgUrl ?? lodingImg.noImage}/>
+                                        <img src={newIng.ingDetail?.imgUrl ?? lodingImg.noImage}/>
                                     </td>
                                 </tr>
                                 <tr>

@@ -175,7 +175,7 @@ export default function MyIngList() {
                                     onClick={() => navigate(`/mypage/inglist/detail/${item.ingNo}`)}>
                                         <div className={myingStyle[`thumbnail`]}>
                                             {/* <img className={myingStyle[`thumbnail-img`]} src={lodingImg.noImage}/> */}
-                                            <img className={myingStyle[`thumbnail-img`]} src={item.imgUrl ?? lodingImg.noImage}/>
+                                            <img className={myingStyle[`thumbnail-img`]} src={item?.imgUrl ?? lodingImg.noImage}/>
                                             {expDateIcon(item)} {/* D-day / 경고 아이콘 */}
                                         </div>
                                         <div className={myingStyle[`mying-title`]}>

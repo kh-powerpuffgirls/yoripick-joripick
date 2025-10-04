@@ -99,7 +99,7 @@ export default function MyIngWrite(){
                     <div className={cx(ingDefaultStyle["content-area"], MyIngWriteStyle["ing-detail-section"])}>
                         
                         <div className={MyIngWriteStyle["thumbnail"]}>
-                            <img src={newMyIng.imgUrl ?? lodingImg.noImage} className={MyIngWriteStyle["thumbnail-img"]}/>
+                            <img src={newMyIng?.imgUrl ?? lodingImg.noImage} className={MyIngWriteStyle["thumbnail-img"]}/>
                         </div>
                         <section className={MyIngWriteStyle["ing-inform"]}>
                             <select name="ingCodeName" className={MyIngWriteStyle["drop-menu"]} onClick={()=>openIngPopup()}>

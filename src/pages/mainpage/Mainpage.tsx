@@ -166,7 +166,7 @@ export default function Mainpage(){
                         <h2>재료 관리 Tip!</h2>
                      </div>
                 <div className={cx("flex-row", "gap-20", ingDefaultStyle["content-area"])}>
-                        <img src={IngPediaMain[0].imgUrl ?? lodingImg.noImage} className={mainStyle[`tip-image`]}
+                        <img src={IngPediaMain?.[0]?.imgUrl ?? lodingImg.noImage} className={mainStyle[`tip-image`]}
                         onClick={() => navigate(`/ingpedia/detail/${IngPediaMain[0].ingNo}`)}/>
                     <div className={mainStyle[`tip-content`]}>
                         <div className={mainStyle[`tip-text`]}>
@@ -183,7 +183,7 @@ export default function Mainpage(){
                             {IngPediaMain.slice(1).map(
                                 (item) => (
                                     <span key={item.ingNo} className={mainStyle[`thumb`]} onClick={() => navigate(`/ingpedia/detail/${item.ingNo}`)}>
-                                        <img className={mainStyle[`thumb-image`]} src={item.imgUrl ?? lodingImg.noImage}/>
+                                        <img className={mainStyle[`thumb-image`]} src={item?.imgUrl ?? lodingImg.noImage}/>
                                     </span>
                                 )
                             )}
