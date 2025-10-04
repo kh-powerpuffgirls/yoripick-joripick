@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from './PasscodeModal.module.css';
+import styles from './passcodeModal.module.css';
 
 interface PasscodeModalProps {
   className: string;
