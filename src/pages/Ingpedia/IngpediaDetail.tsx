@@ -63,7 +63,7 @@ export default function IngpediaDetail(){
                             <table className={ingDetailStyle["ing-table"]}>
                                 <thead>
                                     <tr>
-                                        <th colSpan={2} className={ingDetailStyle["ing-name"]}>{IngPediaItem.ingDetail.ingName}</th>
+                                        <th colSpan={2} className={ingDetailStyle["ing-name"]}>{IngPediaItem.ingDetail?.ingName}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

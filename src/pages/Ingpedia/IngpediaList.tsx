@@ -137,7 +137,7 @@ export default function IngpediaList(){
                     </div>
                     <div className={ingStyle["ing-content-list"]}>
                         <ul className={ingStyle["ing-content-grid"]}>
-                            {ingContents?.ingList.map(
+                            {ingContents && ingContents.ingList.length > 0 && ingContents.ingList.map(
                             (item) => (
                                 <li key={item.ingNo} className={ingStyle[`ing-item`]} onClick={() => navigate(`/ingpedia/detail/${item.ingNo}`)}>
                                     <div className={ingStyle[`ing-item-text`]}>{item.ingName}</div>

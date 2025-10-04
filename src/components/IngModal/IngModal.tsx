@@ -126,7 +126,7 @@ export const IngPopup = () => {
       <hr className={ingModalStyle.margin0}/>
       <section className={ingModalStyle.result}>
         <ul>
-          {IngItems?.list.map(
+          {IngItems && IngItems.list.length > 0 && IngItems.list.map(
                 (Ingitem) => (
                   <>
                     <li className={ingModalStyle["result-item"]} onClick={()=>handleSelect(Ingitem)}>

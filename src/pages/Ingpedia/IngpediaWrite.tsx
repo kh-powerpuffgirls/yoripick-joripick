@@ -159,7 +159,7 @@ export default function IngpediaWrite(){
                                 <tr>
                                     <th colSpan={2}>
                                         <input name="ingName" type="text" className={ingWriteStyle["ing-name"]} placeholder="재료명"
-                                        value={newIng.ingDetail.ingName} onClick={() => openIngPopup()} readOnly/>
+                                        value={newIng.ingDetail?.ingName} onClick={() => openIngPopup()} readOnly/>
                                         {/* <button onClick={() => openIngPopup()}>재료 검색</button> */}
                                     </th>
                                 </tr>

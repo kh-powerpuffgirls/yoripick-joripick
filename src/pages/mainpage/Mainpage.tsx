@@ -170,12 +170,12 @@ export default function Mainpage(){
                         onClick={() => navigate(`/ingpedia/detail/${IngPediaMain[0].ingNo}`)}/>
                     <div className={mainStyle[`tip-content`]}>
                         <div className={mainStyle[`tip-text`]}>
-                            <h3>오늘의 식재료 : {IngPediaMain[0].ingName}</h3>
+                            <h3>오늘의 식재료 : {IngPediaMain?.[0]?.ingName}</h3>
                             <p>
-                                {IngPediaMain[0].buyingTip}
-                                {IngPediaMain[0].preparation}
-                                {IngPediaMain[0].storageMethod}
-                                {IngPediaMain[0].usageTip}
+                                {IngPediaMain?.[0]?.buyingTip}
+                                {IngPediaMain?.[0]?.preparation}
+                                {IngPediaMain?.[0]?.storageMethod}
+                                {IngPediaMain?.[0]?.usageTip}
                             </p>
                         </div>
                         <Link to={'/ingpedia'} className={ingDefaultStyle[`more-link`]}>더 많은 재료 관리 Tip 보기</Link>

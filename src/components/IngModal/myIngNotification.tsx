@@ -64,7 +64,7 @@ export const MyIngNotification = () => {
                     <div className={style.messageBody}>
                         <p><strong>소비기한이 임박했습니다!</strong></p>
                         <p className={style.messageText}>
-                            {ings.map((item, index) => (
+                            {ings.length > 0 && ings.map((item, index) => (
                                 <span key={index}>
                                 {item.ingName}
                                 {item.quantity ? `(${item.quantity})` : ''}

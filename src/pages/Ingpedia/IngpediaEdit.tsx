@@ -131,7 +131,7 @@ export default function IngpediaEdit(){
                                 <tr>
                                     <th colSpan={2}>
                                         <input name="ingName" type="text" className={ingEditStyle["ing-name"]} placeholder="재료명"
-                                        value={newIngPedia.ingDetail.ingName} onChange={handleAddIngPedia}/>
+                                        value={newIngPedia.ingDetail?.ingName} onChange={handleAddIngPedia}/>
                                     </th>
                                 </tr>
                             </thead>
