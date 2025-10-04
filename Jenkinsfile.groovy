@@ -51,8 +51,8 @@ pipeline {
         stage('Deploy Production') {
             steps {
                 sshagent(credentials: ['SSH-PrivateKey']) {
-                    sh "ssh -o StrictHostKeyChecking=no ec2-user@3.38.213.177 docker container rm -f ypjp"
-                    sh "ssh -o StrictHostKeyChecking=no ec2-user@3.38.213.177 docker container run \
+                    sh "ssh -o StrictHostKeyChecking=no ec2-user@43.203.124.138 docker container rm -f ypjp"
+                    sh "ssh -o StrictHostKeyChecking=no ec2-user@43.203.124.138 docker container run \
                         -d \
                         -p 80:80  \
                         --name=ypjp \
