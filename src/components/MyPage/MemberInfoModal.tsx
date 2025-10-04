@@ -76,7 +76,7 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
       return;
     }
     try {
-      const res = await axios.get("http://localhost:8081/auth/users/check", {
+      const res = await axios.get("http://3.38.213.177:8081/auth/users/check", {
         params: { username },
       });
       setUsernameStatus(res.data.available);
@@ -93,7 +93,7 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:8081/auth/email-codes", {
+      const res = await axios.post("http://3.38.213.177:8081/auth/email-codes", {
         email: trimmedEmail,
       });
       setEmailStatus(res.data.available);
@@ -119,7 +119,7 @@ const MemberInfoModal = ({ user, onClose }: MemberInfoModalProps) => {
 
   const handleVerifyCode = async () => {
     try {
-      const res = await axios.post("http://localhost:8081/auth/email-codes/verify", {
+      const res = await axios.post("http://3.38.213.177:8081/auth/email-codes/verify", {
         email,
         code: emailCode,
       });

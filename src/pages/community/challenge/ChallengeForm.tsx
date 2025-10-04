@@ -7,7 +7,7 @@ import type { RootState } from "../../../store/store";
 import styles from "./ChallengeForm.module.css";
 import CommunityHeader from "../Header/CommunityHeader";
 
-const API_BASE = "http://localhost:8081";
+const API_BASE = "http://3.38.213.177:8081";
 
 const getAccessToken = () => store.getState().auth.accessToken;
 

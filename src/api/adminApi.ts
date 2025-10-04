@@ -8,7 +8,7 @@ const getAccessToken = () => {
 }
 
 export const api = axios.create({
-    baseURL: "http://localhost:8081/admin",
+    baseURL: "http://3.38.213.177:8081/admin",
     withCredentials: true
 })
 
@@ -31,7 +31,7 @@ api.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 const response = await axios.post(
-                    "http://localhost:8081/auth/tokens/refresh",
+                    "http://3.38.213.177:8081/auth/tokens/refresh",
                     {},
                     { withCredentials: true }
                 );

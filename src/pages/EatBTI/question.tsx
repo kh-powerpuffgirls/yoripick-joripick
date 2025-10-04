@@ -123,7 +123,7 @@ const QuestionPage = () => {
     // const dispatch = useDispatch();
 
     useEffect(() => {
-        axios.get("http://localhost:8081/sbti")
+        axios.get("http://3.38.213.177:8081/sbti")
             .then(res => setScoreMap(res.data))
             .catch(err => console.error(err));
     }, []);

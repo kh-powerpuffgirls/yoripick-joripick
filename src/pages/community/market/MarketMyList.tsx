@@ -8,7 +8,7 @@ import CommunityHeader from '../Header/CommunityHeader';
 import styles from '../mypost/MyPost.module.css';
 import React from 'react';
 
-const API_BASE = 'http://localhost:8081';
+const API_BASE = 'http://3.38.213.177:8081';
 
 const getAccessToken = (): string | null => store.getState().auth.accessToken;
 

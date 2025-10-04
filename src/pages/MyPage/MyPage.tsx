@@ -100,7 +100,7 @@ const MyPage = () => {
     const fetchData = async (user: User) => {
         console.log(user)
         const api = axios.create({
-            baseURL: "http://localhost:8081/users",
+            baseURL: "http://3.38.213.177:8081/users",
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
@@ -155,7 +155,7 @@ const MyPage = () => {
                 title: r.RCP_NAME,
                 likes: r.RCP_LIKE,
                 img: r.SERVER_NAME
-                    ? `http://localhost:8081/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
+                    ? `http://3.38.213.177:8081/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
                     : defaultProfile,
             }));
             setMyRecipes(formattedMyRecipes);
@@ -165,7 +165,7 @@ const MyPage = () => {
                 title: r.RCP_NAME,
                 likes: r.RCP_LIKE,
                 img: r.SERVER_NAME
-                    ? `http://localhost:8081/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
+                    ? `http://3.38.213.177:8081/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
                     : defaultProfile,
             }));
             setLikedRecipes(formattedLikedRecipes);
@@ -232,7 +232,7 @@ const MyPage = () => {
 
         try {
             const reportApi = axios.create({
-                baseURL: "http://localhost:8081",
+                baseURL: "http://3.38.213.177:8081",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 
@@ -262,7 +262,7 @@ const MyPage = () => {
 
         try {
             const reportApi = axios.create({
-                baseURL: "http://localhost:8081",
+                baseURL: "http://3.38.213.177:8081",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 

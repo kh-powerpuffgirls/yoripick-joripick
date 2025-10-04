@@ -15,7 +15,7 @@ import { getRooms, saveMessage } from '../../../api/chatApi';
 import useChat from '../../../hooks/useChat';
 import { useQueryClient } from '@tanstack/react-query';
 
-const API_BASE = 'http://localhost:8081';
+const API_BASE = 'http://3.38.213.177:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({

@@ -11,7 +11,7 @@ import CommunityModal from '../CommunityModal';
 
 const getAccessToken = () => store.getState().auth.accessToken;
 
-const API_BASE = 'http://localhost:8081';
+const API_BASE = 'http://3.38.213.177:8081';
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,

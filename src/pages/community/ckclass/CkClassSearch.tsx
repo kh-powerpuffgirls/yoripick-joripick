@@ -14,7 +14,7 @@ import useChat from '../../../hooks/useChat';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import PasscodeModal from './passcodeModal';
 
-const API_BASE = 'http://localhost:8081';
+const API_BASE = 'http://3.38.213.177:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({
@@ -122,7 +122,7 @@ const CkClassSearch = () => {
         memberCount: cls.memberCount ?? 0,
         unreadCount: cls.unreadCount ?? 0,
         type: 'search',
-        imageUrl: cls.serverName ? `http://localhost:8081/images/${cls.serverName}` : undefined,
+        imageUrl: cls.serverName ? `http://3.38.213.177:8081/images/${cls.serverName}` : undefined,
         passcode: cls.passcode,
       }));
       setAllClasses(mappedData);

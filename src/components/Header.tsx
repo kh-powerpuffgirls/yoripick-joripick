@@ -43,7 +43,7 @@ const Header = () => {
       if (!user || !accessToken) return;
 
       const api = axios.create({
-          baseURL: "http://localhost:8081/users",
+          baseURL: "http://3.38.213.177:8081/users",
           headers: {
               Authorization: `Bearer ${accessToken}`,
           },
