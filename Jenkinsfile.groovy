@@ -54,7 +54,10 @@ pipeline {
                     sh "ssh -o StrictHostKeyChecking=no ec2-user@43.203.124.138 docker container rm -f ypjp"
                     sh "ssh -o StrictHostKeyChecking=no ec2-user@43.203.124.138 docker container run \
                         -d \
-                        -p 80:80  \
+                        -p 80:80 -p 443:443 \
+                        -v /etc/letsencrypt/live/front.ypjp.store/fullchain.pem:/etc/letsencrypt/live/front.ypjp.store/fullchain.pem \
+                        -v /etc/letsencrypt/live/front.ypjp.store/privkey.pem:/etc/letsencrypt/live/front.ypjp.store/privkey.pem \
+                        -v /home/ec2-user/nginx.conf:/etc/nginx/conf.d/default.conf \
                         --name=ypjp \
                         ${strDockerImage}"
                 }
