@@ -7,7 +7,7 @@ import type { RootState } from "../../../store/store";
 import styles from "./ChallengeForm.module.css";
 import CommunityHeader from "../Header/CommunityHeader";
 
-const API_BASE = "https://api.ypjp.store:8443";
+const API_BASE = "http://localhost:8081";
 
 const getAccessToken = () => store.getState().auth.accessToken;
 

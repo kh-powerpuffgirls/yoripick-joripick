@@ -36,7 +36,7 @@ const FreeMain = () => {
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get<FreePost[]>('https://api.ypjp.store:8443/community/free');
+      const response = await axios.get<FreePost[]>('http://localhost:8081/community/free');
       setAllPosts(response.data);
       setCurrentPage(1);
     } catch (err) {
@@ -102,7 +102,7 @@ const FreeMain = () => {
                     <img
                       src={
                         post.serverName
-                          ? `https://api.ypjp.store:8443/images/${post.serverName}?t=${new Date().getTime()}`
+                          ? `http://localhost:8081/images/${post.serverName}?t=${new Date().getTime()}`
                           : 'https://placehold.co/400x400/CCCCCC/ffffff?text=No+Image'
                       }
                       alt={post.title}

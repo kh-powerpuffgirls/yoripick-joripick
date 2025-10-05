@@ -8,7 +8,7 @@ import CommunityHeader from '../Header/CommunityHeader';
 import styles from '../mypost/MyPost.module.css';
 import React from 'react';
 
-const API_BASE = 'https://api.ypjp.store:8443';
+const API_BASE = 'http://localhost:8081';
 
 const getAccessToken = (): string | null => store.getState().auth.accessToken;
 
