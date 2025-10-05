@@ -10,7 +10,7 @@ import BuyCompleteModal from './BuyCompleteModal';
 import CommunityModal from '../CommunityModal';
 import ReportModal from '../../../components/Report/ReportModal';
 
-const API_BASE = 'https://api.ypjp.store';
+const API_BASE = 'https://api.ypjp.store:8443';
 
 const getAccessToken = () => store.getState().auth.accessToken;
 

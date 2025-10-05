@@ -11,7 +11,7 @@ import useChat from '../../../hooks/useChat';
 import type { Message } from '../../../type/chatmodal';
 import { saveMessage } from '../../../api/chatApi';
 
-const API_BASE = 'https://api.ypjp.store';
+const API_BASE = 'https://api.ypjp.store:8443';
 const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({

@@ -8,7 +8,7 @@ const getAccessToken = () => {
 };
 
 const api = axios.create({
-    baseURL: `https://api.ypjp.store/chat`,
+    baseURL: `https://api.ypjp.store:8443/chat`,
     withCredentials: true
 });
 

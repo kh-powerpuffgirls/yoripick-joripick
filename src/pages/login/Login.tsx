@@ -110,7 +110,7 @@ export default function Login() {
 
 
   const handleKakaoLogin = () => {
-    window.location.href = "https://api.ypjp.store/oauth2/authorization/kakao";
+    window.location.href = "https://api.ypjp.store:8443/oauth2/authorization/kakao";
   };
 
   return (

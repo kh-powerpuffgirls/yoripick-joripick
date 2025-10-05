@@ -17,7 +17,7 @@ export default function OAuth2Success() {
     const accessToken = param.get("accessToken") as string;
 
     axios
-      .get("https://api.ypjp.store/auth/users/me", {
+      .get("https://api.ypjp.store:8443/auth/users/me", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

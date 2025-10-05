@@ -8,7 +8,7 @@ const getAccessToken = () => {
 }
 
 export const api = axios.create({
-    baseURL: "https://api.ypjp.store/admin",
+    baseURL: "https://api.ypjp.store:8443/admin",
     withCredentials: true
 })
 
@@ -31,7 +31,7 @@ api.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 const response = await axios.post(
-                    "https://api.ypjp.store/auth/tokens/refresh",
+                    "https://api.ypjp.store:8443/auth/tokens/refresh",
                     {},
                     { withCredentials: true }
                 );

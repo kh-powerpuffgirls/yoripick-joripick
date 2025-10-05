@@ -8,7 +8,7 @@ const getAccessToken = () => {
 };
 
 const api = axios.create({
-    baseURL: `https://api.ypjp.store/inglist`,
+    baseURL: `https://api.ypjp.store:8443/inglist`,
     withCredentials: true
 });
 

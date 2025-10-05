@@ -100,7 +100,7 @@ const MyPage = () => {
     const fetchData = async (user: User) => {
         console.log(user)
         const api = axios.create({
-            baseURL: "https://api.ypjp.store/users",
+            baseURL: "https://api.ypjp.store:8443/users",
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
@@ -155,7 +155,7 @@ const MyPage = () => {
                 title: r.RCP_NAME,
                 likes: r.RCP_LIKE,
                 img: r.SERVER_NAME
-                    ? `https://api.ypjp.store/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
+                    ? `https://api.ypjp.store:8443/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
                     : defaultProfile,
             }));
             setMyRecipes(formattedMyRecipes);
@@ -165,7 +165,7 @@ const MyPage = () => {
                 title: r.RCP_NAME,
                 likes: r.RCP_LIKE,
                 img: r.SERVER_NAME
-                    ? `https://api.ypjp.store/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
+                    ? `https://api.ypjp.store:8443/images/community/recipe/${r.RCP_NO}/${r.SERVER_NAME}`
                     : defaultProfile,
             }));
             setLikedRecipes(formattedLikedRecipes);
@@ -232,7 +232,7 @@ const MyPage = () => {
 
         try {
             const reportApi = axios.create({
-                baseURL: "https://api.ypjp.store",
+                baseURL: "https://api.ypjp.store:8443",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 
@@ -262,7 +262,7 @@ const MyPage = () => {
 
         try {
             const reportApi = axios.create({
-                baseURL: "https://api.ypjp.store",
+                baseURL: "https://api.ypjp.store:8443",
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 

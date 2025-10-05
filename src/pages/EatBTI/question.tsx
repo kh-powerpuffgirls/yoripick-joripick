@@ -123,7 +123,7 @@ const QuestionPage = () => {
     // const dispatch = useDispatch();
 
     useEffect(() => {
-        axios.get("https://api.ypjp.store/sbti")
+        axios.get("https://api.ypjp.store:8443/sbti")
             .then(res => setScoreMap(res.data))
             .catch(err => console.error(err));
     }, []);

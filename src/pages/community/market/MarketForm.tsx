@@ -11,7 +11,7 @@ import CommunityModal from '../CommunityModal';
 
 const getAccessToken = () => store.getState().auth.accessToken;
 
-const API_BASE = 'https://api.ypjp.store';
+const API_BASE = 'https://api.ypjp.store:8443';
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,

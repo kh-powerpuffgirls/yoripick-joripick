@@ -14,7 +14,7 @@ import useChat from '../../../hooks/useChat';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import PasscodeModal from './passcodeModal';
 
-const API_BASE = 'https://api.ypjp.store';
+const API_BASE = 'https://api.ypjp.store:8443';
 const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({
@@ -122,7 +122,7 @@ const CkClassSearch = () => {
         memberCount: cls.memberCount ?? 0,
         unreadCount: cls.unreadCount ?? 0,
         type: 'search',
-        imageUrl: cls.serverName ? `https://api.ypjp.store/images/${cls.serverName}` : undefined,
+        imageUrl: cls.serverName ? `https://api.ypjp.store:8443/images/${cls.serverName}` : undefined,
         passcode: cls.passcode,
       }));
       setAllClasses(mappedData);

@@ -22,7 +22,7 @@ interface MarketMain {
   sikBti: string;
 }
 
-const API_BASE = 'https://api.ypjp.store';
+const API_BASE = 'https://api.ypjp.store:8443';
 
 const MarketMain = () => {
   const navigate = useNavigate();
