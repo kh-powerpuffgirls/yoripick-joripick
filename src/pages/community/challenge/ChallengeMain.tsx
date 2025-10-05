@@ -10,7 +10,7 @@ import ChallengeSuggestionForm from "./ChallengeSuggestionForm";
 import SikBti from "../Recipe/SikBti";
 import { lodingImg } from "../../../assets/images";
 
-const API_BASE = "https://api.ypjp.store:8443";
+const API_BASE = "http://localhost:8081";
 const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({

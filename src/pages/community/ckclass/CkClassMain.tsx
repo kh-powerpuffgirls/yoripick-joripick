@@ -15,7 +15,7 @@ import { getRooms, saveMessage } from '../../../api/chatApi';
 import useChat from '../../../hooks/useChat';
 import { useQueryClient } from '@tanstack/react-query';
 
-const API_BASE = 'https://api.ypjp.store:8443';
+const API_BASE = 'http://localhost:8081';
 const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({

@@ -53,7 +53,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
     setLoading((prev) => ({ ...prev, sending: true }));
     try {
-      await axios.post("https://api.ypjp.store:8443/auth/email-codes/reset", { email });
+      await axios.post("http://localhost:8081/auth/email-codes/reset", { email });
       alert("인증메일이 발송되었습니다.");
       setTimer(5 * 60);
       setIsVerified(false);
@@ -85,7 +85,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
     setLoading((prev) => ({ ...prev, verifying: true }));
     try {
-      const res = await axios.post("https://api.ypjp.store:8443/auth/email-codes/verify", {
+      const res = await axios.post("http://localhost:8081/auth/email-codes/verify", {
         email,
         code: verificationCode,
       });
@@ -126,7 +126,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
 
     setLoading((prev) => ({ ...prev, changing: true }));
     try {
-      await axios.post("https://api.ypjp.store:8443/auth/reset-password", {
+      await axios.post("http://localhost:8081/auth/reset-password", {
         email,
         password: newPassword,
       });
