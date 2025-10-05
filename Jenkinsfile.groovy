@@ -14,7 +14,7 @@ pipeline {
         // 1. 깃헙 체크아웃(master)
         stage('Checkout') {
             steps {
-                git branch: 'master', url: strGitUrl
+                git branch: 'jenkins', url: strGitUrl
             }
         }
         // 2. 소스코드 빌드
