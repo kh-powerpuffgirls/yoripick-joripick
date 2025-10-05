@@ -31,7 +31,7 @@ const handleNewChat = async (user: User | null, type: ChatRoomCreate,
     dispatch(openChat(newRoom));
     if (type === "cservice") {
         try {
-            await axios.delete(`http://localhost:8080/chat/${user?.userNo}`, { withCredentials: true });
+            await axios.delete(`http://3.38.116.62:8080/chat/${user?.userNo}`, { withCredentials: true });
         } catch (err) {
             console.error("Error:", err);
         }

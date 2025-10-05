@@ -175,7 +175,7 @@ export const ChatModal = () => {
             dispatch(sendMessage(message));
             setLoading(true);
             try {
-                const response = await axios.post(`http://localhost:8080/chat/${userNo}`,
+                const response = await axios.post(`http://3.38.116.62:8080/chat/${userNo}`,
                     { question },
                     { withCredentials: true });
                 const botMessage: Message = {
