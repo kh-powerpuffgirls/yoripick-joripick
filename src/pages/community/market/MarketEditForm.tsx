@@ -14,7 +14,7 @@ import CommunityHeader from '../Header/CommunityHeader';
 import SellerModal from './SellerModal';
 import CommunityModal from '../CommunityModal';
 
-const API_BASE = 'http://3.38.213.177:8081';
+const API_BASE = 'https://api.ypjp.store';
 
 const getAccessToken = () => store.getState().auth.accessToken;
 

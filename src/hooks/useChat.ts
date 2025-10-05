@@ -27,7 +27,7 @@ const useChat = () => {
         if (!userNo || !accessToken) return;
         if (stompManager.client) return; 
             
-        const socket = new SockJS("http://3.38.213.177:8081/ws");
+        const socket = new SockJS("https://api.ypjp.store/ws");
         const client = new Client({
             webSocketFactory: () => socket,
             reconnectDelay: 5000,

@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useChat from '../../../hooks/useChat';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-const API_BASE = 'http://3.38.213.177:8081';
+const API_BASE = 'https://api.ypjp.store';
 const getAccessToken = () => store.getState().auth.accessToken;
 
 const api = axios.create({

@@ -63,7 +63,7 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
       return;
     }
     try {
-      await axios.post("http://3.38.213.177:8081/auth/email-codes", { email });
+      await axios.post("https://api.ypjp.store/auth/email-codes", { email });
       setEmailSent(true);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);
@@ -80,7 +80,7 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
   
   const handleVerifyCode = async () => {
     try {
-      const res = await axios.post("http://3.38.213.177:8081/auth/email-codes/verify", {
+      const res = await axios.post("https://api.ypjp.store/auth/email-codes/verify", {
         email,
         code: emailCode,
       });
@@ -97,7 +97,7 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
       return;
     }
     try {
-      const res = await axios.get("http://3.38.213.177:8081/auth/users/check", {
+      const res = await axios.get("https://api.ypjp.store/auth/users/check", {
         params: { username },
       });
       setUsernameStatus(res.data.available);
@@ -138,7 +138,7 @@ export default function EnrollModal({ onClose }: EnrollModalProps) {
     if (passwordMatch !== true) return alert("비밀번호가 일치하지 않습니다.");
 
     try {
-      const res = await axios.post("http://3.38.213.177:8081/auth/users", {
+      const res = await axios.post("https://api.ypjp.store/auth/users", {
         email,
         username,
         password,

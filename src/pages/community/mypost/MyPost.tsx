@@ -7,7 +7,7 @@ import mypostStyles from './MyPost.module.css';
 import { useNavigate } from 'react-router-dom';
 import CommunityHeader from '../Header/CommunityHeader';
 
-const API_BASE = 'http://3.38.213.177:8081';
+const API_BASE = 'https://api.ypjp.store';
 
 const getAccessToken = () => store.getState().auth.accessToken;
 

@@ -5,7 +5,7 @@ import { store } from "../../../store/store";
 import axios from "axios";
 import style from "./ChallengeSuggestionForm.module.css";
 
-const API_BASE_URL = "http://3.38.213.177:8081";
+const API_BASE_URL = "https://api.ypjp.store";
 
 const getAccessToken = () => store.getState().auth.accessToken;
 

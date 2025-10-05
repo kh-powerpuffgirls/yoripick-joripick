@@ -7,7 +7,7 @@ const getAccessToken = () => {
 };
 
 const api = axios.create({
-    baseURL: `http://3.38.213.177:8081/ingdata`,
+    baseURL: `https://api.ypjp.store/ingdata`,
     withCredentials: true
 });
 

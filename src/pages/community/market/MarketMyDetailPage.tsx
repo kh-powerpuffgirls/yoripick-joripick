@@ -9,7 +9,7 @@ import ReportModal from '../../../components/Report/ReportModal';
 import { store } from '../../../store/store';
 import CommunityHeader from '../Header/CommunityHeader';
 
-const API_BASE = 'http://3.38.213.177:8081';
+const API_BASE = 'https://api.ypjp.store';
 
 const getAccessToken = () => {
   const storeToken = store.getState().auth.accessToken;

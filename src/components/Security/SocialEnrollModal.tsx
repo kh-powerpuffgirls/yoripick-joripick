@@ -46,7 +46,7 @@ export default function SocialEnrollModal({ email, provider, providerUserId, onC
       return;
     }
     try {
-      const res = await axios.get("http://3.38.213.177:8081/auth/users/check", {
+      const res = await axios.get("https://api.ypjp.store/auth/users/check", {
         params: { username },
       });
       setUsernameStatus(res.data.available);
@@ -77,7 +77,7 @@ export default function SocialEnrollModal({ email, provider, providerUserId, onC
 
     try {
       await axios.post(
-        "http://3.38.213.177:8081/auth/users/social",
+        "https://api.ypjp.store/auth/users/social",
         { email, username, provider, providerUserId },
         { withCredentials: true }
       );

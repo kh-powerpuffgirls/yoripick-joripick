@@ -43,7 +43,7 @@ const Header = () => {
       if (!user || !accessToken) return;
 
       const api = axios.create({
-          baseURL: "http://3.38.213.177:8081/users",
+          baseURL: "https://api.ypjp.store/users",
           headers: {
               Authorization: `Bearer ${accessToken}`,
           },

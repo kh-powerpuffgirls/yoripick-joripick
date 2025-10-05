@@ -2,7 +2,7 @@ import axios from "axios";
 import { type IngCreate, type IngPedia, type IngPediaMain, type IngPediaUpdate, type PagedIngListResponse } from "../../type/Ing";
 
 const api = axios.create({
-    baseURL: `http://3.38.213.177:8081/ingpedia`
+    baseURL: `https://api.ypjp.store/ingpedia`
     // withCredentials: true
 });
 

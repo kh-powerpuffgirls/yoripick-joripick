@@ -16,7 +16,7 @@ const CommunityMain = () => {
     const user = useSelector((state: RootState) => state.auth.user); // 로그인 유저 확인
 
     useEffect(() => {
-        axios.get('http://3.38.213.177:8081/community')
+        axios.get('https://api.ypjp.store/community')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setBoards(response.data);
